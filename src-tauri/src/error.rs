@@ -13,6 +13,12 @@ pub enum AppError {
     #[error("formato non supportato: {0}")]
     UnsupportedFormat(String),
 
+    #[error("file audio illeggibile: {0}")]
+    InvalidAudio(String),
+
+    #[error("libreria non accessibile: {0}")]
+    State(String),
+
     #[error("errore di I/O: {0}")]
     Io(#[from] std::io::Error),
 
@@ -47,6 +53,20 @@ mod tests {
         let error = AppError::UnsupportedFormat("mid".to_owned());
 
         assert_eq!(error.to_string(), "formato non supportato: mid");
+    }
+
+    #[test]
+    fn invalid_audio_ha_un_messaggio_leggibile() {
+        let error = AppError::InvalidAudio("tag corrotti".to_owned());
+
+        assert_eq!(error.to_string(), "file audio illeggibile: tag corrotti");
+    }
+
+    #[test]
+    fn state_ha_un_messaggio_leggibile() {
+        let error = AppError::State("lock avvelenato".to_owned());
+
+        assert_eq!(error.to_string(), "libreria non accessibile: lock avvelenato");
     }
 
     #[test]

@@ -4,6 +4,12 @@
 
 pub mod commands;
 pub mod error;
+pub mod library;
+pub mod metadata;
+pub mod state;
+
+#[cfg(test)]
+pub mod fixtures;
 
 pub use error::{AppError, AppResult};
 

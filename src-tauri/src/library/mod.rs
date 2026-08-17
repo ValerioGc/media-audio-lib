@@ -278,7 +278,8 @@ mod tests {
     fn il_file_mancante_produce_una_libreria_vuota() {
         let dir = TempDir::new("library-missing");
 
-        let library = Library::load(&dir.path().join("library.json")).expect("caricamento riuscito");
+        let library =
+            Library::load(&dir.path().join("library.json")).expect("caricamento riuscito");
 
         assert!(library.is_empty());
     }
@@ -309,7 +310,9 @@ mod tests {
         library.remove("aaa");
         library.save(&file).expect("secondo salvataggio");
 
-        assert!(Library::load(&file).expect("caricamento riuscito").is_empty());
+        assert!(Library::load(&file)
+            .expect("caricamento riuscito")
+            .is_empty());
     }
 
     #[test]

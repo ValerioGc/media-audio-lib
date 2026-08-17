@@ -13,6 +13,12 @@ pub mod fixtures;
 
 pub use error::{AppError, AppResult};
 
+use tauri::Manager as _;
+
+use crate::state::LibraryState;
+
+pub const LIBRARY_FILE_NAME: &str = "library.json";
+
 /// Starts the Tauri shell with the registered commands.
 ///
 /// # Panics
@@ -21,7 +27,20 @@ pub use error::{AppError, AppResult};
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
-        .invoke_handler(tauri::generate_handler![commands::app_info])
+        .setup(|app| {
+            let directory = app.path().app_data_dir()?;
+            app.manage(LibraryState::from_file(directory.join(LIBRARY_FILE_NAME)));
+
+            Ok(())
+        })
+        .invoke_handler(tauri::generate_handler![
+            commands::app_info,
+            commands::library::add_tracks,
+            commands::library::remove_track,
+            commands::library::list_tracks,
+            commands::metadata::read_metadata,
+            commands::metadata::get_cover,
+        ])
         .run(tauri::generate_context!())
         .expect("avvio dell'applicazione Tauri fallito");
 }

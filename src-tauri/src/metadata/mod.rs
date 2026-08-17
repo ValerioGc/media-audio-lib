@@ -78,7 +78,9 @@ fn read_tagged_file(path: &Path) -> AppResult<lofty::file::TaggedFile> {
 pub fn read_metadata(path: &Path) -> AppResult<TrackMetadata> {
     let tagged_file = read_tagged_file(path)?;
     let duration_ms = u64::try_from(tagged_file.properties().duration().as_millis()).unwrap_or(0);
-    let tag = tagged_file.primary_tag().or_else(|| tagged_file.first_tag());
+    let tag = tagged_file
+        .primary_tag()
+        .or_else(|| tagged_file.first_tag());
 
     let Some(tag) = tag else {
         return Ok(TrackMetadata {
@@ -108,9 +110,10 @@ pub fn read_cover(path: &Path) -> AppResult<Option<Cover>> {
         .and_then(|tag| tag.pictures().first());
 
     Ok(picture.map(|picture| Cover {
-        mime_type: picture
-            .mime_type()
-            .map_or_else(|| "application/octet-stream".to_owned(), ToString::to_string),
+        mime_type: picture.mime_type().map_or_else(
+            || "application/octet-stream".to_owned(),
+            ToString::to_string,
+        ),
         data: base64::engine::general_purpose::STANDARD.encode(picture.data()),
     }))
 }
@@ -224,7 +227,9 @@ mod tests {
         let path = wav_with_cover(dir.path(), "brano.wav");
 
         let metadata = read_metadata(&path).expect("metadati letti");
-        let cover = read_cover(&path).expect("lettura riuscita").expect("copertina presente");
+        let cover = read_cover(&path)
+            .expect("lettura riuscita")
+            .expect("copertina presente");
 
         assert!(metadata.has_cover);
         assert_eq!(cover.mime_type, "image/png");

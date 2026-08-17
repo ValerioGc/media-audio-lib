@@ -66,7 +66,10 @@ mod tests {
     fn state_ha_un_messaggio_leggibile() {
         let error = AppError::State("lock avvelenato".to_owned());
 
-        assert_eq!(error.to_string(), "libreria non accessibile: lock avvelenato");
+        assert_eq!(
+            error.to_string(),
+            "libreria non accessibile: lock avvelenato"
+        );
     }
 
     #[test]

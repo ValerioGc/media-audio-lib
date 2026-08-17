@@ -1,16 +1,22 @@
 //! Commands exposed to the frontend.
-//! Phase 3 adds the `library` and `metadata` modules here.
+
+pub mod library;
+pub mod metadata;
 
 use serde::{Deserialize, Serialize};
 
+pub use library::{add_tracks, list_tracks, remove_track};
+pub use metadata::{get_cover, read_metadata};
+
+use crate::metadata::SUPPORTED_EXTENSIONS;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppInfo {
     pub name: String,
     pub version: String,
     pub supported_extensions: Vec<String>,
 }
-
-pub const SUPPORTED_EXTENSIONS: [&str; 5] = ["mp3", "flac", "m4a", "ogg", "wav"];
 
 pub fn build_app_info() -> AppInfo {
     AppInfo {
@@ -27,12 +33,6 @@ pub fn build_app_info() -> AppInfo {
 #[tauri::command]
 pub fn app_info() -> AppInfo {
     build_app_info()
-}
-
-/// True when the extension, with or without a leading dot and in any case, is supported.
-pub fn is_supported_extension(extension: &str) -> bool {
-    let normalized = extension.trim_start_matches('.').to_lowercase();
-    SUPPORTED_EXTENSIONS.contains(&normalized.as_str())
 }
 
 #[cfg(test)]
@@ -59,14 +59,6 @@ mod tests {
     fn app_info_e_serializzabile_verso_il_frontend() {
         let json = serde_json::to_string(&build_app_info()).expect("serializzazione riuscita");
 
-        assert!(json.contains("\"supported_extensions\""));
-    }
-
-    #[test]
-    fn le_estensioni_sono_riconosciute_senza_distinzione_di_case() {
-        assert!(is_supported_extension("MP3"));
-        assert!(is_supported_extension(".flac"));
-        assert!(!is_supported_extension("mid"));
-        assert!(!is_supported_extension(""));
+        assert!(json.contains("\"supportedExtensions\""));
     }
 }

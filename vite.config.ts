@@ -55,7 +55,7 @@ export default defineConfig({
         'src/main.ts',
         'src/**/*.spec.ts',
         'src/**/*.d.ts',
-        'src/**/index.ts',
+        'src/router/**',
         'src/types/**',
       ],
       reporter: ['text', 'lcov', 'html'],

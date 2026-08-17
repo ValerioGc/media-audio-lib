@@ -1,0 +1,38 @@
+// Windows 11 / Fluent inspired palettes. Light is the default, dark is opted in
+// through the data-theme attribute set by the settings store.
+
+:root {
+  --color_bg: #f3f3f3;
+  --color_bg_accent: #eaeaea;
+  --color_surface: #ffffff;
+  --color_surface_alt: #fbfbfb;
+  --color_surface_hover: #f5f5f5;
+  --color_border: #e2e2e2;
+  --color_border_strong: #cfcfcf;
+  --color_text: #1b1b1b;
+  --color_text_muted: #5d5d5d;
+  --color_accent: #0067c0;
+  --color_accent_hover: #005ba1;
+  --color_accent_soft: #eaf2fb;
+  --color_on_accent: #ffffff;
+  --shadow_card: 0 1px 3px rgb(0 0 0 / 8%);
+  --shadow_raised: 0 4px 12px rgb(0 0 0 / 12%);
+}
+
+:root[data-theme='dark'] {
+  --color_bg: #1f1f1f;
+  --color_bg_accent: #191919;
+  --color_surface: #2b2b2b;
+  --color_surface_alt: #272727;
+  --color_surface_hover: #343434;
+  --color_border: #3a3a3a;
+  --color_border_strong: #4a4a4a;
+  --color_text: #f7f7f7;
+  --color_text_muted: #a6a6a6;
+  --color_accent: #4cc2ff;
+  --color_accent_hover: #64cbff;
+  --color_accent_soft: #26333d;
+  --color_on_accent: #00293f;
+  --shadow_card: 0 1px 3px rgb(0 0 0 / 40%);
+  --shadow_raised: 0 4px 12px rgb(0 0 0 / 50%);
+}

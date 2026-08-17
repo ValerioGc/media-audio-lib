@@ -1,21 +1,33 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { onBeforeUnmount, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { RouterView } from 'vue-router';
 
-import { APP_NAME, APP_VERSION, isTauriRuntime } from '@/config/app-config';
+import AppNavigation from '@/components/common/AppNavigation.vue';
+import { useSettingsStore } from '@/stores/settings';
 
-const runtimeLabel = computed(() => (isTauriRuntime() ? 'Tauri' : 'Browser'));
+const { t } = useI18n();
+const settings = useSettingsStore();
+
+onMounted(() => {
+  void settings.initialize();
+});
+
+onBeforeUnmount(() => {
+  settings.dispose();
+});
 </script>
 
 <template>
-  <main class="app_shell">
-    <h1 class="app_shell_title">{{ APP_NAME }}</h1>
-    <p class="app_shell_meta">
-      <span class="app_shell_version">v{{ APP_VERSION }}</span>
-      <span class="app_shell_runtime" data-testid="runtime">{{ runtimeLabel }}</span>
-    </p>
-    <p class="app_shell_hint">
-    </p>
-  </main>
+  <div class="app_shell">
+    <header class="app_shell_header">
+      <span class="app_shell_brand">{{ t('app.name') }}</span>
+      <AppNavigation />
+    </header>
+    <main class="app_shell_content">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped lang="scss">
@@ -23,34 +35,27 @@ const runtimeLabel = computed(() => (isTauriRuntime() ? 'Tauri' : 'Browser'));
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: $space_sm;
-  align-items: center;
-  justify-content: center;
-  padding: $space_xl;
-  text-align: center;
+  min-height: 100%;
 
-  &_title {
-    margin: 0;
-    font-size: 2rem;
+  &_header {
+    display: flex;
+    gap: $space_lg;
+    align-items: center;
+    padding: $space_sm $space_lg;
+    border-bottom: 1px solid var(--color_border);
+    background-color: var(--color_surface);
+  }
+
+  &_brand {
     font-weight: 600;
   }
 
-  &_meta {
+  &_content {
     display: flex;
-    gap: $space_sm;
-    margin: 0;
-    opacity: 0.7;
-  }
-
-  &_runtime {
-    padding: 0 $space_sm;
-    border-radius: $radius_sm;
-    background-color: rgb(128 128 128 / 20%);
-  }
-
-  &_hint {
-    margin: 0;
-    opacity: 0.6;
+    flex: 1;
+    flex-direction: column;
+    padding: $space_lg;
+    overflow-y: auto;
   }
 }
 </style>

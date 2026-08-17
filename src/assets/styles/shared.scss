@@ -1,0 +1,4 @@
+// Tokens and mixins only, no CSS output: Vite injects this into every
+// <style lang="scss"> block, so components must not @use it themselves.
+@forward 'tokens';
+@forward 'mixins';

@@ -1,0 +1,50 @@
+{
+  "name": "media-audio-lib",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Gestore di libreria audio con editing dei metadati, viste multiple e player integrato.",
+  "scripts": {
+    "dev": "tauri dev",
+    "dev:web": "vite",
+    "build": "npm run typecheck && vite build",
+    "build:app": "tauri build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "coverage:rust": "cargo llvm-cov --manifest-path src-tauri/Cargo.toml --lcov --output-path src-tauri/coverage/lcov.info",
+    "format:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "lint:rust": "cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "vue": "^3.5.41"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/node": "^22.20.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.4.11",
+    "eslint": "^10.8.1",
+    "eslint-plugin-vue": "^10.10.0",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "sass-embedded": "^1.102.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.10"
+  }
+}

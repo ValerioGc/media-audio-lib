@@ -1,0 +1,40 @@
+// Global stylesheet. Tokens come from the Vite injection, so do not @use 'shared' here.
+
+:root {
+  --app_font_scale: 1;
+
+  font-family: $font_family_base;
+  font-size: calc(#{$font_size_base} * var(--app_font_scale));
+  line-height: $line_height_base;
+  color-scheme: light dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

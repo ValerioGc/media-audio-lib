@@ -1,0 +1,22 @@
+export const LOCALES = ['it', 'en'] as const;
+export type Locale = (typeof LOCALES)[number];
+
+export const TEXT_SIZES = ['small', 'medium', 'large'] as const;
+export type TextSize = (typeof TEXT_SIZES)[number];
+
+export const THEME_CHOICES = ['light', 'dark', 'system'] as const;
+export type ThemeChoice = (typeof THEME_CHOICES)[number];
+
+export type ResolvedTheme = 'light' | 'dark';
+
+export interface AppSettings {
+  locale: Locale;
+  textSize: TextSize;
+  theme: ThemeChoice;
+}
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  locale: 'it',
+  textSize: 'medium',
+  theme: 'system',
+};

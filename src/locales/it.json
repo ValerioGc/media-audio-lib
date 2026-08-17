@@ -1,0 +1,51 @@
+{
+  "app": {
+    "name": "Media Audio Lib"
+  },
+  "nav": {
+    "label": "Sezioni dell'applicazione",
+    "library": "Libreria",
+    "player": "Player",
+    "settings": "Impostazioni"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "subtitle": "Personalizza lingua, leggibilità e aspetto dell'applicazione.",
+    "language": {
+      "title": "Lingua",
+      "description": "Lingua dell'interfaccia. Il cambio è immediato.",
+      "options": {
+        "it": "Italiano",
+        "en": "Inglese"
+      }
+    },
+    "textSize": {
+      "title": "Dimensione testo",
+      "description": "Scala la tipografia di tutta l'interfaccia.",
+      "preview": "Anteprima del testo alla dimensione scelta.",
+      "options": {
+        "small": "Piccolo",
+        "medium": "Medio",
+        "large": "Grande"
+      }
+    },
+    "theme": {
+      "title": "Tema",
+      "description": "Aspetto chiaro o scuro, oppure allineato al sistema.",
+      "systemHint": "Il sistema sta usando il tema {theme}.",
+      "options": {
+        "light": "Chiaro",
+        "dark": "Scuro",
+        "system": "Sistema"
+      }
+    }
+  },
+  "library": {
+    "title": "Libreria",
+    "placeholder": "La libreria dei brani arriva con la Fase 4."
+  },
+  "player": {
+    "title": "Player",
+    "placeholder": "Il player audio arriva con la Fase 8."
+  }
+}

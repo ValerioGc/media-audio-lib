@@ -1,0 +1,51 @@
+{
+  "app": {
+    "name": "Media Audio Lib"
+  },
+  "nav": {
+    "label": "Application sections",
+    "library": "Library",
+    "player": "Player",
+    "settings": "Settings"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Tune the language, readability and appearance of the application.",
+    "language": {
+      "title": "Language",
+      "description": "Interface language. The change applies immediately.",
+      "options": {
+        "it": "Italian",
+        "en": "English"
+      }
+    },
+    "textSize": {
+      "title": "Text size",
+      "description": "Scales the typography across the whole interface.",
+      "preview": "Preview of the text at the selected size.",
+      "options": {
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      }
+    },
+    "theme": {
+      "title": "Theme",
+      "description": "Light or dark appearance, or follow the system.",
+      "systemHint": "The system is currently using the {theme} theme.",
+      "options": {
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      }
+    }
+  },
+  "library": {
+    "title": "Library",
+    "placeholder": "The track library lands in phase 4."
+  },
+  "player": {
+    "title": "Player",
+    "placeholder": "The audio player lands in phase 8."
+  }
+}

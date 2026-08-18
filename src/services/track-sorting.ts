@@ -13,7 +13,7 @@ export function filterTracks(tracks: readonly TrackView[], query: string): Track
   }
 
   return tracks.filter((track) =>
-    [track.title, track.album, track.genre, track.path].some(
+    [track.title, track.artist, track.album, track.genre, track.path].some(
       (field) => field !== null && normalize(field).includes(needle),
     ),
   );

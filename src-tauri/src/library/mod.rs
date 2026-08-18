@@ -11,7 +11,8 @@ use serde::{Deserialize, Serialize};
 use crate::error::{AppError, AppResult};
 use crate::metadata::{self, TrackMetadata};
 
-pub const SCHEMA_VERSION: u32 = 1;
+/// v2 added the `artist` field. Older files still load: the field defaults to absent.
+pub const SCHEMA_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -19,6 +20,8 @@ pub struct Track {
     pub id: String,
     pub path: String,
     pub title: String,
+    #[serde(default)]
+    pub artist: Option<String>,
     pub album: Option<String>,
     pub year: Option<u32>,
     pub genre: Option<String>,
@@ -34,6 +37,7 @@ impl Track {
             id: track_id(path),
             path: path.display().to_string(),
             title: metadata.title.unwrap_or_else(|| file_stem_of(path)),
+            artist: metadata.artist,
             album: metadata.album,
             year: metadata.year,
             genre: metadata.genre,
@@ -242,6 +246,7 @@ pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) 
     track.title = metadata
         .title
         .unwrap_or_else(|| file_stem_of(Path::new(&track.path)));
+    track.artist = metadata.artist;
     track.album = metadata.album;
     track.year = metadata.year;
     track.genre = metadata.genre;
@@ -276,6 +281,7 @@ mod tests {
             id: id.to_owned(),
             path: format!("C:/musica/{id}.mp3"),
             title: "Titolo".to_owned(),
+            artist: None,
             album: None,
             year: None,
             genre: None,
@@ -367,6 +373,25 @@ mod tests {
 
         let library = Library::load(&file).expect("caricamento riuscito");
 
+        assert_eq!(library.version, SCHEMA_VERSION);
+    }
+
+    #[test]
+    fn legge_una_libreria_v1_senza_il_campo_autore() {
+        let dir = TempDir::new("library-v1");
+        let file = dir.path().join("library.json");
+        std::fs::write(
+            &file,
+            r#"{"version":1,"tracks":[{"id":"aaa","path":"C:/musica/aaa.mp3",
+               "title":"Titolo","album":null,"year":null,"genre":null,
+               "durationMs":1000,"format":"mp3","hasCover":false,"addedAt":42}]}"#,
+        )
+        .expect("file scritto");
+
+        let library = Library::load(&file).expect("caricamento riuscito");
+
+        assert_eq!(library.len(), 1);
+        assert_eq!(library.get("aaa").expect("presente").artist, None);
         assert_eq!(library.version, SCHEMA_VERSION);
     }
 
@@ -478,6 +503,7 @@ mod tests {
             "aaa",
             TrackMetadata {
                 title: Some("Titolo nuovo".to_owned()),
+                artist: Some("Autore nuovo".to_owned()),
                 album: Some("Album nuovo".to_owned()),
                 year: Some(2011),
                 genre: Some("Blues".to_owned()),

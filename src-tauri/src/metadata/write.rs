@@ -30,6 +30,7 @@ pub const MAX_TITLE_LENGTH: usize = 512;
 #[serde(rename_all = "camelCase")]
 pub struct MetadataUpdate {
     pub title: String,
+    pub artist: Option<String>,
     pub album: Option<String>,
     pub year: Option<u32>,
     pub genre: Option<String>,
@@ -179,6 +180,11 @@ pub fn write_metadata(path: &Path, update: &MetadataUpdate) -> AppResult<TrackMe
         tag.set_title(update.title.trim().to_owned());
         apply_optional(
             tag,
+            ItemKey::TrackArtist,
+            blank_to_none(update.artist.as_ref()),
+        );
+        apply_optional(
+            tag,
             ItemKey::AlbumTitle,
             blank_to_none(update.album.as_ref()),
         );
@@ -249,6 +255,7 @@ mod tests {
     fn update() -> MetadataUpdate {
         MetadataUpdate {
             title: "Nuovo titolo".to_owned(),
+            artist: Some("Nuovo autore".to_owned()),
             album: Some("Nuovo album".to_owned()),
             year: Some(2010),
             genre: Some("Blues".to_owned()),
@@ -289,6 +296,7 @@ mod tests {
 
         assert_eq!(written, reread);
         assert_eq!(reread.title.as_deref(), Some("Nuovo titolo"));
+        assert_eq!(reread.artist.as_deref(), Some("Nuovo autore"));
         assert_eq!(reread.album.as_deref(), Some("Nuovo album"));
         assert_eq!(reread.year, Some(2010));
         assert_eq!(reread.genre.as_deref(), Some("Blues"));
@@ -301,6 +309,7 @@ mod tests {
 
         let cleared = MetadataUpdate {
             title: "Solo titolo".to_owned(),
+            artist: None,
             album: Some("   ".to_owned()),
             year: None,
             genre: None,
@@ -309,6 +318,7 @@ mod tests {
         let written = write_metadata(&path, &cleared).expect("scrittura riuscita");
 
         assert_eq!(written.title.as_deref(), Some("Solo titolo"));
+        assert_eq!(written.artist, None);
         assert_eq!(written.album, None);
         assert_eq!(written.year, None);
         assert_eq!(written.genre, None);

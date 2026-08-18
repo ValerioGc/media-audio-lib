@@ -53,6 +53,7 @@
     "columns": {
       "cover": "Copertina",
       "title": "Nome",
+      "artist": "Autore",
       "album": "Album",
       "year": "Anno",
       "genre": "Genere",
@@ -105,6 +106,7 @@
     "cancel": "Annulla",
     "fields": {
       "title": "Nome",
+      "artist": "Autore",
       "album": "Album",
       "year": "Anno",
       "genre": "Genere",

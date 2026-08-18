@@ -64,6 +64,7 @@ mod tests {
             id: "aaa".to_owned(),
             path: "C:/musica/brano.mp3".to_owned(),
             title: "Titolo".to_owned(),
+            artist: None,
             album: None,
             year: None,
             genre: None,

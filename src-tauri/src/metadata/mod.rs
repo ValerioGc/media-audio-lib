@@ -23,6 +23,7 @@ pub const SUPPORTED_EXTENSIONS: [&str; 5] = ["mp3", "flac", "m4a", "ogg", "wav"]
 #[serde(rename_all = "camelCase")]
 pub struct TrackMetadata {
     pub title: Option<String>,
+    pub artist: Option<String>,
     pub album: Option<String>,
     pub year: Option<u32>,
     pub genre: Option<String>,
@@ -98,6 +99,7 @@ pub fn read_metadata(path: &Path) -> AppResult<TrackMetadata> {
 
     Ok(TrackMetadata {
         title: tag.title().map(|value| value.to_string()),
+        artist: tag.artist().map(|value| value.to_string()),
         album: tag.album().map(|value| value.to_string()),
         year: year_of(tag),
         genre: tag.genre().map(|value| value.to_string()),
@@ -180,6 +182,7 @@ mod tests {
         let metadata = read_metadata(&path).expect("metadati letti");
 
         assert_eq!(metadata.title.as_deref(), Some("Titolo di prova"));
+        assert_eq!(metadata.artist.as_deref(), Some("Autore di prova"));
         assert_eq!(metadata.album.as_deref(), Some("Album di prova"));
         assert_eq!(metadata.year, Some(1999));
         assert_eq!(metadata.genre.as_deref(), Some("Rock"));

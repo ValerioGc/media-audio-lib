@@ -4,6 +4,7 @@ export interface Track {
   id: string;
   path: string;
   title: string;
+  artist: string | null;
   album: string | null;
   year: number | null;
   genre: string | null;
@@ -36,12 +37,13 @@ export interface Cover {
 /** Payload of the `write_metadata` command: `null` clears the corresponding tag. */
 export interface MetadataUpdate {
   title: string;
+  artist: string | null;
   album: string | null;
   year: number | null;
   genre: string | null;
 }
 
-export const SORTABLE_COLUMNS = ['title', 'album', 'year', 'genre'] as const;
+export const SORTABLE_COLUMNS = ['title', 'artist', 'album', 'year', 'genre'] as const;
 export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
 
 export type SortDirection = 'asc' | 'desc';

@@ -113,7 +113,8 @@ onMounted(() => measure(viewport.value));
 <style scoped lang="scss">
 .library_table {
   --library_row_height: 56px;
-  --library_grid_columns: 2.5rem minmax(0, 2fr) minmax(0, 1.5fr) 4rem minmax(0, 1fr) 4.5rem 5.5rem;
+  --library_grid_columns:
+    2.5rem minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.5fr) 4rem minmax(0, 1fr) 4.5rem 5.5rem;
 
   display: flex;
   flex: 1;

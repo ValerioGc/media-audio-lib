@@ -49,6 +49,7 @@ export function validateCoverFile(file: { type: string; size: number }): CoverEr
 
 export interface DraftMetadata {
   title: string;
+  artist: string;
   album: string;
   year: string;
   genre: string;
@@ -72,6 +73,7 @@ export function toUpdate(draft: DraftMetadata): MetadataUpdate {
 
   return {
     title: draft.title.trim(),
+    artist: clean(draft.artist),
     album: clean(draft.album),
     year: year === null ? null : Number(year),
     genre: clean(draft.genre),

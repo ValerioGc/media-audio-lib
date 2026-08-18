@@ -94,6 +94,7 @@ mod tests {
     fn update() -> MetadataUpdate {
         MetadataUpdate {
             title: "Titolo modificato".to_owned(),
+            artist: Some("Autore modificato".to_owned()),
             album: Some("Album modificato".to_owned()),
             year: Some(2012),
             genre: Some("Blues".to_owned()),

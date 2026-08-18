@@ -42,6 +42,7 @@ const { t } = useI18n();
         {{ t('library.row.missing') }}
       </span>
     </span>
+    <span class="library_row_cell" role="cell">{{ track.artist ?? t('library.row.unknown') }}</span>
     <span class="library_row_cell" role="cell">{{ track.album ?? t('library.row.unknown') }}</span>
     <span class="library_row_cell" role="cell">{{ track.year ?? t('library.row.unknown') }}</span>
     <span class="library_row_cell" role="cell">{{ track.genre ?? t('library.row.unknown') }}</span>

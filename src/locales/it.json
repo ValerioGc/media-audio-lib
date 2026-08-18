@@ -42,7 +42,60 @@
   },
   "library": {
     "title": "Libreria",
-    "placeholder": "La libreria dei brani arriva con la Fase 4."
+    "toolbar": {
+      "add": "Aggiungi brani",
+      "adding": "Importazione in corso…",
+      "search": "Cerca nella libreria",
+      "searchPlaceholder": "Titolo, album o genere",
+      "count": "nessun brano | 1 brano | {count} brani",
+      "missing": "1 file non trovato | {count} file non trovati"
+    },
+    "columns": {
+      "cover": "Copertina",
+      "title": "Nome",
+      "album": "Album",
+      "year": "Anno",
+      "genre": "Genere",
+      "duration": "Durata",
+      "actions": "Azioni"
+    },
+    "sort": {
+      "sortBy": "Ordina per {column}",
+      "asc": "crescente",
+      "desc": "decrescente"
+    },
+    "row": {
+      "unknown": "—",
+      "noCover": "Nessuna copertina",
+      "missing": "File non più presente su disco",
+      "remove": "Rimuovi {title} dalla libreria"
+    },
+    "empty": {
+      "title": "La libreria è vuota",
+      "message": "Aggiungi i tuoi file audio: restano dove sono, qui viene tracciato solo l'elenco.",
+      "dropHint": "Puoi anche trascinare i file in questa finestra."
+    },
+    "noMatches": {
+      "title": "Nessun risultato",
+      "message": "Nessun brano corrisponde alla ricerca «{query}»."
+    },
+    "remove": {
+      "title": "Rimuovere il brano?",
+      "message": "«{title}» viene tolto dalla libreria. Il file su disco non viene cancellato.",
+      "confirm": "Rimuovi",
+      "cancel": "Annulla"
+    },
+    "report": {
+      "title": "Esito dell'importazione",
+      "added": "1 brano aggiunto | {count} brani aggiunti",
+      "duplicates": "1 file già in libreria | {count} file già in libreria",
+      "failed": "1 file non importato | {count} file non importati",
+      "dismiss": "Chiudi"
+    },
+    "errors": {
+      "shellUnavailable": "Questa funzione è disponibile solo nell'applicazione desktop.",
+      "generic": "Operazione non riuscita. Riprova."
+    }
   },
   "player": {
     "title": "Player",

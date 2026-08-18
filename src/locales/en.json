@@ -42,7 +42,60 @@
   },
   "library": {
     "title": "Library",
-    "placeholder": "The track library lands in phase 4."
+    "toolbar": {
+      "add": "Add tracks",
+      "adding": "Importing…",
+      "search": "Search the library",
+      "searchPlaceholder": "Title, album or genre",
+      "count": "no tracks | 1 track | {count} tracks",
+      "missing": "1 missing file | {count} missing files"
+    },
+    "columns": {
+      "cover": "Cover",
+      "title": "Name",
+      "album": "Album",
+      "year": "Year",
+      "genre": "Genre",
+      "duration": "Duration",
+      "actions": "Actions"
+    },
+    "sort": {
+      "sortBy": "Sort by {column}",
+      "asc": "ascending",
+      "desc": "descending"
+    },
+    "row": {
+      "unknown": "—",
+      "noCover": "No cover",
+      "missing": "File no longer on disk",
+      "remove": "Remove {title} from the library"
+    },
+    "empty": {
+      "title": "The library is empty",
+      "message": "Add your audio files: they stay where they are, only the list is tracked here.",
+      "dropHint": "You can also drop files onto this window."
+    },
+    "noMatches": {
+      "title": "No results",
+      "message": "No track matches the search “{query}”."
+    },
+    "remove": {
+      "title": "Remove this track?",
+      "message": "“{title}” leaves the library. The file on disk is not deleted.",
+      "confirm": "Remove",
+      "cancel": "Cancel"
+    },
+    "report": {
+      "title": "Import result",
+      "added": "1 track added | {count} tracks added",
+      "duplicates": "1 file already in the library | {count} files already in the library",
+      "failed": "1 file not imported | {count} files not imported",
+      "dismiss": "Dismiss"
+    },
+    "errors": {
+      "shellUnavailable": "This feature is only available in the desktop application.",
+      "generic": "The operation failed. Please try again."
+    }
   },
   "player": {
     "title": "Player",

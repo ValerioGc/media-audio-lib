@@ -1,0 +1,38 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+import AppButton from '@/components/common/AppButton.vue';
+import AppPlaceholder from '@/components/common/AppPlaceholder.vue';
+import { useLibraryStore } from '@/stores/library';
+
+const props = defineProps<{ variant: 'empty' | 'noMatches' }>();
+
+const { t } = useI18n();
+const library = useLibraryStore();
+
+const title = computed(() => t(`library.${props.variant}.title`));
+const message = computed(() =>
+  props.variant === 'empty'
+    ? t('library.empty.message')
+    : t('library.noMatches.message', { query: library.query }),
+);
+</script>
+
+<template>
+  <AppPlaceholder :title="title" :message="message">
+    <template v-if="variant === 'empty'">
+      <AppButton variant="primary" :disabled="library.isImporting" @click="library.pickAndAdd()">
+        {{ t('library.toolbar.add') }}
+      </AppButton>
+      <p class="library_empty_hint">{{ t('library.empty.dropHint') }}</p>
+    </template>
+  </AppPlaceholder>
+</template>
+
+<style scoped lang="scss">
+.library_empty_hint {
+  color: var(--color_text_muted);
+  font-size: 0.875em;
+}
+</style>

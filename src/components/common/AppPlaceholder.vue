@@ -9,6 +9,7 @@ defineProps<{
   <section class="app_placeholder">
     <h2 class="app_placeholder_title">{{ title }}</h2>
     <p class="app_placeholder_message">{{ message }}</p>
+    <slot />
   </section>
 </template>
 

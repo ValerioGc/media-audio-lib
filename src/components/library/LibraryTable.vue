@@ -21,6 +21,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   sort: [column: SortableColumn];
   select: [id: string];
+  edit: [track: TrackView];
   remove: [track: TrackView];
 }>();
 
@@ -100,6 +101,7 @@ onMounted(() => measure(viewport.value));
             :track="track"
             :selected="track.id === selectedId"
             @select="emit('select', $event)"
+            @edit="emit('edit', $event)"
             @remove="emit('remove', $event)"
           />
         </div>
@@ -111,7 +113,7 @@ onMounted(() => measure(viewport.value));
 <style scoped lang="scss">
 .library_table {
   --library_row_height: 56px;
-  --library_grid_columns: 2.5rem minmax(0, 2fr) minmax(0, 1.5fr) 4rem minmax(0, 1fr) 4.5rem 2.5rem;
+  --library_grid_columns: 2.5rem minmax(0, 2fr) minmax(0, 1.5fr) 4rem minmax(0, 1fr) 4.5rem 5.5rem;
 
   display: flex;
   flex: 1;

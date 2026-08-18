@@ -71,15 +71,33 @@ describe('LibraryRow', () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
-    await wrapper.get('button').trigger('click');
+    await wrapper.findAll('button')[1]?.trigger('click');
 
     expect(wrapper.emitted('remove')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('descrive il pulsante di rimozione agli screen reader', () => {
-    const wrapper = mountRow(makeTrack({ title: 'Brano' }));
+  it('emette la richiesta di modifica dei metadati', async () => {
+    const track = makeTrack();
+    const wrapper = mountRow(track);
 
-    expect(wrapper.get('button').attributes('aria-label')).toBe('Rimuovi Brano dalla libreria');
+    await wrapper.findAll('button')[0]?.trigger('click');
+
+    expect(wrapper.emitted('edit')).toEqual([[track]]);
+    expect(wrapper.emitted('select')).toBeUndefined();
+  });
+
+  it('non permette di modificare un file mancante', () => {
+    const wrapper = mountRow(makeTrack({ missing: true }));
+
+    expect(wrapper.findAll('button')[0]?.attributes('disabled')).toBeDefined();
+  });
+
+  it('descrive i pulsanti agli screen reader', () => {
+    const wrapper = mountRow(makeTrack({ title: 'Brano' }));
+    const buttons = wrapper.findAll('button');
+
+    expect(buttons[0]?.attributes('aria-label')).toBe('Modifica i metadati di Brano');
+    expect(buttons[1]?.attributes('aria-label')).toBe('Rimuovi Brano dalla libreria');
   });
 });

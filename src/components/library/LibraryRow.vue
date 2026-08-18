@@ -15,6 +15,7 @@ defineProps<{
 
 const emit = defineEmits<{
   select: [id: string];
+  edit: [track: TrackView];
   remove: [track: TrackView];
 }>();
 
@@ -47,7 +48,17 @@ const { t } = useI18n();
     <span class="library_row_cell library_row_duration" role="cell">
       {{ formatDuration(track.durationMs) }}
     </span>
-    <span class="library_row_cell" role="cell">
+    <span class="library_row_cell library_row_actions" role="cell">
+      <AppTooltip :text="t('library.row.edit', { title: track.title })">
+        <AppButton
+          variant="ghost"
+          :disabled="track.missing"
+          :aria-label="t('library.row.edit', { title: track.title })"
+          @click.stop="emit('edit', track)"
+        >
+          <AppIcon name="edit" />
+        </AppButton>
+      </AppTooltip>
       <AppTooltip :text="t('library.row.remove', { title: track.title })">
         <AppButton
           variant="ghost"
@@ -115,6 +126,12 @@ const { t } = useI18n();
 
   &_duration {
     font-variant-numeric: tabular-nums;
+  }
+
+  &_actions {
+    display: flex;
+    gap: $space_xs;
+    justify-content: flex-end;
   }
 }
 </style>

@@ -68,7 +68,8 @@
       "unknown": "—",
       "noCover": "Nessuna copertina",
       "missing": "File non più presente su disco",
-      "remove": "Rimuovi {title} dalla libreria"
+      "remove": "Rimuovi {title} dalla libreria",
+      "edit": "Modifica i metadati di {title}"
     },
     "empty": {
       "title": "La libreria è vuota",
@@ -95,6 +96,31 @@
     "errors": {
       "shellUnavailable": "Questa funzione è disponibile solo nell'applicazione desktop.",
       "generic": "Operazione non riuscita. Riprova."
+    }
+  },
+  "metadata": {
+    "title": "Modifica metadati",
+    "save": "Salva",
+    "saving": "Salvataggio…",
+    "cancel": "Annulla",
+    "fields": {
+      "title": "Nome",
+      "album": "Album",
+      "year": "Anno",
+      "genre": "Genere",
+      "genreCustom": "Scegli o scrivi un genere"
+    },
+    "cover": {
+      "label": "Copertina",
+      "choose": "Scegli immagine…",
+      "remove": "Rimuovi copertina"
+    },
+    "errors": {
+      "titleRequired": "Il nome non può essere vuoto.",
+      "titleTooLong": "Il nome è troppo lungo.",
+      "yearOutOfRange": "Inserisci un anno valido (fra 1000 e l'anno prossimo).",
+      "coverType": "Sono ammesse solo immagini PNG o JPEG.",
+      "coverTooLarge": "L'immagine supera i 5 MB."
     }
   },
   "player": {

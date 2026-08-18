@@ -68,7 +68,8 @@
       "unknown": "—",
       "noCover": "No cover",
       "missing": "File no longer on disk",
-      "remove": "Remove {title} from the library"
+      "remove": "Remove {title} from the library",
+      "edit": "Edit the metadata of {title}"
     },
     "empty": {
       "title": "The library is empty",
@@ -95,6 +96,31 @@
     "errors": {
       "shellUnavailable": "This feature is only available in the desktop application.",
       "generic": "The operation failed. Please try again."
+    }
+  },
+  "metadata": {
+    "title": "Edit metadata",
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "fields": {
+      "title": "Name",
+      "album": "Album",
+      "year": "Year",
+      "genre": "Genre",
+      "genreCustom": "Pick or type a genre"
+    },
+    "cover": {
+      "label": "Cover",
+      "choose": "Choose image…",
+      "remove": "Remove cover"
+    },
+    "errors": {
+      "titleRequired": "The name cannot be empty.",
+      "titleTooLong": "The name is too long.",
+      "yearOutOfRange": "Enter a valid year (between 1000 and next year).",
+      "coverType": "Only PNG or JPEG images are allowed.",
+      "coverTooLarge": "The image is larger than 5 MB."
     }
   },
   "player": {

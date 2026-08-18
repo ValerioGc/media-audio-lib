@@ -19,6 +19,8 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     removeTrack: vi.fn(),
     getCover: vi.fn(),
     pickAudioFiles: vi.fn(),
+    writeMetadata: vi.fn(),
+    writeCover: vi.fn(),
   };
 });
 
@@ -27,6 +29,8 @@ const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
 const getCover = vi.mocked(api.getCover);
 const pickAudioFiles = vi.mocked(api.pickAudioFiles);
+const writeMetadata = vi.mocked(api.writeMetadata);
+const writeCover = vi.mocked(api.writeCover);
 
 const emptyReport: AddReport = { added: [], duplicates: [], failed: [] };
 
@@ -223,6 +227,81 @@ describe('ricerca e ordinamento', () => {
     await store.load();
 
     expect(store.missingCount).toBe(1);
+  });
+});
+
+describe('modifica dei metadati', () => {
+  it('rimpiazza il brano modificato conservando lo stato su disco', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ title: 'Vecchio', missing: true });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+
+    const { missing: _missing, ...saved } = { ...track, title: 'Nuovo' };
+    writeMetadata.mockResolvedValue(saved);
+
+    const result = await store.saveMetadata(track.id, {
+      title: 'Nuovo',
+      album: null,
+      year: null,
+      genre: null,
+    });
+
+    expect(result?.title).toBe('Nuovo');
+    expect(store.tracks[0]?.title).toBe('Nuovo');
+    expect(store.tracks[0]?.missing).toBe(true);
+    expect(store.isSaving).toBe(false);
+  });
+
+  it('invalida la copertina in cache dopo una modifica', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ hasCover: true });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+    getCover.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
+    await store.loadCover(track);
+    expect(store.covers.get(track.id)).toBeDefined();
+
+    const { missing: _missing, ...saved } = track;
+    writeCover.mockResolvedValue(saved);
+    await store.saveCover(track.id, { mimeType: 'image/png', data: 'BBB' });
+
+    expect(store.covers.get(track.id)).toBeUndefined();
+  });
+
+  it('segnala l errore di scrittura senza modificare la lista', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ title: 'Intatto' });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+    writeMetadata.mockRejectedValue(new Error('sola lettura'));
+
+    const result = await store.saveMetadata(track.id, {
+      title: 'Nuovo',
+      album: null,
+      year: null,
+      genre: null,
+    });
+
+    expect(result).toBeNull();
+    expect(store.errorKey).toBe('generic');
+    expect(store.tracks[0]?.title).toBe('Intatto');
+    expect(store.isSaving).toBe(false);
+  });
+
+  it('apre e chiude l editor sul brano scelto', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack();
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+
+    expect(store.editingTrack).toBeNull();
+
+    store.openEditor(track.id);
+    expect(store.editingTrack?.id).toBe(track.id);
+
+    store.closeEditor();
+    expect(store.editingTrack).toBeNull();
   });
 });
 

@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 
 import { isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-config';
-import type { AddReport, Cover, TrackView } from '@/types/library';
+import type { AddReport, Cover, MetadataUpdate, Track, TrackView } from '@/types/library';
 
 /** Raised when a feature needs the desktop shell and the app runs in a plain browser. */
 export class ShellUnavailableError extends Error {
@@ -41,6 +41,18 @@ export async function getCover(path: string): Promise<Cover | null> {
   requireShell();
 
   return invoke<Cover | null>('get_cover', { path });
+}
+
+export async function writeMetadata(id: string, update: MetadataUpdate): Promise<Track> {
+  requireShell();
+
+  return invoke<Track>('write_metadata', { id, update });
+}
+
+export async function writeCover(id: string, cover: Cover | null): Promise<Track> {
+  requireShell();
+
+  return invoke<Track>('write_cover', { id, cover });
 }
 
 /** Opens the system picker and returns the selected files, empty when cancelled. */

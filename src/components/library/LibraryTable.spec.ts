@@ -65,14 +65,17 @@ describe('LibraryTable', () => {
     expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 5600px');
   });
 
-  it('inoltra selezione e rimozione delle righe', async () => {
+  it('inoltra selezione, modifica e rimozione delle righe', async () => {
     const track = makeTrack();
     const wrapper = mountTable([track]);
+    const [edit, remove] = wrapper.findAll('.library_row button');
 
     await wrapper.get('.library_row').trigger('click');
-    await wrapper.get('.library_row button').trigger('click');
+    await edit?.trigger('click');
+    await remove?.trigger('click');
 
     expect(wrapper.emitted('select')).toEqual([[track.id]]);
+    expect(wrapper.emitted('edit')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 });

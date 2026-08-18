@@ -33,6 +33,14 @@ export interface Cover {
   data: string;
 }
 
+/** Payload of the `write_metadata` command: `null` clears the corresponding tag. */
+export interface MetadataUpdate {
+  title: string;
+  album: string | null;
+  year: number | null;
+  genre: string | null;
+}
+
 export const SORTABLE_COLUMNS = ['title', 'album', 'year', 'genre'] as const;
 export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
 

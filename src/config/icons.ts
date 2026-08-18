@@ -1,6 +1,7 @@
 /** Single place where the glyphs used by the interface live. */
 export const ICON_GLYPHS = {
   remove: '✕',
+  edit: '✎',
   note: '♪',
   sortAsc: '▲',
   sortDesc: '▼',

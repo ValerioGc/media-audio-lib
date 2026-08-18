@@ -8,6 +8,7 @@ import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
+import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
 import { useFileDrop } from '@/composables/useFileDrop';
 import { useLibraryStore } from '@/stores/library';
 import type { TrackView } from '@/types/library';
@@ -64,7 +65,14 @@ async function confirmRemoval() {
       :selected-id="library.selectedId"
       @sort="library.toggleSort($event)"
       @select="library.select($event)"
+      @edit="library.openEditor($event.id)"
       @remove="askRemoval"
+    />
+
+    <MetadataEditor
+      v-if="library.editingTrack !== null"
+      :track="library.editingTrack"
+      @close="library.closeEditor()"
     />
 
     <AppModal

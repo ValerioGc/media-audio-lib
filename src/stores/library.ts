@@ -7,8 +7,11 @@ import { filterAndSort } from '@/services/track-sorting';
 import {
   DEFAULT_SORT,
   type AddReport,
+  type Cover,
+  type MetadataUpdate,
   type SortableColumn,
   type SortState,
+  type Track,
   type TrackView,
 } from '@/types/library';
 
@@ -24,13 +27,18 @@ export const useLibraryStore = defineStore('library', () => {
   const query = ref('');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
   const selectedId = ref<string | null>(null);
+  const editingId = ref<string | null>(null);
   const isLoading = ref(false);
   const isImporting = ref(false);
+  const isSaving = ref(false);
   const lastReport = ref<AddReport | null>(null);
   const errorKey = ref<LibraryErrorKey>(null);
   const covers = ref(new Map<string, string>());
 
   const visibleTracks = computed(() => filterAndSort(tracks.value, query.value, sort.value));
+  const editingTrack = computed(
+    () => tracks.value.find((track) => track.id === editingId.value) ?? null,
+  );
   const isEmpty = computed(() => tracks.value.length === 0);
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
@@ -128,6 +136,58 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  /** Replaces a track after an edit, keeping the on-disk state already known. */
+  function replaceTrack(updated: Track) {
+    tracks.value = tracks.value.map((track) =>
+      track.id === updated.id ? { ...updated, missing: track.missing } : track,
+    );
+
+    const covers_ = new Map(covers.value);
+    covers_.delete(updated.id);
+    covers.value = covers_;
+  }
+
+  async function withSaving<T>(action: () => Promise<T>): Promise<T | null> {
+    isSaving.value = true;
+    errorKey.value = null;
+
+    try {
+      return await action();
+    } catch (error) {
+      fail(error);
+      return null;
+    } finally {
+      isSaving.value = false;
+    }
+  }
+
+  async function saveMetadata(id: string, update: MetadataUpdate): Promise<Track | null> {
+    return withSaving(async () => {
+      const updated = await api.writeMetadata(id, update);
+      replaceTrack(updated);
+
+      return updated;
+    });
+  }
+
+  async function saveCover(id: string, cover: Cover | null): Promise<Track | null> {
+    return withSaving(async () => {
+      const updated = await api.writeCover(id, cover);
+      replaceTrack(updated);
+
+      return updated;
+    });
+  }
+
+  function openEditor(id: string) {
+    editingId.value = id;
+    errorKey.value = null;
+  }
+
+  function closeEditor() {
+    editingId.value = null;
+  }
+
   function setQuery(value: string) {
     query.value = value;
   }
@@ -158,12 +218,15 @@ export const useLibraryStore = defineStore('library', () => {
     query,
     sort,
     selectedId,
+    editingId,
     isLoading,
     isImporting,
+    isSaving,
     lastReport,
     errorKey,
     covers,
     visibleTracks,
+    editingTrack,
     isEmpty,
     hasNoMatches,
     missingCount,
@@ -172,6 +235,10 @@ export const useLibraryStore = defineStore('library', () => {
     pickAndAdd,
     remove,
     loadCover,
+    saveMetadata,
+    saveCover,
+    openEditor,
+    closeEditor,
     setQuery,
     toggleSort,
     select,

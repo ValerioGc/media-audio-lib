@@ -92,7 +92,7 @@ describe('LibraryView', () => {
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
     await flushPromises();
 
-    await wrapper.get('.library_row button').trigger('click');
+    await wrapper.findAll('.library_row button')[1]?.trigger('click');
     expect(wrapper.get('[role="dialog"]').text()).toContain(track.title);
     expect(remove).not.toHaveBeenCalled();
 
@@ -109,7 +109,7 @@ describe('LibraryView', () => {
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
     await flushPromises();
 
-    await wrapper.get('.library_row button').trigger('click');
+    await wrapper.findAll('.library_row button')[1]?.trigger('click');
     await wrapper.get('.app_modal_actions button').trigger('click');
 
     expect(remove).not.toHaveBeenCalled();
@@ -123,6 +123,22 @@ describe('LibraryView', () => {
     drop.onDrop?.(['C:/musica/brano.mp3']);
 
     expect(addPaths).toHaveBeenCalledWith(['C:/musica/brano.mp3']);
+  });
+
+  it('apre l editor dei metadati dalla riga', async () => {
+    const { wrapper, store } = await mountView();
+    const track = makeTrack();
+    store.tracks = [track];
+    vi.spyOn(store, 'loadCover').mockResolvedValue(null);
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(false);
+
+    await wrapper.findAll('.library_row button')[0]?.trigger('click');
+    await flushPromises();
+
+    expect(store.editingId).toBe(track.id);
+    expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(true);
   });
 
   it('ordina la tabella dalle intestazioni', async () => {

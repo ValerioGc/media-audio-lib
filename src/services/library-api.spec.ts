@@ -16,7 +16,11 @@ import {
   listTracks,
   pickAudioFiles,
   removeTrack,
+  writeCover,
+  writeMetadata,
 } from './library-api';
+
+const update = { title: 'Titolo', album: null, year: 1999, genre: 'Rock' };
 
 const scopedWindow = window as unknown as Record<string, unknown>;
 
@@ -55,6 +59,28 @@ describe('comandi che richiedono la shell', () => {
     await expect(removeTrack('id')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(getCover('a.mp3')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickAudioFiles()).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(writeMetadata('id', update)).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(writeCover('id', null)).rejects.toBeInstanceOf(ShellUnavailableError);
+  });
+
+  it('inoltra la modifica dei metadati', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ id: 'abc', title: 'Titolo' });
+
+    await expect(writeMetadata('abc', update)).resolves.toEqual({ id: 'abc', title: 'Titolo' });
+    expect(mocks.invoke).toHaveBeenCalledWith('write_metadata', { id: 'abc', update });
+  });
+
+  it('inoltra la scrittura e la rimozione della copertina', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ id: 'abc' });
+    const cover = { mimeType: 'image/png', data: 'AAA' };
+
+    await writeCover('abc', cover);
+    expect(mocks.invoke).toHaveBeenCalledWith('write_cover', { id: 'abc', cover });
+
+    await writeCover('abc', null);
+    expect(mocks.invoke).toHaveBeenLastCalledWith('write_cover', { id: 'abc', cover: null });
   });
 
   it('inoltra i percorsi al comando di import', async () => {

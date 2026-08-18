@@ -235,6 +235,26 @@ pub fn add_paths(library: &mut Library, paths: &[String], added_at: u64) -> AddR
     report
 }
 
+/// Mirrors freshly written tags onto the tracked entry. `None` when the id is unknown.
+pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) -> Option<Track> {
+    let track = library.tracks.iter_mut().find(|track| track.id == id)?;
+
+    track.title = metadata
+        .title
+        .unwrap_or_else(|| file_stem_of(Path::new(&track.path)));
+    track.album = metadata.album;
+    track.year = metadata.year;
+    track.genre = metadata.genre;
+    track.duration_ms = metadata.duration_ms;
+    track.has_cover = metadata.has_cover;
+
+    Some(track.clone())
+}
+
+pub fn path_of(library: &Library, id: &str) -> Option<PathBuf> {
+    library.get(id).map(|track| PathBuf::from(&track.path))
+}
+
 pub fn to_views(library: &Library) -> Vec<TrackView> {
     library
         .tracks
@@ -446,6 +466,62 @@ mod tests {
         std::fs::remove_file(&path).expect("file rimosso");
 
         assert!(to_views(&library)[0].missing);
+    }
+
+    #[test]
+    fn riflette_i_tag_riscritti_sul_brano_tracciato() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+
+        let updated = apply_metadata(
+            &mut library,
+            "aaa",
+            TrackMetadata {
+                title: Some("Titolo nuovo".to_owned()),
+                album: Some("Album nuovo".to_owned()),
+                year: Some(2011),
+                genre: Some("Blues".to_owned()),
+                duration_ms: 4242,
+                format: "mp3".to_owned(),
+                has_cover: true,
+            },
+        )
+        .expect("brano presente");
+
+        assert_eq!(updated.title, "Titolo nuovo");
+        assert_eq!(library.get("aaa").expect("presente").year, Some(2011));
+        assert!(library.get("aaa").expect("presente").has_cover);
+        assert_eq!(library.get("aaa").expect("presente").duration_ms, 4242);
+    }
+
+    #[test]
+    fn usa_il_nome_del_file_se_i_tag_restano_senza_titolo() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+
+        let updated =
+            apply_metadata(&mut library, "aaa", TrackMetadata::default()).expect("brano presente");
+
+        assert_eq!(updated.title, "aaa");
+    }
+
+    #[test]
+    fn ignora_l_aggiornamento_di_un_id_sconosciuto() {
+        let mut library = Library::new();
+
+        assert!(apply_metadata(&mut library, "zzz", TrackMetadata::default()).is_none());
+    }
+
+    #[test]
+    fn espone_il_percorso_di_un_brano_tracciato() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+
+        assert_eq!(
+            path_of(&library, "aaa"),
+            Some(PathBuf::from("C:/musica/aaa.mp3"))
+        );
+        assert_eq!(path_of(&library, "zzz"), None);
     }
 
     #[test]

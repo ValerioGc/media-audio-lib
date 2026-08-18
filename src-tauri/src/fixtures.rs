@@ -115,12 +115,23 @@ pub fn wav_with_tags(directory: &Path, name: &str) -> PathBuf {
     path
 }
 
+fn png_cover_bytes() -> Vec<u8> {
+    let mut data = PNG_HEADER.to_vec();
+    data.extend_from_slice(&[0u8; 32]);
+    data
+}
+
+pub fn png_cover_base64() -> String {
+    use base64::Engine as _;
+
+    base64::engine::general_purpose::STANDARD.encode(png_cover_bytes())
+}
+
 pub fn wav_with_cover(directory: &Path, name: &str) -> PathBuf {
     let path = write_file(directory, name, &wav_bytes());
 
     let mut tag = tag_with_values(TagType::Id3v2);
-    let mut picture_data = PNG_HEADER.to_vec();
-    picture_data.extend_from_slice(&[0u8; 32]);
+    let picture_data = png_cover_bytes();
     tag.push_picture(
         Picture::unchecked(picture_data)
             .mime_type(MimeType::Png)

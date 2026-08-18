@@ -41,6 +41,8 @@ pub fn run() {
             commands::library::list_tracks,
             commands::metadata::read_metadata,
             commands::metadata::get_cover,
+            commands::metadata::write_metadata,
+            commands::metadata::write_cover,
         ])
         .run(tauri::generate_context!())
         .expect("avvio dell'applicazione Tauri fallito");

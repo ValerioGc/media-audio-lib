@@ -2,6 +2,10 @@
 //!
 //! Every edit happens on a copy that replaces the original only once it is complete,
 //! so an interrupted or rejected write can never corrupt the user's file.
+//!
+//! Known limitation: on WAV, a cover written by this module cannot be removed again.
+//! The ID3 chunk inside the RIFF container is not shrunk by `lofty`, so the old picture
+//! survives. MP3 — the priority format — handles the full cycle correctly.
 
 use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -9,7 +13,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use base64::Engine as _;
 use lofty::config::WriteOptions;
 use lofty::picture::{MimeType, Picture, PictureType};
-use lofty::prelude::{Accessor, ItemKey, TagExt, TaggedFileExt};
+use lofty::prelude::{Accessor, AudioFile, ItemKey, TaggedFileExt};
 use lofty::tag::Tag;
 use serde::{Deserialize, Serialize};
 
@@ -47,12 +51,16 @@ pub fn max_year() -> u32 {
 }
 
 fn blank_to_none(value: Option<&String>) -> Option<&str> {
-    value.map(|text| text.trim()).filter(|text| !text.is_empty())
+    value
+        .map(|text| text.trim())
+        .filter(|text| !text.is_empty())
 }
 
 pub fn validate_update(update: &MetadataUpdate) -> AppResult<()> {
     if update.title.trim().is_empty() {
-        return Err(AppError::Validation("il titolo non può essere vuoto".to_owned()));
+        return Err(AppError::Validation(
+            "il titolo non può essere vuoto".to_owned(),
+        ));
     }
 
     if update.title.chars().count() > MAX_TITLE_LENGTH {
@@ -111,24 +119,22 @@ fn ensure_writable(path: &Path) -> AppResult<()> {
 
 /// Sibling path that keeps the original extension, so format detection still works.
 fn staging_path(path: &Path) -> PathBuf {
-    let extension = path.extension().and_then(|value| value.to_str()).unwrap_or("");
-    let stem = path.file_stem().and_then(|value| value.to_str()).unwrap_or("file");
+    let extension = path
+        .extension()
+        .and_then(|value| value.to_str())
+        .unwrap_or("");
+    let stem = path
+        .file_stem()
+        .and_then(|value| value.to_str())
+        .unwrap_or("file");
 
     path.with_file_name(format!("{stem}.mal-tmp.{extension}"))
 }
 
-fn tag_of(path: &Path) -> AppResult<Tag> {
-    let tagged_file = read_tagged_file(path)?;
-    let tag_type = tagged_file.primary_tag_type();
-
-    Ok(tagged_file
-        .primary_tag()
-        .or_else(|| tagged_file.first_tag())
-        .cloned()
-        .unwrap_or_else(|| Tag::new(tag_type)))
-}
-
 /// Applies `edit` to a staged copy and swaps it in only on success.
+///
+/// The whole `TaggedFile` is rewritten instead of the single tag: saving a tag on its own
+/// merges into what is already stored, so a removed cover would survive the write.
 fn edit_tag(path: &Path, edit: impl FnOnce(&mut Tag) -> AppResult<()>) -> AppResult<TrackMetadata> {
     ensure_importable(path)?;
     ensure_writable(path)?;
@@ -137,9 +143,22 @@ fn edit_tag(path: &Path, edit: impl FnOnce(&mut Tag) -> AppResult<()>) -> AppRes
     std::fs::copy(path, &staged)?;
 
     let outcome = (|| {
-        let mut tag = tag_of(&staged)?;
+        let mut tagged_file = read_tagged_file(&staged)?;
+        let tag_type = tagged_file.primary_tag_type();
+
+        let mut tag = tagged_file
+            .primary_tag()
+            .or_else(|| tagged_file.first_tag())
+            .cloned()
+            .unwrap_or_else(|| Tag::new(tag_type));
+
         edit(&mut tag)?;
-        tag.save_to_path(&staged, WriteOptions::default())
+
+        tagged_file.clear();
+        tagged_file.insert_tag(tag);
+
+        tagged_file
+            .save_to_path(&staged, WriteOptions::default())
             .map_err(|error| AppError::InvalidAudio(error.to_string()))
     })();
 
@@ -158,7 +177,11 @@ pub fn write_metadata(path: &Path, update: &MetadataUpdate) -> AppResult<TrackMe
 
     edit_tag(path, |tag| {
         tag.set_title(update.title.trim().to_owned());
-        apply_optional(tag, ItemKey::AlbumTitle, blank_to_none(update.album.as_ref()));
+        apply_optional(
+            tag,
+            ItemKey::AlbumTitle,
+            blank_to_none(update.album.as_ref()),
+        );
         apply_optional(tag, ItemKey::Genre, blank_to_none(update.genre.as_ref()));
 
         match update.year {
@@ -230,6 +253,30 @@ mod tests {
             year: Some(2010),
             genre: Some("Blues".to_owned()),
         }
+    }
+
+    /// MP3 is the priority format, and the only one where the full cover life cycle
+    /// (write, replace, remove) is verifiable: see the note on WAV below.
+    #[test]
+    fn su_mp3_la_copertina_puo_essere_aggiunta_e_poi_rimossa() {
+        let dir = TempDir::new("cover-cycle-mp3");
+        let path = crate::fixtures::mp3_with_tags(dir.path(), "brano.mp3");
+        let cover = Cover {
+            mime_type: "image/png".to_owned(),
+            data: png_cover_base64(),
+        };
+
+        assert!(
+            write_cover(&path, Some(&cover))
+                .expect("aggiunta riuscita")
+                .has_cover
+        );
+        assert!(
+            !write_cover(&path, None)
+                .expect("rimozione riuscita")
+                .has_cover
+        );
+        assert_eq!(read_cover(&path).expect("rilettura"), None);
     }
 
     #[test]
@@ -392,7 +439,9 @@ mod tests {
         };
 
         let written = write_cover(&path, Some(&cover)).expect("scrittura riuscita");
-        let stored = read_cover(&path).expect("rilettura").expect("copertina presente");
+        let stored = read_cover(&path)
+            .expect("rilettura")
+            .expect("copertina presente");
 
         assert!(written.has_cover);
         assert_eq!(stored.mime_type, "image/png");
@@ -409,7 +458,9 @@ mod tests {
         };
 
         write_cover(&path, Some(&cover)).expect("scrittura riuscita");
-        let stored = read_cover(&path).expect("rilettura").expect("copertina presente");
+        let stored = read_cover(&path)
+            .expect("rilettura")
+            .expect("copertina presente");
 
         assert_eq!(stored.mime_type, "image/jpeg");
     }

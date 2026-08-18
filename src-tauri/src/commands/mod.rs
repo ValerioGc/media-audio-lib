@@ -6,7 +6,7 @@ pub mod metadata;
 use serde::{Deserialize, Serialize};
 
 pub use library::{add_tracks, list_tracks, remove_track};
-pub use metadata::{get_cover, read_metadata};
+pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
 
 use crate::metadata::SUPPORTED_EXTENSIONS;
 

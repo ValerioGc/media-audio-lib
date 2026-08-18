@@ -33,7 +33,11 @@ export default defineConfigWithVueTs(
       'max-depth': ['error', 4],
       'max-params': ['error', 5],
       '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        // ignoreRestSiblings allows omitting a property via `const { a: _a, ...rest } = obj`.
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
       '@typescript-eslint/consistent-type-imports': 'error',
       'vue/multi-word-component-names': ['error', { ignores: ['App'] }],
       'vue/component-api-style': ['error', ['script-setup']],

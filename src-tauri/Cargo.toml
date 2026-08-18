@@ -22,6 +22,7 @@ thiserror = "2"
 tauri-plugin-store = "2"
 lofty = "0.25"
 base64 = "0.23.1"
+tauri-plugin-dialog = "2.7.2"
 
 [profile.release]
 codegen-units = 1

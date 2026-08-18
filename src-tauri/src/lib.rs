@@ -27,6 +27,7 @@ pub const LIBRARY_FILE_NAME: &str = "library.json";
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             let directory = app.path().app_data_dir()?;
             app.manage(LibraryState::from_file(directory.join(LIBRARY_FILE_NAME)));

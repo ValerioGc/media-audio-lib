@@ -16,6 +16,12 @@ pub enum AppError {
     #[error("file audio illeggibile: {0}")]
     InvalidAudio(String),
 
+    #[error("dati non validi: {0}")]
+    Validation(String),
+
+    #[error("file in sola lettura: {0}")]
+    ReadOnly(String),
+
     #[error("libreria non accessibile: {0}")]
     State(String),
 

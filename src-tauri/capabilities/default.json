@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Minimal permissions for the main window. Each phase adds only what it needs.",
   "windows": ["main"],
-  "permissions": ["core:default", "store:default"]
+  "permissions": ["core:default", "store:default", "dialog:allow-open"]
 }

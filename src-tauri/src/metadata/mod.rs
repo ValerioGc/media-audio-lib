@@ -3,6 +3,10 @@
 //! Every supported format goes through `lofty`, so adding one is a matter of
 //! listing its extension in [`SUPPORTED_EXTENSIONS`].
 
+pub mod write;
+
+pub use write::{write_cover, write_metadata, MetadataUpdate};
+
 use std::path::Path;
 
 use base64::Engine as _;
@@ -16,6 +20,7 @@ pub const SUPPORTED_EXTENSIONS: [&str; 5] = ["mp3", "flac", "m4a", "ogg", "wav"]
 
 /// Tags read from an audio file, exactly as stored: no fallback is applied here.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TrackMetadata {
     pub title: Option<String>,
     pub album: Option<String>,
@@ -28,6 +33,7 @@ pub struct TrackMetadata {
 
 /// Cover art encoded for the webview, ready to be used in a `data:` URL.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Cover {
     pub mime_type: String,
     pub data: String,
@@ -69,7 +75,7 @@ fn year_of(tag: &Tag) -> Option<u32> {
         .and_then(|value| value.get(..4).unwrap_or(value).parse().ok())
 }
 
-fn read_tagged_file(path: &Path) -> AppResult<lofty::file::TaggedFile> {
+pub(crate) fn read_tagged_file(path: &Path) -> AppResult<lofty::file::TaggedFile> {
     ensure_importable(path)?;
 
     lofty::read_from_path(path).map_err(|error| AppError::InvalidAudio(error.to_string()))

@@ -12,7 +12,13 @@ beforeEach(() => {
 function mountControls(props: Partial<InstanceType<typeof PlayerControls>['$props']> = {}) {
   return mount(PlayerControls, {
     ...withPinia(),
-    props: { isPlaying: false, hasNext: true, ...props },
+    props: {
+      isPlaying: false,
+      hasNext: true,
+      isShuffleEnabled: false,
+      isRepeatOneEnabled: false,
+      ...props,
+    },
   });
 }
 
@@ -24,11 +30,15 @@ describe('PlayerControls', () => {
     await wrapper.get('[data-testid="player-toggle"]').trigger('click');
     await wrapper.get('[data-testid="player-stop"]').trigger('click');
     await wrapper.get('[data-testid="player-next"]').trigger('click');
+    await wrapper.get('[data-testid="player-shuffle"]').trigger('click');
+    await wrapper.get('[data-testid="player-repeat-one"]').trigger('click');
 
     expect(wrapper.emitted('previous')).toHaveLength(1);
     expect(wrapper.emitted('toggle')).toHaveLength(1);
     expect(wrapper.emitted('stop')).toHaveLength(1);
     expect(wrapper.emitted('next')).toHaveLength(1);
+    expect(wrapper.emitted('toggleShuffle')).toHaveLength(1);
+    expect(wrapper.emitted('toggleRepeatOne')).toHaveLength(1);
   });
 
   it('mostra riproduci quando e in pausa e pausa quando suona', async () => {
@@ -49,6 +59,21 @@ describe('PlayerControls', () => {
     const wrapper = mountControls({ hasNext: false });
 
     expect(wrapper.get('[data-testid="player-next"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('mostra shuffle e ripetizione come opzioni attive', () => {
+    const wrapper = mountControls({ isShuffleEnabled: true, isRepeatOneEnabled: true });
+
+    expect(wrapper.get('[data-testid="player-shuffle"]').classes()).toContain(
+      'player_controls_mode_active',
+    );
+    expect(wrapper.get('[data-testid="player-shuffle"]').attributes('aria-pressed')).toBe('true');
+    expect(wrapper.get('[data-testid="player-repeat-one"]').classes()).toContain(
+      'player_controls_mode_active',
+    );
+    expect(wrapper.get('[data-testid="player-repeat-one"]').attributes('aria-pressed')).toBe(
+      'true',
+    );
   });
 
   it('lascia disponibile il precedente anche sul primo brano', () => {

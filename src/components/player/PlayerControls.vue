@@ -9,6 +9,8 @@ const props = withDefaults(
   defineProps<{
     isPlaying: boolean;
     hasNext: boolean;
+    isShuffleEnabled: boolean;
+    isRepeatOneEnabled: boolean;
     disabled?: boolean;
   }>(),
   { disabled: false },
@@ -19,6 +21,8 @@ const emit = defineEmits<{
   toggle: [];
   stop: [];
   next: [];
+  toggleShuffle: [];
+  toggleRepeatOne: [];
 }>();
 
 const { t } = useI18n();
@@ -26,6 +30,21 @@ const { t } = useI18n();
 
 <template>
   <div class="player_controls">
+    <AppTooltip :text="t('player.shuffle')">
+      <AppButton
+        variant="ghost"
+        class="player_controls_mode"
+        :class="{ player_controls_mode_active: props.isShuffleEnabled }"
+        :aria-label="t('player.shuffle')"
+        :aria-pressed="props.isShuffleEnabled"
+        :disabled="props.disabled"
+        data-testid="player-shuffle"
+        @click="emit('toggleShuffle')"
+      >
+        <AppIcon name="shuffle" />
+      </AppButton>
+    </AppTooltip>
+
     <!-- Previous stays enabled on the first track: it restarts what is playing. -->
     <AppTooltip :text="t('player.previous')">
       <AppButton
@@ -75,6 +94,21 @@ const { t } = useI18n();
         <AppIcon name="next" />
       </AppButton>
     </AppTooltip>
+
+    <AppTooltip :text="t('player.repeatOne')">
+      <AppButton
+        variant="ghost"
+        class="player_controls_mode"
+        :class="{ player_controls_mode_active: props.isRepeatOneEnabled }"
+        :aria-label="t('player.repeatOne')"
+        :aria-pressed="props.isRepeatOneEnabled"
+        :disabled="props.disabled"
+        data-testid="player-repeat-one"
+        @click="emit('toggleRepeatOne')"
+      >
+        <AppIcon name="repeatOne" />
+      </AppButton>
+    </AppTooltip>
   </div>
 </template>
 
@@ -83,5 +117,11 @@ const { t } = useI18n();
   display: flex;
   gap: $space_xs;
   align-items: center;
+
+  &_mode_active {
+    border-color: var(--color_accent);
+    background-color: var(--color_accent_soft);
+    color: var(--color_accent);
+  }
 }
 </style>

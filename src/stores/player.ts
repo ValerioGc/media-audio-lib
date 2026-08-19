@@ -17,6 +17,29 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+function shuffled<T>(items: readonly T[]): T[] {
+  const result = [...items];
+
+  for (let index_ = result.length - 1; index_ > 0; index_ -= 1) {
+    const nextIndex = Math.floor(Math.random() * (index_ + 1));
+    const current = result[index_];
+    result[index_] = result[nextIndex] as T;
+    result[nextIndex] = current as T;
+  }
+
+  return result;
+}
+
+function buildShuffledQueue(tracks: readonly TrackView[], firstTrackId: string): TrackView[] {
+  const first = tracks.find((track) => track.id === firstTrackId);
+
+  if (first === undefined) {
+    return [...tracks];
+  }
+
+  return [first, ...shuffled(tracks.filter((track) => track.id !== firstTrackId))];
+}
+
 /**
  * The playing queue and everything the dock shows.
  *
@@ -25,10 +48,13 @@ function clamp(value: number, min: number, max: number): number {
  */
 export const usePlayerStore = defineStore('player', () => {
   const queue = ref<TrackView[]>([]);
+  const sourceQueue = ref<TrackView[]>([]);
   const index = ref(-1);
   const isExpanded = ref(false);
   const isPlaying = ref(false);
   const isLoading = ref(false);
+  const isShuffleEnabled = ref(false);
+  const isRepeatOneEnabled = ref(false);
   const position = ref(0);
   const duration = ref(0);
   const volume = ref(DEFAULT_VOLUME);
@@ -38,7 +64,11 @@ export const usePlayerStore = defineStore('player', () => {
 
   const currentTrack = computed<TrackView | null>(() => queue.value[index.value] ?? null);
   const isActive = computed(() => currentTrack.value !== null);
-  const hasNext = computed(() => index.value >= 0 && index.value < queue.value.length - 1);
+  const hasNext = computed(
+    () =>
+      currentTrack.value !== null &&
+      (isRepeatOneEnabled.value || index.value < queue.value.length - 1),
+  );
   const hasPrevious = computed(() => index.value > 0);
   const progress = computed(() => (duration.value > 0 ? position.value / duration.value : 0));
 
@@ -111,8 +141,9 @@ export const usePlayerStore = defineStore('player', () => {
       return;
     }
 
-    queue.value = [...tracks];
-    index.value = start_;
+    sourceQueue.value = [...tracks];
+    queue.value = isShuffleEnabled.value ? buildShuffledQueue(tracks, trackId) : [...tracks];
+    index.value = isShuffleEnabled.value ? 0 : start_;
 
     await start();
   }
@@ -163,6 +194,11 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   async function next() {
+    if (isRepeatOneEnabled.value && currentTrack.value !== null) {
+      await start();
+      return;
+    }
+
     if (!hasNext.value) {
       stop();
       return;
@@ -193,10 +229,31 @@ export const usePlayerStore = defineStore('player', () => {
     engine?.setVolume(volume.value);
   }
 
+  function toggleShuffle() {
+    isShuffleEnabled.value = !isShuffleEnabled.value;
+
+    const track = currentTrack.value;
+
+    if (track === null) {
+      return;
+    }
+
+    const orderedQueue = sourceQueue.value.length > 0 ? sourceQueue.value : queue.value;
+    queue.value = isShuffleEnabled.value
+      ? buildShuffledQueue(orderedQueue, track.id)
+      : [...orderedQueue];
+    index.value = queue.value.findIndex((item) => item.id === track.id);
+  }
+
+  function toggleRepeatOne() {
+    isRepeatOneEnabled.value = !isRepeatOneEnabled.value;
+  }
+
   function close() {
     engine?.release();
     engine = null;
     queue.value = [];
+    sourceQueue.value = [];
     index.value = -1;
     isExpanded.value = false;
     isPlaying.value = false;
@@ -220,10 +277,13 @@ export const usePlayerStore = defineStore('player', () => {
 
   return {
     queue,
+    sourceQueue,
     index,
     isExpanded,
     isPlaying,
     isLoading,
+    isShuffleEnabled,
+    isRepeatOneEnabled,
     position,
     duration,
     volume,
@@ -243,6 +303,8 @@ export const usePlayerStore = defineStore('player', () => {
     previous,
     seek,
     setVolume,
+    toggleShuffle,
+    toggleRepeatOne,
     close,
     expand,
     collapse,

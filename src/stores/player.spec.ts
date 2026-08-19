@@ -51,6 +51,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   vi.clearAllMocks();
 });
 
@@ -102,6 +103,38 @@ describe('usePlayerStore', () => {
     expect(player.hasNext).toBe(true);
   });
 
+  it('prepara una coda casuale mantenendo per primo il brano scelto', async () => {
+    const player = usePlayerStore();
+    const tracks = makeTracks(4);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    player.toggleShuffle();
+    await player.playFrom(tracks, tracks[1]?.id ?? '');
+
+    expect(player.isShuffleEnabled).toBe(true);
+    expect(player.currentTrack?.id).toBe(tracks[1]?.id);
+    expect(player.queue.map((track) => track.id)).toEqual([
+      tracks[1]?.id,
+      tracks[2]?.id,
+      tracks[3]?.id,
+      tracks[0]?.id,
+    ]);
+  });
+
+  it('ripristina l ordine della libreria quando si disattiva la coda casuale', async () => {
+    const player = usePlayerStore();
+    const tracks = makeTracks(3);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+
+    await player.playFrom(tracks, tracks[0]?.id ?? '');
+    player.toggleShuffle();
+    player.toggleShuffle();
+
+    expect(player.isShuffleEnabled).toBe(false);
+    expect(player.queue.map((track) => track.id)).toEqual(tracks.map((track) => track.id));
+    expect(player.currentTrack?.id).toBe(tracks[0]?.id);
+  });
+
   it('ignora un brano che non e nella lista', async () => {
     const player = usePlayerStore();
 
@@ -136,6 +169,22 @@ describe('usePlayerStore', () => {
     expect(player.position).toBe(0);
     expect(player.isPlaying).toBe(false);
     expect(engine.pause).toHaveBeenCalled();
+  });
+
+  it('ripete il brano corrente invece di fermarsi a fine coda', async () => {
+    const player = usePlayerStore();
+    const tracks = makeTracks(2);
+    const ultimo = tracks[1];
+    await player.playFrom(tracks, ultimo?.id ?? '');
+
+    player.toggleRepeatOne();
+    await player.next();
+
+    expect(player.isRepeatOneEnabled).toBe(true);
+    expect(player.currentTrack?.id).toBe(ultimo?.id);
+    expect(player.hasNext).toBe(true);
+    expect(engine.pause).not.toHaveBeenCalled();
+    expect(engine.load).toHaveBeenCalledTimes(2);
   });
 
   it('passa al brano successivo quando quello corrente finisce', async () => {

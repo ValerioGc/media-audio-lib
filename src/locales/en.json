@@ -225,6 +225,8 @@
     "stop": "Stop",
     "previous": "Previous track",
     "next": "Next track",
+    "shuffle": "Shuffle playback",
+    "repeatOne": "Repeat track",
     "progress": "Track progress",
     "volume": "Volume",
     "volumeValue": "Volume {value}%",

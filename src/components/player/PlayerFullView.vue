@@ -87,11 +87,15 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
           <PlayerControls
             :is-playing="player.isPlaying"
             :has-next="player.hasNext"
+            :is-shuffle-enabled="player.isShuffleEnabled"
+            :is-repeat-one-enabled="player.isRepeatOneEnabled"
             :disabled="player.isLoading"
             @previous="player.previous()"
             @toggle="player.toggle()"
             @stop="player.stop()"
             @next="player.next()"
+            @toggle-shuffle="player.toggleShuffle()"
+            @toggle-repeat-one="player.toggleRepeatOne()"
           />
           <PlayerVolume
             :model-value="player.volume"

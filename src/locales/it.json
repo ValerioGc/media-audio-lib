@@ -225,6 +225,8 @@
     "stop": "Interrompi",
     "previous": "Brano precedente",
     "next": "Brano successivo",
+    "shuffle": "Riproduzione casuale",
+    "repeatOne": "Ripeti brano",
     "progress": "Avanzamento del brano",
     "volume": "Volume",
     "volumeValue": "Volume {value}%",

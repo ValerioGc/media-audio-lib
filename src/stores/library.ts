@@ -84,10 +84,17 @@ export const useLibraryStore = defineStore('library', () => {
   }
 
   async function pickAndAdd(): Promise<AddReport | null> {
-    try {
-      const paths = await api.pickAudioFiles();
+    return pickThenAdd(api.pickAudioFiles);
+  }
 
-      return await addPaths(paths);
+  /** Imports whole folders: the backend keeps only the audio files found inside. */
+  async function pickFoldersAndAdd(): Promise<AddReport | null> {
+    return pickThenAdd(api.pickFolders);
+  }
+
+  async function pickThenAdd(pick: () => Promise<string[]>): Promise<AddReport | null> {
+    try {
+      return await addPaths(await pick());
     } catch (error) {
       fail(error);
       return null;
@@ -233,6 +240,7 @@ export const useLibraryStore = defineStore('library', () => {
     load,
     addPaths,
     pickAndAdd,
+    pickFoldersAndAdd,
     remove,
     loadCover,
     saveMetadata,

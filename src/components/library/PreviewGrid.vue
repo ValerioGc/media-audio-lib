@@ -9,6 +9,7 @@ defineProps<{
 
 const emit = defineEmits<{
   select: [id: string];
+  play: [track: TrackView];
   edit: [track: TrackView];
 }>();
 </script>
@@ -20,6 +21,7 @@ const emit = defineEmits<{
         :track="track"
         :selected="track.id === selectedId"
         @select="emit('select', $event)"
+        @play="emit('play', $event)"
         @edit="emit('edit', $event)"
       />
     </div>

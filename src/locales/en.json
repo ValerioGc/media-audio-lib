@@ -3,9 +3,6 @@
     "name": "Media Audio Lib"
   },
   "nav": {
-    "label": "Application sections",
-    "library": "Library",
-    "player": "Player",
     "settings": "Settings"
   },
   "settings": {
@@ -38,6 +35,18 @@
         "dark": "Dark",
         "system": "System"
       }
+    },
+    "tabs": {
+      "general": "General",
+      "library": "Library"
+    },
+    "libraryTab": {
+      "title": "Library settings",
+      "empty": "Library options, such as import and export, will show up here."
+    },
+    "footer": {
+      "version": "version {version}",
+      "repository": "Project on GitHub"
     }
   },
   "library": {
@@ -48,7 +57,8 @@
       "search": "Search the library",
       "searchPlaceholder": "Title, album or genre",
       "count": "no tracks | 1 track | {count} tracks",
-      "missing": "1 missing file | {count} missing files"
+      "missing": "1 missing file | {count} missing files",
+      "addFolder": "Add folder"
     },
     "columns": {
       "cover": "Cover",
@@ -75,7 +85,7 @@
     "empty": {
       "title": "The library is empty",
       "message": "Add your audio files: they stay where they are, only the list is tracked here.",
-      "dropHint": "You can also drop files onto this window."
+      "dropHint": "You can also drop files and folders onto this window."
     },
     "noMatches": {
       "title": "No results",
@@ -132,6 +142,14 @@
   },
   "player": {
     "title": "Player",
-    "placeholder": "The audio player lands in phase 8."
+    "nowPlaying": "Now playing",
+    "expand": "Expand the player",
+    "collapse": "Collapse the player",
+    "close": "Close the player"
+  },
+  "titlebar": {
+    "minimize": "Minimise",
+    "maximize": "Maximise or restore",
+    "close": "Close the application"
   }
 }

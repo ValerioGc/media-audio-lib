@@ -4,18 +4,11 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
-import AppOptionGroup from '@/components/common/AppOptionGroup.vue';
+import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
-import { useSettingsStore } from '@/stores/settings';
-import { VIEW_MODES, type ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
-const settings = useSettingsStore();
-
-const viewOptions = computed(() =>
-  VIEW_MODES.map((mode) => ({ value: mode, label: t(`library.view.${mode}`) })),
-);
 
 const searchValue = computed({
   get: () => library.query,
@@ -29,6 +22,10 @@ const searchValue = computed({
       {{ library.isImporting ? t('library.toolbar.adding') : t('library.toolbar.add') }}
     </AppButton>
 
+    <AppButton :disabled="library.isImporting" @click="library.pickFoldersAndAdd()">
+      {{ t('library.toolbar.addFolder') }}
+    </AppButton>
+
     <AppInput
       v-model="searchValue"
       class="library_toolbar_search"
@@ -36,14 +33,6 @@ const searchValue = computed({
       hide-label
       :label="t('library.toolbar.search')"
       :placeholder="t('library.toolbar.searchPlaceholder')"
-    />
-
-    <AppOptionGroup
-      class="library_toolbar_view"
-      :model-value="settings.viewMode"
-      :options="viewOptions"
-      :legend="t('library.view.label')"
-      @update:model-value="settings.setViewMode($event as ViewMode)"
     />
 
     <p class="library_toolbar_counts">
@@ -54,6 +43,9 @@ const searchValue = computed({
         {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}
       </span>
     </p>
+
+    <!-- The view switch sits at the far right of the toolbar. -->
+    <LibraryViewToggle class="library_toolbar_view" />
   </div>
 </template>
 
@@ -82,6 +74,10 @@ const searchValue = computed({
     padding: 0 $space_sm;
     border: 1px solid var(--color_border_strong);
     border-radius: $radius_sm;
+  }
+
+  &_view {
+    margin-left: auto;
   }
 }
 </style>

@@ -22,15 +22,27 @@ const message = computed(() =>
 <template>
   <AppPlaceholder :title="title" :message="message">
     <template v-if="variant === 'empty'">
-      <AppButton variant="primary" :disabled="library.isImporting" @click="library.pickAndAdd()">
-        {{ t('library.toolbar.add') }}
-      </AppButton>
+      <div class="library_empty_actions">
+        <AppButton variant="primary" :disabled="library.isImporting" @click="library.pickAndAdd()">
+          {{ t('library.toolbar.add') }}
+        </AppButton>
+        <AppButton :disabled="library.isImporting" @click="library.pickFoldersAndAdd()">
+          {{ t('library.toolbar.addFolder') }}
+        </AppButton>
+      </div>
       <p class="library_empty_hint">{{ t('library.empty.dropHint') }}</p>
     </template>
   </AppPlaceholder>
 </template>
 
 <style scoped lang="scss">
+.library_empty_actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space_sm;
+  justify-content: center;
+}
+
 .library_empty_hint {
   color: var(--color_text_muted);
   font-size: 0.875em;

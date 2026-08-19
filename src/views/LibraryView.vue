@@ -12,12 +12,14 @@ import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
 import { useFileDrop } from '@/composables/useFileDrop';
 import { useLibraryStore } from '@/stores/library';
+import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
 const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
+const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
 
 const { isDraggingOver } = useFileDrop((paths) => {
@@ -66,6 +68,7 @@ async function confirmRemoval() {
       :tracks="library.visibleTracks"
       :selected-id="library.selectedId"
       @select="library.select($event)"
+      @play="player.play($event)"
       @edit="library.openEditor($event.id)"
     />
     <LibraryTable
@@ -75,6 +78,7 @@ async function confirmRemoval() {
       :selected-id="library.selectedId"
       @sort="library.toggleSort($event)"
       @select="library.select($event)"
+      @play="player.play($event)"
       @edit="library.openEditor($event.id)"
       @remove="askRemoval"
     />

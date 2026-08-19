@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 
-import { isSupportedAudioFile, isTauriRuntime } from '@/config/app-config';
+import { isTauriRuntime } from '@/config/app-config';
 
 type DragDropPayload = { type: string; paths?: string[] };
 
@@ -15,7 +15,8 @@ export function useFileDrop(onDrop: (paths: string[]) => void) {
   function handle(payload: DragDropPayload) {
     if (payload.type === 'drop') {
       isDraggingOver.value = false;
-      onDrop((payload.paths ?? []).filter(isSupportedAudioFile));
+      // Folders are forwarded untouched: only the backend can look inside them.
+      onDrop(payload.paths ?? []);
       return;
     }
 

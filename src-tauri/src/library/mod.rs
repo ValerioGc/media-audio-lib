@@ -215,10 +215,61 @@ pub fn now_seconds() -> u64 {
 }
 
 /// Imports every path, keeping going when one of them fails.
+/// How deep a dropped folder is walked. Deep enough for any music collection, shallow
+/// enough to stop a symlink loop from running forever.
+const MAX_FOLDER_DEPTH: usize = 16;
+
+/// Collects the supported audio files inside a folder, ignoring everything else.
+fn collect_audio_files(directory: &Path, depth: usize, into: &mut Vec<PathBuf>) {
+    if depth > MAX_FOLDER_DEPTH {
+        return;
+    }
+
+    let Ok(entries) = std::fs::read_dir(directory) else {
+        return;
+    };
+
+    let mut found: Vec<PathBuf> = Vec::new();
+
+    for entry in entries.flatten() {
+        let path = entry.path();
+
+        if path.is_dir() {
+            collect_audio_files(&path, depth + 1, into);
+        } else if metadata::is_supported(&path) {
+            found.push(path);
+        }
+    }
+
+    // Stable order, so an import report reads the same way twice.
+    found.sort();
+    into.extend(found);
+}
+
+/// Turns the selection into a list of files to import: folders are walked, while a file
+/// named explicitly is kept as it is, so an unsupported one is still reported back.
+pub fn expand_paths(paths: &[String]) -> Vec<String> {
+    let mut expanded: Vec<String> = Vec::new();
+
+    for path in paths {
+        let candidate = Path::new(path);
+
+        if candidate.is_dir() {
+            let mut inside = Vec::new();
+            collect_audio_files(candidate, 0, &mut inside);
+            expanded.extend(inside.iter().map(|file| file.display().to_string()));
+        } else {
+            expanded.push(path.clone());
+        }
+    }
+
+    expanded
+}
+
 pub fn add_paths(library: &mut Library, paths: &[String], added_at: u64) -> AddReport {
     let mut report = AddReport::default();
 
-    for path in paths {
+    for path in &expand_paths(paths) {
         let file = Path::new(path);
 
         match metadata::read_metadata(file) {

@@ -45,16 +45,21 @@ describe('useFileDrop', () => {
     expect(wrapper.vm.isDraggingOver).toBe(false);
   });
 
-  it('inoltra solo i file audio supportati', () => {
+  it('inoltra tutto il contenuto rilasciato, cartelle comprese', () => {
     const onDrop = vi.fn();
     const wrapper = mountHost(onDrop);
 
     wrapper.vm.handle({
       type: 'drop',
-      paths: ['C:/musica/brano.mp3', 'C:/musica/note.txt', 'C:/musica/altro.FLAC'],
+      paths: ['C:/musica/brano.mp3', 'C:/musica/Album 2020', 'C:/musica/altro.FLAC'],
     });
 
-    expect(onDrop).toHaveBeenCalledWith(['C:/musica/brano.mp3', 'C:/musica/altro.FLAC']);
+    // Solo il backend puo' guardare dentro una cartella, quindi non si filtra qui.
+    expect(onDrop).toHaveBeenCalledWith([
+      'C:/musica/brano.mp3',
+      'C:/musica/Album 2020',
+      'C:/musica/altro.FLAC',
+    ]);
     expect(wrapper.vm.isDraggingOver).toBe(false);
   });
 

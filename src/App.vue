@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { RouterView } from 'vue-router';
 
-import AppNavigation from '@/components/common/AppNavigation.vue';
+import TitleBar from '@/components/layout/TitleBar.vue';
+import PlayerDock from '@/components/player/PlayerDock.vue';
+import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
+import LibraryView from '@/views/LibraryView.vue';
+import SettingsView from '@/views/SettingsView.vue';
 
-const { t } = useI18n();
 const settings = useSettingsStore();
+const navigation = useNavigationStore();
 
 onMounted(() => {
   void settings.initialize();
@@ -20,13 +22,15 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app_shell">
-    <header class="app_shell_header">
-      <span class="app_shell_brand">{{ t('app.name') }}</span>
-      <AppNavigation />
-    </header>
+    <!-- The window is undecorated: this bar is both the system titlebar and the header. -->
+    <TitleBar />
+
     <main class="app_shell_content">
-      <RouterView />
+      <SettingsView v-if="navigation.isSettings" />
+      <LibraryView v-else />
     </main>
+
+    <PlayerDock />
   </div>
 </template>
 
@@ -36,19 +40,6 @@ onBeforeUnmount(() => {
   flex: 1;
   flex-direction: column;
   min-height: 100%;
-
-  &_header {
-    display: flex;
-    gap: $space_lg;
-    align-items: center;
-    padding: $space_sm $space_lg;
-    border-bottom: 1px solid var(--color_border);
-    background-color: var(--color_surface);
-  }
-
-  &_brand {
-    font-weight: 600;
-  }
 
   &_content {
     display: flex;

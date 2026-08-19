@@ -72,6 +72,20 @@ export async function pickAudioFiles(): Promise<string[]> {
   return Array.isArray(selection) ? selection : [selection];
 }
 
+/** Opens the system picker on folders: everything audio inside is imported. */
+export async function pickFolders(): Promise<string[]> {
+  requireShell();
+
+  const { open } = await import('@tauri-apps/plugin-dialog');
+  const selection = await open({ multiple: true, directory: true });
+
+  if (selection === null) {
+    return [];
+  }
+
+  return Array.isArray(selection) ? selection : [selection];
+}
+
 export function coverDataUrl(cover: Cover): string {
   return `data:${cover.mimeType};base64,${cover.data}`;
 }

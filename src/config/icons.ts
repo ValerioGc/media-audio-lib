@@ -6,6 +6,16 @@ export const ICON_GLYPHS = {
   sortAsc: '▲',
   sortDesc: '▼',
   warning: '⚠',
+  settings: '⚙',
+  expand: '▲',
+  collapse: '▼',
+  close: '✕',
+  play: '▶',
+  list: '☰',
+  grid: '▦',
+  external: '↗',
+  minimize: '─',
+  maximize: '▢',
 } as const;
 
 export type IconName = keyof typeof ICON_GLYPHS;

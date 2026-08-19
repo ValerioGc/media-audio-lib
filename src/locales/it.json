@@ -3,9 +3,6 @@
     "name": "Media Audio Lib"
   },
   "nav": {
-    "label": "Sezioni dell'applicazione",
-    "library": "Libreria",
-    "player": "Player",
     "settings": "Impostazioni"
   },
   "settings": {
@@ -38,6 +35,18 @@
         "dark": "Scuro",
         "system": "Sistema"
       }
+    },
+    "tabs": {
+      "general": "Generale",
+      "library": "Libreria"
+    },
+    "libraryTab": {
+      "title": "Impostazioni della libreria",
+      "empty": "Qui arriveranno le opzioni della libreria, come import ed export."
+    },
+    "footer": {
+      "version": "versione {version}",
+      "repository": "Progetto su GitHub"
     }
   },
   "library": {
@@ -48,7 +57,8 @@
       "search": "Cerca nella libreria",
       "searchPlaceholder": "Titolo, album o genere",
       "count": "nessun brano | 1 brano | {count} brani",
-      "missing": "1 file non trovato | {count} file non trovati"
+      "missing": "1 file non trovato | {count} file non trovati",
+      "addFolder": "Aggiungi cartella"
     },
     "columns": {
       "cover": "Copertina",
@@ -75,7 +85,7 @@
     "empty": {
       "title": "La libreria è vuota",
       "message": "Aggiungi i tuoi file audio: restano dove sono, qui viene tracciato solo l'elenco.",
-      "dropHint": "Puoi anche trascinare i file in questa finestra."
+      "dropHint": "Puoi anche trascinare file e cartelle in questa finestra."
     },
     "noMatches": {
       "title": "Nessun risultato",
@@ -132,6 +142,14 @@
   },
   "player": {
     "title": "Player",
-    "placeholder": "Il player audio arriva con la Fase 8."
+    "nowPlaying": "In riproduzione",
+    "expand": "Espandi il player",
+    "collapse": "Riduci il player",
+    "close": "Chiudi il player"
+  },
+  "titlebar": {
+    "minimize": "Riduci a icona",
+    "maximize": "Ingrandisci o ripristina",
+    "close": "Chiudi l'applicazione"
   }
 }

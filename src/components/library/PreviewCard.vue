@@ -13,6 +13,7 @@ defineProps<{
 
 const emit = defineEmits<{
   select: [id: string];
+  play: [track: TrackView];
   edit: [track: TrackView];
 }>();
 
@@ -26,6 +27,7 @@ const { t } = useI18n();
     tabindex="0"
     :aria-selected="selected"
     @click="emit('select', track.id)"
+    @dblclick="emit('play', track)"
     @keydown.enter="emit('select', track.id)"
   >
     <CoverImage :track="track" size="card" />

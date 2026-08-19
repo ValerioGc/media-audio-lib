@@ -79,4 +79,14 @@ describe('LibraryToolbar', () => {
 
     expect(store.query).toBe('rock');
   });
+
+  it('aggiorna il filtro delle informazioni mancanti', async () => {
+    const options = withPinia();
+    const store = useLibraryStore();
+
+    const wrapper = mount(LibraryToolbar, options);
+    await wrapper.get('select').setValue('artist');
+
+    expect(store.missingInfoFilter).toBe('artist');
+  });
 });

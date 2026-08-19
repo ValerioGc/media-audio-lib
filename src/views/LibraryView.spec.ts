@@ -142,6 +142,17 @@ describe('LibraryView', () => {
     expect(store.lastLibraryImport).toBeNull();
   });
 
+  it('mostra e chiude il riepilogo della verifica file', async () => {
+    const { wrapper, store } = await mountView();
+    store.lastVerification = { total: 3, missing: 1 };
+    await flushPromises();
+
+    expect(wrapper.get('[role="status"]').text()).toContain('file mancanti 1 su 3 brani');
+
+    await wrapper.get('[role="status"] button').trigger('click');
+    expect(store.lastVerification).toBeNull();
+  });
+
   it('chiede conferma prima di rimuovere un brano', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();

@@ -2,6 +2,7 @@ import { mount, type VueWrapper } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetI18n, withPinia } from '../../../tests/support/mount';
+import { makeTrack } from '../../../tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
 
 import LibraryTitle from './LibraryTitle.vue';
@@ -123,8 +124,10 @@ describe('LibraryTitle', () => {
       'Principale',
       'Jazz',
       'Rinomina',
+      'Verifica file',
+      'Esporta elenco',
       'Importa',
-      'Esporta',
+      'Esporta libreria',
       'Elimina libreria',
     ]);
     expect(voci[0]?.attributes('aria-checked')).toBe('true');
@@ -153,7 +156,7 @@ describe('LibraryTitle', () => {
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
@@ -163,9 +166,35 @@ describe('LibraryTitle', () => {
     const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
 
     expect(importLibrary).toHaveBeenCalledWith('mergeSkipDuplicates');
+  });
+
+  it('verifica tutti i file dal menu della libreria', async () => {
+    const { wrapper, library } = mountTitle();
+    library.tracks = [{ ...makeTrack(), missing: false }];
+    const verifyAllTracks = vi.spyOn(library, 'verifyAllTracks').mockResolvedValue({
+      total: 1,
+      missing: 0,
+    });
+    await wrapper.vm.$nextTick();
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+
+    expect(verifyAllTracks).toHaveBeenCalledTimes(1);
+  });
+
+  it('apre il dialog per esportare l elenco brani', async () => {
+    const { wrapper, library } = mountTitle();
+    library.tracks = [{ ...makeTrack(), missing: false }];
+    await wrapper.vm.$nextTick();
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+
+    expect(document.body.textContent).toContain('Esporta elenco brani');
   });
 
   it('chiede conferma prima di eliminare la libreria', async () => {
@@ -173,7 +202,7 @@ describe('LibraryTitle', () => {
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[7]?.trigger('click');
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Principale');
     expect(deleteLibrary).not.toHaveBeenCalled();

@@ -102,6 +102,18 @@ async function confirmRemoval() {
       </AppButton>
     </p>
 
+    <p v-if="library.lastVerification !== null" class="library_view_notice" role="status">
+      {{
+        t('library.verification.summary', {
+          total: library.lastVerification.total,
+          missing: library.lastVerification.missing,
+        })
+      }}
+      <AppButton variant="ghost" @click="library.dismissVerification()">
+        {{ t('library.report.dismiss') }}
+      </AppButton>
+    </p>
+
     <LibraryImportReport
       v-if="library.lastReport !== null"
       :report="library.lastReport"

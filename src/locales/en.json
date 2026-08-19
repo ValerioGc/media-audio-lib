@@ -91,8 +91,10 @@
       "actions": "Library options",
       "menu": {
         "rename": "Rename",
+        "verifyAll": "Verify files",
+        "exportList": "Export list",
         "import": "Import",
-        "export": "Export",
+        "export": "Export library",
         "delete": "Delete library"
       }
     },
@@ -123,7 +125,19 @@
       "searchPlaceholder": "Title, album or genre",
       "count": "no tracks | 1 track | {count} tracks",
       "missing": "1 missing file | {count} missing files",
-      "addFolder": "Add folder"
+      "addFolder": "Add folder",
+      "missingInfo": {
+        "label": "Missing",
+        "options": {
+          "all": "All",
+          "file": "File",
+          "cover": "Cover",
+          "artist": "Artist",
+          "album": "Album",
+          "year": "Year",
+          "genre": "Genre"
+        }
+      }
     },
     "columns": {
       "cover": "Cover",
@@ -176,6 +190,32 @@
       "duplicates": "1 file already in the library | {count} files already in the library",
       "failed": "1 file not imported | {count} files not imported",
       "dismiss": "Dismiss"
+    },
+    "verification": {
+      "summary": "Verification complete: missing files {missing} out of {total} tracks."
+    },
+    "exportList": {
+      "title": "Export track list",
+      "description": "Choose the format and information to include in the file.",
+      "format": "Format",
+      "formats": {
+        "csv": "CSV",
+        "txt": "TXT"
+      },
+      "fieldsLabel": "Information",
+      "fields": {
+        "title": "Name",
+        "artist": "Artist",
+        "album": "Album",
+        "year": "Year",
+        "genre": "Genre",
+        "duration": "Duration",
+        "format": "Format",
+        "path": "Path",
+        "missing": "Missing file"
+      },
+      "cancel": "Cancel",
+      "submit": "Export"
     },
     "errors": {
       "shellUnavailable": "This feature is only available in the desktop application.",

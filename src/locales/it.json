@@ -91,8 +91,10 @@
       "actions": "Opzioni della libreria",
       "menu": {
         "rename": "Rinomina",
+        "verifyAll": "Verifica file",
+        "exportList": "Esporta elenco",
         "import": "Importa",
-        "export": "Esporta",
+        "export": "Esporta libreria",
         "delete": "Elimina libreria"
       }
     },
@@ -123,7 +125,19 @@
       "searchPlaceholder": "Titolo, album o genere",
       "count": "nessun brano | 1 brano | {count} brani",
       "missing": "1 file non trovato | {count} file non trovati",
-      "addFolder": "Aggiungi cartella"
+      "addFolder": "Aggiungi cartella",
+      "missingInfo": {
+        "label": "Mancanti",
+        "options": {
+          "all": "Tutti",
+          "file": "File",
+          "cover": "Copertina",
+          "artist": "Autore",
+          "album": "Album",
+          "year": "Anno",
+          "genre": "Genere"
+        }
+      }
     },
     "columns": {
       "cover": "Copertina",
@@ -176,6 +190,32 @@
       "duplicates": "1 file già in libreria | {count} file già in libreria",
       "failed": "1 file non importato | {count} file non importati",
       "dismiss": "Chiudi"
+    },
+    "verification": {
+      "summary": "Verifica completata: file mancanti {missing} su {total} brani."
+    },
+    "exportList": {
+      "title": "Esporta elenco brani",
+      "description": "Scegli formato e informazioni da includere nel file.",
+      "format": "Formato",
+      "formats": {
+        "csv": "CSV",
+        "txt": "TXT"
+      },
+      "fieldsLabel": "Informazioni",
+      "fields": {
+        "title": "Nome",
+        "artist": "Autore",
+        "album": "Album",
+        "year": "Anno",
+        "genre": "Genere",
+        "duration": "Durata",
+        "format": "Formato",
+        "path": "Percorso",
+        "missing": "File mancante"
+      },
+      "cancel": "Annulla",
+      "submit": "Esporta"
     },
     "errors": {
       "shellUnavailable": "Questa funzione è disponibile solo nell'applicazione desktop.",

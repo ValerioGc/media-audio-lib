@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
+import LibraryTrackListExportDialog from '@/components/library/LibraryTrackListExportDialog.vue';
 import { useLibraryStore } from '@/stores/library';
 import type { LibrarySummary } from '@/types/library';
 import type { MenuItem } from '@/types/menu';
@@ -19,6 +20,7 @@ const field = ref<HTMLInputElement | null>(null);
 const displayName = computed(() => library.libraryName || t('library.title'));
 
 const pendingDeletion = ref<LibrarySummary | null>(null);
+const isTrackListExportOpen = ref(false);
 
 /** The libraries to switch between, then the actions on the open one. */
 const menuItems = computed<MenuItem[]>(() => [
@@ -29,6 +31,18 @@ const menuItems = computed<MenuItem[]>(() => [
     description: t('library.catalog.open', { name: entry.name }),
   })),
   { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit', divider: true },
+  {
+    id: 'verifyAll',
+    label: t('library.name.menu.verifyAll'),
+    icon: 'verify',
+    disabled: library.tracks.length === 0 || library.isVerifying,
+  },
+  {
+    id: 'exportList',
+    label: t('library.name.menu.exportList'),
+    icon: 'list',
+    disabled: library.tracks.length === 0,
+  },
   { id: 'import', label: t('library.name.menu.import'), icon: 'import' },
   { id: 'export', label: t('library.name.menu.export'), icon: 'export' },
   {
@@ -59,6 +73,16 @@ function run(id: string) {
 
   if (id === 'export' && library.activeLibraryId !== null) {
     void library.exportLibrary(library.activeLibraryId);
+    return;
+  }
+
+  if (id === 'exportList') {
+    isTrackListExportOpen.value = true;
+    return;
+  }
+
+  if (id === 'verifyAll') {
+    void library.verifyAllTracks();
     return;
   }
 
@@ -140,6 +164,11 @@ async function submit() {
       :library="pendingDeletion"
       @confirm="confirmDeletion"
       @cancel="pendingDeletion = null"
+    />
+
+    <LibraryTrackListExportDialog
+      :open="isTrackListExportOpen"
+      @close="isTrackListExportOpen = false"
     />
   </div>
 </template>

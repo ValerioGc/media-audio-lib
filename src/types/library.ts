@@ -71,6 +71,38 @@ export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
 export const LIBRARY_CONTENT_TABS = ['tracks', 'artists', 'albums', 'genres'] as const;
 export type LibraryContentTab = (typeof LIBRARY_CONTENT_TABS)[number];
 
+export const MISSING_INFO_FILTERS = [
+  'all',
+  'file',
+  'cover',
+  'artist',
+  'album',
+  'year',
+  'genre',
+] as const;
+export type MissingInfoFilter = (typeof MISSING_INFO_FILTERS)[number];
+
+export const TRACK_EXPORT_FORMATS = ['csv', 'txt'] as const;
+export type TrackExportFormat = (typeof TRACK_EXPORT_FORMATS)[number];
+
+export const TRACK_EXPORT_FIELDS = [
+  'title',
+  'artist',
+  'album',
+  'year',
+  'genre',
+  'duration',
+  'format',
+  'path',
+  'missing',
+] as const;
+export type TrackExportField = (typeof TRACK_EXPORT_FIELDS)[number];
+
+export interface TrackListVerificationReport {
+  total: number;
+  missing: number;
+}
+
 export type SortDirection = 'asc' | 'desc';
 
 export interface SortState {

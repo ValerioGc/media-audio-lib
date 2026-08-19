@@ -11,11 +11,15 @@ import {
   type Cover,
   type LibraryImportReport,
   type LibraryImportStrategy,
+  type MissingInfoFilter,
   type MetadataUpdate,
   type SortableColumn,
   type LibrarySummary,
   type SortState,
   type Track,
+  type TrackExportField,
+  type TrackExportFormat,
+  type TrackListVerificationReport,
   type TrackView,
 } from '@/types/library';
 
@@ -26,27 +30,57 @@ function errorKeyOf(error: unknown): Exclude<LibraryErrorKey, null> {
   return error instanceof ShellUnavailableError ? 'shellUnavailable' : 'generic';
 }
 
+function hasMissingInfo(track: TrackView, filter: MissingInfoFilter): boolean {
+  if (filter === 'all') {
+    return true;
+  }
+
+  if (filter === 'file') {
+    return track.missing;
+  }
+
+  if (filter === 'cover') {
+    return !track.hasCover;
+  }
+
+  const value = track[filter];
+
+  if (typeof value === 'string') {
+    return value.trim().length === 0;
+  }
+
+  return value === null;
+}
+
 export const useLibraryStore = defineStore('library', () => {
   const verification = useTrackFileVerification();
   const libraryName = ref('');
   const libraries = ref<LibrarySummary[]>([]);
   const lastExport = ref<string | null>(null);
   const lastLibraryImport = ref<LibraryImportReport | null>(null);
+  const lastVerification = ref<TrackListVerificationReport | null>(null);
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
+  const missingInfoFilter = ref<MissingInfoFilter>('all');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
   const selectedId = ref<string | null>(null);
   const editingId = ref<string | null>(null);
   const isLoading = ref(false);
   const isImporting = ref(false);
   const isLibraryImporting = ref(false);
+  const isVerifying = ref(false);
   const isRenaming = ref(false);
   const isSaving = ref(false);
   const lastReport = ref<AddReport | null>(null);
   const errorKey = ref<LibraryErrorKey>(null);
   const covers = ref(new Map<string, string>());
 
-  const visibleTracks = computed(() => filterAndSort(tracks.value, query.value, sort.value));
+  const tracksMatchingMissingInfo = computed(() =>
+    tracks.value.filter((track) => hasMissingInfo(track, missingInfoFilter.value)),
+  );
+  const visibleTracks = computed(() =>
+    filterAndSort(tracksMatchingMissingInfo.value, query.value, sort.value),
+  );
   const editingTrack = computed(
     () => tracks.value.find((track) => track.id === editingId.value) ?? null,
   );
@@ -210,6 +244,33 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  async function exportTrackList(
+    format: TrackExportFormat,
+    fields: readonly TrackExportField[],
+  ): Promise<boolean> {
+    if (fields.length === 0) {
+      return false;
+    }
+
+    errorKey.value = null;
+    lastExport.value = null;
+
+    try {
+      const destination = await api.pickTrackListExportFile(libraryName.value, format);
+
+      if (destination === null) {
+        return false;
+      }
+
+      lastExport.value = await api.exportTrackList(destination, format, fields);
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    }
+  }
+
   function dismissExport() {
     lastExport.value = null;
   }
@@ -355,6 +416,36 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  async function verifyAllTracks(): Promise<TrackListVerificationReport | null> {
+    isVerifying.value = true;
+    errorKey.value = null;
+    lastVerification.value = null;
+
+    try {
+      const verified: TrackView[] = [];
+
+      for (const track of tracks.value) {
+        verified.push(await verification.verify(track));
+      }
+
+      tracks.value = tracks.value.map(
+        (track) => verified.find((entry) => entry.id === track.id) ?? track,
+      );
+
+      lastVerification.value = {
+        total: verified.length,
+        missing: verified.filter((track) => track.missing).length,
+      };
+
+      return lastVerification.value;
+    } catch (error) {
+      fail(error);
+      return null;
+    } finally {
+      isVerifying.value = false;
+    }
+  }
+
   async function withSaving<T>(action: () => Promise<T>): Promise<T | null> {
     isSaving.value = true;
     errorKey.value = null;
@@ -400,6 +491,10 @@ export const useLibraryStore = defineStore('library', () => {
     query.value = value;
   }
 
+  function setMissingInfoFilter(value: MissingInfoFilter) {
+    missingInfoFilter.value = value;
+  }
+
   /** Sorts by the given column, flipping the direction when it is already active. */
   function toggleSort(column: SortableColumn) {
     if (sort.value.column === column) {
@@ -421,6 +516,10 @@ export const useLibraryStore = defineStore('library', () => {
     lastReport.value = null;
   }
 
+  function dismissVerification() {
+    lastVerification.value = null;
+  }
+
   return {
     tracks,
     query,
@@ -430,16 +529,19 @@ export const useLibraryStore = defineStore('library', () => {
     isLoading,
     isImporting,
     isLibraryImporting,
+    isVerifying,
     isRenaming,
     isSaving,
     libraryName,
     libraries,
     lastExport,
     lastLibraryImport,
+    lastVerification,
     lastReport,
     errorKey,
     covers,
     visibleTracks,
+    tracksMatchingMissingInfo,
     editingTrack,
     isEmpty,
     activeLibraryId,
@@ -454,6 +556,7 @@ export const useLibraryStore = defineStore('library', () => {
     switchLibrary,
     deleteLibrary,
     exportLibrary,
+    exportTrackList,
     dismissExport,
     importLibrary,
     dismissLibraryImport,
@@ -462,14 +565,18 @@ export const useLibraryStore = defineStore('library', () => {
     pickFoldersAndAdd,
     remove,
     verifyTrack,
+    verifyAllTracks,
     loadCover,
     saveMetadata,
     saveCover,
     openEditor,
     closeEditor,
     setQuery,
+    missingInfoFilter,
+    setMissingInfoFilter,
     toggleSort,
     select,
     dismissReport,
+    dismissVerification,
   };
 });

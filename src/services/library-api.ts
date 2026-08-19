@@ -8,6 +8,8 @@ import type {
   LibraryImportReport,
   LibraryImportStrategy,
   LibrarySummary,
+  TrackExportField,
+  TrackExportFormat,
   MetadataUpdate,
   Track,
   TrackView,
@@ -82,6 +84,16 @@ export async function exportLibrary(id: string, destination: string): Promise<st
   return invoke<string>('export_library', { id, destination });
 }
 
+export async function exportTrackList(
+  destination: string,
+  format: TrackExportFormat,
+  fields: readonly TrackExportField[],
+): Promise<string> {
+  requireShell();
+
+  return invoke<string>('export_track_list', { destination, format, fields: [...fields] });
+}
+
 export async function importLibrary(
   source: string,
   strategy: LibraryImportStrategy,
@@ -100,6 +112,22 @@ export async function pickExportFile(defaultName: string): Promise<string | null
   return save({
     defaultPath: `${defaultName}.json`,
     filters: [{ name: 'JSON', extensions: ['json'] }],
+  });
+}
+
+export async function pickTrackListExportFile(
+  defaultName: string,
+  format: TrackExportFormat,
+): Promise<string | null> {
+  requireShell();
+
+  const { save } = await import('@tauri-apps/plugin-dialog');
+  const extension = format === 'csv' ? 'csv' : 'txt';
+  const filterName = format === 'csv' ? 'CSV' : 'TXT';
+
+  return save({
+    defaultPath: `${defaultName}-brani.${extension}`,
+    filters: [{ name: filterName, extensions: [extension] }],
   });
 }
 

@@ -21,8 +21,10 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     switchLibrary: vi.fn(),
     deleteLibrary: vi.fn(),
     exportLibrary: vi.fn(),
+    exportTrackList: vi.fn(),
     importLibrary: vi.fn(),
     pickExportFile: vi.fn(),
+    pickTrackListExportFile: vi.fn(),
     pickImportFile: vi.fn(),
     listTracks: vi.fn(),
     addTracks: vi.fn(),
@@ -42,8 +44,10 @@ const createLibrary = vi.mocked(api.createLibrary);
 const switchLibrary = vi.mocked(api.switchLibrary);
 const deleteLibrary = vi.mocked(api.deleteLibrary);
 const exportLibrary = vi.mocked(api.exportLibrary);
+const exportTrackList = vi.mocked(api.exportTrackList);
 const importLibrary = vi.mocked(api.importLibrary);
 const pickExportFile = vi.mocked(api.pickExportFile);
+const pickTrackListExportFile = vi.mocked(api.pickTrackListExportFile);
 const pickImportFile = vi.mocked(api.pickImportFile);
 const listTracks = vi.mocked(api.listTracks);
 const addTracks = vi.mocked(api.addTracks);
@@ -69,6 +73,7 @@ beforeEach(() => {
   listLibraries.mockResolvedValue([]);
   importLibrary.mockResolvedValue({ added: 0, updated: 0, skipped: 0, missing: [], total: 0 });
   pickImportFile.mockResolvedValue(null);
+  pickTrackListExportFile.mockResolvedValue(null);
 });
 
 const catalogo = [
@@ -287,6 +292,28 @@ describe('verifica collegamento', () => {
     expect(store.tracks[0]?.missing).toBe(false);
     expect(store.errorKey).toBe('generic');
   });
+
+  it('verifica in blocco tutti i brani e salva il riepilogo', async () => {
+    const store = useLibraryStore();
+    const [present, missing] = [makeTrack({ missing: false }), makeTrack({ missing: false })];
+    listTracks.mockResolvedValue([present, missing]);
+    await store.load();
+    verifyTrackFile.mockImplementation(async (id: string) =>
+      id === missing.id ? { ...missing, missing: true } : { ...present, missing: false },
+    );
+
+    const report = await store.verifyAllTracks();
+
+    expect(verifyTrackFile).toHaveBeenCalledWith(present.id);
+    expect(verifyTrackFile).toHaveBeenCalledWith(missing.id);
+    expect(report).toEqual({ total: 2, missing: 1 });
+    expect(store.lastVerification).toEqual({ total: 2, missing: 1 });
+    expect(store.tracks.find((track) => track.id === missing.id)?.missing).toBe(true);
+    expect(store.isVerifying).toBe(false);
+
+    store.dismissVerification();
+    expect(store.lastVerification).toBeNull();
+  });
 });
 
 describe('ricerca e ordinamento', () => {
@@ -330,6 +357,25 @@ describe('ricerca e ordinamento', () => {
     await store.load();
 
     expect(store.missingCount).toBe(1);
+  });
+
+  it('filtra i brani per informazioni mancanti', async () => {
+    const store = useLibraryStore();
+    listTracks.mockResolvedValue([
+      makeTrack({ title: 'Senza copertina', hasCover: false }),
+      makeTrack({ title: 'Senza autore', hasCover: true, artist: null }),
+      makeTrack({ title: 'Completo', hasCover: true }),
+    ]);
+    await store.load();
+
+    store.setMissingInfoFilter('cover');
+    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Senza copertina']);
+
+    store.setMissingInfoFilter('artist');
+    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Senza autore']);
+
+    store.setMissingInfoFilter('all');
+    expect(store.visibleTracks).toHaveLength(3);
   });
 });
 
@@ -567,6 +613,31 @@ describe('useLibraryStore - piu librerie', () => {
 
     store.dismissExport();
     expect(store.lastExport).toBeNull();
+  });
+
+  it('esporta l elenco brani nel formato scelto', async () => {
+    const store = useLibraryStore();
+    store.libraryName = 'Archivio jazz';
+    pickTrackListExportFile.mockResolvedValue('C:/backup/brani.csv');
+    exportTrackList.mockResolvedValue('C:/backup/brani.csv');
+
+    await expect(store.exportTrackList('csv', ['title', 'artist'])).resolves.toBe(true);
+
+    expect(pickTrackListExportFile).toHaveBeenCalledWith('Archivio jazz', 'csv');
+    expect(exportTrackList).toHaveBeenCalledWith('C:/backup/brani.csv', 'csv', [
+      'title',
+      'artist',
+    ]);
+    expect(store.lastExport).toBe('C:/backup/brani.csv');
+  });
+
+  it('non esporta l elenco brani senza campi selezionati', async () => {
+    const store = useLibraryStore();
+
+    await expect(store.exportTrackList('txt', [])).resolves.toBe(false);
+
+    expect(pickTrackListExportFile).not.toHaveBeenCalled();
+    expect(exportTrackList).not.toHaveBeenCalled();
   });
 
   it('annullando la scelta del file non esporta nulla', async () => {

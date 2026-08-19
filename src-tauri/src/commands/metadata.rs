@@ -9,7 +9,7 @@ use tauri::State;
 
 use crate::error::{AppError, AppResult};
 use crate::library::{self, Track};
-use crate::metadata::{self, Cover, MetadataUpdate, TrackMetadata};
+use crate::metadata::{self, Cover, CoverCache, MetadataUpdate, TrackMetadata};
 use crate::state::LibraryState;
 
 fn tracked_path(state: &LibraryState, id: &str) -> AppResult<PathBuf> {
@@ -46,9 +46,10 @@ pub fn read_metadata(path: String) -> AppResult<TrackMetadata> {
 }
 
 /// Returns the embedded cover art, base64 encoded, or nothing when there is none.
+/// Served from the on-disk cache when the file has not changed since the last read.
 #[tauri::command]
-pub fn get_cover(path: String) -> AppResult<Option<Cover>> {
-    metadata::read_cover(Path::new(&path))
+pub fn get_cover(cache: State<'_, CoverCache>, path: String) -> AppResult<Option<Cover>> {
+    cache.load(Path::new(&path))
 }
 
 /// Writes title, album, year and genre to the audio file.
@@ -112,11 +113,12 @@ mod tests {
     }
 
     #[test]
-    fn legge_la_copertina_da_un_percorso() {
+    fn legge_la_copertina_passando_dalla_cache() {
         let dir = TempDir::new("commands-cover");
         let path = wav_with_cover(dir.path(), "brano.wav");
+        let cache = CoverCache::new(dir.path().join("cover-cache"));
 
-        let cover = get_cover(path.display().to_string()).expect("lettura riuscita");
+        let cover = cache.load(&path).expect("lettura riuscita");
 
         assert_eq!(
             cover.map(|cover| cover.mime_type),

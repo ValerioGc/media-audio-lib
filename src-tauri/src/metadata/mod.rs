@@ -3,8 +3,10 @@
 //! Every supported format goes through `lofty`, so adding one is a matter of
 //! listing its extension in [`SUPPORTED_EXTENSIONS`].
 
+pub mod cover_cache;
 pub mod write;
 
+pub use cover_cache::CoverCache;
 pub use write::{write_cover, write_metadata, MetadataUpdate};
 
 use std::path::Path;

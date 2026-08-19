@@ -97,8 +97,14 @@ impl Library {
 
     /// Reads the library file. A missing file simply means an empty library.
     pub fn load(path: &Path) -> AppResult<Self> {
+        Self::load_with_version(path).map(|(library, _)| library)
+    }
+
+    /// Same as [`Library::load`], also reporting the schema version the file was stored
+    /// with: entries written by an older schema miss the fields added since.
+    pub fn load_with_version(path: &Path) -> AppResult<(Self, u32)> {
         if !path.exists() {
-            return Ok(Self::new());
+            return Ok((Self::new(), SCHEMA_VERSION));
         }
 
         let contents = std::fs::read_to_string(path)?;
@@ -111,10 +117,15 @@ impl Library {
             )));
         }
 
-        Ok(Self {
-            version: SCHEMA_VERSION,
-            tracks: library.tracks,
-        })
+        let stored_version = library.version;
+
+        Ok((
+            Self {
+                version: SCHEMA_VERSION,
+                tracks: library.tracks,
+            },
+            stored_version,
+        ))
     }
 
     /// Writes through a temporary file so an interrupted save cannot truncate the library.
@@ -194,16 +205,7 @@ pub fn canonical_key(path: &Path) -> String {
 
 /// Stable identifier derived from the file location, so the same file keeps its id.
 pub fn track_id(path: &Path) -> String {
-    const OFFSET_BASIS: u64 = 0xcbf2_9ce4_8422_2325;
-    const PRIME: u64 = 0x0000_0100_0000_01b3;
-
-    let mut hash = OFFSET_BASIS;
-    for byte in canonical_key(path).as_bytes() {
-        hash ^= u64::from(*byte);
-        hash = hash.wrapping_mul(PRIME);
-    }
-
-    format!("{hash:016x}")
+    crate::hash::fnv1a_hex(&canonical_key(path))
 }
 
 pub fn now_seconds() -> u64 {
@@ -254,6 +256,31 @@ pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) 
     track.has_cover = metadata.has_cover;
 
     Some(track.clone())
+}
+
+/// Re-reads the tags of every tracked file still on disk, and reports how many entries
+/// changed. Used to fill in fields added after those entries were first saved.
+pub fn refresh_metadata(library: &mut Library) -> usize {
+    let identifiers: Vec<(String, PathBuf)> = library
+        .tracks
+        .iter()
+        .map(|track| (track.id.clone(), PathBuf::from(&track.path)))
+        .collect();
+
+    let mut refreshed = 0;
+
+    for (id, path) in identifiers {
+        let Ok(metadata) = metadata::read_metadata(&path) else {
+            continue;
+        };
+
+        let before = library.get(&id).cloned();
+        if apply_metadata(library, &id, metadata).as_ref() != before.as_ref() {
+            refreshed += 1;
+        }
+    }
+
+    refreshed
 }
 
 pub fn path_of(library: &Library, id: &str) -> Option<PathBuf> {

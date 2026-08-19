@@ -4,6 +4,7 @@
 
 pub mod commands;
 pub mod error;
+pub mod hash;
 pub mod library;
 pub mod metadata;
 pub mod state;
@@ -15,9 +16,11 @@ pub use error::{AppError, AppResult};
 
 use tauri::Manager as _;
 
+use crate::metadata::CoverCache;
 use crate::state::LibraryState;
 
 pub const LIBRARY_FILE_NAME: &str = "library.json";
+pub const COVER_CACHE_DIR_NAME: &str = "covers";
 
 /// Starts the Tauri shell with the registered commands.
 ///
@@ -29,8 +32,13 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
-            let directory = app.path().app_data_dir()?;
-            app.manage(LibraryState::from_file(directory.join(LIBRARY_FILE_NAME)));
+            let data_directory = app.path().app_data_dir()?;
+            app.manage(LibraryState::from_file(
+                data_directory.join(LIBRARY_FILE_NAME),
+            ));
+
+            let cache_directory = app.path().app_cache_dir()?;
+            app.manage(CoverCache::new(cache_directory.join(COVER_CACHE_DIR_NAME)));
 
             Ok(())
         })

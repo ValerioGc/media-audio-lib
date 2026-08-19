@@ -9,6 +9,7 @@ import type { TrackView } from '@/types/library';
 defineProps<{
   track: TrackView;
   selected: boolean;
+  playing: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -25,9 +26,14 @@ const { t } = useI18n();
 <template>
   <article
     class="preview_card"
-    :class="{ preview_card_selected: selected, preview_card_missing: track.missing }"
+    :class="{
+      preview_card_selected: selected,
+      preview_card_missing: track.missing,
+      preview_card_playing: playing,
+    }"
     tabindex="0"
     :aria-selected="selected"
+    :aria-current="playing ? 'true' : undefined"
     @click="emit('select', track.id)"
     @dblclick="emit('play', track)"
     @keydown.enter="emit('select', track.id)"
@@ -40,6 +46,10 @@ const { t } = useI18n();
         {{ track.artist ?? t('library.row.unknown') }}
       </p>
       <p class="preview_card_meta">{{ track.album ?? t('library.row.unknown') }}</p>
+      <p v-if="playing" class="preview_card_badge preview_card_badge_playing">
+        <AppIcon name="play" />
+        {{ t('library.row.playing') }}
+      </p>
       <p v-if="track.missing" class="preview_card_badge">
         <AppIcon name="warning" />
         {{ t('library.row.missing') }}
@@ -86,6 +96,12 @@ const { t } = useI18n();
     color: var(--color_text_muted);
   }
 
+  &_playing {
+    border-color: var(--color_accent);
+    box-shadow: inset 0 0 0 1px var(--color_accent);
+    background-color: var(--color_accent_soft);
+  }
+
   &_body {
     display: flex;
     flex-direction: column;
@@ -114,6 +130,11 @@ const { t } = useI18n();
     gap: $space_xs;
     align-items: center;
     font-size: 0.75em;
+
+    &_playing {
+      color: var(--color_accent);
+      font-weight: 600;
+    }
   }
 
   &_actions {

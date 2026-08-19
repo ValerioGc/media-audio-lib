@@ -11,8 +11,12 @@ beforeEach(() => {
   resetI18n();
 });
 
-function mountGrid(tracks: TrackView[], selectedId: string | null = null) {
-  return mount(PreviewGrid, { ...withPinia(), props: { tracks, selectedId } });
+function mountGrid(
+  tracks: TrackView[],
+  selectedId: string | null = null,
+  playingId: string | null = null,
+) {
+  return mount(PreviewGrid, { ...withPinia(), props: { tracks, selectedId, playingId } });
 }
 
 describe('PreviewGrid', () => {
@@ -38,6 +42,17 @@ describe('PreviewGrid', () => {
 
     expect(selected).toHaveLength(1);
     expect(selected[0]?.get('.preview_card_title').text()).toBe(selectedTrack?.title);
+  });
+
+  it('marca come in riproduzione solo la scheda corrente', () => {
+    const tracks = makeTracks(3);
+    const playingTrack = tracks[2];
+    const wrapper = mountGrid(tracks, null, playingTrack?.id ?? null);
+
+    const playing = wrapper.findAll('.preview_card_playing');
+
+    expect(playing).toHaveLength(1);
+    expect(playing[0]?.get('.preview_card_title').text()).toBe(playingTrack?.title);
   });
 
   it('inoltra selezione e azioni del menu', async () => {

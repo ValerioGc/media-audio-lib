@@ -144,6 +144,7 @@
       "unknown": "—",
       "noCover": "No cover",
       "missing": "File no longer on disk",
+      "playing": "Now playing",
       "actions": "Actions for {title}",
       "remove": "Remove {title} from the library",
       "edit": "Edit the metadata of {title}",

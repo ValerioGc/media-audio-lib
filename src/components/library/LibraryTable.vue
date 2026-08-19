@@ -18,6 +18,7 @@ const props = defineProps<{
   tracks: readonly TrackView[];
   sort: SortState;
   selectedId: string | null;
+  playingId: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -113,6 +114,7 @@ onMounted(() => measure(viewport.value));
             :key="track.id"
             :track="track"
             :selected="track.id === selectedId"
+            :playing="track.id === playingId"
             @select="emit('select', $event)"
             @play="emit('play', $event)"
             @edit="emit('edit', $event)"

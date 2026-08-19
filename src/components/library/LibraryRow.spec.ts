@@ -10,8 +10,8 @@ beforeEach(() => {
   resetI18n();
 });
 
-function mountRow(track = makeTrack(), selected = false) {
-  return mount(LibraryRow, { ...withPinia(), props: { track, selected } });
+function mountRow(track = makeTrack(), selected = false, playing = false) {
+  return mount(LibraryRow, { ...withPinia(), props: { track, selected, playing } });
 }
 
 describe('LibraryRow', () => {
@@ -63,6 +63,14 @@ describe('LibraryRow', () => {
 
     expect(wrapper.classes()).toContain('library_row_selected');
     expect(wrapper.attributes('aria-selected')).toBe('true');
+  });
+
+  it('indica la riga in riproduzione', () => {
+    const wrapper = mountRow(makeTrack(), false, true);
+
+    expect(wrapper.classes()).toContain('library_row_playing');
+    expect(wrapper.attributes('aria-current')).toBe('true');
+    expect(wrapper.get('.library_row_badge_playing').text()).toContain('In riproduzione');
   });
 
   it('emette la selezione al click e con Invio', async () => {

@@ -144,6 +144,7 @@
       "unknown": "—",
       "noCover": "Nessuna copertina",
       "missing": "File non più presente su disco",
+      "playing": "In riproduzione",
       "actions": "Azioni per {title}",
       "remove": "Rimuovi {title} dalla libreria",
       "edit": "Modifica i metadati di {title}",

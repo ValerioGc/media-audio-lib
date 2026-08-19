@@ -12,10 +12,14 @@ beforeEach(() => {
   resetI18n();
 });
 
-function mountTable(tracks: TrackView[], sort: SortState = DEFAULT_SORT) {
+function mountTable(
+  tracks: TrackView[],
+  sort: SortState = DEFAULT_SORT,
+  playingId: string | null = null,
+) {
   return mount(LibraryTable, {
     ...withPinia(),
-    props: { tracks, sort, selectedId: null },
+    props: { tracks, sort, selectedId: null, playingId },
   });
 }
 
@@ -67,6 +71,16 @@ describe('LibraryTable', () => {
 
     expect(rendered).toBeGreaterThan(0);
     expect(rendered).toBeLessThan(500);
+  });
+
+  it('marca solo la riga in riproduzione', () => {
+    const tracks = makeTracks(3);
+    const wrapper = mountTable(tracks, DEFAULT_SORT, tracks[1]?.id ?? null);
+
+    const playing = wrapper.findAll('.library_row_playing');
+
+    expect(playing).toHaveLength(1);
+    expect(playing[0]?.text()).toContain(tracks[1]?.title);
   });
 
   it('riserva lo spazio verticale dell intera lista', () => {

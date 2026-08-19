@@ -11,8 +11,8 @@ beforeEach(() => {
   resetI18n();
 });
 
-function mountCard(track: TrackView = makeTrack(), selected = false) {
-  return mount(PreviewCard, { ...withPinia(), props: { track, selected } });
+function mountCard(track: TrackView = makeTrack(), selected = false, playing = false) {
+  return mount(PreviewCard, { ...withPinia(), props: { track, selected, playing } });
 }
 
 describe('PreviewCard', () => {
@@ -43,6 +43,14 @@ describe('PreviewCard', () => {
 
     expect(wrapper.classes()).toContain('preview_card_selected');
     expect(wrapper.attributes('aria-selected')).toBe('true');
+  });
+
+  it('indica la scheda in riproduzione', () => {
+    const wrapper = mountCard(makeTrack(), false, true);
+
+    expect(wrapper.classes()).toContain('preview_card_playing');
+    expect(wrapper.attributes('aria-current')).toBe('true');
+    expect(wrapper.get('.preview_card_badge_playing').text()).toContain('In riproduzione');
   });
 
   it('segnala i file spariti dal disco', () => {

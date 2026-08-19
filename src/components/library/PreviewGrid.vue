@@ -5,6 +5,7 @@ import type { TrackView } from '@/types/library';
 defineProps<{
   tracks: readonly TrackView[];
   selectedId: string | null;
+  playingId: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -22,6 +23,7 @@ const emit = defineEmits<{
       <PreviewCard
         :track="track"
         :selected="track.id === selectedId"
+        :playing="track.id === playingId"
         @select="emit('select', $event)"
         @play="emit('play', $event)"
         @edit="emit('edit', $event)"

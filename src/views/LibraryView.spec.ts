@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '../../tests/support/mount';
 import { makeTrack, makeTracks } from '../../tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
+import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 
 import LibraryView from './LibraryView.vue';
@@ -56,6 +57,18 @@ describe('LibraryView', () => {
     await flushPromises();
 
     expect(wrapper.findAll('.library_row')).toHaveLength(2);
+  });
+
+  it('indica il brano in riproduzione nella libreria', async () => {
+    const { wrapper, store } = await mountView();
+    const track = makeTrack();
+    const player = usePlayerStore();
+    store.tracks = [track];
+    player.queue = [track];
+    player.index = 0;
+    await flushPromises();
+
+    expect(wrapper.get('.library_row_playing').text()).toContain(track.title);
   });
 
   it('usa il nome della libreria come titolo quando disponibile', async () => {

@@ -10,6 +10,7 @@ import type { TrackView } from '@/types/library';
 defineProps<{
   track: TrackView;
   selected: boolean;
+  playing: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -26,10 +27,15 @@ const { t } = useI18n();
 <template>
   <div
     class="library_row"
-    :class="{ library_row_selected: selected, library_row_missing: track.missing }"
+    :class="{
+      library_row_selected: selected,
+      library_row_missing: track.missing,
+      library_row_playing: playing,
+    }"
     role="row"
     tabindex="0"
     :aria-selected="selected"
+    :aria-current="playing ? 'true' : undefined"
     @click="emit('select', track.id)"
     @dblclick="emit('play', track)"
     @keydown.enter="emit('select', track.id)"
@@ -39,6 +45,10 @@ const { t } = useI18n();
     </span>
     <span class="library_row_cell library_row_title" role="cell">
       <span class="library_row_text">{{ track.title }}</span>
+      <span v-if="playing" class="library_row_badge library_row_badge_playing">
+        <AppIcon name="play" />
+        {{ t('library.row.playing') }}
+      </span>
       <span v-if="track.missing" class="library_row_badge">
         <AppIcon name="warning" />
         {{ t('library.row.missing') }}
@@ -88,6 +98,11 @@ const { t } = useI18n();
     color: var(--color_text_muted);
   }
 
+  &_playing {
+    box-shadow: inset 3px 0 0 var(--color_accent);
+    background-color: var(--color_accent_soft);
+  }
+
   &_cell {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -107,11 +122,19 @@ const { t } = useI18n();
   }
 
   &_badge {
+    display: inline-flex;
+    gap: $space_2xs;
+    align-items: center;
     flex-shrink: 0;
     padding: 0 $space_sm;
     border: 1px solid var(--color_border_strong);
     border-radius: $radius_sm;
     font-size: 0.75em;
+
+    &_playing {
+      border-color: var(--color_accent);
+      color: var(--color_accent);
+    }
   }
 
   &_duration {

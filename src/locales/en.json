@@ -186,6 +186,29 @@
       "label": "View",
       "table": "List",
       "preview": "Previews"
+    },
+    "tabs": {
+      "label": "Library sections",
+      "tracks": "Tracks",
+      "artists": "Artists",
+      "albums": "Albums",
+      "genres": "Genres"
+    },
+    "groups": {
+      "trackCount": "no tracks | 1 track | {count} tracks",
+      "columns": {
+        "artist": "Artist",
+        "album": "Album",
+        "genre": "Genre",
+        "tracks": "Tracks",
+        "duration": "Duration",
+        "examples": "Examples"
+      },
+      "unknown": {
+        "artist": "No artist",
+        "album": "No album",
+        "genre": "No genre"
+      }
     }
   },
   "metadata": {

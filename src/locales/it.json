@@ -186,6 +186,29 @@
       "label": "Vista",
       "table": "Elenco",
       "preview": "Anteprime"
+    },
+    "tabs": {
+      "label": "Sezioni libreria",
+      "tracks": "Brani",
+      "artists": "Autori",
+      "albums": "Album",
+      "genres": "Generi"
+    },
+    "groups": {
+      "trackCount": "nessun brano | 1 brano | {count} brani",
+      "columns": {
+        "artist": "Autore",
+        "album": "Album",
+        "genre": "Genere",
+        "tracks": "Brani",
+        "duration": "Durata",
+        "examples": "Esempi"
+      },
+      "unknown": {
+        "artist": "Senza autore",
+        "album": "Senza album",
+        "genre": "Senza genere"
+      }
     }
   },
   "metadata": {

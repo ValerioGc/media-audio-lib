@@ -59,6 +59,30 @@ describe('LibraryView', () => {
     expect(wrapper.findAll('.library_row')).toHaveLength(2);
   });
 
+  it('cambia dalla tab brani alla tab autori', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Uno', artist: 'Autore A' }),
+      makeTrack({ title: 'Due', artist: 'Autore B' }),
+    ];
+    await flushPromises();
+
+    expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
+      'Brani',
+      'Autori',
+      'Album',
+      'Generi',
+    ]);
+    expect(wrapper.find('.library_table').exists()).toBe(true);
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+
+    expect(wrapper.find('.library_table').exists()).toBe(false);
+    expect(wrapper.find('.library_facet_list').exists()).toBe(true);
+    expect(wrapper.findAll('.library_facet_list_row')).toHaveLength(2);
+    expect(wrapper.text()).toContain('Autore A');
+  });
+
   it('indica il brano in riproduzione nella libreria', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();

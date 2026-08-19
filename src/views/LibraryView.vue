@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppModal from '@/components/common/AppModal.vue';
+import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
+import LibraryFacetList from '@/components/library/LibraryFacetList.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
@@ -15,13 +17,30 @@ import { useFileDrop } from '@/composables/useFileDrop';
 import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
-import type { TrackView } from '@/types/library';
+import type { LibraryContentTab, TrackView } from '@/types/library';
 
 const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
 const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
+const activeTab = ref<LibraryContentTab>('tracks');
+
+const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
+  if (activeTab.value === 'artists') {
+    return 'artist';
+  }
+
+  if (activeTab.value === 'albums') {
+    return 'album';
+  }
+
+  if (activeTab.value === 'genres') {
+    return 'genre';
+  }
+
+  return null;
+});
 
 const { isDraggingOver } = useFileDrop((paths) => {
   void library.addPaths(paths);
@@ -90,31 +109,43 @@ async function confirmRemoval() {
     />
 
     <LibraryEmptyState v-if="library.isEmpty" variant="empty" />
-    <LibraryEmptyState v-else-if="library.hasNoMatches" variant="noMatches" />
-    <PreviewGrid
-      v-else-if="settings.viewMode === 'preview'"
-      :tracks="library.visibleTracks"
-      :selected-id="library.selectedId"
-      :playing-id="player.currentTrack?.id ?? null"
-      @select="library.select($event)"
-      @play="startPlayback($event)"
-      @edit="library.openEditor($event.id)"
-      @remove="askRemoval"
-      @verify="library.verifyTrack($event)"
-    />
-    <LibraryTable
-      v-else
-      :tracks="library.visibleTracks"
-      :sort="library.sort"
-      :selected-id="library.selectedId"
-      :playing-id="player.currentTrack?.id ?? null"
-      @sort="library.toggleSort($event)"
-      @select="library.select($event)"
-      @play="startPlayback($event)"
-      @edit="library.openEditor($event.id)"
-      @remove="askRemoval"
-      @verify="library.verifyTrack($event)"
-    />
+    <template v-else>
+      <LibraryContentTabs v-model="activeTab" />
+
+      <section
+        class="library_view_panel"
+        role="tabpanel"
+        :id="`library-panel-${activeTab}`"
+        :aria-labelledby="`library-tab-${activeTab}`"
+      >
+        <LibraryEmptyState v-if="library.hasNoMatches" variant="noMatches" />
+        <PreviewGrid
+          v-else-if="activeTab === 'tracks' && settings.viewMode === 'preview'"
+          :tracks="library.visibleTracks"
+          :selected-id="library.selectedId"
+          :playing-id="player.currentTrack?.id ?? null"
+          @select="library.select($event)"
+          @play="startPlayback($event)"
+          @edit="library.openEditor($event.id)"
+          @remove="askRemoval"
+          @verify="library.verifyTrack($event)"
+        />
+        <LibraryTable
+          v-else-if="activeTab === 'tracks'"
+          :tracks="library.visibleTracks"
+          :sort="library.sort"
+          :selected-id="library.selectedId"
+          :playing-id="player.currentTrack?.id ?? null"
+          @sort="library.toggleSort($event)"
+          @select="library.select($event)"
+          @play="startPlayback($event)"
+          @edit="library.openEditor($event.id)"
+          @remove="askRemoval"
+          @verify="library.verifyTrack($event)"
+        />
+        <LibraryFacetList v-else-if="activeFacet !== null" :tracks="library.visibleTracks" :field="activeFacet" />
+      </section>
+    </template>
 
     <MetadataEditor
       v-if="library.editingTrack !== null"
@@ -178,6 +209,13 @@ async function confirmRemoval() {
     @include surface_panel($radius_md, var(--color_surface_alt));
 
     border-color: var(--color_border_strong);
+  }
+
+  &_panel {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
   }
 }
 </style>

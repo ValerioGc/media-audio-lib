@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
-import AppTooltip from '@/components/common/AppTooltip.vue';
 import LibraryCoverCell from '@/components/library/LibraryCoverCell.vue';
+import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import { formatDuration } from '@/services/track-sorting';
 import type { TrackView } from '@/types/library';
 
@@ -18,6 +17,7 @@ const emit = defineEmits<{
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
+  verify: [track: TrackView];
 }>();
 
 const { t } = useI18n();
@@ -52,25 +52,12 @@ const { t } = useI18n();
       {{ formatDuration(track.durationMs) }}
     </span>
     <span class="library_row_cell library_row_actions" role="cell">
-      <AppTooltip :text="t('library.row.edit', { title: track.title })">
-        <AppButton
-          variant="ghost"
-          :disabled="track.missing"
-          :aria-label="t('library.row.edit', { title: track.title })"
-          @click.stop="emit('edit', track)"
-        >
-          <AppIcon name="edit" />
-        </AppButton>
-      </AppTooltip>
-      <AppTooltip :text="t('library.row.remove', { title: track.title })">
-        <AppButton
-          variant="ghost"
-          :aria-label="t('library.row.remove', { title: track.title })"
-          @click.stop="emit('remove', track)"
-        >
-          <AppIcon name="remove" />
-        </AppButton>
-      </AppTooltip>
+      <LibraryRowActions
+        :track="track"
+        @edit="emit('edit', $event)"
+        @remove="emit('remove', $event)"
+        @verify="emit('verify', $event)"
+      />
     </span>
   </div>
 </template>
@@ -135,6 +122,7 @@ const { t } = useI18n();
     display: flex;
     gap: $space_xs;
     justify-content: flex-end;
+    overflow: visible;
   }
 }
 </style>

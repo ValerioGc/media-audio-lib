@@ -2,8 +2,8 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import AppPlaceholder from '@/components/common/AppPlaceholder.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
+import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
 import SettingsFooter from '@/components/settings/SettingsFooter.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import SettingsTabs from '@/components/settings/SettingsTabs.vue';
@@ -52,10 +52,12 @@ const tabs = computed(() => [
       </template>
 
       <template #library>
-        <AppPlaceholder
-          :title="t('settings.libraryTab.title')"
-          :message="t('settings.libraryTab.empty')"
-        />
+        <SettingsSection
+          :title="t('settings.libraryName.title')"
+          :description="t('settings.libraryName.description')"
+        >
+          <LibraryNameForm />
+        </SettingsSection>
       </template>
     </SettingsTabs>
 

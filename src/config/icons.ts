@@ -19,6 +19,10 @@ export const ICON_GLYPHS = {
   help: '?',
   add: '＋',
   search: '⌕',
+  more: '⋮',
+  verify: '✓',
+  check: '✔',
+  export: '⤓',
 } as const;
 
 export type IconName = keyof typeof ICON_GLYPHS;

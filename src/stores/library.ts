@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
+import { useTrackFileVerification } from '@/composables/useTrackFileVerification';
 import * as api from '@/services/library-api';
 import { ShellUnavailableError } from '@/services/library-api';
 import { filterAndSort } from '@/services/track-sorting';
@@ -16,13 +17,15 @@ import {
 } from '@/types/library';
 
 /** i18n key describing the last failure, so the UI stays free of hardcoded text. */
-export type LibraryErrorKey = 'shellUnavailable' | 'generic' | null;
+export type LibraryErrorKey = 'shellUnavailable' | 'generic' | 'invalidLibraryName' | null;
 
 function errorKeyOf(error: unknown): Exclude<LibraryErrorKey, null> {
   return error instanceof ShellUnavailableError ? 'shellUnavailable' : 'generic';
 }
 
 export const useLibraryStore = defineStore('library', () => {
+  const verification = useTrackFileVerification();
+  const libraryName = ref('');
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
@@ -30,6 +33,7 @@ export const useLibraryStore = defineStore('library', () => {
   const editingId = ref<string | null>(null);
   const isLoading = ref(false);
   const isImporting = ref(false);
+  const isRenaming = ref(false);
   const isSaving = ref(false);
   const lastReport = ref<AddReport | null>(null);
   const errorKey = ref<LibraryErrorKey>(null);
@@ -47,16 +51,51 @@ export const useLibraryStore = defineStore('library', () => {
     errorKey.value = errorKeyOf(error);
   }
 
+  async function loadInfo() {
+    errorKey.value = null;
+
+    try {
+      libraryName.value = (await api.libraryInfo()).name;
+    } catch (error) {
+      fail(error);
+    }
+  }
+
   async function load() {
     isLoading.value = true;
     errorKey.value = null;
 
     try {
-      tracks.value = await api.listTracks();
+      const [info, loadedTracks] = await Promise.all([api.libraryInfo(), api.listTracks()]);
+      libraryName.value = info.name;
+      tracks.value = loadedTracks;
     } catch (error) {
       fail(error);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  async function renameLibrary(name: string): Promise<boolean> {
+    const cleaned = name.trim();
+
+    if (cleaned.length === 0) {
+      errorKey.value = 'invalidLibraryName';
+      return false;
+    }
+
+    isRenaming.value = true;
+    errorKey.value = null;
+
+    try {
+      const info = await api.renameLibrary(cleaned);
+      libraryName.value = info.name;
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    } finally {
+      isRenaming.value = false;
     }
   }
 
@@ -154,6 +193,24 @@ export const useLibraryStore = defineStore('library', () => {
     covers.value = covers_;
   }
 
+  function replaceTrackView(updated: TrackView) {
+    tracks.value = tracks.value.map((track) => (track.id === updated.id ? updated : track));
+  }
+
+  async function verifyTrack(track: TrackView): Promise<TrackView | null> {
+    errorKey.value = null;
+
+    try {
+      const verified = await verification.verify(track);
+      replaceTrackView(verified);
+
+      return verified;
+    } catch (error) {
+      fail(error);
+      return null;
+    }
+  }
+
   async function withSaving<T>(action: () => Promise<T>): Promise<T | null> {
     isSaving.value = true;
     errorKey.value = null;
@@ -228,7 +285,9 @@ export const useLibraryStore = defineStore('library', () => {
     editingId,
     isLoading,
     isImporting,
+    isRenaming,
     isSaving,
+    libraryName,
     lastReport,
     errorKey,
     covers,
@@ -237,11 +296,14 @@ export const useLibraryStore = defineStore('library', () => {
     isEmpty,
     hasNoMatches,
     missingCount,
+    loadInfo,
     load,
+    renameLibrary,
     addPaths,
     pickAndAdd,
     pickFoldersAndAdd,
     remove,
+    verifyTrack,
     loadCover,
     saveMetadata,
     saveCover,

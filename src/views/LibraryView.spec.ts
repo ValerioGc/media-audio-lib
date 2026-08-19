@@ -57,6 +57,14 @@ describe('LibraryView', () => {
     expect(wrapper.findAll('.library_row')).toHaveLength(2);
   });
 
+  it('usa il nome della libreria come titolo quando disponibile', async () => {
+    const { wrapper, store } = await mountView();
+    store.libraryName = 'Archivio jazz';
+    await flushPromises();
+
+    expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
+  });
+
   it('mostra lo stato senza risultati quando il filtro non trova nulla', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);
@@ -92,7 +100,8 @@ describe('LibraryView', () => {
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
     await flushPromises();
 
-    await wrapper.findAll('.library_row button')[1]?.trigger('click');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
     expect(wrapper.get('[role="dialog"]').text()).toContain(track.title);
     expect(remove).not.toHaveBeenCalled();
 
@@ -109,7 +118,8 @@ describe('LibraryView', () => {
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
     await flushPromises();
 
-    await wrapper.findAll('.library_row button')[1]?.trigger('click');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
     await wrapper.get('.app_modal_actions button').trigger('click');
 
     expect(remove).not.toHaveBeenCalled();
@@ -134,11 +144,25 @@ describe('LibraryView', () => {
 
     expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(false);
 
-    await wrapper.findAll('.library_row button')[0]?.trigger('click');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[0]?.trigger('click');
     await flushPromises();
 
     expect(store.editingId).toBe(track.id);
     expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(true);
+  });
+
+  it('verifica il collegamento del file dalla riga', async () => {
+    const { wrapper, store } = await mountView();
+    const track = makeTrack();
+    store.tracks = [track];
+    const verifyTrack = vi.spyOn(store, 'verifyTrack').mockResolvedValue(track);
+    await flushPromises();
+
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
+
+    expect(verifyTrack).toHaveBeenCalledWith(track);
   });
 
   it('ordina la tabella dalle intestazioni', async () => {

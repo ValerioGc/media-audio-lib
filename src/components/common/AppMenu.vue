@@ -1,0 +1,216 @@
+<script setup lang="ts">
+import { nextTick, onUnmounted, ref, watch } from 'vue';
+
+import AppIcon from '@/components/common/AppIcon.vue';
+import type { IconName } from '@/config/icons';
+import type { MenuItem } from '@/types/menu';
+
+const props = withDefaults(
+  defineProps<{
+    items: readonly MenuItem[];
+    label: string;
+    icon?: IconName;
+  }>(),
+  { icon: 'more' },
+);
+
+const emit = defineEmits<{ select: [id: string] }>();
+
+const isOpen = ref(false);
+const root = ref<HTMLElement | null>(null);
+const trigger = ref<HTMLButtonElement | null>(null);
+
+function closeMenu() {
+  isOpen.value = false;
+}
+
+async function openMenu() {
+  isOpen.value = true;
+  await nextTick();
+  root.value?.querySelector<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')?.focus();
+}
+
+function toggleMenu() {
+  if (isOpen.value) {
+    closeMenu();
+    return;
+  }
+
+  void openMenu();
+}
+
+function run(item: MenuItem) {
+  if (item.disabled === true) {
+    return;
+  }
+
+  emit('select', item.id);
+  closeMenu();
+}
+
+function onTriggerKeydown(event: KeyboardEvent) {
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    void openMenu();
+  }
+}
+
+function onDocumentPointerdown(event: PointerEvent) {
+  if (root.value !== null && !root.value.contains(event.target as Node)) {
+    closeMenu();
+  }
+}
+
+function onDocumentKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    closeMenu();
+    trigger.value?.focus();
+  }
+}
+
+watch(
+  isOpen,
+  (open) => {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    if (open) {
+      document.addEventListener('pointerdown', onDocumentPointerdown);
+      document.addEventListener('keydown', onDocumentKeydown);
+    } else {
+      document.removeEventListener('pointerdown', onDocumentPointerdown);
+      document.removeEventListener('keydown', onDocumentKeydown);
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.removeEventListener('pointerdown', onDocumentPointerdown);
+  document.removeEventListener('keydown', onDocumentKeydown);
+});
+
+defineExpose({ close: closeMenu });
+</script>
+
+<template>
+  <div ref="root" class="app_menu">
+    <button
+      ref="trigger"
+      class="app_menu_trigger"
+      type="button"
+      :aria-label="props.label"
+      :aria-expanded="isOpen"
+      aria-haspopup="menu"
+      @click="toggleMenu"
+      @keydown="onTriggerKeydown"
+    >
+      <AppIcon :name="props.icon" />
+    </button>
+
+    <div v-if="isOpen" class="app_menu_panel" role="menu">
+      <button
+        v-for="item in props.items"
+        :key="item.id"
+        class="app_menu_item"
+        :class="{ app_menu_item_danger: item.danger === true }"
+        type="button"
+        role="menuitem"
+        :disabled="item.disabled === true"
+        :aria-label="item.description"
+        @click="run(item)"
+      >
+        <AppIcon v-if="item.icon !== undefined" :name="item.icon" />
+        <span class="app_menu_item_label">{{ item.label }}</span>
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.app_menu {
+  position: relative;
+  display: flex;
+
+  &_trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: $radius_md;
+    background-color: transparent;
+    color: var(--color_text_muted);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      background-color $duration_fast ease,
+      color $duration_fast ease;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      background-color: var(--color_surface_hover);
+      color: var(--color_text);
+    }
+
+    @include focus_ring;
+  }
+
+  &_panel {
+    position: absolute;
+    top: calc(100% + #{$space_xs});
+    right: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    min-width: 9rem;
+    padding: $space_xs;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_md;
+    background-color: var(--color_surface);
+    box-shadow: var(--shadow_raised);
+  }
+
+  &_item {
+    display: flex;
+    gap: $space_sm;
+    align-items: center;
+    min-height: 2rem;
+    padding: $space_sm $space_md;
+    border: 0;
+    border-radius: $radius_sm;
+    background: none;
+    color: var(--color_text);
+    font: inherit;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background-color: var(--color_surface_hover);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &_danger {
+      color: #c42b1c;
+    }
+
+    &_label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @include focus_ring;
+  }
+}
+</style>

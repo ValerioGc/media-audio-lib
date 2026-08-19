@@ -29,6 +29,10 @@ export interface AddReport {
   failed: FailedImport[];
 }
 
+export interface LibraryInfo {
+  name: string;
+}
+
 export interface Cover {
   mimeType: string;
   data: string;

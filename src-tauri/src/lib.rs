@@ -45,9 +45,12 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
+            commands::library::library_info,
+            commands::library::rename_library,
             commands::library::add_tracks,
             commands::library::remove_track,
             commands::library::list_tracks,
+            commands::library::verify_track_file,
             commands::metadata::read_metadata,
             commands::metadata::get_cover,
             commands::metadata::write_metadata,

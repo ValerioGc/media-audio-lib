@@ -7,6 +7,7 @@ import AppModal from '@/components/common/AppModal.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
+import LibraryTitle from '@/components/library/LibraryTitle.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
@@ -47,7 +48,7 @@ async function confirmRemoval() {
 <template>
   <div class="library_view" :class="{ library_view_dropping: isDraggingOver }">
     <header class="library_view_header">
-      <h1 class="library_view_title">{{ t('library.title') }}</h1>
+      <LibraryTitle />
       <LibraryToolbar />
     </header>
 
@@ -81,6 +82,7 @@ async function confirmRemoval() {
       @play="player.play($event)"
       @edit="library.openEditor($event.id)"
       @remove="askRemoval"
+      @verify="library.verifyTrack($event)"
     />
 
     <MetadataEditor
@@ -124,11 +126,6 @@ async function confirmRemoval() {
     display: flex;
     flex-direction: column;
     gap: $space_md;
-  }
-
-  &_title {
-    font-size: 1.75em;
-    font-weight: 600;
   }
 
   &_error {

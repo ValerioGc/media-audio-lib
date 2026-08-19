@@ -79,7 +79,8 @@ describe('LibraryRow', () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
-    await wrapper.findAll('button')[1]?.trigger('click');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('remove')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
@@ -89,23 +90,52 @@ describe('LibraryRow', () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
-    await wrapper.findAll('button')[0]?.trigger('click');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[0]?.trigger('click');
 
     expect(wrapper.emitted('edit')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('non permette di modificare un file mancante', () => {
-    const wrapper = mountRow(makeTrack({ missing: true }));
+  it('emette la verifica del collegamento', async () => {
+    const track = makeTrack();
+    const wrapper = mountRow(track);
 
-    expect(wrapper.findAll('button')[0]?.attributes('disabled')).toBeDefined();
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
+
+    expect(wrapper.emitted('verify')).toEqual([[track]]);
+    expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('descrive i pulsanti agli screen reader', () => {
-    const wrapper = mountRow(makeTrack({ title: 'Brano' }));
-    const buttons = wrapper.findAll('button');
+  it('non permette di modificare un file mancante', async () => {
+    const wrapper = mountRow(makeTrack({ missing: true }));
 
-    expect(buttons[0]?.attributes('aria-label')).toBe('Modifica i metadati di Brano');
-    expect(buttons[1]?.attributes('aria-label')).toBe('Rimuovi Brano dalla libreria');
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+
+    expect(wrapper.findAll('.library_row .app_menu_item')[0]?.attributes('disabled')).toBeDefined();
+  });
+
+  it('descrive il menu agli screen reader', async () => {
+    const wrapper = mountRow(makeTrack({ title: 'Brano' }));
+
+    expect(wrapper.get('.library_row .app_menu_trigger').attributes('aria-label')).toBe(
+      'Azioni per Brano',
+    );
+
+    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
+
+    expect(
+      wrapper
+        .findAll('.library_row .app_menu_item')
+        .map((item) => item.get('.app_menu_item_label').text()),
+    ).toEqual(['Modifica', 'Verifica', 'Elimina']);
+    expect(
+      wrapper.findAll('.library_row .app_menu_item').map((item) => item.attributes('aria-label')),
+    ).toEqual([
+      'Modifica i metadati di Brano',
+      'Verifica collegamento di Brano',
+      'Rimuovi Brano dalla libreria',
+    ]);
   });
 });

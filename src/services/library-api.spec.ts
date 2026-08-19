@@ -13,9 +13,12 @@ import {
   addTracks,
   coverDataUrl,
   getCover,
+  libraryInfo,
   listTracks,
   pickAudioFiles,
   removeTrack,
+  renameLibrary,
+  verifyTrackFile,
   writeCover,
   writeMetadata,
 } from './library-api';
@@ -53,10 +56,27 @@ describe('listTracks', () => {
   });
 });
 
+describe('libraryInfo', () => {
+  it('usa il nome dell app fuori dalla shell', async () => {
+    await expect(libraryInfo()).resolves.toEqual({ name: 'Media Audio Lib' });
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
+  it('interroga il comando Rust dentro la shell', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ name: 'Archivio' });
+
+    await expect(libraryInfo()).resolves.toEqual({ name: 'Archivio' });
+    expect(mocks.invoke).toHaveBeenCalledWith('library_info');
+  });
+});
+
 describe('comandi che richiedono la shell', () => {
   it('rifiutano fuori dalla shell', async () => {
     await expect(addTracks(['a.mp3'])).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(removeTrack('id')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(renameLibrary('Archivio')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(verifyTrackFile('id')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(getCover('a.mp3')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickAudioFiles()).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(writeMetadata('id', update)).rejects.toBeInstanceOf(ShellUnavailableError);
@@ -100,6 +120,22 @@ describe('comandi che richiedono la shell', () => {
 
     await expect(removeTrack('abc')).resolves.toBe(true);
     expect(mocks.invoke).toHaveBeenCalledWith('remove_track', { id: 'abc' });
+  });
+
+  it('inoltra il nome della libreria', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ name: 'Archivio' });
+
+    await expect(renameLibrary('Archivio')).resolves.toEqual({ name: 'Archivio' });
+    expect(mocks.invoke).toHaveBeenCalledWith('rename_library', { name: 'Archivio' });
+  });
+
+  it('inoltra la verifica del file tracciato', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ id: 'abc', missing: true });
+
+    await expect(verifyTrackFile('abc')).resolves.toEqual({ id: 'abc', missing: true });
+    expect(mocks.invoke).toHaveBeenCalledWith('verify_track_file', { id: 'abc' });
   });
 
   it('richiede la copertina per percorso', async () => {

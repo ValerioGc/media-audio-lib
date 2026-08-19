@@ -14,9 +14,12 @@ vi.mock('@/services/library-api', async (importOriginal) => {
 
   return {
     ...actual,
+    libraryInfo: vi.fn(),
+    renameLibrary: vi.fn(),
     listTracks: vi.fn(),
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
+    verifyTrackFile: vi.fn(),
     getCover: vi.fn(),
     pickAudioFiles: vi.fn(),
     writeMetadata: vi.fn(),
@@ -24,9 +27,12 @@ vi.mock('@/services/library-api', async (importOriginal) => {
   };
 });
 
+const libraryInfo = vi.mocked(api.libraryInfo);
+const renameLibrary = vi.mocked(api.renameLibrary);
 const listTracks = vi.mocked(api.listTracks);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
+const verifyTrackFile = vi.mocked(api.verifyTrackFile);
 const getCover = vi.mocked(api.getCover);
 const pickAudioFiles = vi.mocked(api.pickAudioFiles);
 const writeMetadata = vi.mocked(api.writeMetadata);
@@ -36,9 +42,12 @@ const emptyReport: AddReport = { added: [], duplicates: [], failed: [] };
 
 beforeEach(() => {
   setActivePinia(createTestPinia());
+  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib' });
+  renameLibrary.mockResolvedValue({ name: 'Archivio' });
   listTracks.mockResolvedValue([]);
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
+  verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
   getCover.mockResolvedValue(null);
   pickAudioFiles.mockResolvedValue([]);
 });
@@ -65,6 +74,15 @@ describe('caricamento', () => {
     expect(store.isLoading).toBe(false);
   });
 
+  it('carica il nome della libreria dal backend', async () => {
+    const store = useLibraryStore();
+    libraryInfo.mockResolvedValue({ name: 'Archivio jazz' });
+
+    await store.load();
+
+    expect(store.libraryName).toBe('Archivio jazz');
+  });
+
   it('segnala l assenza della shell desktop', async () => {
     const store = useLibraryStore();
     listTracks.mockRejectedValue(new ShellUnavailableError());
@@ -80,6 +98,38 @@ describe('caricamento', () => {
 
     await store.load();
 
+    expect(store.errorKey).toBe('generic');
+  });
+});
+
+describe('rinomina', () => {
+  it('salva il nome ripulito dagli spazi', async () => {
+    const store = useLibraryStore();
+
+    await expect(store.renameLibrary('  Archivio  ')).resolves.toBe(true);
+
+    expect(renameLibrary).toHaveBeenCalledWith('Archivio');
+    expect(store.libraryName).toBe('Archivio');
+    expect(store.isRenaming).toBe(false);
+  });
+
+  it('rifiuta un nome vuoto senza chiamare il backend', async () => {
+    const store = useLibraryStore();
+
+    await expect(store.renameLibrary('   ')).resolves.toBe(false);
+
+    expect(renameLibrary).not.toHaveBeenCalled();
+    expect(store.errorKey).toBe('invalidLibraryName');
+  });
+
+  it('mantiene il nome corrente se il backend fallisce', async () => {
+    const store = useLibraryStore();
+    store.libraryName = 'Archivio';
+    renameLibrary.mockRejectedValue(new Error('boom'));
+
+    await expect(store.renameLibrary('Nuovo')).resolves.toBe(false);
+
+    expect(store.libraryName).toBe('Archivio');
     expect(store.errorKey).toBe('generic');
   });
 });
@@ -182,6 +232,35 @@ describe('rimozione', () => {
     await store.remove(track.id);
 
     expect(store.tracks).toHaveLength(1);
+    expect(store.errorKey).toBe('generic');
+  });
+});
+
+describe('verifica collegamento', () => {
+  it('aggiorna lo stato su disco del brano verificato', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ missing: false });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+    verifyTrackFile.mockResolvedValue({ ...track, missing: true });
+
+    const verified = await store.verifyTrack(track);
+
+    expect(verifyTrackFile).toHaveBeenCalledWith(track.id);
+    expect(verified?.missing).toBe(true);
+    expect(store.tracks[0]?.missing).toBe(true);
+  });
+
+  it('segnala l errore senza cambiare la lista', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ missing: false });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+    verifyTrackFile.mockRejectedValue(new Error('boom'));
+
+    await expect(store.verifyTrack(track)).resolves.toBeNull();
+
+    expect(store.tracks[0]?.missing).toBe(false);
     expect(store.errorKey).toBe('generic');
   });
 });

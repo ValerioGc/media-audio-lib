@@ -45,6 +45,14 @@
       "title": "Impostazioni della libreria",
       "empty": "Qui arriveranno le opzioni della libreria, come import ed export."
     },
+    "libraryName": {
+      "title": "Nome della libreria",
+      "description": "Il nome identifica la libreria attiva nella schermata principale.",
+      "label": "Nome",
+      "placeholder": "La mia libreria",
+      "save": "Salva nome",
+      "saving": "Salvataggio…"
+    },
     "footer": {
       "version": "versione {version}",
       "repository": "Progetto su GitHub"
@@ -52,6 +60,19 @@
   },
   "library": {
     "title": "Libreria",
+    "name": {
+      "edit": "Rinomina la libreria",
+      "field": "Nome della libreria",
+      "placeholder": "La mia libreria",
+      "save": "Salva il nome",
+      "cancel": "Annulla la modifica",
+      "actions": "Opzioni della libreria",
+      "menu": {
+        "rename": "Rinomina",
+        "export": "Esporta",
+        "delete": "Elimina libreria"
+      }
+    },
     "toolbar": {
       "add": "Aggiungi brani",
       "adding": "Importazione in corso…",
@@ -80,8 +101,15 @@
       "unknown": "—",
       "noCover": "Nessuna copertina",
       "missing": "File non più presente su disco",
+      "actions": "Azioni per {title}",
       "remove": "Rimuovi {title} dalla libreria",
-      "edit": "Modifica i metadati di {title}"
+      "edit": "Modifica i metadati di {title}",
+      "verify": "Verifica collegamento di {title}",
+      "menu": {
+        "edit": "Modifica",
+        "verify": "Verifica",
+        "remove": "Elimina"
+      }
     },
     "empty": {
       "title": "La libreria è vuota",
@@ -107,7 +135,8 @@
     },
     "errors": {
       "shellUnavailable": "Questa funzione è disponibile solo nell'applicazione desktop.",
-      "generic": "Operazione non riuscita. Riprova."
+      "generic": "Operazione non riuscita. Riprova.",
+      "invalidLibraryName": "Il nome della libreria non può essere vuoto."
     },
     "view": {
       "label": "Vista",

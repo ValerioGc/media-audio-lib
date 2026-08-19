@@ -45,6 +45,14 @@
       "title": "Library settings",
       "empty": "Library options, such as import and export, will show up here."
     },
+    "libraryName": {
+      "title": "Library name",
+      "description": "The name identifies the active library on the main screen.",
+      "label": "Name",
+      "placeholder": "My library",
+      "save": "Save name",
+      "saving": "Saving…"
+    },
     "footer": {
       "version": "version {version}",
       "repository": "Project on GitHub"
@@ -52,6 +60,19 @@
   },
   "library": {
     "title": "Library",
+    "name": {
+      "edit": "Rename the library",
+      "field": "Library name",
+      "placeholder": "My library",
+      "save": "Save the name",
+      "cancel": "Cancel the change",
+      "actions": "Library options",
+      "menu": {
+        "rename": "Rename",
+        "export": "Export",
+        "delete": "Delete library"
+      }
+    },
     "toolbar": {
       "add": "Add tracks",
       "adding": "Importing…",
@@ -80,8 +101,15 @@
       "unknown": "—",
       "noCover": "No cover",
       "missing": "File no longer on disk",
+      "actions": "Actions for {title}",
       "remove": "Remove {title} from the library",
-      "edit": "Edit the metadata of {title}"
+      "edit": "Edit the metadata of {title}",
+      "verify": "Verify link for {title}",
+      "menu": {
+        "edit": "Edit",
+        "verify": "Verify",
+        "remove": "Delete"
+      }
     },
     "empty": {
       "title": "The library is empty",
@@ -107,7 +135,8 @@
     },
     "errors": {
       "shellUnavailable": "This feature is only available in the desktop application.",
-      "generic": "The operation failed. Please try again."
+      "generic": "The operation failed. Please try again.",
+      "invalidLibraryName": "The library name cannot be empty."
     },
     "view": {
       "label": "View",

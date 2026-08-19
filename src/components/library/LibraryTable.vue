@@ -24,6 +24,7 @@ const emit = defineEmits<{
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
+  verify: [track: TrackView];
 }>();
 
 const ROW_HEIGHT = 56;
@@ -105,6 +106,7 @@ onMounted(() => measure(viewport.value));
             @play="emit('play', $event)"
             @edit="emit('edit', $event)"
             @remove="emit('remove', $event)"
+            @verify="emit('verify', $event)"
           />
         </div>
       </div>

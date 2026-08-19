@@ -33,13 +33,13 @@ describe('SettingsView', () => {
     expect(titles).toEqual(['Lingua', 'Dimensione testo', 'Tema']);
   });
 
-  it('la tab libreria e ancora vuota e lo dichiara', async () => {
+  it('mostra la rinomina nella tab libreria', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
-    expect(wrapper.findAll('.settings_section_title')).toHaveLength(0);
-    expect(wrapper.get('.app_placeholder_title').text()).toBe('Impostazioni della libreria');
+    expect(wrapper.get('.settings_section_title').text()).toBe('Nome della libreria');
+    expect(wrapper.find('.library_name_form').exists()).toBe(true);
   });
 
   it('mostra nome, versione e collegamento al progetto in fondo', () => {

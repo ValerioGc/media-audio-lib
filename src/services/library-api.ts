@@ -1,7 +1,14 @@
 import { invoke } from '@tauri-apps/api/core';
 
-import { isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-config';
-import type { AddReport, Cover, MetadataUpdate, Track, TrackView } from '@/types/library';
+import { APP_NAME, isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-config';
+import type {
+  AddReport,
+  Cover,
+  LibraryInfo,
+  MetadataUpdate,
+  Track,
+  TrackView,
+} from '@/types/library';
 
 /** Raised when a feature needs the desktop shell and the app runs in a plain browser. */
 export class ShellUnavailableError extends Error {
@@ -25,6 +32,20 @@ export async function listTracks(): Promise<TrackView[]> {
   return invoke<TrackView[]>('list_tracks');
 }
 
+export async function libraryInfo(): Promise<LibraryInfo> {
+  if (!isTauriRuntime()) {
+    return { name: APP_NAME };
+  }
+
+  return invoke<LibraryInfo>('library_info');
+}
+
+export async function renameLibrary(name: string): Promise<LibraryInfo> {
+  requireShell();
+
+  return invoke<LibraryInfo>('rename_library', { name });
+}
+
 export async function addTracks(paths: readonly string[]): Promise<AddReport> {
   requireShell();
 
@@ -35,6 +56,12 @@ export async function removeTrack(id: string): Promise<boolean> {
   requireShell();
 
   return invoke<boolean>('remove_track', { id });
+}
+
+export async function verifyTrackFile(id: string): Promise<TrackView> {
+  requireShell();
+
+  return invoke<TrackView>('verify_track_file', { id });
 }
 
 export async function getCover(path: string): Promise<Cover | null> {

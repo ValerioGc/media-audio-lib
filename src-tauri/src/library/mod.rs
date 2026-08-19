@@ -11,8 +11,9 @@ use serde::{Deserialize, Serialize};
 use crate::error::{AppError, AppResult};
 use crate::metadata::{self, TrackMetadata};
 
-/// v2 added the `artist` field. Older files still load: the field defaults to absent.
-pub const SCHEMA_VERSION: u32 = 2;
+/// v3 added the library `name`. Older files still load: the name defaults to the app name.
+pub const SCHEMA_VERSION: u32 = 3;
+pub const DEFAULT_LIBRARY_NAME: &str = "Media Audio Lib";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -78,6 +79,8 @@ pub struct AddReport {
 #[serde(rename_all = "camelCase")]
 pub struct Library {
     pub version: u32,
+    #[serde(default = "default_library_name")]
+    pub name: String,
     pub tracks: Vec<Track>,
 }
 
@@ -85,6 +88,7 @@ impl Default for Library {
     fn default() -> Self {
         Self {
             version: SCHEMA_VERSION,
+            name: default_library_name(),
             tracks: Vec::new(),
         }
     }
@@ -122,6 +126,7 @@ impl Library {
         Ok((
             Self {
                 version: SCHEMA_VERSION,
+                name: clean_library_name(&library.name).unwrap_or_else(default_library_name),
                 tracks: library.tracks,
             },
             stored_version,
@@ -143,6 +148,16 @@ impl Library {
 
     pub fn tracks(&self) -> &[Track] {
         &self.tracks
+    }
+
+    pub fn rename(&mut self, name: &str) -> AppResult<String> {
+        let name = clean_library_name(name).ok_or_else(|| {
+            AppError::Validation("il nome della libreria non puo essere vuoto".to_owned())
+        })?;
+
+        self.name = name.clone();
+
+        Ok(name)
     }
 
     pub fn len(&self) -> usize {
@@ -175,6 +190,20 @@ impl Library {
         let before = self.tracks.len();
         self.tracks.retain(|track| track.id != id);
         before != self.tracks.len()
+    }
+}
+
+fn default_library_name() -> String {
+    DEFAULT_LIBRARY_NAME.to_owned()
+}
+
+fn clean_library_name(name: &str) -> Option<String> {
+    let trimmed = name.trim();
+
+    if trimmed.is_empty() {
+        None
+    } else {
+        Some(trimmed.to_owned())
     }
 }
 
@@ -339,14 +368,18 @@ pub fn path_of(library: &Library, id: &str) -> Option<PathBuf> {
 }
 
 pub fn to_views(library: &Library) -> Vec<TrackView> {
-    library
-        .tracks
-        .iter()
-        .map(|track| TrackView {
-            track: track.clone(),
-            missing: !Path::new(&track.path).is_file(),
-        })
-        .collect()
+    library.tracks.iter().map(view_of_track).collect()
+}
+
+pub fn view_of(library: &Library, id: &str) -> Option<TrackView> {
+    library.get(id).map(view_of_track)
+}
+
+fn view_of_track(track: &Track) -> TrackView {
+    TrackView {
+        track: track.clone(),
+        missing: !Path::new(&track.path).is_file(),
+    }
 }
 
 #[cfg(test)]
@@ -376,6 +409,7 @@ mod tests {
 
         assert!(library.is_empty());
         assert_eq!(library.version, SCHEMA_VERSION);
+        assert_eq!(library.name, DEFAULT_LIBRARY_NAME);
     }
 
     #[test]
@@ -393,6 +427,7 @@ mod tests {
         let dir = TempDir::new("library-roundtrip");
         let file = dir.path().join("nested").join("library.json");
         let mut library = Library::new();
+        library.rename("Archivio jazz").expect("rinomina riuscita");
         library.add(sample_track("aaa"));
         library.add(sample_track("bbb"));
 
@@ -455,6 +490,18 @@ mod tests {
     }
 
     #[test]
+    fn legge_una_libreria_v2_senza_nome() {
+        let dir = TempDir::new("library-v2");
+        let file = dir.path().join("library.json");
+        std::fs::write(&file, r#"{"version":2,"tracks":[]}"#).expect("file scritto");
+
+        let library = Library::load(&file).expect("caricamento riuscito");
+
+        assert_eq!(library.name, DEFAULT_LIBRARY_NAME);
+        assert_eq!(library.version, SCHEMA_VERSION);
+    }
+
+    #[test]
     fn legge_una_libreria_v1_senza_il_campo_autore() {
         let dir = TempDir::new("library-v1");
         let file = dir.path().join("library.json");
@@ -482,6 +529,22 @@ mod tests {
         assert!(library.get("aaa").is_some());
         assert!(library.remove("aaa"));
         assert!(library.is_empty());
+    }
+
+    #[test]
+    fn rinomina_la_libreria_validando_il_nome() {
+        let mut library = Library::new();
+
+        assert_eq!(
+            library.rename("  Archivio personale  ").expect("rinomina"),
+            "Archivio personale"
+        );
+        assert_eq!(library.name, "Archivio personale");
+        assert!(matches!(
+            library.rename("   ").unwrap_err(),
+            AppError::Validation(_)
+        ));
+        assert_eq!(library.name, "Archivio personale");
     }
 
     #[test]
@@ -569,6 +632,22 @@ mod tests {
         std::fs::remove_file(&path).expect("file rimosso");
 
         assert!(to_views(&library)[0].missing);
+    }
+
+    #[test]
+    fn verifica_un_singolo_file_tracciato() {
+        let dir = TempDir::new("library-view-one");
+        let path = wav_with_tags(dir.path(), "brano.wav");
+        let mut library = Library::new();
+        add_paths(&mut library, &[path.display().to_string()], 0);
+        let id = library.tracks()[0].id.clone();
+
+        assert!(!view_of(&library, &id).expect("presente").missing);
+        assert!(view_of(&library, "zzz").is_none());
+
+        std::fs::remove_file(&path).expect("file rimosso");
+
+        assert!(view_of(&library, &id).expect("presente").missing);
     }
 
     #[test]

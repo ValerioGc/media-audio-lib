@@ -55,6 +55,7 @@ pub fn run() {
             commands::metadata::get_cover,
             commands::metadata::write_metadata,
             commands::metadata::write_cover,
+            commands::playback::prepare_playback,
         ])
         .run(tauri::generate_context!())
         .expect("avvio dell'applicazione Tauri fallito");

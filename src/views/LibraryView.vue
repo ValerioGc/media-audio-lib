@@ -31,6 +31,11 @@ onMounted(() => {
   void library.load();
 });
 
+/** The visible list becomes the queue, so previous and next follow what is on screen. */
+function startPlayback(track: TrackView) {
+  void player.playFrom(library.visibleTracks, track.id);
+}
+
 function askRemoval(track: TrackView) {
   pendingRemoval.value = track;
 }
@@ -69,7 +74,7 @@ async function confirmRemoval() {
       :tracks="library.visibleTracks"
       :selected-id="library.selectedId"
       @select="library.select($event)"
-      @play="player.play($event)"
+      @play="startPlayback($event)"
       @edit="library.openEditor($event.id)"
     />
     <LibraryTable
@@ -79,7 +84,7 @@ async function confirmRemoval() {
       :selected-id="library.selectedId"
       @sort="library.toggleSort($event)"
       @select="library.select($event)"
-      @play="player.play($event)"
+      @play="startPlayback($event)"
       @edit="library.openEditor($event.id)"
       @remove="askRemoval"
       @verify="library.verifyTrack($event)"

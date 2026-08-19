@@ -2,6 +2,7 @@
 
 pub mod library;
 pub mod metadata;
+pub mod playback;
 
 use serde::{Deserialize, Serialize};
 
@@ -9,6 +10,7 @@ pub use library::{
     add_tracks, library_info, list_tracks, remove_track, rename_library, verify_track_file,
 };
 pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
+pub use playback::prepare_playback;
 
 use crate::metadata::SUPPORTED_EXTENSIONS;
 

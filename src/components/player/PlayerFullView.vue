@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
+import PlayerControls from '@/components/player/PlayerControls.vue';
+import PlayerProgress from '@/components/player/PlayerProgress.vue';
+import PlayerVolume from '@/components/player/PlayerVolume.vue';
+import { usePlayerStore } from '@/stores/player';
 import type { TrackView } from '@/types/library';
 
-defineProps<{ track: TrackView }>();
+const props = defineProps<{ track: TrackView }>();
 
 const emit = defineEmits<{
   collapse: [];
@@ -15,6 +19,14 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const player = usePlayerStore();
+
+/** Everything that is not title and artist goes under the cover. */
+const details = computed(() => [
+  { key: 'album', value: props.track.album },
+  { key: 'year', value: props.track.year },
+  { key: 'genre', value: props.track.genre },
+]);
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -44,24 +56,61 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     </header>
 
     <div class="player_full_body">
+      <div class="player_full_heading">
+        <h1 class="player_full_title">{{ track.title }}</h1>
+        <p class="player_full_artist">{{ track.artist ?? t('library.row.unknown') }}</p>
+      </div>
+
       <div class="player_full_cover">
         <CoverImage :track="track" size="card" eager />
       </div>
 
-      <div class="player_full_info">
-        <h1 class="player_full_title">{{ track.title }}</h1>
-        <p class="player_full_meta">{{ track.artist ?? t('library.row.unknown') }}</p>
-        <p class="player_full_meta">{{ track.album ?? t('library.row.unknown') }}</p>
+      <dl class="player_full_details">
+        <div v-for="detail in details" :key="detail.key" class="player_full_detail">
+          <dt class="player_full_detail_label">{{ t(`library.columns.${detail.key}`) }}</dt>
+          <dd class="player_full_detail_value">{{ detail.value ?? t('library.row.unknown') }}</dd>
+        </div>
+      </dl>
+
+      <p v-if="player.errorKey !== null" class="player_full_error" role="alert">
+        {{ t(`player.errors.${player.errorKey}`) }}
+      </p>
+
+      <div class="player_full_playback">
+        <PlayerProgress
+          :position="player.position"
+          :duration="player.duration"
+          @seek="player.seek($event)"
+        />
+
+        <div class="player_full_transport">
+          <PlayerControls
+            :is-playing="player.isPlaying"
+            :has-next="player.hasNext"
+            :disabled="player.isLoading"
+            @previous="player.previous()"
+            @toggle="player.toggle()"
+            @stop="player.stop()"
+            @next="player.next()"
+          />
+          <PlayerVolume
+            :model-value="player.volume"
+            @update:model-value="player.setVolume($event)"
+          />
+        </div>
       </div>
     </div>
-    <!-- Transport controls, progress bar and volume arrive with phase 8. -->
   </section>
 </template>
 
 <style scoped lang="scss">
 .player_full {
+  /* The titlebar stays reachable: window controls, settings and guide are on it. */
   position: fixed;
-  inset: 0;
+  top: $titlebar_height;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -90,14 +139,11 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     align-items: center;
     justify-content: center;
     padding: $space_xl;
+    overflow-y: auto;
     text-align: center;
   }
 
-  &_cover {
-    width: min(20rem, 60vw);
-  }
-
-  &_info {
+  &_heading {
     display: flex;
     flex-direction: column;
     gap: $space_xs;
@@ -109,8 +155,55 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     font-weight: 600;
   }
 
-  &_meta {
+  &_artist {
     color: var(--color_text_muted);
+    font-size: 1.125em;
+  }
+
+  &_cover {
+    width: min(20rem, 60vw);
+  }
+
+  &_details {
+    display: flex;
+    gap: $space_xl;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &_detail {
+    display: flex;
+    flex-direction: column;
+    gap: $space_xs;
+
+    &_label {
+      color: var(--color_text_muted);
+      font-size: 0.75em;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    &_value {
+      margin: 0;
+    }
+  }
+
+  &_error {
+    color: #c42b1c;
+  }
+
+  &_playback {
+    display: flex;
+    flex-direction: column;
+    gap: $space_md;
+    width: min(32rem, 100%);
+  }
+
+  &_transport {
+    display: flex;
+    gap: $space_lg;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>

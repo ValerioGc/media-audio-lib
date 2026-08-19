@@ -175,7 +175,21 @@
     "nowPlaying": "Now playing",
     "expand": "Expand the player",
     "collapse": "Collapse the player",
-    "close": "Close the player"
+    "close": "Close the player",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "previous": "Previous track",
+    "next": "Next track",
+    "progress": "Track progress",
+    "volume": "Volume",
+    "volumeValue": "Volume {value}%",
+    "errors": {
+      "missing": "The file of this track is no longer on disk.",
+      "unsupported": "This audio format cannot be played here.",
+      "shellUnavailable": "Playback is only available in the desktop application.",
+      "generic": "Playback failed."
+    }
   },
   "titlebar": {
     "minimize": "Minimise",
@@ -232,9 +246,11 @@
         "title": "Playing a track",
         "where": "double click a row or a card; the player appears at the bottom.",
         "steps": [
-          "Double click the track you want to hear.",
-          "The player shows up at the bottom with cover, title and artist.",
-          "The arrow expands it to full page; Esc or the down arrow returns to the bar.",
+          "Double click the track you want to hear: the list on screen becomes the play queue.",
+          "The player appears at the bottom of the window with cover, title and artist.",
+          "Use the controls to pause, stop or move to the previous and next track.",
+          "Drag the progress bar to move inside the track, and the one on the right for volume.",
+          "The arrow expands it to full page; Esc or the down arrow brings back the bar.",
           "The X closes the player."
         ]
       },

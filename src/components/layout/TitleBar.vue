@@ -94,7 +94,7 @@ const controls = computed<WindowControl[]>(() => [
   display: flex;
   flex-shrink: 0;
   align-items: stretch;
-  height: 2rem;
+  height: $titlebar_height;
   border-bottom: 1px solid var(--color_border);
   background-color: var(--color_surface);
   user-select: none;

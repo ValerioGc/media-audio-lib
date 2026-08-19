@@ -175,7 +175,21 @@
     "nowPlaying": "In riproduzione",
     "expand": "Espandi il player",
     "collapse": "Riduci il player",
-    "close": "Chiudi il player"
+    "close": "Chiudi il player",
+    "play": "Riproduci",
+    "pause": "Metti in pausa",
+    "stop": "Interrompi",
+    "previous": "Brano precedente",
+    "next": "Brano successivo",
+    "progress": "Avanzamento del brano",
+    "volume": "Volume",
+    "volumeValue": "Volume {value}%",
+    "errors": {
+      "missing": "Il file di questo brano non è più presente su disco.",
+      "unsupported": "Questo formato audio non è riproducibile qui.",
+      "shellUnavailable": "La riproduzione è disponibile solo nell'applicazione desktop.",
+      "generic": "Riproduzione non riuscita."
+    }
   },
   "titlebar": {
     "minimize": "Riduci a icona",
@@ -232,8 +246,10 @@
         "title": "Ascoltare un brano",
         "where": "doppio clic su una riga o su una scheda; il player compare in basso.",
         "steps": [
-          "Fai doppio clic sul brano da ascoltare.",
+          "Fai doppio clic sul brano da ascoltare: l'elenco che vedi diventa la coda di riproduzione.",
           "Il player appare in fondo alla finestra con copertina, titolo e autore.",
+          "Usa i comandi per mettere in pausa, interrompere o passare al brano precedente e successivo.",
+          "Trascina la barra di avanzamento per spostarti nel brano e quella a destra per il volume.",
           "Con la freccia lo espandi a tutta pagina; con Esc o la freccia in giù torni alla barra.",
           "La X chiude il player."
         ]

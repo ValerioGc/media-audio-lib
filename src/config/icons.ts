@@ -28,6 +28,7 @@ export const ICON_GLYPHS = {
   verify: '✓',
   check: '✔',
   export: '⤓',
+  import: '⤒',
 } as const;
 
 export type IconName = keyof typeof ICON_GLYPHS;

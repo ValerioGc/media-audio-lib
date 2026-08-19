@@ -66,6 +66,7 @@ pub fn run() {
             commands::catalog::switch_library,
             commands::catalog::delete_library,
             commands::catalog::export_library,
+            commands::catalog::import_library,
         ])
         .run(tauri::generate_context!())
         .expect("avvio dell'applicazione Tauri fallito");

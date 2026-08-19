@@ -15,8 +15,10 @@ import {
   createLibrary,
   deleteLibrary,
   exportLibrary,
+  importLibrary,
   listLibraries,
   pickExportFile,
+  pickImportFile,
   switchLibrary,
   coverDataUrl,
   getCover,
@@ -95,7 +97,11 @@ describe('comandi che richiedono la shell', () => {
     await expect(exportLibrary('lib-1', 'copia.json')).rejects.toBeInstanceOf(
       ShellUnavailableError,
     );
+    await expect(importLibrary('copia.json', 'merge')).rejects.toBeInstanceOf(
+      ShellUnavailableError,
+    );
     await expect(pickExportFile('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(pickImportFile()).rejects.toBeInstanceOf(ShellUnavailableError);
   });
 
   it('inoltra la modifica dei metadati', async () => {
@@ -239,6 +245,23 @@ describe('catalogo delle librerie', () => {
     });
   });
 
+  it('importa dal file scelto con la strategia selezionata', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue({ added: 1, updated: 0, skipped: 0, missing: [], total: 1 });
+
+    await expect(importLibrary('C:/backup/jazz.json', 'mergeSkipDuplicates')).resolves.toEqual({
+      added: 1,
+      updated: 0,
+      skipped: 0,
+      missing: [],
+      total: 1,
+    });
+    expect(mocks.invoke).toHaveBeenCalledWith('import_library', {
+      source: 'C:/backup/jazz.json',
+      strategy: 'mergeSkipDuplicates',
+    });
+  });
+
   it('propone un nome file e filtra il dialog sul JSON', async () => {
     withShell();
     mocks.save.mockResolvedValue('C:/backup/jazz.json');
@@ -248,5 +271,23 @@ describe('catalogo delle librerie', () => {
       defaultPath: 'Jazz.json',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     });
+  });
+
+  it('sceglie un file JSON da importare', async () => {
+    withShell();
+    mocks.open.mockResolvedValue('C:/backup/jazz.json');
+
+    await expect(pickImportFile()).resolves.toBe('C:/backup/jazz.json');
+    expect(mocks.open).toHaveBeenCalledWith({
+      multiple: false,
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    });
+  });
+
+  it('normalizza selezioni multiple inattese nel picker di import', async () => {
+    withShell();
+    mocks.open.mockResolvedValue(['C:/backup/jazz.json']);
+
+    await expect(pickImportFile()).resolves.toBe('C:/backup/jazz.json');
   });
 });

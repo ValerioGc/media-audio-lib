@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
+import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
 import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
@@ -62,6 +63,13 @@ const tabs = computed(() => [
             :description="t('settings.libraryName.description')"
           >
             <LibraryNameForm />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.importExport.title')"
+            :description="t('settings.importExport.description')"
+          >
+            <ImportExportPanel />
           </SettingsSection>
 
           <SettingsSection

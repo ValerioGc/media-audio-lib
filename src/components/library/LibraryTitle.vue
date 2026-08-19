@@ -29,6 +29,7 @@ const menuItems = computed<MenuItem[]>(() => [
     description: t('library.catalog.open', { name: entry.name }),
   })),
   { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit', divider: true },
+  { id: 'import', label: t('library.name.menu.import'), icon: 'import' },
   { id: 'export', label: t('library.name.menu.export'), icon: 'export' },
   {
     id: 'delete',
@@ -58,6 +59,11 @@ function run(id: string) {
 
   if (id === 'export' && library.activeLibraryId !== null) {
     void library.exportLibrary(library.activeLibraryId);
+    return;
+  }
+
+  if (id === 'import') {
+    void library.importLibrary('mergeSkipDuplicates');
     return;
   }
 

@@ -54,6 +54,24 @@
       "save": "Salva nome",
       "saving": "Salvataggio…"
     },
+    "importExport": {
+      "title": "Import / Export",
+      "description": "Salva una copia JSON della libreria o importa un file prodotto dall'app.",
+      "import": "Importa",
+      "importing": "Importazione…",
+      "export": "Esporta attiva",
+      "strategy": {
+        "label": "Strategia di import",
+        "options": {
+          "replace": "Sostituisci la libreria attiva",
+          "merge": "Unisci aggiornando i duplicati",
+          "mergeSkipDuplicates": "Unisci saltando i duplicati"
+        }
+      },
+      "report": {
+        "summary": "{total} brani letti: {added} aggiunti, {updated} aggiornati, {skipped} saltati, {missing} file mancanti."
+      }
+    },
     "libraries": {
       "title": "Librerie",
       "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, esportarle o eliminarle."
@@ -73,6 +91,7 @@
       "actions": "Opzioni della libreria",
       "menu": {
         "rename": "Rinomina",
+        "import": "Importa",
         "export": "Esporta",
         "delete": "Elimina libreria"
       }

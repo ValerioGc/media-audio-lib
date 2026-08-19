@@ -9,6 +9,8 @@ import {
   DEFAULT_SORT,
   type AddReport,
   type Cover,
+  type LibraryImportReport,
+  type LibraryImportStrategy,
   type MetadataUpdate,
   type SortableColumn,
   type LibrarySummary,
@@ -29,6 +31,7 @@ export const useLibraryStore = defineStore('library', () => {
   const libraryName = ref('');
   const libraries = ref<LibrarySummary[]>([]);
   const lastExport = ref<string | null>(null);
+  const lastLibraryImport = ref<LibraryImportReport | null>(null);
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
@@ -36,6 +39,7 @@ export const useLibraryStore = defineStore('library', () => {
   const editingId = ref<string | null>(null);
   const isLoading = ref(false);
   const isImporting = ref(false);
+  const isLibraryImporting = ref(false);
   const isRenaming = ref(false);
   const isSaving = ref(false);
   const lastReport = ref<AddReport | null>(null);
@@ -208,6 +212,35 @@ export const useLibraryStore = defineStore('library', () => {
 
   function dismissExport() {
     lastExport.value = null;
+  }
+
+  async function importLibrary(strategy: LibraryImportStrategy): Promise<boolean> {
+    isLibraryImporting.value = true;
+    errorKey.value = null;
+    lastLibraryImport.value = null;
+
+    try {
+      const source = await api.pickImportFile();
+
+      if (source === null) {
+        return false;
+      }
+
+      lastLibraryImport.value = await api.importLibrary(source, strategy);
+      await load();
+      await loadLibraries();
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    } finally {
+      isLibraryImporting.value = false;
+    }
+  }
+
+  function dismissLibraryImport() {
+    lastLibraryImport.value = null;
   }
 
   /** Imports the given files and refreshes the list, keeping the import report. */
@@ -396,11 +429,13 @@ export const useLibraryStore = defineStore('library', () => {
     editingId,
     isLoading,
     isImporting,
+    isLibraryImporting,
     isRenaming,
     isSaving,
     libraryName,
     libraries,
     lastExport,
+    lastLibraryImport,
     lastReport,
     errorKey,
     covers,
@@ -420,6 +455,8 @@ export const useLibraryStore = defineStore('library', () => {
     deleteLibrary,
     exportLibrary,
     dismissExport,
+    importLibrary,
+    dismissLibraryImport,
     addPaths,
     pickAndAdd,
     pickFoldersAndAdd,

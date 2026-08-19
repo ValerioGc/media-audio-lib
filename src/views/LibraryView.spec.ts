@@ -94,6 +94,17 @@ describe('LibraryView', () => {
     expect(store.lastReport).toBeNull();
   });
 
+  it('mostra e chiude l esito dell import libreria', async () => {
+    const { wrapper, store } = await mountView();
+    store.lastLibraryImport = { added: 2, updated: 1, skipped: 0, missing: [], total: 3 };
+    await flushPromises();
+
+    expect(wrapper.get('[role="status"]').text()).toContain('3 brani letti');
+
+    await wrapper.get('[role="status"] button').trigger('click');
+    expect(store.lastLibraryImport).toBeNull();
+  });
+
   it('chiede conferma prima di rimuovere un brano', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();

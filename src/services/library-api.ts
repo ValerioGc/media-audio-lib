@@ -5,6 +5,8 @@ import type {
   AddReport,
   Cover,
   LibraryInfo,
+  LibraryImportReport,
+  LibraryImportStrategy,
   LibrarySummary,
   MetadataUpdate,
   Track,
@@ -80,6 +82,15 @@ export async function exportLibrary(id: string, destination: string): Promise<st
   return invoke<string>('export_library', { id, destination });
 }
 
+export async function importLibrary(
+  source: string,
+  strategy: LibraryImportStrategy,
+): Promise<LibraryImportReport> {
+  requireShell();
+
+  return invoke<LibraryImportReport>('import_library', { source, strategy });
+}
+
 /** Opens the save dialog for an export, returning null when the user cancels. */
 export async function pickExportFile(defaultName: string): Promise<string | null> {
   requireShell();
@@ -90,6 +101,19 @@ export async function pickExportFile(defaultName: string): Promise<string | null
     defaultPath: `${defaultName}.json`,
     filters: [{ name: 'JSON', extensions: ['json'] }],
   });
+}
+
+/** Opens the file picker for an app library JSON, returning null when cancelled. */
+export async function pickImportFile(): Promise<string | null> {
+  requireShell();
+
+  const { open } = await import('@tauri-apps/plugin-dialog');
+  const selection = await open({
+    multiple: false,
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+  });
+
+  return Array.isArray(selection) ? (selection[0] ?? null) : selection;
 }
 
 export async function addTracks(paths: readonly string[]): Promise<AddReport> {

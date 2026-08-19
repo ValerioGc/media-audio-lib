@@ -123,6 +123,7 @@ describe('LibraryTitle', () => {
       'Principale',
       'Jazz',
       'Rinomina',
+      'Importa',
       'Esporta',
       'Elimina libreria',
     ]);
@@ -152,9 +153,19 @@ describe('LibraryTitle', () => {
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
+  });
+
+  it('importa nella libreria aperta dal menu', async () => {
+    const { wrapper, library } = mountTitle();
+    const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+
+    expect(importLibrary).toHaveBeenCalledWith('mergeSkipDuplicates');
   });
 
   it('chiede conferma prima di eliminare la libreria', async () => {
@@ -162,7 +173,7 @@ describe('LibraryTitle', () => {
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Principale');
     expect(deleteLibrary).not.toHaveBeenCalled();

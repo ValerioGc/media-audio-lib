@@ -75,6 +75,25 @@ pub struct AddReport {
     pub failed: Vec<FailedImport>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum LibraryImportStrategy {
+    Replace,
+    Merge,
+    MergeSkipDuplicates,
+}
+
+/// Outcome of importing another library file into the active one.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryImportReport {
+    pub added: usize,
+    pub updated: usize,
+    pub skipped: usize,
+    pub missing: Vec<String>,
+    pub total: usize,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
@@ -190,6 +209,50 @@ impl Library {
         let before = self.tracks.len();
         self.tracks.retain(|track| track.id != id);
         before != self.tracks.len()
+    }
+
+    pub fn import(
+        &mut self,
+        imported: Library,
+        strategy: LibraryImportStrategy,
+    ) -> LibraryImportReport {
+        let mut report = LibraryImportReport {
+            total: imported.tracks.len(),
+            missing: imported
+                .tracks
+                .iter()
+                .filter(|track| !Path::new(&track.path).is_file())
+                .map(|track| track.path.clone())
+                .collect(),
+            ..LibraryImportReport::default()
+        };
+
+        if strategy == LibraryImportStrategy::Replace {
+            report.added = imported.tracks.len();
+            self.name = imported.name;
+            self.tracks = imported.tracks;
+            return report;
+        }
+
+        for track in imported.tracks {
+            if let Some(existing) = self
+                .tracks
+                .iter_mut()
+                .find(|existing| existing.id == track.id)
+            {
+                if strategy == LibraryImportStrategy::MergeSkipDuplicates {
+                    report.skipped += 1;
+                } else {
+                    *existing = track;
+                    report.updated += 1;
+                }
+            } else {
+                self.tracks.push(track);
+                report.added += 1;
+            }
+        }
+
+        report
     }
 }
 
@@ -554,6 +617,73 @@ mod tests {
 
         assert!(!library.remove("zzz"));
         assert_eq!(library.len(), 1);
+    }
+
+    #[test]
+    fn importa_sostituendo_la_libreria_corrente() {
+        let mut library = Library::new();
+        library.rename("Vecchia").expect("nome valido");
+        library.add(sample_track("aaa"));
+        let mut imported = Library::new();
+        imported.rename("Nuova").expect("nome valido");
+        imported.add(sample_track("bbb"));
+
+        let report = library.import(imported, LibraryImportStrategy::Replace);
+
+        assert_eq!(library.name, "Nuova");
+        assert!(library.get("aaa").is_none());
+        assert!(library.get("bbb").is_some());
+        assert_eq!(report.added, 1);
+        assert_eq!(report.total, 1);
+    }
+
+    #[test]
+    fn importa_unendo_e_aggiornando_i_duplicati() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+        let mut imported = Library::new();
+        imported.add(Track {
+            title: "Aggiornato".to_owned(),
+            ..sample_track("aaa")
+        });
+        imported.add(sample_track("bbb"));
+
+        let report = library.import(imported, LibraryImportStrategy::Merge);
+
+        assert_eq!(library.len(), 2);
+        assert_eq!(library.get("aaa").expect("presente").title, "Aggiornato");
+        assert_eq!(report.updated, 1);
+        assert_eq!(report.added, 1);
+    }
+
+    #[test]
+    fn importa_unendo_e_saltando_i_duplicati() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+        let mut imported = Library::new();
+        imported.add(Track {
+            title: "Aggiornato".to_owned(),
+            ..sample_track("aaa")
+        });
+        imported.add(sample_track("bbb"));
+
+        let report = library.import(imported, LibraryImportStrategy::MergeSkipDuplicates);
+
+        assert_eq!(library.len(), 2);
+        assert_eq!(library.get("aaa").expect("presente").title, "Titolo");
+        assert_eq!(report.skipped, 1);
+        assert_eq!(report.added, 1);
+    }
+
+    #[test]
+    fn l_import_segnala_i_file_mancanti_su_disco() {
+        let mut library = Library::new();
+        let mut imported = Library::new();
+        imported.add(sample_track("aaa"));
+
+        let report = library.import(imported, LibraryImportStrategy::Merge);
+
+        assert_eq!(report.missing, vec!["C:/musica/aaa.mp3"]);
     }
 
     #[test]

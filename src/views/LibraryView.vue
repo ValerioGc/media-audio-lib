@@ -68,6 +68,21 @@ async function confirmRemoval() {
       </AppButton>
     </p>
 
+    <p v-if="library.lastLibraryImport !== null" class="library_view_notice" role="status">
+      {{
+        t('settings.importExport.report.summary', {
+          total: library.lastLibraryImport.total,
+          added: library.lastLibraryImport.added,
+          updated: library.lastLibraryImport.updated,
+          skipped: library.lastLibraryImport.skipped,
+          missing: library.lastLibraryImport.missing.length,
+        })
+      }}
+      <AppButton variant="ghost" @click="library.dismissLibraryImport()">
+        {{ t('library.report.dismiss') }}
+      </AppButton>
+    </p>
+
     <LibraryImportReport
       v-if="library.lastReport !== null"
       :report="library.lastReport"

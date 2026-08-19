@@ -50,8 +50,10 @@ describe('SettingsView', () => {
 
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
       'Nome della libreria',
+      'Import / Export',
       'Librerie',
     ]);
+    expect(wrapper.find('.import_export_panel').exists()).toBe(true);
     expect(wrapper.find('.library_list').exists()).toBe(true);
   });
 

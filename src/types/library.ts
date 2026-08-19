@@ -41,6 +41,16 @@ export interface LibrarySummary {
   active: boolean;
 }
 
+export type LibraryImportStrategy = 'replace' | 'merge' | 'mergeSkipDuplicates';
+
+export interface LibraryImportReport {
+  added: number;
+  updated: number;
+  skipped: number;
+  missing: string[];
+  total: number;
+}
+
 export interface Cover {
   mimeType: string;
   data: string;

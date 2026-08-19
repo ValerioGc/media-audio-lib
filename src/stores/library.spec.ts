@@ -21,7 +21,9 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     switchLibrary: vi.fn(),
     deleteLibrary: vi.fn(),
     exportLibrary: vi.fn(),
+    importLibrary: vi.fn(),
     pickExportFile: vi.fn(),
+    pickImportFile: vi.fn(),
     listTracks: vi.fn(),
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
@@ -40,7 +42,9 @@ const createLibrary = vi.mocked(api.createLibrary);
 const switchLibrary = vi.mocked(api.switchLibrary);
 const deleteLibrary = vi.mocked(api.deleteLibrary);
 const exportLibrary = vi.mocked(api.exportLibrary);
+const importLibrary = vi.mocked(api.importLibrary);
 const pickExportFile = vi.mocked(api.pickExportFile);
+const pickImportFile = vi.mocked(api.pickImportFile);
 const listTracks = vi.mocked(api.listTracks);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
@@ -63,6 +67,8 @@ beforeEach(() => {
   getCover.mockResolvedValue(null);
   pickAudioFiles.mockResolvedValue([]);
   listLibraries.mockResolvedValue([]);
+  importLibrary.mockResolvedValue({ added: 0, updated: 0, skipped: 0, missing: [], total: 0 });
+  pickImportFile.mockResolvedValue(null);
 });
 
 const catalogo = [
@@ -573,6 +579,51 @@ describe('useLibraryStore - piu librerie', () => {
 
     expect(exportLibrary).not.toHaveBeenCalled();
     expect(store.lastExport).toBeNull();
+  });
+
+  it('importa una libreria JSON e ricarica stato ed elenco', async () => {
+    const imported = { added: 2, updated: 1, skipped: 0, missing: ['C:/missing.mp3'], total: 3 };
+    pickImportFile.mockResolvedValue('C:/backup/jazz.json');
+    importLibrary.mockResolvedValue(imported);
+    libraryInfo.mockResolvedValue({ name: 'Importata' });
+    listTracks.mockResolvedValue([makeTrack()]);
+    listLibraries.mockResolvedValue(catalogo);
+    const store = useLibraryStore();
+
+    await expect(store.importLibrary('merge')).resolves.toBe(true);
+
+    expect(pickImportFile).toHaveBeenCalledTimes(1);
+    expect(importLibrary).toHaveBeenCalledWith('C:/backup/jazz.json', 'merge');
+    expect(store.lastLibraryImport).toEqual(imported);
+    expect(store.libraryName).toBe('Importata');
+    expect(store.tracks).toHaveLength(1);
+    expect(store.libraries).toEqual(catalogo);
+
+    store.dismissLibraryImport();
+    expect(store.lastLibraryImport).toBeNull();
+  });
+
+  it('annullando la scelta del file non importa nulla', async () => {
+    pickImportFile.mockResolvedValue(null);
+    const store = useLibraryStore();
+
+    await expect(store.importLibrary('replace')).resolves.toBe(false);
+
+    expect(importLibrary).not.toHaveBeenCalled();
+    expect(store.lastLibraryImport).toBeNull();
+    expect(store.isLibraryImporting).toBe(false);
+  });
+
+  it('riporta l errore se l import della libreria fallisce', async () => {
+    pickImportFile.mockResolvedValue('C:/backup/rotto.json');
+    importLibrary.mockRejectedValue(new Error('rotto'));
+    const store = useLibraryStore();
+
+    await expect(store.importLibrary('mergeSkipDuplicates')).resolves.toBe(false);
+
+    expect(store.errorKey).toBe('generic');
+    expect(store.lastLibraryImport).toBeNull();
+    expect(store.isLibraryImporting).toBe(false);
   });
 
   it('riporta l errore quando il catalogo non risponde', async () => {

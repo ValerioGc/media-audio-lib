@@ -54,6 +54,24 @@
       "save": "Save name",
       "saving": "Saving…"
     },
+    "importExport": {
+      "title": "Import / Export",
+      "description": "Save a JSON copy of the library or import a file produced by the app.",
+      "import": "Import",
+      "importing": "Importing…",
+      "export": "Export active",
+      "strategy": {
+        "label": "Import strategy",
+        "options": {
+          "replace": "Replace the active library",
+          "merge": "Merge and update duplicates",
+          "mergeSkipDuplicates": "Merge and skip duplicates"
+        }
+      },
+      "report": {
+        "summary": "{total} tracks read: {added} added, {updated} updated, {skipped} skipped, {missing} missing files."
+      }
+    },
     "libraries": {
       "title": "Libraries",
       "description": "Each library has its own track list. You can create more, open, export or delete them."
@@ -73,6 +91,7 @@
       "actions": "Library options",
       "menu": {
         "rename": "Rename",
+        "import": "Import",
         "export": "Export",
         "delete": "Delete library"
       }

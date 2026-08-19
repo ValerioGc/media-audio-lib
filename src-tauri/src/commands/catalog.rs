@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::catalog::{self, Catalog, CatalogState};
 use crate::commands::library::LibraryInfo;
 use crate::error::{AppError, AppResult};
-use crate::library::Library;
+use crate::library::{Library, LibraryImportReport, LibraryImportStrategy};
 use crate::state::LibraryState;
 
 /// One library as shown in the settings list.
@@ -155,6 +155,26 @@ pub fn export(
     Ok(destination.to_string_lossy().into_owned())
 }
 
+/// Imports a library JSON into the active library using the selected merge strategy.
+pub fn import(
+    state: &LibraryState,
+    source: &str,
+    strategy: LibraryImportStrategy,
+) -> AppResult<LibraryImportReport> {
+    if source.trim().is_empty() {
+        return Err(AppError::Validation(
+            "percorso di import mancante".to_owned(),
+        ));
+    }
+
+    let (mut imported, stored_version) = Library::load_with_version(&PathBuf::from(source))?;
+    if stored_version < crate::library::SCHEMA_VERSION {
+        crate::library::refresh_metadata(&mut imported);
+    }
+
+    state.update(|library| library.import(imported, strategy))
+}
+
 /// Lists the libraries the user can switch between.
 #[tauri::command]
 pub fn list_libraries(
@@ -199,6 +219,16 @@ pub fn export_library(
     destination: String,
 ) -> AppResult<String> {
     export(&catalog, &state, &id, &destination)
+}
+
+/// Imports a library file into the active library.
+#[tauri::command]
+pub fn import_library(
+    state: State<'_, LibraryState>,
+    source: String,
+    strategy: LibraryImportStrategy,
+) -> AppResult<LibraryImportReport> {
+    import(&state, &source, strategy)
 }
 
 #[cfg(test)]
@@ -389,6 +419,53 @@ mod tests {
             .clone();
 
         let error = export(&setup.catalog, &setup.state, &attiva, "  ").expect_err("destinazione");
+
+        assert!(matches!(error, AppError::Validation(_)));
+    }
+
+    #[test]
+    fn importa_una_libreria_nella_libreria_attiva() {
+        let setup = setup();
+        let source = setup._directory.path().join("importata.json");
+        let mut imported = Library::new();
+        imported.rename("Importata").expect("nome valido");
+        imported.add(crate::library::Track {
+            id: "aaa".to_owned(),
+            path: "C:/musica/aaa.mp3".to_owned(),
+            title: "Brano".to_owned(),
+            artist: None,
+            album: None,
+            year: None,
+            genre: None,
+            duration_ms: 1,
+            format: "mp3".to_owned(),
+            has_cover: false,
+            added_at: 1,
+        });
+        imported.save(&source).expect("fixture salvata");
+
+        let report = import(
+            &setup.state,
+            &source.to_string_lossy(),
+            LibraryImportStrategy::Replace,
+        )
+        .expect("import riuscito");
+
+        assert_eq!(report.added, 1);
+        assert_eq!(
+            setup
+                .state
+                .read(|library| library.name.clone())
+                .expect("lettura"),
+            "Importata"
+        );
+    }
+
+    #[test]
+    fn rifiuta_un_import_senza_sorgente() {
+        let setup = setup();
+
+        let error = import(&setup.state, "  ", LibraryImportStrategy::Merge).expect_err("sorgente");
 
         assert!(matches!(error, AppError::Validation(_)));
     }

@@ -7,7 +7,9 @@ pub mod playback;
 
 use serde::{Deserialize, Serialize};
 
-pub use catalog::{create_library, delete_library, export_library, list_libraries, switch_library};
+pub use catalog::{
+    create_library, delete_library, export_library, import_library, list_libraries, switch_library,
+};
 pub use library::{
     add_tracks, library_info, list_tracks, remove_track, rename_library, verify_track_file,
 };

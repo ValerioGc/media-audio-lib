@@ -11,6 +11,7 @@ import {
   type Cover,
   type MetadataUpdate,
   type SortableColumn,
+  type LibrarySummary,
   type SortState,
   type Track,
   type TrackView,
@@ -26,6 +27,8 @@ function errorKeyOf(error: unknown): Exclude<LibraryErrorKey, null> {
 export const useLibraryStore = defineStore('library', () => {
   const verification = useTrackFileVerification();
   const libraryName = ref('');
+  const libraries = ref<LibrarySummary[]>([]);
+  const lastExport = ref<string | null>(null);
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
@@ -44,6 +47,11 @@ export const useLibraryStore = defineStore('library', () => {
     () => tracks.value.find((track) => track.id === editingId.value) ?? null,
   );
   const isEmpty = computed(() => tracks.value.length === 0);
+  const activeLibraryId = computed(
+    () => libraries.value.find((library) => library.active)?.id ?? null,
+  );
+  /** The catalog always keeps one library: below two, deleting is not an option. */
+  const canDeleteLibrary = computed(() => libraries.value.length > 1);
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
 
@@ -90,6 +98,7 @@ export const useLibraryStore = defineStore('library', () => {
     try {
       const info = await api.renameLibrary(cleaned);
       libraryName.value = info.name;
+      await loadLibraries();
       return true;
     } catch (error) {
       fail(error);
@@ -97,6 +106,108 @@ export const useLibraryStore = defineStore('library', () => {
     } finally {
       isRenaming.value = false;
     }
+  }
+
+  async function loadLibraries() {
+    try {
+      libraries.value = await api.listLibraries();
+    } catch (error) {
+      fail(error);
+    }
+  }
+
+  async function createLibrary(name: string): Promise<boolean> {
+    const cleaned = name.trim();
+
+    if (cleaned.length === 0) {
+      errorKey.value = 'invalidLibraryName';
+      return false;
+    }
+
+    errorKey.value = null;
+
+    try {
+      await api.createLibrary(cleaned);
+      await loadLibraries();
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    }
+  }
+
+  /** Opens another library: name, tracks and covers all belong to the new one. */
+  async function switchLibrary(id: string): Promise<boolean> {
+    if (id === activeLibraryId.value) {
+      return true;
+    }
+
+    errorKey.value = null;
+
+    try {
+      await api.switchLibrary(id);
+      selectedId.value = null;
+      editingId.value = null;
+      lastReport.value = null;
+      covers.value = new Map();
+      await load();
+      await loadLibraries();
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    }
+  }
+
+  /** Deletes a library; when it was the open one the backend opens another. */
+  async function deleteLibrary(id: string): Promise<boolean> {
+    errorKey.value = null;
+
+    try {
+      const wasActive = id === activeLibraryId.value;
+      libraries.value = await api.deleteLibrary(id);
+
+      if (wasActive) {
+        covers.value = new Map();
+        selectedId.value = null;
+        editingId.value = null;
+        await load();
+      }
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    }
+  }
+
+  /** Asks where to save and writes the copy; returns false when the user cancels. */
+  async function exportLibrary(id: string): Promise<boolean> {
+    errorKey.value = null;
+    lastExport.value = null;
+
+    const name = libraries.value.find((library) => library.id === id)?.name ?? libraryName.value;
+
+    try {
+      const destination = await api.pickExportFile(name);
+
+      if (destination === null) {
+        return false;
+      }
+
+      lastExport.value = await api.exportLibrary(id, destination);
+
+      return true;
+    } catch (error) {
+      fail(error);
+      return false;
+    }
+  }
+
+  function dismissExport() {
+    lastExport.value = null;
   }
 
   /** Imports the given files and refreshes the list, keeping the import report. */
@@ -288,17 +399,27 @@ export const useLibraryStore = defineStore('library', () => {
     isRenaming,
     isSaving,
     libraryName,
+    libraries,
+    lastExport,
     lastReport,
     errorKey,
     covers,
     visibleTracks,
     editingTrack,
     isEmpty,
+    activeLibraryId,
+    canDeleteLibrary,
     hasNoMatches,
     missingCount,
     loadInfo,
     load,
     renameLibrary,
+    loadLibraries,
+    createLibrary,
+    switchLibrary,
+    deleteLibrary,
+    exportLibrary,
+    dismissExport,
     addPaths,
     pickAndAdd,
     pickFoldersAndAdd,

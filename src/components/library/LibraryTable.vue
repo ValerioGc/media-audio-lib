@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
+import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
+import { useSettingsStore } from '@/stores/settings';
 import {
   SORTABLE_COLUMNS,
   type SortState,
@@ -27,16 +29,25 @@ const emit = defineEmits<{
   verify: [track: TrackView];
 }>();
 
-const ROW_HEIGHT = 56;
-
 const { t } = useI18n();
+const settings = useSettingsStore();
 
 const viewport = ref<HTMLElement | null>(null);
 const trackCount = computed(() => props.tracks.length);
+const rowHeight = ref(remToPixels(LIBRARY_ROW_HEIGHT_REM));
 const { range, onScroll, measure } = useVirtualList({
   itemCount: trackCount,
-  itemHeight: ROW_HEIGHT,
+  itemHeight: rowHeight,
 });
+
+// Rows grow with the text size: the windowing maths needs the new height in pixels.
+watch(
+  () => settings.textSize,
+  () => {
+    rowHeight.value = remToPixels(LIBRARY_ROW_HEIGHT_REM);
+    measure(viewport.value);
+  },
+);
 
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
 
@@ -116,7 +127,7 @@ onMounted(() => measure(viewport.value));
 
 <style scoped lang="scss">
 .library_table {
-  --library_row_height: 56px;
+  --library_row_height: #{$library_row_height};
   --library_grid_columns: 2.5rem minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.5fr) 4rem
     minmax(0, 1fr) 4.5rem 5.5rem;
 
@@ -125,9 +136,7 @@ onMounted(() => measure(viewport.value));
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--color_border);
-  border-radius: $radius_lg;
-  background-color: var(--color_surface);
+  @include surface_panel($radius_lg);
 
   &_head {
     display: grid;
@@ -135,6 +144,10 @@ onMounted(() => measure(viewport.value));
     gap: $space_md;
     align-items: center;
     padding: $space_sm $space_md;
+
+    // The body reserves the scrollbar gutter: without the same room here the columns of
+    // the header no longer line up with the ones of the rows.
+    padding-right: calc(#{$space_md} + #{$scrollbar_size});
     border-bottom: 1px solid var(--color_border_strong);
     background-color: var(--color_surface_alt);
     font-size: 0.875em;
@@ -178,7 +191,8 @@ onMounted(() => measure(viewport.value));
   &_viewport {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
+
+    @include scroll_area;
   }
 
   &_spacer {

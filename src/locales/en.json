@@ -53,6 +53,10 @@
       "save": "Save name",
       "saving": "Saving…"
     },
+    "libraries": {
+      "title": "Libraries",
+      "description": "Each library has its own track list. You can create more, open, export or delete them."
+    },
     "footer": {
       "version": "version {version}",
       "repository": "Project on GitHub"
@@ -71,6 +75,26 @@
         "rename": "Rename",
         "export": "Export",
         "delete": "Delete library"
+      }
+    },
+    "catalog": {
+      "active": "in use",
+      "trackCount": "no tracks | 1 track | {count} tracks",
+      "open": "Open the {name} library",
+      "openShort": "Open",
+      "export": "Export the {name} library",
+      "remove": "Delete the {name} library",
+      "exported": "Library exported to {path}",
+      "create": {
+        "label": "New library",
+        "placeholder": "Name of the new library",
+        "submit": "Create"
+      },
+      "delete": {
+        "title": "Delete the library?",
+        "message": "The \"{name}\" library and its {count} tracks are removed from the list. The audio files stay on disk.",
+        "cancel": "Cancel",
+        "confirm": "Delete library"
       }
     },
     "toolbar": {
@@ -252,6 +276,17 @@
           "Drag the progress bar to move inside the track, and the one on the right for volume.",
           "The arrow expands it to full page; Esc or the down arrow brings back the bar.",
           "The X closes the player."
+        ]
+      },
+      "libraries": {
+        "title": "Using several libraries",
+        "where": "menu next to the library name on the homepage, and the Library tab in settings.",
+        "steps": [
+          "In settings, Library tab, type a name and press Create to add a library.",
+          "From the menu next to the name on the homepage pick which library to open: the tick marks the one in use.",
+          "Export saves a copy of the library to a JSON file you choose.",
+          "Delete library removes it from the list; the audio files stay on disk.",
+          "The last library cannot be deleted: one is always open."
         ]
       },
       "settings": {

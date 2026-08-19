@@ -25,9 +25,8 @@ const { t } = useI18n();
   display: flex;
   flex-direction: column;
   gap: $space_lg;
-  width: 100%;
-  max-width: 46rem;
-  margin: 0 auto;
+
+  @include page_column;
 
   &_header {
     display: flex;

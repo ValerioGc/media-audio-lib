@@ -63,9 +63,7 @@ const { t } = useI18n();
   flex-direction: column;
   gap: $space_sm;
   padding: $space_sm;
-  border: 1px solid var(--color_border);
-  border-radius: $radius_lg;
-  background-color: var(--color_surface);
+  @include surface_panel($radius_lg);
   cursor: pointer;
   transition:
     background-color $duration_fast ease,
@@ -89,7 +87,7 @@ const { t } = useI18n();
   &_body {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
+    gap: $space_2xs;
     min-width: 0;
   }
 

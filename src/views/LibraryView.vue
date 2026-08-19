@@ -61,6 +61,13 @@ async function confirmRemoval() {
       {{ t(`library.errors.${library.errorKey}`) }}
     </p>
 
+    <p v-if="library.lastExport !== null" class="library_view_notice" role="status">
+      {{ t('library.catalog.exported', { path: library.lastExport }) }}
+      <AppButton variant="ghost" @click="library.dismissExport()">
+        {{ t('library.report.dismiss') }}
+      </AppButton>
+    </p>
+
     <LibraryImportReport
       v-if="library.lastReport !== null"
       :report="library.lastReport"
@@ -133,12 +140,25 @@ async function confirmRemoval() {
     gap: $space_md;
   }
 
+  &_notice {
+    display: flex;
+    gap: $space_sm;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space_sm $space_md;
+    font-size: 0.875em;
+
+    @include surface_panel($radius_md, var(--color_surface_alt));
+    overflow-wrap: anywhere;
+  }
+
   &_error {
     padding: $space_sm $space_md;
-    border: 1px solid var(--color_border_strong);
-    border-radius: $radius_md;
-    background-color: var(--color_surface_alt);
     color: var(--color_text);
+
+    @include surface_panel($radius_md, var(--color_surface_alt));
+
+    border-color: var(--color_border_strong);
   }
 }
 </style>

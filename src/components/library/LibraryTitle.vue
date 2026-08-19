@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
+import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
 import { useLibraryStore } from '@/stores/library';
+import type { LibrarySummary } from '@/types/library';
 import type { MenuItem } from '@/types/menu';
 
 const { t } = useI18n();
@@ -16,18 +18,59 @@ const field = ref<HTMLInputElement | null>(null);
 
 const displayName = computed(() => library.libraryName || t('library.title'));
 
-/** Library wide actions: declared here, each one is enabled with the feature behind it. */
+const pendingDeletion = ref<LibrarySummary | null>(null);
+
+/** The libraries to switch between, then the actions on the open one. */
 const menuItems = computed<MenuItem[]>(() => [
-  { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit', disabled: true },
-  { id: 'export', label: t('library.name.menu.export'), icon: 'export', disabled: true },
+  ...library.libraries.map((entry) => ({
+    id: `open:${entry.id}`,
+    label: entry.name,
+    checked: entry.active,
+    description: t('library.catalog.open', { name: entry.name }),
+  })),
+  { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit', divider: true },
+  { id: 'export', label: t('library.name.menu.export'), icon: 'export' },
   {
     id: 'delete',
     label: t('library.name.menu.delete'),
     icon: 'remove',
-    disabled: true,
     danger: true,
+    disabled: !library.canDeleteLibrary,
   },
 ]);
+
+onMounted(() => {
+  void library.loadLibraries();
+});
+
+function run(id: string) {
+  const opened = id.startsWith('open:') ? id.slice('open:'.length) : null;
+
+  if (opened !== null) {
+    void library.switchLibrary(opened);
+    return;
+  }
+
+  if (id === 'rename') {
+    void startEditing();
+    return;
+  }
+
+  if (id === 'export' && library.activeLibraryId !== null) {
+    void library.exportLibrary(library.activeLibraryId);
+    return;
+  }
+
+  if (id === 'delete') {
+    pendingDeletion.value =
+      library.libraries.find((entry) => entry.id === library.activeLibraryId) ?? null;
+  }
+}
+
+async function confirmDeletion(id: string) {
+  pendingDeletion.value = null;
+  await library.deleteLibrary(id);
+}
 
 async function startEditing() {
   draft.value = library.libraryName;
@@ -95,7 +138,13 @@ async function submit() {
       </button>
     </template>
 
-    <AppMenu :items="menuItems" :label="t('library.name.actions')" />
+    <AppMenu :items="menuItems" :label="t('library.name.actions')" @select="run" />
+
+    <LibraryDeleteDialog
+      :library="pendingDeletion"
+      @confirm="confirmDeletion"
+      @cancel="pendingDeletion = null"
+    />
   </div>
 </template>
 

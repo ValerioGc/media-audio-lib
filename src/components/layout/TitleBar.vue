@@ -105,7 +105,7 @@ const controls = computed<WindowControl[]>(() => [
     gap: $space_sm;
     align-items: center;
     min-width: 0;
-    padding: 0 $space_md;
+    padding: 0 $page_gutter;
   }
 
   &_mark {

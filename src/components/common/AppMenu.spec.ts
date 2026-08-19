@@ -87,6 +87,30 @@ describe('AppMenu', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
+  it('segna la voce scelta di un gruppo di opzioni', async () => {
+    const wrapper = mount(AppMenu, {
+      ...withPinia(),
+      props: {
+        items: [
+          { id: 'lib-1', label: 'Principale', checked: true },
+          { id: 'lib-2', label: 'Jazz', checked: false },
+          { id: 'delete', label: 'Elimina', divider: true, danger: true },
+        ],
+        label: 'Opzioni',
+      },
+      attachTo: document.body,
+    });
+    wrappers.push(wrapper);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    const voci = wrapper.findAll('.app_menu_item');
+
+    expect(voci[0]?.attributes('role')).toBe('menuitemradio');
+    expect(voci[0]?.attributes('aria-checked')).toBe('true');
+    expect(voci[2]?.attributes('role')).toBe('menuitem');
+    expect(wrapper.findAll('.app_menu_divider')).toHaveLength(1);
+  });
+
   it('apre il menu con la freccia giu', async () => {
     const wrapper = mountMenu();
 

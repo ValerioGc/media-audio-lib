@@ -6,16 +6,21 @@ use std::sync::{Mutex, MutexGuard};
 use crate::error::{AppError, AppResult};
 use crate::library::Library;
 
-pub struct LibraryState {
+/// The library in memory together with the file it belongs to: switching library swaps
+/// both at once, so a save can never land in the file of another library.
+struct Active {
     file: PathBuf,
-    library: Mutex<Library>,
+    library: Library,
+}
+
+pub struct LibraryState {
+    active: Mutex<Active>,
 }
 
 impl LibraryState {
     pub fn new(file: PathBuf, library: Library) -> Self {
         Self {
-            file,
-            library: Mutex::new(library),
+            active: Mutex::new(Active { file, library }),
         }
     }
 
@@ -24,50 +29,76 @@ impl LibraryState {
     /// Entries saved with an older schema are missing the fields added since, so their
     /// tags are re-read from disk once and the file is rewritten.
     pub fn from_file(file: PathBuf) -> Self {
-        let (library, stored_version) = Library::load_with_version(&file).unwrap_or_else(|error| {
-            eprintln!("libreria non caricata ({error}), si riparte da una vuota");
-            (Library::new(), crate::library::SCHEMA_VERSION)
-        });
-
+        let (library, stored_version) = load_or_empty(&file);
         let state = Self::new(file, library);
-
-        if stored_version < crate::library::SCHEMA_VERSION {
-            match state.update(crate::library::refresh_metadata) {
-                Ok(refreshed) => {
-                    eprintln!(
-                        "libreria migrata a v{}: {refreshed} brani riletti dai file",
-                        crate::library::SCHEMA_VERSION
-                    );
-                }
-                Err(error) => eprintln!("migrazione della libreria non riuscita: {error}"),
-            }
-        }
+        state.migrate_if_needed(stored_version);
 
         state
     }
 
-    pub fn file(&self) -> &Path {
-        &self.file
+    pub fn file(&self) -> AppResult<PathBuf> {
+        Ok(self.lock()?.file.clone())
     }
 
-    fn lock(&self) -> AppResult<MutexGuard<'_, Library>> {
-        self.library
+    fn lock(&self) -> AppResult<MutexGuard<'_, Active>> {
+        self.active
             .lock()
             .map_err(|error| AppError::State(error.to_string()))
     }
 
     pub fn read<T>(&self, action: impl FnOnce(&Library) -> T) -> AppResult<T> {
-        Ok(action(&*self.lock()?))
+        Ok(action(&self.lock()?.library))
     }
 
     /// Applies a change and writes the library back to disk before returning.
     pub fn update<T>(&self, action: impl FnOnce(&mut Library) -> T) -> AppResult<T> {
-        let mut library = self.lock()?;
-        let outcome = action(&mut library);
-        library.save(&self.file)?;
+        let mut active = self.lock()?;
+        let outcome = action(&mut active.library);
+        active.library.save(&active.file)?;
 
         Ok(outcome)
     }
+
+    /// Loads another library file and makes it the current one.
+    ///
+    /// The library left behind needs no flush: every change is already written when it
+    /// happens.
+    pub fn switch_to(&self, file: PathBuf) -> AppResult<()> {
+        let (library, stored_version) = load_or_empty(&file);
+
+        {
+            let mut active = self.lock()?;
+            active.file = file;
+            active.library = library;
+        }
+
+        self.migrate_if_needed(stored_version);
+
+        Ok(())
+    }
+
+    fn migrate_if_needed(&self, stored_version: u32) {
+        if stored_version >= crate::library::SCHEMA_VERSION {
+            return;
+        }
+
+        match self.update(crate::library::refresh_metadata) {
+            Ok(refreshed) => {
+                eprintln!(
+                    "libreria migrata a v{}: {refreshed} brani riletti dai file",
+                    crate::library::SCHEMA_VERSION
+                );
+            }
+            Err(error) => eprintln!("migrazione della libreria non riuscita: {error}"),
+        }
+    }
+}
+
+fn load_or_empty(file: &Path) -> (Library, u32) {
+    Library::load_with_version(file).unwrap_or_else(|error| {
+        eprintln!("libreria non caricata ({error}), si riparte da una vuota");
+        (Library::new(), crate::library::SCHEMA_VERSION)
+    })
 }
 
 #[cfg(test)]
@@ -208,6 +239,6 @@ mod tests {
         let file = dir.path().join("library.json");
         let state = LibraryState::new(file.clone(), Library::new());
 
-        assert_eq!(state.file(), file);
+        assert_eq!(state.file().expect("percorso letto"), file);
     }
 }

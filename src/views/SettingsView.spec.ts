@@ -42,6 +42,18 @@ describe('SettingsView', () => {
     expect(wrapper.find('.library_name_form').exists()).toBe(true);
   });
 
+  it('mostra l elenco delle librerie nella tab libreria', async () => {
+    const wrapper = mount(SettingsView, withPinia());
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+
+    expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
+      'Nome della libreria',
+      'Librerie',
+    ]);
+    expect(wrapper.find('.library_list').exists()).toBe(true);
+  });
+
   it('mostra nome, versione e collegamento al progetto in fondo', () => {
     const wrapper = mount(SettingsView, withPinia());
 

@@ -66,10 +66,9 @@ watch(
     flex-direction: column;
     gap: $space_md;
     width: min(28rem, 100%);
+    max-height: 100%;
     padding: $space_lg;
-    border: 1px solid var(--color_border);
-    border-radius: $radius_lg;
-    background-color: var(--color_surface);
+    @include surface_panel($radius_lg);
     box-shadow: var(--shadow_raised);
   }
 
@@ -79,7 +78,10 @@ watch(
   }
 
   &_body {
+    min-height: 0;
     color: var(--color_text_muted);
+
+    @include scroll_area;
   }
 
   &_actions {

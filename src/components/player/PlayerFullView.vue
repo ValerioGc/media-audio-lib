@@ -121,7 +121,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     gap: $space_md;
     align-items: center;
     justify-content: space-between;
-    padding: $space_sm $space_lg;
+    padding: $space_sm $page_gutter;
     border-bottom: 1px solid var(--color_border);
     background-color: var(--color_surface);
   }
@@ -138,9 +138,10 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     gap: $space_lg;
     align-items: center;
     justify-content: center;
-    padding: $space_xl;
-    overflow-y: auto;
+    padding: $page_gutter;
     text-align: center;
+
+    @include scroll_area(stable both-edges);
   }
 
   &_heading {
@@ -166,7 +167,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 
   &_details {
     display: flex;
-    gap: $space_xl;
+    gap: $space_lg;
     flex-wrap: wrap;
     justify-content: center;
   }

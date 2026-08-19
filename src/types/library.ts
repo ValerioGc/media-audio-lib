@@ -33,6 +33,14 @@ export interface LibraryInfo {
   name: string;
 }
 
+/** One library of the catalog, as listed in the settings and in the homepage menu. */
+export interface LibrarySummary {
+  id: string;
+  name: string;
+  trackCount: number;
+  active: boolean;
+}
+
 export interface Cover {
   mimeType: string;
   data: string;

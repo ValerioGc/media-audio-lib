@@ -16,9 +16,18 @@ afterEach(() => {
   wrappers.splice(0).forEach((wrapper) => wrapper.unmount());
 });
 
-function mountTitle() {
+const catalogo = [
+  { id: 'lib-1', name: 'Principale', trackCount: 2, active: true },
+  { id: 'lib-2', name: 'Jazz', trackCount: 5, active: false },
+];
+
+function mountTitle(libraries = catalogo) {
   const options = withPinia();
   const library = useLibraryStore();
+  // The list normally arrives from the backend on mount.
+  vi.spyOn(library, 'loadLibraries').mockResolvedValue();
+  library.libraries = libraries;
+
   const wrapper = mount(LibraryTitle, { ...options, attachTo: document.body });
   wrappers.push(wrapper);
 
@@ -94,19 +103,73 @@ describe('LibraryTitle', () => {
     expect(rename).not.toHaveBeenCalled();
   });
 
-  it('elenca le opzioni della libreria ancora non disponibili', async () => {
+  it('elenca le librerie e poi le azioni sulla libreria aperta', async () => {
     const { wrapper } = mountTitle();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
     const voci = wrapper.findAll('.app_menu_item');
 
     expect(voci.map((voce) => voce.get('.app_menu_item_label').text())).toEqual([
+      'Principale',
+      'Jazz',
       'Rinomina',
       'Esporta',
       'Elimina libreria',
     ]);
-    voci.forEach((voce) => {
-      expect(voce.attributes('disabled')).toBeDefined();
-    });
+    expect(voci[0]?.attributes('aria-checked')).toBe('true');
+    expect(voci[1]?.attributes('aria-checked')).toBe('false');
+  });
+
+  it('apre la libreria scelta dal menu', async () => {
+    const { wrapper, library } = mountTitle();
+    const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
+
+    expect(switchLibrary).toHaveBeenCalledWith('lib-2');
+  });
+
+  it('rinomina dal menu apre lo stesso campo della penna', async () => {
+    const { wrapper } = mountTitle();
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
+
+    expect(wrapper.find('[data-testid="library-name-field"]').exists()).toBe(true);
+  });
+
+  it('esporta la libreria aperta', async () => {
+    const { wrapper, library } = mountTitle();
+    const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+
+    expect(exportLibrary).toHaveBeenCalledWith('lib-1');
+  });
+
+  it('chiede conferma prima di eliminare la libreria', async () => {
+    const { wrapper, library } = mountTitle();
+    const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Principale');
+    expect(deleteLibrary).not.toHaveBeenCalled();
+
+    await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
+
+    expect(deleteLibrary).toHaveBeenCalledWith('lib-1');
+  });
+
+  it('con una sola libreria l eliminazione resta spenta', async () => {
+    const { wrapper } = mountTitle([catalogo[0]!]);
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    const voci = wrapper.findAll('.app_menu_item');
+
+    expect(voci.at(-1)?.attributes('disabled')).toBeDefined();
   });
 });

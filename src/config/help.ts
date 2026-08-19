@@ -13,6 +13,7 @@ export const HELP_TOPICS = [
   'views',
   'metadata',
   'player',
+  'libraries',
   'settings',
 ] as const;
 
@@ -24,5 +25,6 @@ export const HELP_TOPIC_ICONS: Record<HelpTopic, IconName> = {
   views: 'grid',
   metadata: 'edit',
   player: 'play',
+  libraries: 'list',
   settings: 'settings',
 };

@@ -9,4 +9,8 @@ export interface MenuItem {
   description?: string;
   disabled?: boolean;
   danger?: boolean;
+  /** Set on the entries of a choice: the menu renders them as a radio group. */
+  checked?: boolean;
+  /** Draws a separator above this entry, to open a new group. */
+  divider?: boolean;
 }

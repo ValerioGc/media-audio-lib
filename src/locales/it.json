@@ -53,6 +53,10 @@
       "save": "Salva nome",
       "saving": "Salvataggio…"
     },
+    "libraries": {
+      "title": "Librerie",
+      "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, esportarle o eliminarle."
+    },
     "footer": {
       "version": "versione {version}",
       "repository": "Progetto su GitHub"
@@ -71,6 +75,26 @@
         "rename": "Rinomina",
         "export": "Esporta",
         "delete": "Elimina libreria"
+      }
+    },
+    "catalog": {
+      "active": "in uso",
+      "trackCount": "nessun brano | 1 brano | {count} brani",
+      "open": "Apri la libreria {name}",
+      "openShort": "Apri",
+      "export": "Esporta la libreria {name}",
+      "remove": "Elimina la libreria {name}",
+      "exported": "Libreria esportata in {path}",
+      "create": {
+        "label": "Nuova libreria",
+        "placeholder": "Nome della nuova libreria",
+        "submit": "Crea"
+      },
+      "delete": {
+        "title": "Eliminare la libreria?",
+        "message": "La libreria \"{name}\" e i suoi {count} brani vengono rimossi dall'elenco. I file audio restano sul disco.",
+        "cancel": "Annulla",
+        "confirm": "Elimina libreria"
       }
     },
     "toolbar": {
@@ -252,6 +276,17 @@
           "Trascina la barra di avanzamento per spostarti nel brano e quella a destra per il volume.",
           "Con la freccia lo espandi a tutta pagina; con Esc o la freccia in giù torni alla barra.",
           "La X chiude il player."
+        ]
+      },
+      "libraries": {
+        "title": "Usare più librerie",
+        "where": "menu accanto al nome della libreria in homepage, e tab Libreria nelle impostazioni.",
+        "steps": [
+          "Nelle impostazioni, tab Libreria, scrivi un nome e premi Crea per aggiungere una libreria.",
+          "Dal menu accanto al nome in homepage scegli quale libreria aprire: la spunta indica quella in uso.",
+          "Esporta salva una copia della libreria in un file JSON che scegli tu.",
+          "Elimina libreria toglie la libreria dall’elenco; i file audio restano sul disco.",
+          "L’ultima libreria non si può eliminare: ce n’è sempre una aperta."
         ]
       },
       "settings": {

@@ -1,6 +1,7 @@
 // Base design tokens. Full palette and light/dark themes land in phase 1.
 
 // Spacing
+$space_2xs: 0.125rem;
 $space_xs: 0.25rem;
 $space_sm: 0.5rem;
 $space_md: 1rem;
@@ -9,6 +10,11 @@ $space_xl: 2rem;
 
 // Layout
 $titlebar_height: 2rem;
+/// Horizontal margin shared by the page content and by the bars above and below it.
+$page_gutter: $space_lg;
+/// Height of a row of the list view. Keep in sync with LIBRARY_ROW_HEIGHT_REM.
+$library_row_height: 3.5rem;
+$scrollbar_size: 0.625rem;
 
 // Radii
 $radius_sm: 4px;

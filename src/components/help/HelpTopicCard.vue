@@ -43,9 +43,7 @@ const steps = computed(() =>
   flex-direction: column;
   gap: $space_sm;
   padding: $space_lg;
-  border: 1px solid var(--color_border);
-  border-radius: $radius_lg;
-  background-color: var(--color_surface);
+  @include surface_panel($radius_lg);
   box-shadow: var(--shadow_card);
 
   &_header {

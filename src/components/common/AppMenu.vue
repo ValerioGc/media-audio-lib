@@ -27,7 +27,7 @@ function closeMenu() {
 async function openMenu() {
   isOpen.value = true;
   await nextTick();
-  root.value?.querySelector<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')?.focus();
+  root.value?.querySelector<HTMLButtonElement>('.app_menu_item:not(:disabled)')?.focus();
 }
 
 function toggleMenu() {
@@ -114,20 +114,25 @@ defineExpose({ close: closeMenu });
     </button>
 
     <div v-if="isOpen" class="app_menu_panel" role="menu">
-      <button
-        v-for="item in props.items"
-        :key="item.id"
-        class="app_menu_item"
-        :class="{ app_menu_item_danger: item.danger === true }"
-        type="button"
-        role="menuitem"
-        :disabled="item.disabled === true"
-        :aria-label="item.description"
-        @click="run(item)"
-      >
-        <AppIcon v-if="item.icon !== undefined" :name="item.icon" />
-        <span class="app_menu_item_label">{{ item.label }}</span>
-      </button>
+      <template v-for="item in props.items" :key="item.id">
+        <hr v-if="item.divider === true" class="app_menu_divider" />
+        <button
+          class="app_menu_item"
+          :class="{
+            app_menu_item_danger: item.danger === true,
+            app_menu_item_checked: item.checked === true,
+          }"
+          type="button"
+          :role="item.checked === undefined ? 'menuitem' : 'menuitemradio'"
+          :aria-checked="item.checked"
+          :disabled="item.disabled === true"
+          :aria-label="item.description"
+          @click="run(item)"
+        >
+          <AppIcon v-if="item.icon !== undefined" :name="item.icon" />
+          <span class="app_menu_item_label">{{ item.label }}</span>
+        </button>
+      </template>
     </div>
   </div>
 </template>
@@ -171,10 +176,15 @@ defineExpose({ close: closeMenu });
     flex-direction: column;
     min-width: 9rem;
     padding: $space_xs;
-    border: 1px solid var(--color_border);
-    border-radius: $radius_md;
-    background-color: var(--color_surface);
+    @include surface_panel;
     box-shadow: var(--shadow_raised);
+  }
+
+  &_divider {
+    height: 1px;
+    margin: $space_xs 0;
+    border: 0;
+    background-color: var(--color_border);
   }
 
   &_item {
@@ -208,6 +218,10 @@ defineExpose({ close: closeMenu });
     &_label {
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    &_checked {
+      font-weight: 600;
     }
 
     @include focus_ring;

@@ -47,8 +47,9 @@ onBeforeUnmount(() => {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: $space_lg;
-    overflow-y: auto;
+    padding: $page_gutter;
+
+    @include scroll_area;
   }
 }
 </style>

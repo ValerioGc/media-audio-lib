@@ -2,6 +2,7 @@
 //!
 //! The binary only calls [`run`]; all logic lives here so it stays testable with `cargo test`.
 
+pub mod catalog;
 pub mod commands;
 pub mod error;
 pub mod hash;
@@ -16,6 +17,7 @@ pub use error::{AppError, AppResult};
 
 use tauri::Manager as _;
 
+use crate::catalog::CatalogState;
 use crate::metadata::CoverCache;
 use crate::state::LibraryState;
 
@@ -34,9 +36,12 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let data_directory = app.path().app_data_dir()?;
-            app.manage(LibraryState::from_file(
-                data_directory.join(LIBRARY_FILE_NAME),
-            ));
+            let catalog = CatalogState::open(
+                data_directory.clone(),
+                &data_directory.join(LIBRARY_FILE_NAME),
+            );
+            app.manage(LibraryState::from_file(catalog.active_file()?));
+            app.manage(catalog);
 
             let cache_directory = app.path().app_cache_dir()?;
             app.manage(CoverCache::new(cache_directory.join(COVER_CACHE_DIR_NAME)));
@@ -56,6 +61,11 @@ pub fn run() {
             commands::metadata::write_metadata,
             commands::metadata::write_cover,
             commands::playback::prepare_playback,
+            commands::catalog::list_libraries,
+            commands::catalog::create_library,
+            commands::catalog::switch_library,
+            commands::catalog::delete_library,
+            commands::catalog::export_library,
         ])
         .run(tauri::generate_context!())
         .expect("avvio dell'applicazione Tauri fallito");

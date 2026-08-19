@@ -13,6 +13,29 @@
   }
 }
 
+/// The centred column used by the pages that are read rather than browsed.
+@mixin page_column($width: 46rem) {
+  width: 100%;
+  max-width: $width;
+  margin: 0 auto;
+}
+
+/// The raised surface shared by cards, panels and menus.
+@mixin surface_panel($radius: $radius_md, $background: var(--color_surface)) {
+  border: 1px solid var(--color_border);
+  border-radius: $radius;
+  background-color: $background;
+}
+
+/// A scrollable region: the gutter is reserved so the content does not shift when the
+/// scrollbar appears, and the scroll chain stops here instead of moving the page.
+/// Centred content passes `stable both-edges`, which keeps it on the middle of the box.
+@mixin scroll_area($gutter: stable) {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: $gutter;
+}
+
 /// Hides an element visually while keeping it available to screen readers.
 @mixin visually_hidden {
   position: absolute;

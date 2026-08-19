@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
+import LibraryList from '@/components/settings/LibraryList.vue';
 import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
 import SettingsFooter from '@/components/settings/SettingsFooter.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
@@ -52,12 +53,21 @@ const tabs = computed(() => [
       </template>
 
       <template #library>
-        <SettingsSection
-          :title="t('settings.libraryName.title')"
-          :description="t('settings.libraryName.description')"
-        >
-          <LibraryNameForm />
-        </SettingsSection>
+        <div class="settings_view_group">
+          <SettingsSection
+            :title="t('settings.libraryName.title')"
+            :description="t('settings.libraryName.description')"
+          >
+            <LibraryNameForm />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.libraries.title')"
+            :description="t('settings.libraries.description')"
+          >
+            <LibraryList />
+          </SettingsSection>
+        </div>
       </template>
     </SettingsTabs>
 
@@ -70,9 +80,8 @@ const tabs = computed(() => [
   display: flex;
   flex-direction: column;
   gap: $space_lg;
-  width: 100%;
-  max-width: 46rem;
-  margin: 0 auto;
+
+  @include page_column;
 
   &_header {
     display: flex;

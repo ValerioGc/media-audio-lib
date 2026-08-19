@@ -36,7 +36,8 @@ export function computeVirtualRange(
 
 export interface VirtualListOptions {
   itemCount: Ref<number>;
-  itemHeight: number;
+  /** A ref: the row height changes with the text size setting. */
+  itemHeight: Ref<number>;
   overscan?: number;
 }
 
@@ -47,7 +48,7 @@ export function useVirtualList({ itemCount, itemHeight, overscan }: VirtualListO
   const range = computed(() =>
     computeVirtualRange(
       itemCount.value,
-      itemHeight,
+      itemHeight.value,
       viewportHeight.value,
       scrollTop.value,
       overscan,

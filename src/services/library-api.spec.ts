@@ -3,14 +3,21 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   invoke: vi.fn(),
   open: vi.fn(),
+  save: vi.fn(),
 }));
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: mocks.invoke }));
-vi.mock('@tauri-apps/plugin-dialog', () => ({ open: mocks.open }));
+vi.mock('@tauri-apps/plugin-dialog', () => ({ open: mocks.open, save: mocks.save }));
 
 import {
   ShellUnavailableError,
   addTracks,
+  createLibrary,
+  deleteLibrary,
+  exportLibrary,
+  listLibraries,
+  pickExportFile,
+  switchLibrary,
   coverDataUrl,
   getCover,
   libraryInfo,
@@ -34,6 +41,7 @@ function withShell() {
 beforeEach(() => {
   mocks.invoke.mockResolvedValue([]);
   mocks.open.mockResolvedValue(null);
+  mocks.save.mockResolvedValue(null);
 });
 
 afterEach(() => {
@@ -81,6 +89,13 @@ describe('comandi che richiedono la shell', () => {
     await expect(pickAudioFiles()).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(writeMetadata('id', update)).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(writeCover('id', null)).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(createLibrary('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(switchLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(deleteLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(exportLibrary('lib-1', 'copia.json')).rejects.toBeInstanceOf(
+      ShellUnavailableError,
+    );
+    await expect(pickExportFile('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
   });
 
   it('inoltra la modifica dei metadati', async () => {
@@ -187,5 +202,51 @@ describe('coverDataUrl', () => {
     expect(coverDataUrl({ mimeType: 'image/png', data: 'AAAA' })).toBe(
       'data:image/png;base64,AAAA',
     );
+  });
+});
+
+describe('catalogo delle librerie', () => {
+  it('senza shell non conosce nessuna libreria', async () => {
+    await expect(listLibraries()).resolves.toEqual([]);
+    expect(mocks.invoke).not.toHaveBeenCalled();
+  });
+
+  it('inoltra elenco, creazione, apertura ed eliminazione', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue([]);
+
+    await listLibraries();
+    await createLibrary('Jazz');
+    await switchLibrary('lib-2');
+    await deleteLibrary('lib-2');
+
+    expect(mocks.invoke).toHaveBeenNthCalledWith(1, 'list_libraries');
+    expect(mocks.invoke).toHaveBeenNthCalledWith(2, 'create_library', { name: 'Jazz' });
+    expect(mocks.invoke).toHaveBeenNthCalledWith(3, 'switch_library', { id: 'lib-2' });
+    expect(mocks.invoke).toHaveBeenNthCalledWith(4, 'delete_library', { id: 'lib-2' });
+  });
+
+  it('esporta verso il file scelto', async () => {
+    withShell();
+    mocks.invoke.mockResolvedValue('C:/backup/jazz.json');
+
+    await expect(exportLibrary('lib-2', 'C:/backup/jazz.json')).resolves.toBe(
+      'C:/backup/jazz.json',
+    );
+    expect(mocks.invoke).toHaveBeenCalledWith('export_library', {
+      id: 'lib-2',
+      destination: 'C:/backup/jazz.json',
+    });
+  });
+
+  it('propone un nome file e filtra il dialog sul JSON', async () => {
+    withShell();
+    mocks.save.mockResolvedValue('C:/backup/jazz.json');
+
+    await expect(pickExportFile('Jazz')).resolves.toBe('C:/backup/jazz.json');
+    expect(mocks.save).toHaveBeenCalledWith({
+      defaultPath: 'Jazz.json',
+      filters: [{ name: 'JSON', extensions: ['json'] }],
+    });
   });
 });

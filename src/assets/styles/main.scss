@@ -43,6 +43,37 @@ p {
   margin: 0;
 }
 
+// Scrollbars: one look in every scrollable area, in both themes.
+//
+// Two declarations on purpose. Chromium honours the standard properties and, as soon as
+// they are set, ignores the -webkit- pseudo elements; older WebKitGTK does the opposite.
+// Between the two every target engine gets a thin scrollbar over a transparent track.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color_scrollbar_thumb) transparent;
+}
+
+::-webkit-scrollbar {
+  width: $scrollbar_size;
+  height: $scrollbar_size;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: $scrollbar_size;
+  background-color: var(--color_scrollbar_thumb);
+  background-clip: content-box;
+
+  &:hover {
+    background-color: var(--color_scrollbar_thumb_hover);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

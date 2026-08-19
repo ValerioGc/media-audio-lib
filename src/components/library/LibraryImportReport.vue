@@ -110,9 +110,7 @@ const lines = computed(() =>
   justify-content: space-between;
   overflow: hidden;
   padding: $space_md;
-  border: 1px solid var(--color_border);
-  border-radius: $radius_lg;
-  background-color: var(--color_surface_alt);
+  @include surface_panel($radius_lg, var(--color_surface_alt));
 
   &_blocking {
     border-color: var(--color_border_strong);

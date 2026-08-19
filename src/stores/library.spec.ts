@@ -16,6 +16,12 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     ...actual,
     libraryInfo: vi.fn(),
     renameLibrary: vi.fn(),
+    listLibraries: vi.fn(),
+    createLibrary: vi.fn(),
+    switchLibrary: vi.fn(),
+    deleteLibrary: vi.fn(),
+    exportLibrary: vi.fn(),
+    pickExportFile: vi.fn(),
     listTracks: vi.fn(),
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
@@ -29,6 +35,12 @@ vi.mock('@/services/library-api', async (importOriginal) => {
 
 const libraryInfo = vi.mocked(api.libraryInfo);
 const renameLibrary = vi.mocked(api.renameLibrary);
+const listLibraries = vi.mocked(api.listLibraries);
+const createLibrary = vi.mocked(api.createLibrary);
+const switchLibrary = vi.mocked(api.switchLibrary);
+const deleteLibrary = vi.mocked(api.deleteLibrary);
+const exportLibrary = vi.mocked(api.exportLibrary);
+const pickExportFile = vi.mocked(api.pickExportFile);
 const listTracks = vi.mocked(api.listTracks);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
@@ -50,7 +62,13 @@ beforeEach(() => {
   verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
   getCover.mockResolvedValue(null);
   pickAudioFiles.mockResolvedValue([]);
+  listLibraries.mockResolvedValue([]);
 });
+
+const catalogo = [
+  { id: 'lib-1', name: 'Principale', trackCount: 2, active: true },
+  { id: 'lib-2', name: 'Jazz', trackCount: 0, active: false },
+];
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -427,5 +445,142 @@ describe('copertine', () => {
     getCover.mockResolvedValue(null);
 
     await expect(store.loadCover(makeTrack({ hasCover: true }))).resolves.toBeNull();
+  });
+});
+
+describe('useLibraryStore - piu librerie', () => {
+  it('carica l elenco delle librerie', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    const store = useLibraryStore();
+
+    await store.loadLibraries();
+
+    expect(store.libraries).toHaveLength(2);
+    expect(store.activeLibraryId).toBe('lib-1');
+    expect(store.canDeleteLibrary).toBe(true);
+  });
+
+  it('con una sola libreria non permette di eliminarla', async () => {
+    listLibraries.mockResolvedValue([catalogo[0]!]);
+    const store = useLibraryStore();
+
+    await store.loadLibraries();
+
+    expect(store.canDeleteLibrary).toBe(false);
+  });
+
+  it('crea una libreria e aggiorna l elenco', async () => {
+    createLibrary.mockResolvedValue({ id: 'lib-3', name: 'Rock', trackCount: 0, active: false });
+    listLibraries.mockResolvedValue(catalogo);
+    const store = useLibraryStore();
+
+    await expect(store.createLibrary('  Rock  ')).resolves.toBe(true);
+
+    expect(createLibrary).toHaveBeenCalledWith('Rock');
+    expect(listLibraries).toHaveBeenCalled();
+  });
+
+  it('rifiuta una libreria senza nome', async () => {
+    const store = useLibraryStore();
+
+    await expect(store.createLibrary('   ')).resolves.toBe(false);
+
+    expect(createLibrary).not.toHaveBeenCalled();
+    expect(store.errorKey).toBe('invalidLibraryName');
+  });
+
+  it('aprendo un altra libreria ricarica brani e copertine', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    switchLibrary.mockResolvedValue({ name: 'Jazz' });
+    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    listTracks.mockResolvedValue([makeTrack()]);
+    const store = useLibraryStore();
+    await store.loadLibraries();
+    store.select('id-1');
+    store.openEditor('id-1');
+
+    await expect(store.switchLibrary('lib-2')).resolves.toBe(true);
+
+    expect(switchLibrary).toHaveBeenCalledWith('lib-2');
+    expect(store.libraryName).toBe('Jazz');
+    expect(store.tracks).toHaveLength(1);
+    expect(store.selectedId).toBeNull();
+    expect(store.editingId).toBeNull();
+    expect(store.covers.size).toBe(0);
+  });
+
+  it('non riapre la libreria gia aperta', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    const store = useLibraryStore();
+    await store.loadLibraries();
+
+    await expect(store.switchLibrary('lib-1')).resolves.toBe(true);
+
+    expect(switchLibrary).not.toHaveBeenCalled();
+  });
+
+  it('elimina una libreria non aperta senza toccare i brani', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    deleteLibrary.mockResolvedValue([catalogo[0]!]);
+    const store = useLibraryStore();
+    await store.loadLibraries();
+    listTracks.mockClear();
+
+    await expect(store.deleteLibrary('lib-2')).resolves.toBe(true);
+
+    expect(store.libraries).toHaveLength(1);
+    expect(listTracks).not.toHaveBeenCalled();
+  });
+
+  it('eliminando la libreria aperta ricarica quella rimasta', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    deleteLibrary.mockResolvedValue([{ ...catalogo[1]!, active: true }]);
+    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    const store = useLibraryStore();
+    await store.loadLibraries();
+    listTracks.mockClear();
+
+    await expect(store.deleteLibrary('lib-1')).resolves.toBe(true);
+
+    expect(listTracks).toHaveBeenCalledTimes(1);
+    expect(store.libraryName).toBe('Jazz');
+  });
+
+  it('segnala il file scritto dall export', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    pickExportFile.mockResolvedValue('C:/backup/jazz.json');
+    exportLibrary.mockResolvedValue('C:/backup/jazz.json');
+    const store = useLibraryStore();
+    await store.loadLibraries();
+
+    await expect(store.exportLibrary('lib-2')).resolves.toBe(true);
+
+    expect(pickExportFile).toHaveBeenCalledWith('Jazz');
+    expect(exportLibrary).toHaveBeenCalledWith('lib-2', 'C:/backup/jazz.json');
+    expect(store.lastExport).toBe('C:/backup/jazz.json');
+
+    store.dismissExport();
+    expect(store.lastExport).toBeNull();
+  });
+
+  it('annullando la scelta del file non esporta nulla', async () => {
+    listLibraries.mockResolvedValue(catalogo);
+    pickExportFile.mockResolvedValue(null);
+    const store = useLibraryStore();
+    await store.loadLibraries();
+
+    await expect(store.exportLibrary('lib-1')).resolves.toBe(false);
+
+    expect(exportLibrary).not.toHaveBeenCalled();
+    expect(store.lastExport).toBeNull();
+  });
+
+  it('riporta l errore quando il catalogo non risponde', async () => {
+    listLibraries.mockRejectedValue(new ShellUnavailableError());
+    const store = useLibraryStore();
+
+    await store.loadLibraries();
+
+    expect(store.errorKey).toBe('shellUnavailable');
   });
 });

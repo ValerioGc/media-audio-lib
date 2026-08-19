@@ -5,6 +5,7 @@ import type {
   AddReport,
   Cover,
   LibraryInfo,
+  LibrarySummary,
   MetadataUpdate,
   Track,
   TrackView,
@@ -44,6 +45,51 @@ export async function renameLibrary(name: string): Promise<LibraryInfo> {
   requireShell();
 
   return invoke<LibraryInfo>('rename_library', { name });
+}
+
+export async function listLibraries(): Promise<LibrarySummary[]> {
+  if (!isTauriRuntime()) {
+    return [];
+  }
+
+  return invoke<LibrarySummary[]>('list_libraries');
+}
+
+export async function createLibrary(name: string): Promise<LibrarySummary> {
+  requireShell();
+
+  return invoke<LibrarySummary>('create_library', { name });
+}
+
+export async function switchLibrary(id: string): Promise<LibraryInfo> {
+  requireShell();
+
+  return invoke<LibraryInfo>('switch_library', { id });
+}
+
+export async function deleteLibrary(id: string): Promise<LibrarySummary[]> {
+  requireShell();
+
+  return invoke<LibrarySummary[]>('delete_library', { id });
+}
+
+/** Writes a copy of the library to `destination` and returns the file written. */
+export async function exportLibrary(id: string, destination: string): Promise<string> {
+  requireShell();
+
+  return invoke<string>('export_library', { id, destination });
+}
+
+/** Opens the save dialog for an export, returning null when the user cancels. */
+export async function pickExportFile(defaultName: string): Promise<string | null> {
+  requireShell();
+
+  const { save } = await import('@tauri-apps/plugin-dialog');
+
+  return save({
+    defaultPath: `${defaultName}.json`,
+    filters: [{ name: 'JSON', extensions: ['json'] }],
+  });
 }
 
 export async function addTracks(paths: readonly string[]): Promise<AddReport> {

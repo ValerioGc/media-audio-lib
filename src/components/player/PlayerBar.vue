@@ -86,7 +86,7 @@ const player = usePlayerStore();
 .player_bar {
   display: flex;
   flex-direction: column;
-  padding: $space_sm $space_lg;
+  padding: $space_sm $page_gutter;
   border-top: 1px solid var(--color_border);
   background-color: var(--color_surface);
   box-shadow: var(--shadow_raised);

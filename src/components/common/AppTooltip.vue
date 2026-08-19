@@ -32,9 +32,7 @@ function hide() {
     bottom: calc(100% + #{$space_xs});
     z-index: 5;
     padding: $space_xs $space_sm;
-    border: 1px solid var(--color_border);
-    border-radius: $radius_sm;
-    background-color: var(--color_surface);
+    @include surface_panel($radius_sm);
     box-shadow: var(--shadow_raised);
     color: var(--color_text);
     font-size: 0.75rem;

@@ -53,7 +53,8 @@ describe('useVirtualList', () => {
   const Host = defineComponent({
     setup() {
       const itemCount = ref(100);
-      return useVirtualList({ itemCount, itemHeight: 50 });
+      const itemHeight = ref(50);
+      return { ...useVirtualList({ itemCount, itemHeight }), itemHeight };
     },
     template: '<div />',
   });
@@ -77,5 +78,15 @@ describe('useVirtualList', () => {
 
     wrapper.vm.measure(null);
     expect(wrapper.vm.viewportHeight).toBe(0);
+  });
+
+  it('segue un altezza di riga che cambia', async () => {
+    const wrapper = mount(Host);
+    expect(wrapper.vm.range.totalHeight).toBe(5000);
+
+    wrapper.vm.itemHeight = 70;
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.vm.range.totalHeight).toBe(7000);
   });
 });

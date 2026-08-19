@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { makeTrack, makeTracks } from '../../../tests/support/tracks';
+import { useSettingsStore } from '@/stores/settings';
 import { DEFAULT_SORT, type SortState, type TrackView } from '@/types/library';
 
 import LibraryTable from './LibraryTable.vue';
@@ -90,5 +91,21 @@ describe('LibraryTable', () => {
     expect(wrapper.emitted('edit')).toEqual([[track]]);
     expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
+  });
+
+  it('alza le righe quando il testo diventa piu grande', async () => {
+    document.documentElement.style.fontSize = '16px';
+    const wrapper = mountTable(makeTracks(100));
+    const settings = useSettingsStore();
+
+    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 5600px');
+
+    document.documentElement.style.fontSize = '20px';
+    settings.textSize = 'large';
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 7000px');
+
+    document.documentElement.style.removeProperty('font-size');
   });
 });

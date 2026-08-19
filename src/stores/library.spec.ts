@@ -242,6 +242,7 @@ describe('modifica dei metadati', () => {
 
     const result = await store.saveMetadata(track.id, {
       title: 'Nuovo',
+      artist: null,
       album: null,
       year: null,
       genre: null,
@@ -278,6 +279,7 @@ describe('modifica dei metadati', () => {
 
     const result = await store.saveMetadata(track.id, {
       title: 'Nuovo',
+      artist: null,
       album: null,
       year: null,
       genre: null,

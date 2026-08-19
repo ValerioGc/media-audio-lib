@@ -6,9 +6,23 @@ import { DEFAULT_SORT } from '@/types/library';
 import { filterAndSort, filterTracks, formatDuration, sortTracks } from './track-sorting';
 
 const tracks = [
-  makeTrack({ id: 'a', title: 'Zebra', album: 'Bianco', year: 1999, genre: 'Jazz' }),
-  makeTrack({ id: 'b', title: 'alfa', album: 'Nero', year: 2020, genre: 'Rock' }),
-  makeTrack({ id: 'c', title: 'Mezzo', album: null, year: null, genre: null }),
+  makeTrack({
+    id: 'a',
+    title: 'Zebra',
+    artist: 'Verdi',
+    album: 'Bianco',
+    year: 1999,
+    genre: 'Jazz',
+  }),
+  makeTrack({
+    id: 'b',
+    title: 'alfa',
+    artist: 'Bianchi',
+    album: 'Nero',
+    year: 2020,
+    genre: 'Rock',
+  }),
+  makeTrack({ id: 'c', title: 'Mezzo', artist: null, album: null, year: null, genre: null }),
 ];
 
 describe('filterTracks', () => {
@@ -20,9 +34,10 @@ describe('filterTracks', () => {
     expect(filterTracks(tracks, 'ZEB').map((track) => track.id)).toEqual(['a']);
   });
 
-  it('cerca anche in album, genere e percorso', () => {
+  it('cerca anche in autore, album, genere e percorso', () => {
     expect(filterTracks(tracks, 'nero').map((track) => track.id)).toEqual(['b']);
     expect(filterTracks(tracks, 'jazz').map((track) => track.id)).toEqual(['a']);
+    expect(filterTracks(tracks, 'verdi').map((track) => track.id)).toEqual(['a']);
     expect(filterTracks(tracks, 'C:/musica').length).toBe(3);
   });
 
@@ -42,6 +57,12 @@ describe('sortTracks', () => {
     const sorted = sortTracks(tracks, { column: 'title', direction: 'desc' });
 
     expect(sorted.map((track) => track.title)).toEqual(['Zebra', 'Mezzo', 'alfa']);
+  });
+
+  it('ordina per autore tenendo in fondo i brani senza', () => {
+    const sorted = sortTracks(tracks, { column: 'artist', direction: 'asc' });
+
+    expect(sorted.map((track) => track.artist)).toEqual(['Bianchi', 'Verdi', null]);
   });
 
   it('ordina per anno in modo numerico', () => {

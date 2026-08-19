@@ -16,24 +16,32 @@ function mountRow(track = makeTrack(), selected = false) {
 
 describe('LibraryRow', () => {
   it('mostra i campi del brano nelle colonne', () => {
-    const track = makeTrack({ title: 'Brano', album: 'Album', year: 1999, genre: 'Jazz' });
+    const track = makeTrack({
+      title: 'Brano',
+      artist: 'Autore',
+      album: 'Album',
+      year: 1999,
+      genre: 'Jazz',
+    });
 
     const cells = mountRow(track).findAll('[role="cell"]');
 
     expect(cells[1]?.text()).toContain('Brano');
-    expect(cells[2]?.text()).toBe('Album');
-    expect(cells[3]?.text()).toBe('1999');
-    expect(cells[4]?.text()).toBe('Jazz');
+    expect(cells[2]?.text()).toBe('Autore');
+    expect(cells[3]?.text()).toBe('Album');
+    expect(cells[4]?.text()).toBe('1999');
+    expect(cells[5]?.text()).toBe('Jazz');
   });
 
   it('mostra un trattino per i campi mancanti', () => {
-    const cells = mountRow(makeTrack({ album: null, year: null, genre: null })).findAll(
-      '[role="cell"]',
-    );
+    const cells = mountRow(
+      makeTrack({ artist: null, album: null, year: null, genre: null }),
+    ).findAll('[role="cell"]');
 
     expect(cells[2]?.text()).toBe('—');
     expect(cells[3]?.text()).toBe('—');
     expect(cells[4]?.text()).toBe('—');
+    expect(cells[5]?.text()).toBe('—');
   });
 
   it('formatta la durata', () => {

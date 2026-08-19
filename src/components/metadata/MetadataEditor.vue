@@ -30,6 +30,7 @@ const pendingCover = ref<Cover | null | undefined>(undefined);
 function fromTrack(track: TrackView): DraftMetadata {
   return {
     title: track.title,
+    artist: track.artist ?? '',
     album: track.album ?? '',
     year: track.year === null ? '' : String(track.year),
     genre: track.genre ?? '',
@@ -91,6 +92,7 @@ async function save() {
         :label="t('metadata.fields.title')"
         :error="messageFor(errors.title)"
       />
+      <MetadataField v-model="draft.artist" :label="t('metadata.fields.artist')" />
       <MetadataField v-model="draft.album" :label="t('metadata.fields.album')" />
       <MetadataField
         v-model="draft.year"

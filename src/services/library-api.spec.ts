@@ -20,7 +20,7 @@ import {
   writeMetadata,
 } from './library-api';
 
-const update = { title: 'Titolo', album: null, year: 1999, genre: 'Rock' };
+const update = { title: 'Titolo', artist: 'Autore', album: null, year: 1999, genre: 'Rock' };
 
 const scopedWindow = window as unknown as Record<string, unknown>;
 

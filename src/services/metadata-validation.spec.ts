@@ -17,7 +17,14 @@ import {
 const now = new Date('2026-08-18T00:00:00Z');
 
 function draft(overrides: Partial<DraftMetadata> = {}): DraftMetadata {
-  return { title: 'Titolo', album: 'Album', year: '1999', genre: 'Rock', ...overrides };
+  return {
+    title: 'Titolo',
+    artist: 'Autore',
+    album: 'Album',
+    year: '1999',
+    genre: 'Rock',
+    ...overrides,
+  };
 }
 
 describe('validateTitle', () => {
@@ -98,8 +105,13 @@ describe('draftErrors', () => {
 
 describe('toUpdate', () => {
   it('ripulisce gli spazi e converte l anno', () => {
-    expect(toUpdate(draft({ title: '  Titolo  ', album: ' Album ', year: ' 1999 ' }))).toEqual({
+    expect(
+      toUpdate(
+        draft({ title: '  Titolo  ', artist: ' Autore ', album: ' Album ', year: ' 1999 ' }),
+      ),
+    ).toEqual({
       title: 'Titolo',
+      artist: 'Autore',
       album: 'Album',
       year: 1999,
       genre: 'Rock',
@@ -107,8 +119,9 @@ describe('toUpdate', () => {
   });
 
   it('trasforma i campi vuoti in null per azzerare i tag', () => {
-    expect(toUpdate(draft({ album: '', year: '', genre: '   ' }))).toEqual({
+    expect(toUpdate(draft({ artist: '', album: '', year: '', genre: '   ' }))).toEqual({
       title: 'Titolo',
+      artist: null,
       album: null,
       year: null,
       genre: null,

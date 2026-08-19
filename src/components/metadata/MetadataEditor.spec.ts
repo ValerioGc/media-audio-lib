@@ -31,20 +31,30 @@ function fieldAt(wrapper: Awaited<ReturnType<typeof mountEditor>>['wrapper'], in
 
 describe('MetadataEditor', () => {
   it('precompila i campi con i valori del brano', async () => {
-    const track = makeTrack({ title: 'Brano', album: 'Album', year: 1999, genre: 'Jazz' });
+    const track = makeTrack({
+      title: 'Brano',
+      artist: 'Autore',
+      album: 'Album',
+      year: 1999,
+      genre: 'Jazz',
+    });
     const { wrapper } = await mountEditor(track);
 
     expect((fieldAt(wrapper, 0)?.element as HTMLInputElement).value).toBe('Brano');
-    expect((fieldAt(wrapper, 1)?.element as HTMLInputElement).value).toBe('Album');
-    expect((fieldAt(wrapper, 2)?.element as HTMLInputElement).value).toBe('1999');
+    expect((fieldAt(wrapper, 1)?.element as HTMLInputElement).value).toBe('Autore');
+    expect((fieldAt(wrapper, 2)?.element as HTMLInputElement).value).toBe('Album');
+    expect((fieldAt(wrapper, 3)?.element as HTMLInputElement).value).toBe('1999');
     expect((wrapper.get('.genre_select_input').element as HTMLInputElement).value).toBe('Jazz');
   });
 
   it('lascia vuoti i campi assenti', async () => {
-    const { wrapper } = await mountEditor(makeTrack({ album: null, year: null, genre: null }));
+    const { wrapper } = await mountEditor(
+      makeTrack({ artist: null, album: null, year: null, genre: null }),
+    );
 
     expect((fieldAt(wrapper, 1)?.element as HTMLInputElement).value).toBe('');
     expect((fieldAt(wrapper, 2)?.element as HTMLInputElement).value).toBe('');
+    expect((fieldAt(wrapper, 3)?.element as HTMLInputElement).value).toBe('');
   });
 
   it('blocca il salvataggio con un titolo vuoto', async () => {
@@ -62,7 +72,7 @@ describe('MetadataEditor', () => {
   it('blocca il salvataggio con un anno non plausibile', async () => {
     const { wrapper } = await mountEditor();
 
-    await fieldAt(wrapper, 2)?.setValue('12');
+    await fieldAt(wrapper, 3)?.setValue('12');
 
     expect(wrapper.get('[data-testid="metadata-save"]').attributes('disabled')).toBeDefined();
   });
@@ -72,12 +82,14 @@ describe('MetadataEditor', () => {
     const { wrapper, saveMetadata, saveCover } = await mountEditor(track);
 
     await fieldAt(wrapper, 0)?.setValue('Nuovo titolo');
-    await fieldAt(wrapper, 2)?.setValue('2001');
+    await fieldAt(wrapper, 1)?.setValue('Nuovo autore');
+    await fieldAt(wrapper, 3)?.setValue('2001');
     await wrapper.get('[data-testid="metadata-save"]').trigger('click');
     await flushPromises();
 
     expect(saveMetadata).toHaveBeenCalledWith(track.id, {
       title: 'Nuovo titolo',
+      artist: 'Nuovo autore',
       album: 'Album',
       year: 2001,
       genre: 'Rock',
@@ -91,12 +103,13 @@ describe('MetadataEditor', () => {
 
     await fieldAt(wrapper, 1)?.setValue('');
     await fieldAt(wrapper, 2)?.setValue('');
+    await fieldAt(wrapper, 3)?.setValue('');
     await wrapper.get('[data-testid="metadata-save"]').trigger('click');
     await flushPromises();
 
     expect(saveMetadata).toHaveBeenCalledWith(
       expect.any(String),
-      expect.objectContaining({ album: null, year: null }),
+      expect.objectContaining({ artist: null, album: null, year: null }),
     );
   });
 

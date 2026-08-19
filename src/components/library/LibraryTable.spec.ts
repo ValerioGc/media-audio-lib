@@ -25,7 +25,16 @@ describe('LibraryTable', () => {
       // The active column also renders the sort arrow.
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
-    expect(headings).toEqual(['Copertina', 'Nome', 'Album', 'Anno', 'Genere', 'Durata', 'Azioni']);
+    expect(headings).toEqual([
+      'Copertina',
+      'Nome',
+      'Autore',
+      'Album',
+      'Anno',
+      'Genere',
+      'Durata',
+      'Azioni',
+    ]);
   });
 
   it('dichiara il numero di righe', () => {
@@ -39,15 +48,15 @@ describe('LibraryTable', () => {
 
     await wrapper.findAll('.library_table_sort')[1]?.trigger('click');
 
-    expect(wrapper.emitted('sort')).toEqual([['album']]);
+    expect(wrapper.emitted('sort')).toEqual([['artist']]);
   });
 
   it('marca la colonna attiva per gli screen reader', () => {
     const wrapper = mountTable([makeTrack()], { column: 'year', direction: 'desc' });
     const headers = wrapper.findAll('[role="columnheader"]');
 
-    expect(headers[3]?.attributes('aria-sort')).toBe('descending');
-    expect(headers[2]?.attributes('aria-sort')).toBe('none');
+    expect(headers[4]?.attributes('aria-sort')).toBe('descending');
+    expect(headers[3]?.attributes('aria-sort')).toBe('none');
   });
 
   it('rende solo una finestra di righe per liste lunghe', () => {

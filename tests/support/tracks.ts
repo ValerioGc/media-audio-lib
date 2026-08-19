@@ -9,6 +9,7 @@ export function makeTrack(overrides: Partial<TrackView> = {}): TrackView {
     id: `id-${sequence}`,
     path: `C:/musica/brano-${sequence}.mp3`,
     title: `Brano ${sequence}`,
+    artist: 'Autore',
     album: 'Album',
     year: 2000,
     genre: 'Rock',

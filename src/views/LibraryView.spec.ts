@@ -146,7 +146,7 @@ describe('LibraryView', () => {
     store.tracks = makeTracks(2);
     await flushPromises();
 
-    await wrapper.findAll('.library_table_sort')[2]?.trigger('click');
+    await wrapper.findAll('.library_table_sort')[3]?.trigger('click');
 
     expect(store.sort).toEqual({ column: 'year', direction: 'asc' });
   });

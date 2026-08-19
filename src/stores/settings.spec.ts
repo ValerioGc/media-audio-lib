@@ -132,9 +132,49 @@ describe('useSettingsStore', () => {
     await store.setTheme('light');
 
     expect(storage.saved).toHaveLength(3);
-    expect(storage.saved.at(-1)).toEqual({ locale: 'en', textSize: 'small', theme: 'light' });
+    expect(storage.saved.at(-1)).toEqual({
+      locale: 'en',
+      textSize: 'small',
+      theme: 'light',
+      viewMode: 'table',
+    });
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
+
+    store.dispose();
+  });
+
+  it('ricorda la vista scelta per la libreria', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setViewMode('preview');
+
+    expect(store.viewMode).toBe('preview');
+    expect(storage.saved.at(-1)?.viewMode).toBe('preview');
+
+    store.dispose();
+  });
+
+  it('ripristina la vista salvata in una sessione precedente', async () => {
+    const store = useSettingsStore();
+
+    await store.initialize(createFakeStorage({ viewMode: 'preview' }));
+
+    expect(store.viewMode).toBe('preview');
+
+    store.dispose();
+  });
+
+  it('scarta una vista sconosciuta tornando all elenco', async () => {
+    const store = useSettingsStore();
+
+    await store.initialize(
+      createFakeStorage({ viewMode: 'copertine' } as unknown as Partial<AppSettings>),
+    );
+
+    expect(store.viewMode).toBe(DEFAULT_SETTINGS.viewMode);
 
     store.dispose();
   });

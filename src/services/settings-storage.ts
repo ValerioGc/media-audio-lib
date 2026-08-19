@@ -4,6 +4,7 @@ import {
   LOCALES,
   TEXT_SIZES,
   THEME_CHOICES,
+  VIEW_MODES,
   type AppSettings,
 } from '@/types/settings';
 
@@ -27,6 +28,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     locale: pickKnown(LOCALES, source.locale, DEFAULT_SETTINGS.locale),
     textSize: pickKnown(TEXT_SIZES, source.textSize, DEFAULT_SETTINGS.textSize),
     theme: pickKnown(THEME_CHOICES, source.theme, DEFAULT_SETTINGS.theme),
+    viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
   };
 }
 

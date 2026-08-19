@@ -9,14 +9,19 @@ export type ThemeChoice = (typeof THEME_CHOICES)[number];
 
 export type ResolvedTheme = 'light' | 'dark';
 
+export const VIEW_MODES = ['table', 'preview'] as const;
+export type ViewMode = (typeof VIEW_MODES)[number];
+
 export interface AppSettings {
   locale: Locale;
   textSize: TextSize;
   theme: ThemeChoice;
+  viewMode: ViewMode;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
   locale: 'it',
   textSize: 'medium',
   theme: 'system',
+  viewMode: 'table',
 };

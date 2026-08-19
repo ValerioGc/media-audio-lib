@@ -97,6 +97,11 @@
     "errors": {
       "shellUnavailable": "This feature is only available in the desktop application.",
       "generic": "The operation failed. Please try again."
+    },
+    "view": {
+      "label": "View",
+      "table": "List",
+      "preview": "Previews"
     }
   },
   "metadata": {

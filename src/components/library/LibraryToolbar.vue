@@ -4,10 +4,18 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
+import AppOptionGroup from '@/components/common/AppOptionGroup.vue';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
+import { VIEW_MODES, type ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const settings = useSettingsStore();
+
+const viewOptions = computed(() =>
+  VIEW_MODES.map((mode) => ({ value: mode, label: t(`library.view.${mode}`) })),
+);
 
 const searchValue = computed({
   get: () => library.query,
@@ -28,6 +36,14 @@ const searchValue = computed({
       hide-label
       :label="t('library.toolbar.search')"
       :placeholder="t('library.toolbar.searchPlaceholder')"
+    />
+
+    <AppOptionGroup
+      class="library_toolbar_view"
+      :model-value="settings.viewMode"
+      :options="viewOptions"
+      :legend="t('library.view.label')"
+      @update:model-value="settings.setViewMode($event as ViewMode)"
     />
 
     <p class="library_toolbar_counts">

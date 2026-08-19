@@ -8,13 +8,16 @@ import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
+import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
 import { useFileDrop } from '@/composables/useFileDrop';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const settings = useSettingsStore();
 const pendingRemoval = ref<TrackView | null>(null);
 
 const { isDraggingOver } = useFileDrop((paths) => {
@@ -58,6 +61,13 @@ async function confirmRemoval() {
 
     <LibraryEmptyState v-if="library.isEmpty" variant="empty" />
     <LibraryEmptyState v-else-if="library.hasNoMatches" variant="noMatches" />
+    <PreviewGrid
+      v-else-if="settings.viewMode === 'preview'"
+      :tracks="library.visibleTracks"
+      :selected-id="library.selectedId"
+      @select="library.select($event)"
+      @edit="library.openEditor($event.id)"
+    />
     <LibraryTable
       v-else
       :tracks="library.visibleTracks"

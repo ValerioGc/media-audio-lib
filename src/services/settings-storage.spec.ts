@@ -55,7 +55,12 @@ describe('sanitizeSettings', () => {
   });
 
   it('conserva i valori validi', () => {
-    const settings: AppSettings = { locale: 'en', textSize: 'large', theme: 'dark' };
+    const settings: AppSettings = {
+      locale: 'en',
+      textSize: 'large',
+      theme: 'dark',
+      viewMode: 'preview',
+    };
 
     expect(sanitizeSettings(settings)).toEqual(settings);
   });
@@ -67,6 +72,7 @@ describe('sanitizeSettings', () => {
       locale: DEFAULT_SETTINGS.locale,
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
+      viewMode: DEFAULT_SETTINGS.viewMode,
     });
   });
 });
@@ -80,7 +86,12 @@ describe('createWebStorage', () => {
 
   it('esegue il round-trip delle impostazioni', async () => {
     const storage = createWebStorage(createFakeStorage());
-    const settings: AppSettings = { locale: 'en', textSize: 'small', theme: 'light' };
+    const settings: AppSettings = {
+      locale: 'en',
+      textSize: 'small',
+      theme: 'light',
+      viewMode: 'table',
+    };
 
     await storage.save(settings);
 
@@ -96,7 +107,12 @@ describe('createTauriStorage', () => {
   });
 
   it('legge le impostazioni dallo store del plugin', async () => {
-    const settings: AppSettings = { locale: 'en', textSize: 'large', theme: 'dark' };
+    const settings: AppSettings = {
+      locale: 'en',
+      textSize: 'large',
+      theme: 'dark',
+      viewMode: 'preview',
+    };
     mocks.store.get.mockResolvedValue(settings);
 
     await expect(createTauriStorage().load()).resolves.toEqual(settings);
@@ -127,12 +143,13 @@ describe('createSettingsStorage', () => {
 
   it('usa localStorage nel browser', async () => {
     const storage = createSettingsStorage();
-    await storage.save({ locale: 'en', textSize: 'small', theme: 'light' });
+    await storage.save({ locale: 'en', textSize: 'small', theme: 'light', viewMode: 'table' });
 
     await expect(storage.load()).resolves.toEqual({
       locale: 'en',
       textSize: 'small',
       theme: 'light',
+      viewMode: 'table',
     });
     expect(mocks.load).not.toHaveBeenCalled();
 

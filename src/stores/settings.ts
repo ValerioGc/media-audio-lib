@@ -16,12 +16,14 @@ import {
   type ResolvedTheme,
   type TextSize,
   type ThemeChoice,
+  type ViewMode,
 } from '@/types/settings';
 
 export const useSettingsStore = defineStore('settings', () => {
   const locale = ref<Locale>(DEFAULT_SETTINGS.locale);
   const textSize = ref<TextSize>(DEFAULT_SETTINGS.textSize);
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
+  const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -36,6 +38,7 @@ export const useSettingsStore = defineStore('settings', () => {
     locale: locale.value,
     textSize: textSize.value,
     theme: theme.value,
+    viewMode: viewMode.value,
   }));
 
   function apply() {
@@ -82,6 +85,7 @@ export const useSettingsStore = defineStore('settings', () => {
     locale.value = restored.locale;
     textSize.value = restored.textSize;
     theme.value = restored.theme;
+    viewMode.value = restored.viewMode;
 
     apply();
     isReady.value = true;
@@ -96,6 +100,12 @@ export const useSettingsStore = defineStore('settings', () => {
   async function setTextSize(next: TextSize) {
     textSize.value = next;
     apply();
+    await persist();
+  }
+
+  // The chosen library view is remembered across sessions.
+  async function setViewMode(next: ViewMode) {
+    viewMode.value = next;
     await persist();
   }
 
@@ -114,6 +124,7 @@ export const useSettingsStore = defineStore('settings', () => {
     locale,
     textSize,
     theme,
+    viewMode,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -122,6 +133,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setLocale,
     setTextSize,
     setTheme,
+    setViewMode,
     dispose,
   };
 });

@@ -20,9 +20,7 @@ describe('LibraryCoverCell', () => {
     await flushPromises();
 
     expect(wrapper.find('img').exists()).toBe(false);
-    expect(wrapper.get('.library_cover_fallback').attributes('aria-label')).toBe(
-      'Nessuna copertina',
-    );
+    expect(wrapper.get('.cover_image_fallback').attributes('aria-label')).toBe('Nessuna copertina');
   });
 
   it('mostra la copertina caricata dallo store', async () => {

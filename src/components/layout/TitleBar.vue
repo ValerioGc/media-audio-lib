@@ -50,6 +50,18 @@ const controls = computed<WindowControl[]>(() => [
 
     <button
       class="titlebar_action"
+      :class="{ titlebar_action_active: navigation.isHelp }"
+      type="button"
+      :aria-label="t('nav.help')"
+      :aria-current="navigation.isHelp ? 'page' : undefined"
+      data-testid="open-help"
+      @click="navigation.toggleHelp()"
+    >
+      <AppIcon name="help" />
+    </button>
+
+    <button
+      class="titlebar_action"
       :class="{ titlebar_action_active: navigation.isSettings }"
       type="button"
       :aria-label="t('nav.settings')"

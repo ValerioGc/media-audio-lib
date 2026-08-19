@@ -3,7 +3,8 @@
     "name": "Media Audio Lib"
   },
   "nav": {
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "help": "Guida"
   },
   "settings": {
     "title": "Impostazioni",
@@ -151,5 +152,72 @@
     "minimize": "Riduci a icona",
     "maximize": "Ingrandisci o ripristina",
     "close": "Chiudi l'applicazione"
+  },
+  "help": {
+    "title": "Guida",
+    "subtitle": "Come si usa Media Audio Lib: dove trovare ogni funzione e come eseguirla.",
+    "where": "Dove:",
+    "topics": {
+      "import": {
+        "title": "Aggiungere brani e cartelle",
+        "where": "barra in alto della Libreria, oppure trascinando sulla finestra.",
+        "steps": [
+          "Premi «Aggiungi brani» per scegliere uno o più file audio.",
+          "Premi «Aggiungi cartella» per importare tutta la musica contenuta in una cartella, comprese le sottocartelle.",
+          "In alternativa trascina file o cartelle direttamente nella finestra.",
+          "Al termine compare un riepilogo con i brani aggiunti, quelli già presenti e quelli non importati. Se è tutto andato bene sparisce da solo.",
+          "I file restano dove sono: la libreria tiene solo l’elenco."
+        ]
+      },
+      "organize": {
+        "title": "Cercare e ordinare",
+        "where": "barra in alto e intestazioni delle colonne, nella vista a elenco.",
+        "steps": [
+          "Scrivi nel campo di ricerca per filtrare per titolo, autore, album, genere o percorso.",
+          "Fai clic su un’intestazione di colonna per ordinare i brani.",
+          "Un secondo clic sulla stessa colonna inverte l’ordine.",
+          "I brani senza quel dato finiscono sempre in fondo."
+        ]
+      },
+      "views": {
+        "title": "Cambiare vista",
+        "where": "le due icone a destra nella barra della Libreria.",
+        "steps": [
+          "L’icona a righe mostra l’elenco con tutte le colonne.",
+          "L’icona a griglia mostra le anteprime delle copertine.",
+          "La vista scelta viene ricordata alla prossima apertura."
+        ]
+      },
+      "metadata": {
+        "title": "Modificare i metadati",
+        "where": "icona con la matita sulla riga o sulla scheda del brano.",
+        "steps": [
+          "Apri l’editor con l’icona della matita.",
+          "Modifica nome, autore, album, anno e genere; il genere si può scegliere o scrivere.",
+          "Con «Scegli immagine…» sostituisci la copertina (PNG o JPEG, fino a 5 MB).",
+          "Premi «Salva»: le modifiche vengono scritte nei tag del file, non solo nella libreria.",
+          "Lasciando vuoto un campo il dato viene rimosso dal file."
+        ]
+      },
+      "player": {
+        "title": "Ascoltare un brano",
+        "where": "doppio clic su una riga o su una scheda; il player compare in basso.",
+        "steps": [
+          "Fai doppio clic sul brano da ascoltare.",
+          "Il player appare in fondo alla finestra con copertina, titolo e autore.",
+          "Con la freccia lo espandi a tutta pagina; con Esc o la freccia in giù torni alla barra.",
+          "La X chiude il player."
+        ]
+      },
+      "settings": {
+        "title": "Personalizzare l’app",
+        "where": "icona dell’ingranaggio in alto a destra.",
+        "steps": [
+          "Nella scheda «Generale» scegli lingua, dimensione del testo e tema chiaro o scuro.",
+          "Il tema «Sistema» segue l’impostazione di Windows.",
+          "Ogni scelta viene applicata subito e ricordata."
+        ]
+      }
+    }
   }
 }

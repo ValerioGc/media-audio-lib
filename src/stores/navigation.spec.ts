@@ -27,6 +27,26 @@ describe('useNavigationStore', () => {
     expect(navigation.isLibrary).toBe(false);
   });
 
+  it('l icona della guida fa da interruttore', () => {
+    const navigation = useNavigationStore();
+
+    navigation.toggleHelp();
+    expect(navigation.view).toBe('help');
+    expect(navigation.isHelp).toBe(true);
+
+    navigation.toggleHelp();
+    expect(navigation.view).toBe('library');
+  });
+
+  it('passa direttamente da una vista all altra', () => {
+    const navigation = useNavigationStore();
+    navigation.go('settings');
+
+    navigation.toggleHelp();
+
+    expect(navigation.view).toBe('help');
+  });
+
   it('l icona delle impostazioni fa da interruttore', () => {
     const navigation = useNavigationStore();
 

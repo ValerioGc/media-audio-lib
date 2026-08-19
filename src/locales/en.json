@@ -3,7 +3,8 @@
     "name": "Media Audio Lib"
   },
   "nav": {
-    "settings": "Settings"
+    "settings": "Settings",
+    "help": "Guide"
   },
   "settings": {
     "title": "Settings",
@@ -151,5 +152,72 @@
     "minimize": "Minimise",
     "maximize": "Maximise or restore",
     "close": "Close the application"
+  },
+  "help": {
+    "title": "Guide",
+    "subtitle": "How to use Media Audio Lib: where each feature lives and how to run it.",
+    "where": "Where:",
+    "topics": {
+      "import": {
+        "title": "Adding tracks and folders",
+        "where": "top bar of the Library, or by dropping onto the window.",
+        "steps": [
+          "Press \"Add tracks\" to pick one or more audio files.",
+          "Press \"Add folder\" to import all the music inside a folder, subfolders included.",
+          "You can also drop files or folders straight onto the window.",
+          "A summary then lists what was added, what was already there and what could not be imported. A clean import dismisses itself.",
+          "Files stay where they are: the library only keeps the list."
+        ]
+      },
+      "organize": {
+        "title": "Searching and sorting",
+        "where": "top bar and column headers, in the list view.",
+        "steps": [
+          "Type in the search box to filter by title, artist, album, genre or path.",
+          "Click a column header to sort the tracks.",
+          "Clicking the same column again reverses the order.",
+          "Tracks missing that field always sink to the bottom."
+        ]
+      },
+      "views": {
+        "title": "Switching view",
+        "where": "the two icons on the right of the Library bar.",
+        "steps": [
+          "The list icon shows the table with every column.",
+          "The grid icon shows the cover previews.",
+          "The chosen view is remembered next time you open the app."
+        ]
+      },
+      "metadata": {
+        "title": "Editing metadata",
+        "where": "pencil icon on the track row or card.",
+        "steps": [
+          "Open the editor with the pencil icon.",
+          "Edit name, artist, album, year and genre; the genre can be picked or typed.",
+          "Use \"Choose image…\" to replace the cover (PNG or JPEG, up to 5 MB).",
+          "Press \"Save\": the changes are written into the file tags, not just the library.",
+          "Leaving a field empty removes that value from the file."
+        ]
+      },
+      "player": {
+        "title": "Playing a track",
+        "where": "double click a row or a card; the player appears at the bottom.",
+        "steps": [
+          "Double click the track you want to hear.",
+          "The player shows up at the bottom with cover, title and artist.",
+          "The arrow expands it to full page; Esc or the down arrow returns to the bar.",
+          "The X closes the player."
+        ]
+      },
+      "settings": {
+        "title": "Personalising the app",
+        "where": "gear icon in the top right corner.",
+        "steps": [
+          "Under the \"General\" tab choose language, text size and light or dark theme.",
+          "The \"System\" theme follows the Windows setting.",
+          "Every choice applies straight away and is remembered."
+        ]
+      }
+    }
   }
 }

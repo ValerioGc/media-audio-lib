@@ -5,6 +5,7 @@ import TitleBar from '@/components/layout/TitleBar.vue';
 import PlayerDock from '@/components/player/PlayerDock.vue';
 import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
+import HelpView from '@/views/HelpView.vue';
 import LibraryView from '@/views/LibraryView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 
@@ -27,6 +28,7 @@ onBeforeUnmount(() => {
 
     <main class="app_shell_content">
       <SettingsView v-if="navigation.isSettings" />
+      <HelpView v-else-if="navigation.isHelp" />
       <LibraryView v-else />
     </main>
 

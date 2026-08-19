@@ -16,6 +16,9 @@ export const ICON_GLYPHS = {
   external: '↗',
   minimize: '─',
   maximize: '▢',
+  help: '?',
+  add: '＋',
+  search: '⌕',
 } as const;
 
 export type IconName = keyof typeof ICON_GLYPHS;

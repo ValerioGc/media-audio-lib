@@ -76,6 +76,29 @@ describe('TitleBar', () => {
     expect(navigation.view).toBe('library');
   });
 
+  it('apre la guida e ci torna indietro', async () => {
+    const options = withPinia();
+    const navigation = useNavigationStore();
+    const wrapper = mount(TitleBar, options);
+
+    await wrapper.get('[data-testid="open-help"]').trigger('click');
+    expect(navigation.view).toBe('help');
+
+    await wrapper.get('[data-testid="open-help"]').trigger('click');
+    expect(navigation.view).toBe('library');
+  });
+
+  it('passa dalle impostazioni alla guida senza tornare alla libreria', async () => {
+    const options = withPinia();
+    const navigation = useNavigationStore();
+    navigation.go('settings');
+    const wrapper = mount(TitleBar, options);
+
+    await wrapper.get('[data-testid="open-help"]').trigger('click');
+
+    expect(navigation.view).toBe('help');
+  });
+
   it('segnala quando le impostazioni sono aperte', async () => {
     const options = withPinia();
     useNavigationStore().go('settings');

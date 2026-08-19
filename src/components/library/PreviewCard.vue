@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
+import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import type { TrackView } from '@/types/library';
 
 defineProps<{
@@ -15,6 +15,8 @@ const emit = defineEmits<{
   select: [id: string];
   play: [track: TrackView];
   edit: [track: TrackView];
+  remove: [track: TrackView];
+  verify: [track: TrackView];
 }>();
 
 const { t } = useI18n();
@@ -44,15 +46,15 @@ const { t } = useI18n();
       </p>
     </div>
 
-    <AppButton
-      class="preview_card_edit"
-      variant="ghost"
-      :disabled="track.missing"
-      :aria-label="t('library.row.edit', { title: track.title })"
-      @click.stop="emit('edit', track)"
-    >
-      <AppIcon name="edit" />
-    </AppButton>
+    <!-- Same menu as the list view, so both views offer the same actions. -->
+    <div class="preview_card_actions">
+      <LibraryRowActions
+        :track="track"
+        @edit="emit('edit', $event)"
+        @remove="emit('remove', $event)"
+        @verify="emit('verify', $event)"
+      />
+    </div>
   </article>
 </template>
 
@@ -114,17 +116,20 @@ const { t } = useI18n();
     font-size: 0.75em;
   }
 
-  &_edit {
+  &_actions {
     position: absolute;
     top: $space_sm;
     right: $space_sm;
+    border-radius: $radius_md;
     background-color: var(--color_surface);
     opacity: 0;
     transition: opacity $duration_fast ease;
   }
 
-  &:hover &_edit,
-  &:focus-within &_edit {
+  // The menu stays visible while it is open, otherwise it would vanish under the pointer.
+  &:hover &_actions,
+  &:focus-within &_actions,
+  &_actions:has([aria-expanded='true']) {
     opacity: 1;
   }
 }

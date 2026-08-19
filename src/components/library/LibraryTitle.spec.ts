@@ -34,6 +34,16 @@ function mountTitle(libraries = catalogo) {
   return { wrapper, library };
 }
 
+/** Renaming has one entry point: the menu next to the name. */
+async function openRename(wrapper: VueWrapper) {
+  await wrapper.get('.app_menu_trigger').trigger('click');
+  const voce = wrapper
+    .findAll('.app_menu_item')
+    .find((item) => item.get('.app_menu_item_label').text() === 'Rinomina');
+
+  await voce?.trigger('click');
+}
+
 describe('LibraryTitle', () => {
   it('usa il nome della libreria e ripiega sul titolo generico', async () => {
     const { wrapper, library } = mountTitle();
@@ -46,12 +56,12 @@ describe('LibraryTitle', () => {
     expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
   });
 
-  it('apre il campo di modifica dall icona della penna', async () => {
+  it('apre il campo di modifica dal menu', async () => {
     const { wrapper, library } = mountTitle();
     library.libraryName = 'Archivio jazz';
     await wrapper.vm.$nextTick();
 
-    await wrapper.get('[data-testid="library-name-edit"]').trigger('click');
+    await openRename(wrapper);
 
     const campo = wrapper.get('[data-testid="library-name-field"]');
     expect((campo.element as HTMLInputElement).value).toBe('Archivio jazz');
@@ -65,7 +75,7 @@ describe('LibraryTitle', () => {
       return true;
     });
 
-    await wrapper.get('[data-testid="library-name-edit"]').trigger('click');
+    await openRename(wrapper);
     await wrapper.get('[data-testid="library-name-field"]').setValue('Colonne sonore');
     await wrapper.get('.library_title_form').trigger('submit');
 
@@ -77,7 +87,7 @@ describe('LibraryTitle', () => {
     const { wrapper, library } = mountTitle();
     vi.spyOn(library, 'renameLibrary').mockResolvedValue(false);
 
-    await wrapper.get('[data-testid="library-name-edit"]').trigger('click');
+    await openRename(wrapper);
     await wrapper.get('[data-testid="library-name-field"]').setValue('   ');
     await wrapper.get('.library_title_form').trigger('submit');
 
@@ -90,13 +100,13 @@ describe('LibraryTitle', () => {
     const rename = vi.spyOn(library, 'renameLibrary');
     await wrapper.vm.$nextTick();
 
-    await wrapper.get('[data-testid="library-name-edit"]').trigger('click');
+    await openRename(wrapper);
     await wrapper.get('[data-testid="library-name-field"]').setValue('Altro');
     await wrapper.get('[data-testid="library-name-cancel"]').trigger('click');
 
     expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
 
-    await wrapper.get('[data-testid="library-name-edit"]').trigger('click');
+    await openRename(wrapper);
     await wrapper.get('[data-testid="library-name-field"]').trigger('keydown.esc');
 
     expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
@@ -130,13 +140,11 @@ describe('LibraryTitle', () => {
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('rinomina dal menu apre lo stesso campo della penna', async () => {
+  it('accanto al nome non c e piu una penna: si passa dal menu', () => {
     const { wrapper } = mountTitle();
 
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
-
-    expect(wrapper.find('[data-testid="library-name-field"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="library-name-edit"]').exists()).toBe(false);
+    expect(wrapper.findAll('.library_title_action')).toHaveLength(0);
   });
 
   it('esporta la libreria aperta', async () => {

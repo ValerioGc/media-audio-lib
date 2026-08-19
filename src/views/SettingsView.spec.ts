@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '../../tests/support/mount';
 import { APP_NAME } from '@/config/app-config';
+import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
 
 import SettingsView from './SettingsView.vue';
@@ -78,5 +79,16 @@ describe('SettingsView', () => {
       'Text size',
       'Theme',
     ]);
+  });
+
+  it('riporta alla libreria', async () => {
+    const options = withPinia();
+    const navigation = useNavigationStore();
+    navigation.go('settings');
+    const wrapper = mount(SettingsView, options);
+
+    await wrapper.get('[data-testid="back-to-library"]').trigger('click');
+
+    expect(navigation.view).toBe('library');
   });
 });

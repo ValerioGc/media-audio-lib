@@ -40,14 +40,18 @@ describe('PreviewGrid', () => {
     expect(selected[0]?.get('.preview_card_title').text()).toBe(selectedTrack?.title);
   });
 
-  it('inoltra selezione e modifica', async () => {
+  it('inoltra selezione e azioni del menu', async () => {
     const track = makeTrack();
     const wrapper = mountGrid([track]);
 
     await wrapper.get('.preview_card').trigger('click');
-    await wrapper.get('.preview_card_edit').trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('select')).toEqual([[track.id]]);
     expect(wrapper.emitted('edit')).toEqual([[track]]);
+    expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 });

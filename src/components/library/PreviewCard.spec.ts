@@ -49,7 +49,6 @@ describe('PreviewCard', () => {
     const wrapper = mountCard(makeTrack({ missing: true }));
 
     expect(wrapper.get('.preview_card_badge').text()).toContain('File non più presente su disco');
-    expect(wrapper.get('.preview_card_edit').attributes('disabled')).toBeDefined();
   });
 
   it('emette la selezione al click e con Invio', async () => {
@@ -62,13 +61,38 @@ describe('PreviewCard', () => {
     expect(wrapper.emitted('select')).toEqual([[track.id], [track.id]]);
   });
 
-  it('emette la modifica senza selezionare la scheda', async () => {
+  it('offre dal menu le stesse azioni della vista elenco', async () => {
+    const wrapper = mountCard(makeTrack({ title: 'Brano' }));
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+
+    expect(
+      wrapper.findAll('.app_menu_item').map((voce) => voce.get('.app_menu_item_label').text()),
+    ).toEqual(['Modifica', 'Verifica', 'Elimina']);
+  });
+
+  it('emette modifica, verifica ed eliminazione senza selezionare la scheda', async () => {
     const track = makeTrack();
     const wrapper = mountCard(track);
 
-    await wrapper.get('.preview_card_edit').trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('edit')).toEqual([[track]]);
+    expect(wrapper.emitted('verify')).toEqual([[track]]);
+    expect(wrapper.emitted('remove')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
+  });
+
+  it('non fa modificare un file sparito dal disco', async () => {
+    const wrapper = mountCard(makeTrack({ missing: true }));
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+
+    expect(wrapper.findAll('.app_menu_item')[0]?.attributes('disabled')).toBeDefined();
   });
 });

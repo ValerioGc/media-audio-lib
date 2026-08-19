@@ -1,9 +1,10 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { resetI18n } from '../../tests/support/mount';
+import { resetI18n, withPinia } from '../../tests/support/mount';
 import { HELP_TOPICS } from '@/config/help';
-import { i18n, setI18nLocale } from '@/i18n';
+import { setI18nLocale } from '@/i18n';
+import { useNavigationStore } from '@/stores/navigation';
 
 import HelpView from './HelpView.vue';
 
@@ -12,7 +13,7 @@ beforeEach(() => {
 });
 
 function mountHelp() {
-  return mount(HelpView, { global: { plugins: [i18n] } });
+  return mount(HelpView, withPinia());
 }
 
 describe('HelpView', () => {
@@ -56,5 +57,15 @@ describe('HelpView', () => {
       'Adding tracks and folders',
     );
     expect(wrapper.get('.help_topic_where').text()).toContain('Where:');
+  });
+
+  it('riporta alla libreria', async () => {
+    const wrapper = mountHelp();
+    const navigation = useNavigationStore();
+    navigation.go('help');
+
+    await wrapper.get('[data-testid="back-to-library"]').trigger('click');
+
+    expect(navigation.view).toBe('library');
   });
 });

@@ -4,7 +4,8 @@
   },
   "nav": {
     "settings": "Settings",
-    "help": "Guide"
+    "help": "Guide",
+    "backToLibrary": "Back to the library"
   },
   "settings": {
     "title": "Settings",
@@ -65,7 +66,6 @@
   "library": {
     "title": "Library",
     "name": {
-      "edit": "Rename the library",
       "field": "Library name",
       "placeholder": "My library",
       "save": "Save the name",
@@ -257,9 +257,9 @@
       },
       "metadata": {
         "title": "Editing metadata",
-        "where": "pencil icon on the track row or card.",
+        "where": "three dots menu on the track row or card.",
         "steps": [
-          "Open the editor with the pencil icon.",
+          "Open the three dots menu and choose Edit.",
           "Edit name, artist, album, year and genre; the genre can be picked or typed.",
           "Use \"Choose image…\" to replace the cover (PNG or JPEG, up to 5 MB).",
           "Press \"Save\": the changes are written into the file tags, not just the library.",

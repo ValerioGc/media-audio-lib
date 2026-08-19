@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import BackToLibrary from '@/components/layout/BackToLibrary.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
 import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
@@ -21,6 +22,8 @@ const tabs = computed(() => [
 
 <template>
   <div class="settings_view">
+    <BackToLibrary />
+
     <header class="settings_view_header">
       <h1 class="settings_view_title">{{ t('settings.title') }}</h1>
       <p class="settings_view_subtitle">{{ t('settings.subtitle') }}</p>

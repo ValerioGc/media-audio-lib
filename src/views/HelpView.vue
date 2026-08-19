@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n';
 
 import HelpTopicCard from '@/components/help/HelpTopicCard.vue';
+import BackToLibrary from '@/components/layout/BackToLibrary.vue';
 import { HELP_TOPICS } from '@/config/help';
 
 const { t } = useI18n();
@@ -9,6 +10,8 @@ const { t } = useI18n();
 
 <template>
   <div class="help_view">
+    <BackToLibrary />
+
     <header class="help_view_header">
       <h1 class="help_view_title">{{ t('help.title') }}</h1>
       <p class="help_view_subtitle">{{ t('help.subtitle') }}</p>

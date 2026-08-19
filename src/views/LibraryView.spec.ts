@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '../../tests/support/mount';
 import { makeTrack, makeTracks } from '../../tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 
 import LibraryView from './LibraryView.vue';
 
@@ -173,5 +174,27 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_table_sort')[3]?.trigger('click');
 
     expect(store.sort).toEqual({ column: 'year', direction: 'asc' });
+  });
+
+  it('offre le stesse azioni anche nella vista anteprima', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    settings.viewMode = 'preview';
+    const track = makeTrack();
+    store.tracks = [track];
+    const remove = vi.spyOn(store, 'remove').mockResolvedValue();
+    const verify = vi.spyOn(store, 'verifyTrack').mockResolvedValue(track);
+    await flushPromises();
+
+    await wrapper.get('.preview_card .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.preview_card .app_menu_item')[1]?.trigger('click');
+    expect(verify).toHaveBeenCalledWith(track);
+
+    await wrapper.get('.preview_card .app_menu_trigger').trigger('click');
+    await wrapper.findAll('.preview_card .app_menu_item')[2]?.trigger('click');
+    await wrapper.get('[data-testid="confirm-remove"]').trigger('click');
+    await flushPromises();
+
+    expect(remove).toHaveBeenCalledWith(track.id);
   });
 });

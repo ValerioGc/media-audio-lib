@@ -83,6 +83,8 @@ async function confirmRemoval() {
       @select="library.select($event)"
       @play="startPlayback($event)"
       @edit="library.openEditor($event.id)"
+      @remove="askRemoval"
+      @verify="library.verifyTrack($event)"
     />
     <LibraryTable
       v-else

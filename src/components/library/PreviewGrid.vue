@@ -11,6 +11,8 @@ const emit = defineEmits<{
   select: [id: string];
   play: [track: TrackView];
   edit: [track: TrackView];
+  remove: [track: TrackView];
+  verify: [track: TrackView];
 }>();
 </script>
 
@@ -23,6 +25,8 @@ const emit = defineEmits<{
         @select="emit('select', $event)"
         @play="emit('play', $event)"
         @edit="emit('edit', $event)"
+        @remove="emit('remove', $event)"
+        @verify="emit('verify', $event)"
       />
     </div>
   </div>

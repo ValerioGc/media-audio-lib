@@ -21,6 +21,7 @@ export const ICON_GLYPHS = {
   minimize: '─',
   maximize: '▢',
   help: '?',
+  back: '←',
   add: '＋',
   search: '⌕',
   more: '⋮',

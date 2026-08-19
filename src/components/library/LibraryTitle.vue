@@ -125,18 +125,8 @@ async function submit() {
       </button>
     </form>
 
-    <template v-else>
-      <h1 class="library_title_name">{{ displayName }}</h1>
-      <button
-        class="library_title_action"
-        type="button"
-        :aria-label="t('library.name.edit')"
-        data-testid="library-name-edit"
-        @click="startEditing"
-      >
-        <AppIcon name="edit" />
-      </button>
-    </template>
+    <!-- Renaming starts from the menu: no separate pen next to the name. -->
+    <h1 v-else class="library_title_name">{{ displayName }}</h1>
 
     <AppMenu :items="menuItems" :label="t('library.name.actions')" @select="run" />
 

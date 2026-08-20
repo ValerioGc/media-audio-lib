@@ -1,4 +1,5 @@
 import { isTauriRuntime } from '@/config/app-config';
+import { normalizeAccentColor } from '@/services/accent';
 import {
   DEFAULT_SETTINGS,
   DEFAULT_TABLE_COLUMNS,
@@ -106,6 +107,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     locale: pickKnown(LOCALES, source.locale, DEFAULT_SETTINGS.locale),
     textSize: pickKnown(TEXT_SIZES, source.textSize, DEFAULT_SETTINGS.textSize),
     theme: pickKnown(THEME_CHOICES, source.theme, DEFAULT_SETTINGS.theme),
+    accentColor: normalizeAccentColor(source.accentColor) ?? DEFAULT_SETTINGS.accentColor,
     viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
     mainLibraryId:
       typeof source.mainLibraryId === 'string' && source.mainLibraryId.trim().length > 0

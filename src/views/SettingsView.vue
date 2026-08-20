@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
+import AccentColorPicker from '@/components/settings/AccentColorPicker.vue';
 import CoverGradientToggle from '@/components/settings/CoverGradientToggle.vue';
 import DefaultPlayerPanel from '@/components/settings/DefaultPlayerPanel.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
@@ -69,6 +70,13 @@ const tabs = computed(() => [
             :description="t('settings.theme.description')"
           >
             <ThemeSwitch />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.accent.title')"
+            :description="t('settings.accent.description')"
+          >
+            <AccentColorPicker />
           </SettingsSection>
 
           <div class="settings_view_divider" role="presentation">

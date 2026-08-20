@@ -38,6 +38,14 @@
         "system": "System"
       }
     },
+    "accent": {
+      "title": "Accent colour",
+      "description": "Colour of the controls, buttons and active elements of the interface.",
+      "swatch": "Colour {color}",
+      "custom": "Custom",
+      "reset": "Reset to blue",
+      "hint": "The colour is lightened or darkened automatically so it stays readable on both the light and the dark theme."
+    },
     "coverGradient": {
       "title": "Cover background",
       "description": "Use the dominant cover color for the player background and the playing row.",

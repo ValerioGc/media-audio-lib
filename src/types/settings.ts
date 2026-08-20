@@ -9,6 +9,24 @@ export type ThemeChoice = (typeof THEME_CHOICES)[number];
 
 export type ResolvedTheme = 'light' | 'dark';
 
+/** Accent colours offered as swatches. The first one is the default of the interface. */
+export const ACCENT_PRESETS = [
+  '#0067c0',
+  '#0099bc',
+  '#038387',
+  '#107c10',
+  '#498205',
+  '#986f0b',
+  '#ca5010',
+  '#c42b1c',
+  '#e3008c',
+  '#c239b3',
+  '#8764b8',
+  '#4f6bed',
+] as const;
+
+export const DEFAULT_ACCENT_COLOR = ACCENT_PRESETS[0];
+
 export const VIEW_MODES = ['table', 'preview'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
@@ -65,6 +83,7 @@ export interface AppSettings {
   locale: Locale;
   textSize: TextSize;
   theme: ThemeChoice;
+  accentColor: string;
   viewMode: ViewMode;
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
@@ -79,6 +98,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   locale: 'it',
   textSize: 'medium',
   theme: 'system',
+  accentColor: DEFAULT_ACCENT_COLOR,
   viewMode: 'preview',
   mainLibraryId: null,
   coverGradientEnabled: true,

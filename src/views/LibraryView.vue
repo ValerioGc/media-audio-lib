@@ -16,12 +16,13 @@ import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
+import BulkMetadataEditor from '@/components/metadata/BulkMetadataEditor.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
 import { useFileDrop } from '@/composables/useFileDrop';
 import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
-import type { LibraryContentTab, TrackView } from '@/types/library';
+import type { LibraryContentTab, TrackSelectionIntent, TrackView } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
@@ -33,6 +34,8 @@ const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const activeTab = ref<LibraryContentTab>('tracks');
 const facetViewMode = ref<ViewMode>('preview');
 const groupModalViewMode = ref<ViewMode>('preview');
+const selectionAnchorId = ref<string | null>(null);
+const isBulkEditorOpen = ref(false);
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   if (activeTab.value === 'artists') {
@@ -110,6 +113,34 @@ function openFacet(group: FacetGroupOpenPayload) {
   selectedFacet.value = group;
 }
 
+function selectFromTracks(intent: TrackSelectionIntent, tracks: readonly TrackView[]) {
+  if (intent.range && selectionAnchorId.value !== null) {
+    const anchorIndex = tracks.findIndex((track) => track.id === selectionAnchorId.value);
+    const targetIndex = tracks.findIndex((track) => track.id === intent.id);
+
+    if (anchorIndex >= 0 && targetIndex >= 0) {
+      const start = Math.min(anchorIndex, targetIndex);
+      const end = Math.max(anchorIndex, targetIndex);
+      library.setSelected(tracks.slice(start, end + 1).map((track) => track.id));
+      return;
+    }
+  }
+
+  if (intent.additive) {
+    library.toggleSelected(intent.id);
+  } else {
+    library.select(intent.id);
+  }
+
+  selectionAnchorId.value = intent.id;
+}
+
+function openBulkEditor() {
+  if (library.selectedTracks.length > 1) {
+    isBulkEditorOpen.value = true;
+  }
+}
+
 function setDisplayedViewMode(mode: ViewMode) {
   if (activeTab.value === 'tracks') {
     settings.setViewMode(mode);
@@ -130,10 +161,15 @@ async function confirmRemoval() {
 </script>
 
 <template>
-  <div class="library_view" :class="{ library_view_dropping: isDraggingOver }">
+  <div class="library_view">
     <header class="library_view_header">
       <LibraryTitle />
-      <LibraryToolbar :view-mode="displayedViewMode" @update:view-mode="setDisplayedViewMode" />
+      <LibraryToolbar
+        :view-mode="displayedViewMode"
+        :selected-count="library.selectedIds.length"
+        @update:view-mode="setDisplayedViewMode"
+        @edit-selected="openBulkEditor"
+      />
     </header>
 
     <p v-if="library.errorKey !== null" class="library_view_error" role="alert">
@@ -189,6 +225,7 @@ async function confirmRemoval() {
       <section
         :id="`library-panel-${activeTab}`"
         class="library_view_panel"
+        :class="{ library_view_panel_dropping: isDraggingOver }"
         role="tabpanel"
         :aria-labelledby="`library-tab-${activeTab}`"
       >
@@ -199,9 +236,9 @@ async function confirmRemoval() {
         <PreviewGrid
           v-else-if="activeTab === 'tracks' && settings.viewMode === 'preview'"
           :tracks="library.visibleTracks"
-          :selected-id="library.selectedId"
+          :selected-ids="library.selectedIds"
           :playing-id="player.currentTrack?.id ?? null"
-          @select="library.select($event)"
+          @select="selectFromTracks($event, library.visibleTracks)"
           @play="startPlayback($event)"
           @edit="library.openEditor($event.id)"
           @remove="askRemoval"
@@ -211,10 +248,10 @@ async function confirmRemoval() {
           v-else-if="activeTab === 'tracks'"
           :tracks="library.visibleTracks"
           :sort="library.sort"
-          :selected-id="library.selectedId"
+          :selected-ids="library.selectedIds"
           :playing-id="player.currentTrack?.id ?? null"
           @sort="library.toggleSort($event)"
-          @select="library.select($event)"
+          @select="selectFromTracks($event, library.visibleTracks)"
           @play="startPlayback($event)"
           @edit="library.openEditor($event.id)"
           @remove="askRemoval"
@@ -253,9 +290,9 @@ async function confirmRemoval() {
         <PreviewGrid
           v-if="groupModalViewMode === 'preview'"
           :tracks="selectedFacetTracks"
-          :selected-id="library.selectedId"
+          :selected-ids="library.selectedIds"
           :playing-id="player.currentTrack?.id ?? null"
-          @select="library.select($event)"
+          @select="selectFromTracks($event, selectedFacetTracks)"
           @play="startFacetPlayback($event)"
           @edit="openEditor"
           @remove="askRemoval"
@@ -265,10 +302,10 @@ async function confirmRemoval() {
           v-else
           :tracks="selectedFacetTracks"
           :sort="library.sort"
-          :selected-id="library.selectedId"
+          :selected-ids="library.selectedIds"
           :playing-id="player.currentTrack?.id ?? null"
           @sort="library.toggleSort($event)"
-          @select="library.select($event)"
+          @select="selectFromTracks($event, selectedFacetTracks)"
           @play="startFacetPlayback($event)"
           @edit="openEditor"
           @remove="askRemoval"
@@ -285,6 +322,12 @@ async function confirmRemoval() {
       v-if="library.editingTrack !== null"
       :track="library.editingTrack"
       @close="library.closeEditor()"
+    />
+
+    <BulkMetadataEditor
+      v-if="isBulkEditorOpen"
+      :tracks="library.selectedTracks"
+      @close="isBulkEditorOpen = false"
     />
 
     <AppModal
@@ -313,10 +356,6 @@ async function confirmRemoval() {
   border: 2px dashed transparent;
   border-radius: $radius_lg;
   transition: border-color $duration_fast ease;
-
-  &_dropping {
-    border-color: var(--color_accent);
-  }
 
   &_header {
     display: flex;
@@ -350,6 +389,16 @@ async function confirmRemoval() {
     flex: 1;
     flex-direction: column;
     min-height: 0;
+    border: 2px dashed transparent;
+    border-radius: $radius_lg;
+    transition:
+      background-color $duration_fast ease,
+      border-color $duration_fast ease;
+
+    &_dropping {
+      border-color: var(--color_accent);
+      background-color: var(--color_accent_soft);
+    }
   }
 
   &_group_modal {

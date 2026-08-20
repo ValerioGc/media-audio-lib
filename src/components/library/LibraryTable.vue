@@ -12,19 +12,24 @@ import {
   visibleTableColumns,
 } from '@/services/table-columns';
 import { useSettingsStore } from '@/stores/settings';
-import { type SortState, type SortableColumn, type TrackView } from '@/types/library';
+import {
+  type SortState,
+  type SortableColumn,
+  type TrackSelectionIntent,
+  type TrackView,
+} from '@/types/library';
 import type { TableColumnKey } from '@/types/settings';
 
 const props = defineProps<{
   tracks: readonly TrackView[];
   sort: SortState;
-  selectedId: string | null;
+  selectedIds: readonly string[];
   playingId: string | null;
 }>();
 
 const emit = defineEmits<{
   sort: [column: SortableColumn];
-  select: [id: string];
+  select: [intent: TrackSelectionIntent];
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
@@ -166,7 +171,7 @@ onUnmounted(stopResize);
             :key="track.id"
             :track="track"
             :columns="columns"
-            :selected="track.id === selectedId"
+            :selected="selectedIds.includes(track.id)"
             :playing="track.id === playingId"
             @select="emit('select', $event)"
             @play="emit('play', $event)"

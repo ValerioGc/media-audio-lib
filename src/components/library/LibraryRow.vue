@@ -8,7 +8,7 @@ import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import { tableColumnValue } from '@/services/table-columns';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
-import type { TrackView } from '@/types/library';
+import type { TrackSelectionIntent, TrackView } from '@/types/library';
 import type { TableColumnSetting } from '@/types/settings';
 
 const props = defineProps<{
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  select: [id: string];
+  select: [intent: TrackSelectionIntent];
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
@@ -49,6 +49,14 @@ function valueFor(column: TableColumnSetting): string {
     t('library.row.present'),
   );
 }
+
+function select(event: MouseEvent | KeyboardEvent) {
+  emit('select', {
+    id: props.track.id,
+    additive: event instanceof MouseEvent && (event.ctrlKey || event.metaKey),
+    range: event.shiftKey,
+  });
+}
 </script>
 
 <template>
@@ -64,9 +72,9 @@ function valueFor(column: TableColumnSetting): string {
     tabindex="0"
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
-    @click="emit('select', track.id)"
+    @click="select($event)"
     @dblclick="emit('play', track)"
-    @keydown.enter="emit('select', track.id)"
+    @keydown.enter="select($event)"
   >
     <span v-for="column in columns" :key="column.key" class="library_row_cell" role="cell">
       <LibraryCoverCell v-if="column.key === 'cover'" :track="track" />

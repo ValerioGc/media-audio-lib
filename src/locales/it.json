@@ -145,12 +145,14 @@
     },
     "toolbar": {
       "add": "Aggiungi brani",
+      "addFiles": "File audio",
       "adding": "Importazione in corso…",
       "search": "Cerca nella libreria",
       "searchPlaceholder": "Titolo, album o genere",
       "count": "nessun brano | 1 brano | {count} brani",
       "missing": "1 file non trovato | {count} file non trovati",
       "addFolder": "Aggiungi cartella",
+      "editSelected": "Modifica {count} selezionati",
       "missingInfo": {
         "label": "Mancanti",
         "active": "Mancanti: {filter}",
@@ -320,6 +322,10 @@
     "save": "Salva",
     "saving": "Salvataggio…",
     "cancel": "Annulla",
+    "bulk": {
+      "title": "Modifica {count} brani",
+      "description": "Abilita solo i campi da applicare a tutti i brani selezionati. Il nome del brano resta individuale."
+    },
     "fields": {
       "title": "Nome",
       "artist": "Autore",

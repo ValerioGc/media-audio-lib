@@ -13,10 +13,10 @@ beforeEach(() => {
 
 function mountGrid(
   tracks: TrackView[],
-  selectedId: string | null = null,
+  selectedIds: string[] = [],
   playingId: string | null = null,
 ) {
-  return mount(PreviewGrid, { ...withPinia(), props: { tracks, selectedId, playingId } });
+  return mount(PreviewGrid, { ...withPinia(), props: { tracks, selectedIds, playingId } });
 }
 
 describe('PreviewGrid', () => {
@@ -36,7 +36,7 @@ describe('PreviewGrid', () => {
   it('marks only the current card as selected', () => {
     const tracks = makeTracks(3);
     const selectedTrack = tracks[1];
-    const wrapper = mountGrid(tracks, selectedTrack?.id ?? null);
+    const wrapper = mountGrid(tracks, selectedTrack === undefined ? [] : [selectedTrack.id]);
 
     const selected = wrapper.findAll('.preview_card_selected');
 
@@ -47,7 +47,7 @@ describe('PreviewGrid', () => {
   it('marks only the current card as playing', () => {
     const tracks = makeTracks(3);
     const playingTrack = tracks[2];
-    const wrapper = mountGrid(tracks, null, playingTrack?.id ?? null);
+    const wrapper = mountGrid(tracks, [], playingTrack?.id ?? null);
 
     const playing = wrapper.findAll('.preview_card_playing');
 
@@ -65,7 +65,7 @@ describe('PreviewGrid', () => {
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
-    expect(wrapper.emitted('select')).toEqual([[track.id]]);
+    expect(wrapper.emitted('select')).toEqual([[{ id: track.id, additive: false, range: false }]]);
     expect(wrapper.emitted('edit')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });

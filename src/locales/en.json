@@ -145,12 +145,14 @@
     },
     "toolbar": {
       "add": "Add tracks",
+      "addFiles": "Audio files",
       "adding": "Importing…",
       "search": "Search the library",
       "searchPlaceholder": "Title, album or genre",
       "count": "no tracks | 1 track | {count} tracks",
       "missing": "1 missing file | {count} missing files",
       "addFolder": "Add folder",
+      "editSelected": "Edit {count} selected",
       "missingInfo": {
         "label": "Missing",
         "active": "Missing: {filter}",
@@ -320,6 +322,10 @@
     "save": "Save",
     "saving": "Saving…",
     "cancel": "Cancel",
+    "bulk": {
+      "title": "Edit {count} tracks",
+      "description": "Enable only the fields to apply to every selected track. The track name stays individual."
+    },
     "fields": {
       "title": "Name",
       "artist": "Artist",

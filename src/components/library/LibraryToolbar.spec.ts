@@ -47,15 +47,28 @@ describe('LibraryToolbar', () => {
     expect(wrapper.get('.library_toolbar_missing').text()).toBe('1 file non trovato');
   });
 
-  it('opens the system dialog from the add button', async () => {
+  it('opens the system dialog from the unified add menu', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     const pickAndAdd = vi.spyOn(store, 'pickAndAdd').mockResolvedValue(null);
 
     const wrapper = mount(LibraryToolbar, options);
-    await wrapper.get('button').trigger('click');
+    await wrapper.get('[data-testid="library-import-open"]').trigger('click');
+    await wrapper.findAll('.library_import_button_item')[0]?.trigger('click');
 
     expect(pickAndAdd).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens the folder dialog from the unified add menu', async () => {
+    const options = withPinia();
+    const store = useLibraryStore();
+    const pickFoldersAndAdd = vi.spyOn(store, 'pickFoldersAndAdd').mockResolvedValue(null);
+
+    const wrapper = mount(LibraryToolbar, options);
+    await wrapper.get('[data-testid="library-import-open"]').trigger('click');
+    await wrapper.findAll('.library_import_button_item')[1]?.trigger('click');
+
+    expect(pickFoldersAndAdd).toHaveBeenCalledTimes(1);
   });
 
   it('blocca il pulsante durante l import', async () => {
@@ -66,8 +79,10 @@ describe('LibraryToolbar', () => {
     const wrapper = mount(LibraryToolbar, options);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('button').attributes('disabled')).toBeDefined();
-    expect(wrapper.get('button').text()).toBe('Importazione in corso…');
+    expect(wrapper.get('[data-testid="library-import-open"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="library-import-open"]').text()).toContain(
+      'Importazione in corso…',
+    );
   });
 
   it('updates search in the store', async () => {
@@ -95,5 +110,13 @@ describe('LibraryToolbar', () => {
     await wrapper.vm.$nextTick();
 
     expect(wrapper.get('[data-testid="missing-info-active"]').text()).toBe('Mancanti: Autore');
+  });
+
+  it('offers batch editing only for multiple selected tracks', async () => {
+    const wrapper = mount(LibraryToolbar, { ...withPinia(), props: { selectedCount: 2 } });
+
+    await wrapper.get('[data-testid="bulk-edit-open"]').trigger('click');
+
+    expect(wrapper.emitted('editSelected')).toHaveLength(1);
   });
 });

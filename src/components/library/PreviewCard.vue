@@ -4,16 +4,16 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
-import type { TrackView } from '@/types/library';
+import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
-defineProps<{
+const props = defineProps<{
   track: TrackView;
   selected: boolean;
   playing: boolean;
 }>();
 
 const emit = defineEmits<{
-  select: [id: string];
+  select: [intent: TrackSelectionIntent];
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
@@ -21,6 +21,14 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+
+function select(event: MouseEvent | KeyboardEvent) {
+  emit('select', {
+    id: props.track.id,
+    additive: event instanceof MouseEvent && (event.ctrlKey || event.metaKey),
+    range: event.shiftKey,
+  });
+}
 </script>
 
 <template>
@@ -34,9 +42,9 @@ const { t } = useI18n();
     tabindex="0"
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
-    @click="emit('select', track.id)"
+    @click="select($event)"
     @dblclick="emit('play', track)"
-    @keydown.enter="emit('select', track.id)"
+    @keydown.enter="select($event)"
   >
     <CoverImage :track="track" size="card" />
 

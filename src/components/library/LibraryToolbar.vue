@@ -4,12 +4,16 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
+import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
 import type { ViewMode } from '@/types/settings';
 
-defineProps<{ viewMode?: ViewMode | undefined }>();
-const emit = defineEmits<{ 'update:viewMode': [mode: ViewMode] }>();
+defineProps<{ viewMode?: ViewMode | undefined; selectedCount?: number }>();
+const emit = defineEmits<{
+  'update:viewMode': [mode: ViewMode];
+  editSelected: [];
+}>();
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -22,13 +26,7 @@ const searchValue = computed({
 
 <template>
   <div class="library_toolbar">
-    <AppButton variant="primary" :disabled="library.isImporting" @click="library.pickAndAdd()">
-      {{ library.isImporting ? t('library.toolbar.adding') : t('library.toolbar.add') }}
-    </AppButton>
-
-    <AppButton :disabled="library.isImporting" @click="library.pickFoldersAndAdd()">
-      {{ t('library.toolbar.addFolder') }}
-    </AppButton>
+    <LibraryImportButton />
 
     <AppInput
       v-model="searchValue"
@@ -58,6 +56,14 @@ const searchValue = computed({
         }}
       </span>
     </p>
+
+    <AppButton
+      v-if="(selectedCount ?? 0) > 1"
+      data-testid="bulk-edit-open"
+      @click="emit('editSelected')"
+    >
+      {{ t('library.toolbar.editSelected', { count: selectedCount }) }}
+    </AppButton>
 
     <!-- The view switch sits at the far right of the toolbar. -->
     <LibraryViewToggle

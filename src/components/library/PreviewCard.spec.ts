@@ -66,7 +66,10 @@ describe('PreviewCard', () => {
     await wrapper.trigger('click');
     await wrapper.trigger('keydown.enter');
 
-    expect(wrapper.emitted('select')).toEqual([[track.id], [track.id]]);
+    expect(wrapper.emitted('select')).toEqual([
+      [{ id: track.id, additive: false, range: false }],
+      [{ id: track.id, additive: false, range: false }],
+    ]);
   });
 
   it('offers the same actions as list view from the menu', async () => {

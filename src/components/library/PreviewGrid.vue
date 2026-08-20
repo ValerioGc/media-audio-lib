@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import PreviewCard from '@/components/library/PreviewCard.vue';
-import type { TrackView } from '@/types/library';
+import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
 defineProps<{
   tracks: readonly TrackView[];
-  selectedId: string | null;
+  selectedIds: readonly string[];
   playingId: string | null;
 }>();
 
 const emit = defineEmits<{
-  select: [id: string];
+  select: [intent: TrackSelectionIntent];
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
@@ -22,7 +22,7 @@ const emit = defineEmits<{
     <div v-for="track in tracks" :key="track.id" class="preview_grid_item" role="listitem">
       <PreviewCard
         :track="track"
-        :selected="track.id === selectedId"
+        :selected="selectedIds.includes(track.id)"
         :playing="track.id === playingId"
         @select="emit('select', $event)"
         @play="emit('play', $event)"

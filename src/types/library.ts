@@ -19,6 +19,12 @@ export interface TrackView extends Track {
   standalone?: boolean;
 }
 
+export interface TrackSelectionIntent {
+  id: string;
+  additive: boolean;
+  range: boolean;
+}
+
 export interface FailedImport {
   path: string;
   reason: string;

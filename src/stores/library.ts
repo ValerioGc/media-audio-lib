@@ -63,6 +63,12 @@ function uniqueTrackValues(
   ].sort((left, right) => left.localeCompare(right));
 }
 
+function keepExistingIds(ids: readonly string[], tracks: readonly TrackView[]): string[] {
+  const known = new Set(tracks.map((track) => track.id));
+
+  return ids.filter((id) => known.has(id));
+}
+
 export const useLibraryStore = defineStore('library', () => {
   const verification = useTrackFileVerification();
   const libraryName = ref('');
@@ -74,7 +80,7 @@ export const useLibraryStore = defineStore('library', () => {
   const query = ref('');
   const missingInfoFilter = ref<MissingInfoFilter>('all');
   const sort = ref<SortState>({ ...DEFAULT_SORT });
-  const selectedId = ref<string | null>(null);
+  const selectedIds = ref<string[]>([]);
   const editingId = ref<string | null>(null);
   const isLoading = ref(false);
   const isImporting = ref(false);
@@ -91,6 +97,12 @@ export const useLibraryStore = defineStore('library', () => {
   );
   const visibleTracks = computed(() =>
     filterAndSort(tracksMatchingMissingInfo.value, query.value, sort.value),
+  );
+  const selectedId = computed(() => selectedIds.value.at(-1) ?? null);
+  const selectedTracks = computed(() =>
+    selectedIds.value
+      .map((id) => tracks.value.find((track) => track.id === id))
+      .filter((track): track is TrackView => track !== undefined),
   );
   const editingTrack = computed(
     () => tracks.value.find((track) => track.id === editingId.value) ?? null,
@@ -129,6 +141,7 @@ export const useLibraryStore = defineStore('library', () => {
       const [info, loadedTracks] = await Promise.all([api.libraryInfo(), api.listTracks()]);
       libraryName.value = info.name;
       tracks.value = loadedTracks;
+      selectedIds.value = keepExistingIds(selectedIds.value, loadedTracks);
     } catch (error) {
       fail(error);
     } finally {
@@ -218,7 +231,7 @@ export const useLibraryStore = defineStore('library', () => {
 
     try {
       await api.switchLibrary(id);
-      selectedId.value = null;
+      selectedIds.value = [];
       editingId.value = null;
       lastReport.value = null;
       covers.value = new Map();
@@ -242,7 +255,7 @@ export const useLibraryStore = defineStore('library', () => {
 
       if (wasActive) {
         covers.value = new Map();
-        selectedId.value = null;
+        selectedIds.value = [];
         editingId.value = null;
         await load();
       }
@@ -350,6 +363,7 @@ export const useLibraryStore = defineStore('library', () => {
       const report = await api.addTracks(paths);
       lastReport.value = report;
       tracks.value = await api.listTracks();
+      selectedIds.value = keepExistingIds(selectedIds.value, tracks.value);
 
       return report;
     } catch (error) {
@@ -385,10 +399,7 @@ export const useLibraryStore = defineStore('library', () => {
       await api.removeTrack(id);
       tracks.value = tracks.value.filter((track) => track.id !== id);
       covers.value.delete(id);
-
-      if (selectedId.value === id) {
-        selectedId.value = null;
-      }
+      selectedIds.value = selectedIds.value.filter((selected) => selected !== id);
     } catch (error) {
       fail(error);
     }
@@ -542,7 +553,17 @@ export const useLibraryStore = defineStore('library', () => {
   }
 
   function select(id: string | null) {
-    selectedId.value = id;
+    selectedIds.value = id === null ? [] : [id];
+  }
+
+  function setSelected(ids: readonly string[]) {
+    selectedIds.value = keepExistingIds([...new Set(ids)], tracks.value);
+  }
+
+  function toggleSelected(id: string) {
+    selectedIds.value = selectedIds.value.includes(id)
+      ? selectedIds.value.filter((selected) => selected !== id)
+      : [...selectedIds.value, id];
   }
 
   function dismissReport() {
@@ -558,6 +579,7 @@ export const useLibraryStore = defineStore('library', () => {
     query,
     sort,
     selectedId,
+    selectedIds,
     editingId,
     isLoading,
     isImporting,
@@ -576,6 +598,7 @@ export const useLibraryStore = defineStore('library', () => {
     visibleTracks,
     tracksMatchingMissingInfo,
     editingTrack,
+    selectedTracks,
     isEmpty,
     activeLibraryId,
     canDeleteLibrary,
@@ -614,6 +637,8 @@ export const useLibraryStore = defineStore('library', () => {
     setMissingInfoFilter,
     toggleSort,
     select,
+    setSelected,
+    toggleSelected,
     dismissReport,
     dismissVerification,
   };

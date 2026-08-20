@@ -339,4 +339,23 @@ describe('LibraryView', () => {
 
     expect(remove).toHaveBeenCalledWith(track.id);
   });
+
+  it('selects multiple tracks with Ctrl and Shift and opens bulk editing', async () => {
+    const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
+    const tracks = makeTracks(4);
+    store.tracks = tracks;
+    await flushPromises();
+
+    await wrapper.findAll('.library_row')[0]?.trigger('click');
+    await wrapper.findAll('.library_row')[2]?.trigger('click', { ctrlKey: true });
+    expect(store.selectedIds).toEqual([tracks[0]?.id, tracks[2]?.id]);
+
+    await wrapper.findAll('.library_row')[3]?.trigger('click', { shiftKey: true });
+    expect(store.selectedIds).toEqual([tracks[2]?.id, tracks[3]?.id]);
+
+    await wrapper.get('[data-testid="bulk-edit-open"]').trigger('click');
+
+    expect(wrapper.find('[data-testid="bulk-metadata-editor"]').exists()).toBe(true);
+  });
 });

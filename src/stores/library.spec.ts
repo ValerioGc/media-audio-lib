@@ -252,6 +252,21 @@ describe('removal', () => {
     expect(removeTrack).toHaveBeenCalledWith(first.id);
   });
 
+  it('keeps multiple selected tracks and drops removed ids', async () => {
+    const store = useLibraryStore();
+    const [first, second, third] = [makeTrack(), makeTrack(), makeTrack()];
+    listTracks.mockResolvedValue([first, second, third]);
+    await store.load();
+
+    store.setSelected([first.id, second.id]);
+    store.toggleSelected(third.id);
+    await store.remove(second.id);
+
+    expect(store.selectedIds).toEqual([first.id, third.id]);
+    expect(store.selectedTracks.map((track) => track.id)).toEqual([first.id, third.id]);
+    expect(store.selectedId).toBe(third.id);
+  });
+
   it('updates metadata suggestions when tracks are removed', async () => {
     const store = useLibraryStore();
     const first = makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' });

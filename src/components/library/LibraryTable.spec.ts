@@ -19,7 +19,7 @@ function mountTable(
 ) {
   return mount(LibraryTable, {
     ...withPinia(),
-    props: { tracks, sort, selectedId: null, playingId },
+    props: { tracks, sort, selectedIds: [], playingId },
   });
 }
 
@@ -68,7 +68,7 @@ describe('LibraryTable', () => {
       props: {
         tracks: [makeTrack({ format: 'flac' })],
         sort: DEFAULT_SORT,
-        selectedId: null,
+        selectedIds: [],
         playingId: null,
       },
     });
@@ -89,7 +89,7 @@ describe('LibraryTable', () => {
 
     const wrapper = mount(LibraryTable, {
       ...options,
-      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedId: null, playingId: null },
+      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedIds: [], playingId: null },
     });
     const headings = wrapper
       .findAll('[role="columnheader"]')
@@ -143,7 +143,7 @@ describe('LibraryTable', () => {
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
     await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
 
-    expect(wrapper.emitted('select')).toEqual([[track.id]]);
+    expect(wrapper.emitted('select')).toEqual([[{ id: track.id, additive: false, range: false }]]);
     expect(wrapper.emitted('edit')).toEqual([[track]]);
     expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);

@@ -106,9 +106,7 @@ describe('draftErrors', () => {
 describe('toUpdate', () => {
   it('trims whitespace and converts the year', () => {
     expect(
-      toUpdate(
-        draft({ title: '  Title  ', artist: ' Artist ', album: ' Album ', year: ' 1999 ' }),
-      ),
+      toUpdate(draft({ title: '  Title  ', artist: ' Artist ', album: ' Album ', year: ' 1999 ' })),
     ).toEqual({
       title: 'Title',
       artist: 'Artist',

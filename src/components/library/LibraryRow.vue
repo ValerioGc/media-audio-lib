@@ -116,9 +116,7 @@ const accentStyle = computed(() =>
   }
 
   &_playing[style*='--cover_row_gradient'] {
-    background:
-      var(--cover_row_gradient),
-      var(--color_surface);
+    background: var(--cover_row_gradient), var(--color_surface);
   }
 
   &_cell {

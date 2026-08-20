@@ -20,11 +20,7 @@ function liftDarkColor(red: number, green: number, blue: number): [number, numbe
 
   const lift = 104 - luminance;
 
-  return [
-    red + lift * 0.7,
-    green + lift * 0.7,
-    blue + lift * 0.9,
-  ];
+  return [red + lift * 0.7, green + lift * 0.7, blue + lift * 0.9];
 }
 
 export function coverAccentFromRgb(red: number, green: number, blue: number): CoverAccent {
@@ -82,7 +78,9 @@ export async function dominantCoverAccent(source: string): Promise<CoverAccent |
       samples += 1;
     }
 
-    return samples === 0 ? null : coverAccentFromRgb(red / samples, green / samples, blue / samples);
+    return samples === 0
+      ? null
+      : coverAccentFromRgb(red / samples, green / samples, blue / samples);
   } catch {
     return null;
   }

@@ -26,12 +26,18 @@ describe('SettingsView', () => {
     ]);
   });
 
-  it('groups language, text, and theme under the first tab', () => {
+  it('groups general application settings under the first tab', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
 
-    expect(titles).toEqual(['Lingua', 'Dimensione testo', 'Tema', 'Sfondo da copertina']);
+    expect(titles).toEqual([
+      'Lingua',
+      'Dimensione testo',
+      'Tema',
+      'Sfondo da copertina',
+      'Player audio predefinito',
+    ]);
   });
 
   it('shows rename in the library tab', async () => {
@@ -81,6 +87,7 @@ describe('SettingsView', () => {
       'Text size',
       'Theme',
       'Cover background',
+      'Default audio player',
     ]);
   });
 

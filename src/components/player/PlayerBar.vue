@@ -24,15 +24,13 @@ const { t } = useI18n();
 const player = usePlayerStore();
 const settings = useSettingsStore();
 
-const accentStyle = computed(() =>
-  ({
-    '--player_surface_strength': `${100 - settings.playerTransparency}%`,
-    '--player_blur': `${settings.playerBlur}px`,
-    ...(settings.coverGradientEnabled && player.coverAccent !== null
-      ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
-      : {}),
-  }),
-);
+const accentStyle = computed(() => ({
+  '--player_surface_strength': `${100 - settings.playerTransparency}%`,
+  '--player_blur': `${settings.playerBlur}px`,
+  ...(settings.coverGradientEnabled && player.coverAccent !== null
+    ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
+    : {}),
+}));
 </script>
 
 <template>

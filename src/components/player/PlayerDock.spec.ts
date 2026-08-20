@@ -45,7 +45,10 @@ afterEach(() => {
 });
 
 function mountDock(options: ReturnType<typeof withPinia> = withPinia(), attachTo?: HTMLElement) {
-  const wrapper = mount(PlayerDock, { ...options, ...(attachTo === undefined ? {} : { attachTo }) });
+  const wrapper = mount(PlayerDock, {
+    ...options,
+    ...(attachTo === undefined ? {} : { attachTo }),
+  });
   wrappers.push(wrapper);
 
   return wrapper;

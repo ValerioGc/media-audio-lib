@@ -4,9 +4,12 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppModal from '@/components/common/AppModal.vue';
+import DefaultPlayerBanner from '@/components/library/DefaultPlayerBanner.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
-import LibraryFacetList from '@/components/library/LibraryFacetList.vue';
+import LibraryFacetList, {
+  type FacetGroupOpenPayload,
+} from '@/components/library/LibraryFacetList.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
@@ -19,7 +22,6 @@ import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackView } from '@/types/library';
-import type { FacetGroupOpenPayload } from '@/components/library/LibraryFacetList.vue';
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -108,6 +110,8 @@ async function confirmRemoval() {
       {{ t(`library.errors.${library.errorKey}`) }}
     </p>
 
+    <DefaultPlayerBanner v-if="!settings.defaultPlayerBannerDismissed" />
+
     <p v-if="library.lastExport !== null" class="library_view_notice" role="status">
       {{ t('library.catalog.exported', { path: library.lastExport }) }}
       <AppButton variant="ghost" @click="library.dismissExport()">
@@ -153,9 +157,9 @@ async function confirmRemoval() {
       <LibraryContentTabs v-model="activeTab" />
 
       <section
+        :id="`library-panel-${activeTab}`"
         class="library_view_panel"
         role="tabpanel"
-        :id="`library-panel-${activeTab}`"
         :aria-labelledby="`library-tab-${activeTab}`"
       >
         <LibraryEmptyState v-if="library.hasNoMatches" variant="noMatches" />

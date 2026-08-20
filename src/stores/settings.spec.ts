@@ -140,6 +140,7 @@ describe('useSettingsStore', () => {
       coverGradientEnabled: true,
       playerTransparency: 12,
       playerBlur: 12,
+      defaultPlayerBannerDismissed: false,
     });
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
@@ -207,6 +208,19 @@ describe('useSettingsStore', () => {
     expect(store.playerBlur).toBe(18);
     expect(storage.saved.at(-1)?.playerTransparency).toBe(30);
     expect(storage.saved.at(-1)?.playerBlur).toBe(18);
+
+    store.dispose();
+  });
+
+  it('remembers when the default player banner is dismissed', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.dismissDefaultPlayerBanner();
+
+    expect(store.defaultPlayerBannerDismissed).toBe(true);
+    expect(storage.saved.at(-1)?.defaultPlayerBannerDismissed).toBe(true);
 
     store.dispose();
   });

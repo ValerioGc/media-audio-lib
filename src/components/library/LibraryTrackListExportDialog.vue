@@ -83,11 +83,7 @@ async function submit() {
 
       <fieldset class="track_list_export_fields">
         <legend class="track_list_export_legend">{{ t('library.exportList.fieldsLabel') }}</legend>
-        <label
-          v-for="option in fieldOptions"
-          :key="option.value"
-          class="track_list_export_field"
-        >
+        <label v-for="option in fieldOptions" :key="option.value" class="track_list_export_field">
           <input
             type="checkbox"
             :checked="selectedFields.includes(option.value)"

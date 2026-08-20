@@ -27,6 +27,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
   const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
   const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
+  const defaultPlayerBannerDismissed = ref(DEFAULT_SETTINGS.defaultPlayerBannerDismissed);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -45,6 +46,7 @@ export const useSettingsStore = defineStore('settings', () => {
     coverGradientEnabled: coverGradientEnabled.value,
     playerTransparency: playerTransparency.value,
     playerBlur: playerBlur.value,
+    defaultPlayerBannerDismissed: defaultPlayerBannerDismissed.value,
   }));
 
   function apply() {
@@ -95,6 +97,7 @@ export const useSettingsStore = defineStore('settings', () => {
     coverGradientEnabled.value = restored.coverGradientEnabled;
     playerTransparency.value = restored.playerTransparency;
     playerBlur.value = restored.playerBlur;
+    defaultPlayerBannerDismissed.value = restored.defaultPlayerBannerDismissed;
 
     apply();
     isReady.value = true;
@@ -139,6 +142,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function dismissDefaultPlayerBanner() {
+    defaultPlayerBannerDismissed.value = true;
+    await persist();
+  }
+
   function dispose() {
     stopSystemWatch?.();
     stopSystemWatch = null;
@@ -152,6 +160,7 @@ export const useSettingsStore = defineStore('settings', () => {
     coverGradientEnabled,
     playerTransparency,
     playerBlur,
+    defaultPlayerBannerDismissed,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -164,6 +173,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setCoverGradientEnabled,
     setPlayerTransparency,
     setPlayerBlur,
+    dismissDefaultPlayerBanner,
     dispose,
   };
 });

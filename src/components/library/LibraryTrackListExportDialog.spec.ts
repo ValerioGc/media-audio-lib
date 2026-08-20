@@ -47,10 +47,7 @@ describe('LibraryTrackListExportDialog', () => {
     await wrapper.findAll('input[type="checkbox"]')[1]?.setValue(false);
     await wrapper.get('[data-testid="track-list-export-submit"]').trigger('click');
 
-    expect(exportTrackList).toHaveBeenCalledWith(
-      'txt',
-      expect.not.arrayContaining(['artist']),
-    );
+    expect(exportTrackList).toHaveBeenCalledWith('txt', expect.not.arrayContaining(['artist']));
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
@@ -61,6 +58,8 @@ describe('LibraryTrackListExportDialog', () => {
       await checkbox.setValue(false);
     }
 
-    expect(wrapper.get('[data-testid="track-list-export-submit"]').attributes('disabled')).toBeDefined();
+    expect(
+      wrapper.get('[data-testid="track-list-export-submit"]').attributes('disabled'),
+    ).toBeDefined();
   });
 });

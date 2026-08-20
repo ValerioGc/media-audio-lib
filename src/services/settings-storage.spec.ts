@@ -63,6 +63,7 @@ describe('sanitizeSettings', () => {
       coverGradientEnabled: false,
       playerTransparency: 30,
       playerBlur: 18,
+      defaultPlayerBannerDismissed: true,
     };
 
     expect(sanitizeSettings(settings)).toEqual(settings);
@@ -79,6 +80,7 @@ describe('sanitizeSettings', () => {
       coverGradientEnabled: DEFAULT_SETTINGS.coverGradientEnabled,
       playerTransparency: DEFAULT_SETTINGS.playerTransparency,
       playerBlur: DEFAULT_SETTINGS.playerBlur,
+      defaultPlayerBannerDismissed: DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
     });
   });
 
@@ -108,6 +110,7 @@ describe('createWebStorage', () => {
       coverGradientEnabled: true,
       playerTransparency: 12,
       playerBlur: 12,
+      defaultPlayerBannerDismissed: false,
     };
 
     await storage.save(settings);
@@ -132,6 +135,7 @@ describe('createTauriStorage', () => {
       coverGradientEnabled: false,
       playerTransparency: 30,
       playerBlur: 18,
+      defaultPlayerBannerDismissed: true,
     };
     mocks.store.get.mockResolvedValue(settings);
 
@@ -171,6 +175,7 @@ describe('createSettingsStorage', () => {
       coverGradientEnabled: false,
       playerTransparency: 20,
       playerBlur: 10,
+      defaultPlayerBannerDismissed: true,
     });
 
     await expect(storage.load()).resolves.toEqual({
@@ -181,6 +186,7 @@ describe('createSettingsStorage', () => {
       coverGradientEnabled: false,
       playerTransparency: 20,
       playerBlur: 10,
+      defaultPlayerBannerDismissed: true,
     });
     expect(mocks.load).not.toHaveBeenCalled();
 

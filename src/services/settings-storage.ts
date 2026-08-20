@@ -46,6 +46,10 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       45,
     ),
     playerBlur: pickNumber(source.playerBlur, DEFAULT_SETTINGS.playerBlur, 0, 28),
+    defaultPlayerBannerDismissed:
+      typeof source.defaultPlayerBannerDismissed === 'boolean'
+        ? source.defaultPlayerBannerDismissed
+        : DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
   };
 }
 

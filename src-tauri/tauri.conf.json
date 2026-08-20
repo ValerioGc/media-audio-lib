@@ -36,6 +36,15 @@
     "targets": ["nsis", "deb", "appimage"],
     "category": "Music",
     "shortDescription": "Audio library manager",
+    "fileAssociations": [
+      {
+        "ext": ["mp3", "flac", "m4a", "ogg", "wav"],
+        "name": "Audio File",
+        "description": "Audio file",
+        "role": "Viewer",
+        "mimeType": "audio/*"
+      }
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/64x64.png",

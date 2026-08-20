@@ -45,6 +45,14 @@
       "transparency": "Trasparenza player",
       "blur": "Blur player"
     },
+    "defaultPlayer": {
+      "title": "Player audio predefinito",
+      "description": "Apri le impostazioni di sistema per associare i file audio a Media Audio Lib.",
+      "message": "Windows richiede una scelta manuale: cerca Media Audio Lib nelle app predefinite e assegna i formati audio che vuoi aprire qui.",
+      "open": "Apri impostazioni",
+      "opening": "Apertura…",
+      "error": "Non riesco ad aprire le impostazioni di sistema da questa sessione."
+    },
     "tabs": {
       "general": "Generale",
       "library": "Libreria"
@@ -145,6 +153,12 @@
           "genre": "Genere"
         }
       }
+    },
+    "defaultPlayerBanner": {
+      "title": "Puoi usare Media Audio Lib come player predefinito",
+      "message": "Apri le impostazioni di sistema e scegli questa app per MP3, FLAC, WAV e gli altri formati audio.",
+      "action": "Imposta",
+      "dismiss": "Nascondi avviso"
     },
     "columns": {
       "cover": "Copertina",

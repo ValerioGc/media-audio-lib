@@ -51,6 +51,17 @@ describe('LibraryView', () => {
     expect(wrapper.find('.library_table').exists()).toBe(false);
   });
 
+  it('shows the default player banner until it is dismissed', async () => {
+    const { wrapper } = await mountView();
+
+    expect(wrapper.find('.default_player_banner').exists()).toBe(true);
+
+    useSettingsStore().defaultPlayerBannerDismissed = true;
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('.default_player_banner').exists()).toBe(false);
+  });
+
   it('shows previews when there are tracks by default', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);

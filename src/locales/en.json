@@ -45,6 +45,14 @@
       "transparency": "Player transparency",
       "blur": "Player blur"
     },
+    "defaultPlayer": {
+      "title": "Default audio player",
+      "description": "Open system settings to associate audio files with Media Audio Lib.",
+      "message": "Windows requires a manual choice: find Media Audio Lib in default apps and assign the audio formats you want to open here.",
+      "open": "Open settings",
+      "opening": "Opening…",
+      "error": "System settings cannot be opened from this session."
+    },
     "tabs": {
       "general": "General",
       "library": "Library"
@@ -145,6 +153,12 @@
           "genre": "Genre"
         }
       }
+    },
+    "defaultPlayerBanner": {
+      "title": "You can use Media Audio Lib as your default player",
+      "message": "Open system settings and choose this app for MP3, FLAC, WAV and the other audio formats.",
+      "action": "Set up",
+      "dismiss": "Hide notice"
     },
     "columns": {
       "cover": "Cover",

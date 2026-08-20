@@ -94,12 +94,8 @@ describe('commands requiring the shell', () => {
     await expect(createLibrary('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(switchLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(deleteLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
-    await expect(exportLibrary('lib-1', 'copy.json')).rejects.toBeInstanceOf(
-      ShellUnavailableError,
-    );
-    await expect(importLibrary('copy.json', 'merge')).rejects.toBeInstanceOf(
-      ShellUnavailableError,
-    );
+    await expect(exportLibrary('lib-1', 'copy.json')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(importLibrary('copy.json', 'merge')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickExportFile('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickImportFile()).rejects.toBeInstanceOf(ShellUnavailableError);
   });

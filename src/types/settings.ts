@@ -20,6 +20,7 @@ export interface AppSettings {
   coverGradientEnabled: boolean;
   playerTransparency: number;
   playerBlur: number;
+  defaultPlayerBannerDismissed: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -30,4 +31,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   coverGradientEnabled: true,
   playerTransparency: 12,
   playerBlur: 12,
+  defaultPlayerBannerDismissed: false,
 };

@@ -79,10 +79,7 @@ describe('LibraryFacetList', () => {
       props: {
         field: 'genre',
         viewMode: 'table',
-        tracks: [
-          makeTrack({ genre: null }),
-          makeTrack({ genre: 'Jazz' }),
-        ],
+        tracks: [makeTrack({ genre: null }), makeTrack({ genre: 'Jazz' })],
       },
     });
 

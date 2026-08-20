@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
 import CoverGradientToggle from '@/components/settings/CoverGradientToggle.vue';
+import DefaultPlayerPanel from '@/components/settings/DefaultPlayerPanel.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
@@ -60,6 +61,13 @@ const tabs = computed(() => [
             :description="t('settings.coverGradient.description')"
           >
             <CoverGradientToggle />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.defaultPlayer.title')"
+            :description="t('settings.defaultPlayer.description')"
+          >
+            <DefaultPlayerPanel />
           </SettingsSection>
         </div>
       </template>

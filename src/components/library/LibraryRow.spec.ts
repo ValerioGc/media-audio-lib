@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { makeTrack } from '../../../tests/support/tracks';
+import { usePlayerStore } from '@/stores/player';
 
 import LibraryRow from './LibraryRow.vue';
 
@@ -71,6 +72,23 @@ describe('LibraryRow', () => {
     expect(wrapper.classes()).toContain('library_row_playing');
     expect(wrapper.attributes('aria-current')).toBe('true');
     expect(wrapper.get('.library_row_badge_playing').text()).toContain('In riproduzione');
+  });
+
+  it('usa il gradiente della copertina sulla riga in riproduzione', () => {
+    const options = withPinia();
+    const player = usePlayerStore();
+    player.setCoverAccent({
+      rgb: '10 20 30',
+      surfaceGradient: 'linear-gradient(red, transparent)',
+      rowGradient: 'linear-gradient(90deg, rgb(10 20 30 / 26%), transparent)',
+    });
+
+    const wrapper = mount(LibraryRow, {
+      ...options,
+      props: { track: makeTrack(), selected: false, playing: true },
+    });
+
+    expect(wrapper.attributes('style')).toContain('--cover_row_gradient');
   });
 
   it('emette la selezione al click e con Invio', async () => {

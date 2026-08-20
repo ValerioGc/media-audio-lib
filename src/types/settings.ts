@@ -17,6 +17,7 @@ export interface AppSettings {
   textSize: TextSize;
   theme: ThemeChoice;
   viewMode: ViewMode;
+  coverGradientEnabled: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -24,4 +25,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   textSize: 'medium',
   theme: 'system',
   viewMode: 'table',
+  coverGradientEnabled: true,
 };

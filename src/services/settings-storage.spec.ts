@@ -60,6 +60,7 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: 'dark',
       viewMode: 'preview',
+      coverGradientEnabled: false,
     };
 
     expect(sanitizeSettings(settings)).toEqual(settings);
@@ -73,6 +74,7 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
       viewMode: DEFAULT_SETTINGS.viewMode,
+      coverGradientEnabled: DEFAULT_SETTINGS.coverGradientEnabled,
     });
   });
 });
@@ -91,6 +93,7 @@ describe('createWebStorage', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      coverGradientEnabled: true,
     };
 
     await storage.save(settings);
@@ -112,6 +115,7 @@ describe('createTauriStorage', () => {
       textSize: 'large',
       theme: 'dark',
       viewMode: 'preview',
+      coverGradientEnabled: false,
     };
     mocks.store.get.mockResolvedValue(settings);
 
@@ -143,13 +147,20 @@ describe('createSettingsStorage', () => {
 
   it('usa localStorage nel browser', async () => {
     const storage = createSettingsStorage();
-    await storage.save({ locale: 'en', textSize: 'small', theme: 'light', viewMode: 'table' });
+    await storage.save({
+      locale: 'en',
+      textSize: 'small',
+      theme: 'light',
+      viewMode: 'table',
+      coverGradientEnabled: false,
+    });
 
     await expect(storage.load()).resolves.toEqual({
       locale: 'en',
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      coverGradientEnabled: false,
     });
     expect(mocks.load).not.toHaveBeenCalled();
 

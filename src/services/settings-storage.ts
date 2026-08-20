@@ -29,6 +29,10 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     textSize: pickKnown(TEXT_SIZES, source.textSize, DEFAULT_SETTINGS.textSize),
     theme: pickKnown(THEME_CHOICES, source.theme, DEFAULT_SETTINGS.theme),
     viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
+    coverGradientEnabled:
+      typeof source.coverGradientEnabled === 'boolean'
+        ? source.coverGradientEnabled
+        : DEFAULT_SETTINGS.coverGradientEnabled,
   };
 }
 

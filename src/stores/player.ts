@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import { createAudioEngine, type AudioEngine } from '@/services/audio-engine';
+import type { CoverAccent } from '@/services/cover-accent';
 import { ShellUnavailableError } from '@/services/library-api';
 import { playbackUrl } from '@/services/playback-api';
 import type { TrackView } from '@/types/library';
@@ -55,6 +56,7 @@ export const usePlayerStore = defineStore('player', () => {
   const isLoading = ref(false);
   const isShuffleEnabled = ref(false);
   const isRepeatOneEnabled = ref(false);
+  const coverAccent = ref<CoverAccent | null>(null);
   const position = ref(0);
   const duration = ref(0);
   const volume = ref(DEFAULT_VOLUME);
@@ -249,6 +251,10 @@ export const usePlayerStore = defineStore('player', () => {
     isRepeatOneEnabled.value = !isRepeatOneEnabled.value;
   }
 
+  function setCoverAccent(accent: CoverAccent | null) {
+    coverAccent.value = accent;
+  }
+
   function close() {
     engine?.release();
     engine = null;
@@ -261,6 +267,7 @@ export const usePlayerStore = defineStore('player', () => {
     position.value = 0;
     duration.value = 0;
     errorKey.value = null;
+    coverAccent.value = null;
   }
 
   function expand() {
@@ -284,6 +291,7 @@ export const usePlayerStore = defineStore('player', () => {
     isLoading,
     isShuffleEnabled,
     isRepeatOneEnabled,
+    coverAccent,
     position,
     duration,
     volume,
@@ -305,6 +313,7 @@ export const usePlayerStore = defineStore('player', () => {
     setVolume,
     toggleShuffle,
     toggleRepeatOne,
+    setCoverAccent,
     close,
     expand,
     collapse,

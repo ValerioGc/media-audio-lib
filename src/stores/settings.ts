@@ -24,6 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const textSize = ref<TextSize>(DEFAULT_SETTINGS.textSize);
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
+  const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -39,6 +40,7 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize: textSize.value,
     theme: theme.value,
     viewMode: viewMode.value,
+    coverGradientEnabled: coverGradientEnabled.value,
   }));
 
   function apply() {
@@ -86,6 +88,7 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize.value = restored.textSize;
     theme.value = restored.theme;
     viewMode.value = restored.viewMode;
+    coverGradientEnabled.value = restored.coverGradientEnabled;
 
     apply();
     isReady.value = true;
@@ -115,6 +118,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setCoverGradientEnabled(next: boolean) {
+    coverGradientEnabled.value = next;
+    await persist();
+  }
+
   function dispose() {
     stopSystemWatch?.();
     stopSystemWatch = null;
@@ -125,6 +133,7 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize,
     theme,
     viewMode,
+    coverGradientEnabled,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -134,6 +143,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setTextSize,
     setTheme,
     setViewMode,
+    setCoverGradientEnabled,
     dispose,
   };
 });

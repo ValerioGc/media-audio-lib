@@ -9,6 +9,7 @@ import PlayerControls from '@/components/player/PlayerControls.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
 import PlayerVolume from '@/components/player/PlayerVolume.vue';
 import { usePlayerStore } from '@/stores/player';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
 const props = defineProps<{ track: TrackView }>();
@@ -20,6 +21,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const player = usePlayerStore();
+const settings = useSettingsStore();
 
 /** Everything that is not title and artist goes under the cover. */
 const details = computed(() => [
@@ -27,6 +29,12 @@ const details = computed(() => [
   { key: 'year', value: props.track.year },
   { key: 'genre', value: props.track.genre },
 ]);
+
+const accentStyle = computed(() =>
+  settings.coverGradientEnabled && player.coverAccent !== null
+    ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
+    : {},
+);
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
@@ -39,7 +47,12 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 </script>
 
 <template>
-  <section class="player_full" :aria-label="t('player.nowPlaying')">
+  <section
+    class="player_full"
+    :class="{ player_full_accented: settings.coverGradientEnabled && player.coverAccent !== null }"
+    :style="accentStyle"
+    :aria-label="t('player.nowPlaying')"
+  >
     <header class="player_full_header">
       <AppButton
         variant="ghost"
@@ -119,6 +132,12 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   display: flex;
   flex-direction: column;
   background-color: var(--color_bg);
+
+  &_accented {
+    background:
+      var(--cover_accent_gradient),
+      var(--color_bg);
+  }
 
   &_header {
     display: flex;

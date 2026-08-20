@@ -1,13 +1,16 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import LibraryCoverCell from '@/components/library/LibraryCoverCell.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import { formatDuration } from '@/services/track-sorting';
+import { usePlayerStore } from '@/stores/player';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
-defineProps<{
+const props = defineProps<{
   track: TrackView;
   selected: boolean;
   playing: boolean;
@@ -22,6 +25,14 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const player = usePlayerStore();
+const settings = useSettingsStore();
+
+const accentStyle = computed(() =>
+  props.playing && settings.coverGradientEnabled && player.coverAccent !== null
+    ? { '--cover_row_gradient': player.coverAccent.rowGradient }
+    : {},
+);
 </script>
 
 <template>
@@ -32,6 +43,7 @@ const { t } = useI18n();
       library_row_missing: track.missing,
       library_row_playing: playing,
     }"
+    :style="accentStyle"
     role="row"
     tabindex="0"
     :aria-selected="selected"
@@ -101,6 +113,12 @@ const { t } = useI18n();
   &_playing {
     box-shadow: inset 3px 0 0 var(--color_accent);
     background-color: var(--color_accent_soft);
+  }
+
+  &_playing[style*='--cover_row_gradient'] {
+    background:
+      var(--cover_row_gradient),
+      var(--color_surface);
   }
 
   &_cell {

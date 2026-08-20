@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
@@ -9,6 +10,7 @@ import PlayerControls from '@/components/player/PlayerControls.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
 import PlayerVolume from '@/components/player/PlayerVolume.vue';
 import { usePlayerStore } from '@/stores/player';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
 defineProps<{ track: TrackView }>();
@@ -20,10 +22,22 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 const player = usePlayerStore();
+const settings = useSettingsStore();
+
+const accentStyle = computed(() =>
+  settings.coverGradientEnabled && player.coverAccent !== null
+    ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
+    : {},
+);
 </script>
 
 <template>
-  <section class="player_bar" :aria-label="t('player.nowPlaying')">
+  <section
+    class="player_bar"
+    :class="{ player_bar_accented: settings.coverGradientEnabled && player.coverAccent !== null }"
+    :style="accentStyle"
+    :aria-label="t('player.nowPlaying')"
+  >
     <p v-if="player.errorKey !== null" class="player_bar_error" role="alert">
       {{ t(`player.errors.${player.errorKey}`) }}
     </p>
@@ -94,6 +108,12 @@ const player = usePlayerStore();
   border-top: 1px solid var(--color_border);
   background-color: var(--color_surface);
   box-shadow: var(--shadow_raised);
+
+  &_accented {
+    background:
+      var(--cover_accent_gradient),
+      var(--color_surface);
+  }
 
   &_error {
     padding-bottom: $space_xs;

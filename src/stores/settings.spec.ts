@@ -137,6 +137,7 @@ describe('useSettingsStore', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      coverGradientEnabled: true,
     });
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
@@ -175,6 +176,19 @@ describe('useSettingsStore', () => {
     );
 
     expect(store.viewMode).toBe(DEFAULT_SETTINGS.viewMode);
+
+    store.dispose();
+  });
+
+  it('ricorda se il gradiente della copertina e disabilitato', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setCoverGradientEnabled(false);
+
+    expect(store.coverGradientEnabled).toBe(false);
+    expect(storage.saved.at(-1)?.coverGradientEnabled).toBe(false);
 
     store.dispose();
   });

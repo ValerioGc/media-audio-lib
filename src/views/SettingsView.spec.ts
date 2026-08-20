@@ -31,7 +31,7 @@ describe('SettingsView', () => {
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
 
-    expect(titles).toEqual(['Lingua', 'Dimensione testo', 'Tema']);
+    expect(titles).toEqual(['Lingua', 'Dimensione testo', 'Tema', 'Sfondo da copertina']);
   });
 
   it('mostra la rinomina nella tab libreria', async () => {
@@ -80,6 +80,7 @@ describe('SettingsView', () => {
       'Language',
       'Text size',
       'Theme',
+      'Cover background',
     ]);
   });
 

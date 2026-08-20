@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
+import CoverGradientToggle from '@/components/settings/CoverGradientToggle.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
@@ -52,6 +53,13 @@ const tabs = computed(() => [
             :description="t('settings.theme.description')"
           >
             <ThemeSwitch />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.coverGradient.title')"
+            :description="t('settings.coverGradient.description')"
+          >
+            <CoverGradientToggle />
           </SettingsSection>
         </div>
       </template>

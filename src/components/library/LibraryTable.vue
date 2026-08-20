@@ -315,8 +315,8 @@ onUnmounted(stopResize);
       position: sticky;
       right: 0;
       z-index: 2;
-      width: 4.25rem;
-      gap: $space_2xs;
+      width: 5.25rem;
+      gap: $space_xs;
       justify-self: end;
       justify-content: flex-end;
       background-color: var(--color_surface_alt);
@@ -407,17 +407,23 @@ onUnmounted(stopResize);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border: 1px solid var(--color_border);
-    border-radius: $radius_sm;
+    border-radius: $radius_md;
     background-color: var(--color_surface);
     color: var(--color_text_muted);
+    font-size: 1.05rem;
     cursor: pointer;
+    transition:
+      background-color $duration_fast ease,
+      border-color $duration_fast ease,
+      color $duration_fast ease;
 
     &:hover {
-      background-color: var(--color_surface_hover);
-      color: var(--color_text);
+      border-color: var(--color_accent);
+      background-color: var(--color_accent_soft);
+      color: var(--color_accent);
     }
 
     @include focus_ring;

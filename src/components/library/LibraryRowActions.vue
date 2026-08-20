@@ -75,5 +75,19 @@ defineExpose({ open: openMenu });
 .library_row_menu {
   display: flex;
   justify-content: flex-end;
+
+  // The row menu is the main command of the list: a larger target than a plain menu
+  // trigger, and it answers on the accent like the other controls.
+  :deep(.app_menu_trigger) {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.05rem;
+
+    &:hover,
+    &[aria-expanded='true'] {
+      background-color: var(--color_accent_soft);
+      color: var(--color_accent);
+    }
+  }
 }
 </style>

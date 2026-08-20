@@ -153,7 +153,7 @@ describe('LibraryTable', () => {
       false,
     );
     expect(wrapper.attributes('style')).toContain('4.5rem');
-    expect(wrapper.attributes('style')).toContain('5.25rem 4.25rem');
+    expect(wrapper.attributes('style')).toContain('5.25rem 5.25rem');
     expect(wrapper.attributes('style')).not.toContain('minmax(0, 1fr) 2rem');
   });
 

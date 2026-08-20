@@ -8,6 +8,15 @@ const options = {
   slots: { default: '<button>✕</button>' },
 };
 
+/** jsdom does no layout: the placement maths needs a box to work from. */
+function stubTriggerRect(
+  element: HTMLElement,
+  { top = 0, bottom = 0, left = 100, right = 140 } = {},
+) {
+  element.getBoundingClientRect = () =>
+    ({ top, bottom, left, right, width: right - left, height: bottom - top }) as DOMRect;
+}
+
 describe('AppTooltip', () => {
   it('stays hidden until interaction', () => {
     const wrapper = mount(AppTooltip, options);
@@ -26,25 +35,67 @@ describe('AppTooltip', () => {
     expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
   });
 
-  it('sits above the trigger and against its right edge by default', async () => {
+  it('is placed against the window, so no panel can clip it', async () => {
     const wrapper = mount(AppTooltip, options);
 
     await wrapper.trigger('mouseenter');
+    await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_top');
-    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_end');
+    const style = wrapper.get('[role="tooltip"]').attributes('style') ?? '';
+
+    expect(style).toContain('top:');
+    expect(style).toContain('left:');
   });
 
-  it('can hang under the trigger, for the controls on the top edge', async () => {
-    const wrapper = mount(AppTooltip, {
-      ...options,
-      props: { ...options.props, placement: 'bottom' as const, align: 'center' as const },
+  it('flips to the other side when the requested one has no room', async () => {
+    const wrapper = mount(AppTooltip, options);
+
+    // A trigger against the top edge leaves nothing above it.
+    stubTriggerRect(wrapper.element as HTMLElement, { top: 0, bottom: 24 });
+
+    await wrapper.trigger('mouseenter');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('[role="tooltip"]').attributes('data-placement')).toBe('bottom');
+  });
+
+  it('keeps the requested side when it fits', async () => {
+    const wrapper = mount(AppTooltip, options);
+
+    stubTriggerRect(wrapper.element as HTMLElement, { top: 300, bottom: 324 });
+
+    await wrapper.trigger('mouseenter');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('[role="tooltip"]').attributes('data-placement')).toBe('top');
+  });
+
+  it('never leaves the bubble hanging off the left edge', async () => {
+    const wrapper = mount(AppTooltip, options);
+
+    stubTriggerRect(wrapper.element as HTMLElement, {
+      top: 300,
+      bottom: 324,
+      left: -80,
+      right: -40,
     });
 
     await wrapper.trigger('mouseenter');
+    await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_bottom');
-    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_center');
+    expect(wrapper.get('[role="tooltip"]').attributes('style')).toContain('left: 6px');
+  });
+
+  it('disappears while the page moves under it', async () => {
+    const wrapper = mount(AppTooltip, options);
+
+    await wrapper.trigger('mouseenter');
+    expect(wrapper.find('[role="tooltip"]').exists()).toBe(true);
+
+    window.dispatchEvent(new Event('scroll'));
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
   });
 
   it('also appears from keyboard, not only mouse', async () => {

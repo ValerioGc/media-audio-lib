@@ -199,7 +199,7 @@ function openActionsMenu(event: MouseEvent) {
     position: sticky;
     right: 0;
     z-index: 1;
-    width: 2rem;
+    width: 2.5rem;
     justify-self: end;
     justify-content: center;
     background-color: var(--color_surface);

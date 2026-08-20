@@ -85,7 +85,6 @@ const controls = computed<WindowControl[]>(() => [
         :key="control.id"
         :text="control.label"
         placement="bottom"
-        align="center"
       >
         <button
           class="titlebar_button"

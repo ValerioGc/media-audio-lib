@@ -6,7 +6,7 @@ import {
   type TableColumnSetting,
 } from '@/types/settings';
 
-const TABLE_ACTIONS_COLUMN_WIDTH = '4.25rem';
+const TABLE_ACTIONS_COLUMN_WIDTH = '5.25rem';
 const FIXED_TABLE_COLUMN_WIDTHS: Partial<Record<TableColumnKey, string>> = {
   year: '4.5rem',
   duration: '5.25rem',

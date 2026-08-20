@@ -175,6 +175,43 @@ describe('LibraryView', () => {
     ).toEqual(['Copertina', 'Nome', 'Album', 'Anno', 'Durata', '']);
   });
 
+  it('marks the artist modal album that contains the playing track', async () => {
+    const { wrapper, store } = await mountView();
+    const player = usePlayerStore();
+    const playingTrack = makeTrack({
+      title: 'Barabba',
+      artist: 'Achille Lauro',
+      album: 'Barabba Mixtape',
+      year: 2012,
+    });
+    store.tracks = [
+      playingTrack,
+      makeTrack({
+        title: 'Ascensore per l inferno',
+        artist: 'Achille Lauro',
+        album: 'Ragazzi madre',
+        year: 2016,
+      }),
+      makeTrack({ title: 'Other', artist: 'Other Artist', album: 'Other Album' }),
+    ];
+    player.queue = [playingTrack];
+    player.index = 0;
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    const playingAlbums = wrapper
+      .get('[role="dialog"]')
+      .findAll('.library_view_group_modal_album_card_playing');
+
+    expect(playingAlbums).toHaveLength(1);
+    expect(playingAlbums[0]?.attributes('aria-current')).toBe('true');
+    expect(playingAlbums[0]?.text()).toContain('Barabba Mixtape');
+    expect(playingAlbums[0]?.text()).toContain('In riproduzione');
+  });
+
   it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [

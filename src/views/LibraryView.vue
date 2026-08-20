@@ -107,6 +107,7 @@ interface ModalAlbumGroup {
   year: number | null;
   tracks: TrackView[];
   coverTrack: TrackView | null;
+  playing: boolean;
   isUnknown: boolean;
 }
 
@@ -129,6 +130,9 @@ const selectedFacetAlbums = computed<ModalAlbumGroup[]>(() => {
         year: tracks.find((track) => track.year !== null)?.year ?? null,
         tracks,
         coverTrack: tracks.find((track) => track.hasCover && !track.missing) ?? tracks[0] ?? null,
+        playing:
+          player.currentTrack !== null &&
+          tracks.some((track) => track.id === player.currentTrack?.id),
         isUnknown,
       };
     })
@@ -419,8 +423,10 @@ async function confirmRemoval() {
                 v-for="album in selectedFacetAlbums"
                 :key="album.key"
                 class="library_view_group_modal_album_card"
+                :class="{ library_view_group_modal_album_card_playing: album.playing }"
                 type="button"
                 :aria-label="t('library.groups.openLabel', { name: album.name })"
+                :aria-current="album.playing ? 'true' : undefined"
                 @click="openFacet({ field: 'album', key: album.key, name: album.name })"
               >
                 <CoverImage
@@ -433,6 +439,10 @@ async function confirmRemoval() {
                 <span class="library_view_group_modal_album_title">{{ album.name }}</span>
                 <span v-if="album.year !== null" class="library_view_group_modal_album_year">
                   {{ album.year }}
+                </span>
+                <span v-if="album.playing" class="library_view_group_modal_album_badge">
+                  <AppIcon name="play" />
+                  {{ t('library.row.playing') }}
                 </span>
               </button>
             </div>
@@ -728,6 +738,12 @@ async function confirmRemoval() {
       }
 
       @include focus_ring;
+
+      &_playing {
+        border-color: var(--color_accent);
+        background-color: var(--color_accent_soft);
+        box-shadow: inset 0 0 0 1px var(--color_accent);
+      }
     }
 
     &_albums_expanded &_album_card {
@@ -755,6 +771,17 @@ async function confirmRemoval() {
       color: var(--color_text_muted);
       font-size: 0.8em;
       font-variant-numeric: tabular-nums;
+    }
+
+    &_album_badge {
+      display: inline-flex;
+      gap: $space_2xs;
+      align-items: center;
+      min-width: 0;
+      color: var(--color_accent);
+      font-size: 0.75em;
+      font-weight: 700;
+      line-height: 1.2;
     }
 
     &_tabs {

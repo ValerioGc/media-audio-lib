@@ -115,14 +115,20 @@ describe('LibraryTable', () => {
     expect(wrapper.getComponent(LibraryColumnSettingsDialog).props('open')).toBe(true);
   });
 
-  it('shows a resize handle on data columns but not on the actions column', () => {
+  it('shows resize handles only on resizable data columns', () => {
     const wrapper = mountTable([makeTrack()]);
+    const headings = wrapper.findAll('.library_table_heading');
+    const yearHeading = headings.find((heading) => heading.text().includes('Anno'));
+    const durationHeading = headings.find((heading) => heading.text().includes('Durata'));
 
-    expect(wrapper.findAll('.library_table_resize')).toHaveLength(7);
+    expect(wrapper.findAll('.library_table_resize')).toHaveLength(5);
+    expect(yearHeading?.find('.library_table_resize').exists()).toBe(false);
+    expect(durationHeading?.find('.library_table_resize').exists()).toBe(false);
     expect(wrapper.find('.library_table_heading_actions .library_table_resize').exists()).toBe(
       false,
     );
-    expect(wrapper.attributes('style')).toContain('90px 2rem');
+    expect(wrapper.attributes('style')).toContain('4.5rem');
+    expect(wrapper.attributes('style')).toContain('5.25rem 2rem');
     expect(wrapper.attributes('style')).not.toContain('minmax(0, 1fr) 2rem');
   });
 

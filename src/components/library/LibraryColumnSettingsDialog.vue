@@ -9,6 +9,7 @@ import { useSettingsStore } from '@/stores/settings';
 import {
   LOCKED_LEADING_TABLE_COLUMN_KEYS,
   MANDATORY_TABLE_COLUMN_KEYS,
+  TABLE_COLUMN_KEYS,
   type TableColumnKey,
   type TableColumnSetting,
 } from '@/types/settings';
@@ -37,23 +38,51 @@ function isLocked(column: TableColumnSetting): boolean {
   );
 }
 
+function isTableColumnKey(value: string): value is TableColumnKey {
+  return TABLE_COLUMN_KEYS.includes(value as TableColumnKey);
+}
+
 function setVisible(column: TableColumnSetting, event: Event) {
   void settings.setTableColumnVisible(column.key, (event.target as HTMLInputElement).checked);
 }
 
-function onDragStart(column: TableColumnSetting) {
+function canMove(column: TableColumnSetting, direction: -1 | 1): boolean {
+  if (isLocked(column)) {
+    return false;
+  }
+
+  const index = columns.value.findIndex((item) => item.key === column.key);
+  const target = columns.value[index + direction];
+
+  return target !== undefined && !isLocked(target);
+}
+
+function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
+  if (canMove(column, direction)) {
+    void settings.nudgeTableColumn(column.key, direction);
+  }
+}
+
+function onDragStart(event: DragEvent, column: TableColumnSetting) {
   if (isLocked(column)) {
     return;
+  }
+
+  event.dataTransfer?.setData('text/plain', column.key);
+
+  if (event.dataTransfer !== null) {
+    event.dataTransfer.effectAllowed = 'move';
   }
 
   draggedKey.value = column.key;
 }
 
-function onDrop(target: TableColumnSetting) {
-  const source = draggedKey.value;
+function onDrop(event: DragEvent, target: TableColumnSetting) {
+  event.preventDefault();
+  const source = draggedKey.value ?? event.dataTransfer?.getData('text/plain') ?? '';
   draggedKey.value = null;
 
-  if (source !== null) {
+  if (isTableColumnKey(source) && source !== target.key) {
     void settings.moveTableColumn(source, target.key);
   }
 }
@@ -78,10 +107,10 @@ function onDrop(target: TableColumnSetting) {
           role="listitem"
           :draggable="!isLocked(column)"
           :data-testid="`column-row-${column.key}`"
-          @dragstart="onDragStart(column)"
+          @dragstart="onDragStart($event, column)"
           @dragend="draggedKey = null"
           @dragover.prevent
-          @drop="onDrop(column)"
+          @drop="onDrop($event, column)"
         >
           <span class="library_column_settings_handle" aria-hidden="true">
             <AppIcon :name="isLocked(column) ? 'check' : 'drag'" />
@@ -97,6 +126,43 @@ function onDrop(target: TableColumnSetting) {
             />
             <span>{{ t(`library.columns.${column.key}`) }}</span>
           </label>
+
+          <div class="library_column_settings_order">
+            <button
+              class="library_column_settings_order_button"
+              type="button"
+              :aria-label="
+                t('library.columnSettings.moveUp', { column: t(`library.columns.${column.key}`) })
+              "
+              :title="
+                t('library.columnSettings.moveUp', { column: t(`library.columns.${column.key}`) })
+              "
+              :disabled="!canMove(column, -1)"
+              :data-testid="`column-move-up-${column.key}`"
+              @click="moveColumn(column, -1)"
+            >
+              <AppIcon name="sortAsc" />
+            </button>
+            <button
+              class="library_column_settings_order_button"
+              type="button"
+              :aria-label="
+                t('library.columnSettings.moveDown', {
+                  column: t(`library.columns.${column.key}`),
+                })
+              "
+              :title="
+                t('library.columnSettings.moveDown', {
+                  column: t(`library.columns.${column.key}`),
+                })
+              "
+              :disabled="!canMove(column, 1)"
+              :data-testid="`column-move-down-${column.key}`"
+              @click="moveColumn(column, 1)"
+            >
+              <AppIcon name="sortDesc" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -130,7 +196,7 @@ function onDrop(target: TableColumnSetting) {
 
   &_row {
     display: grid;
-    grid-template-columns: 1.5rem minmax(9rem, 1fr);
+    grid-template-columns: 1.5rem minmax(9rem, 1fr) auto;
     gap: $space_md;
     align-items: center;
     padding: $space_sm;
@@ -174,9 +240,39 @@ function onDrop(target: TableColumnSetting) {
     }
   }
 
+  &_order {
+    display: inline-flex;
+    gap: $space_2xs;
+  }
+
+  &_order_button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_sm;
+    background-color: var(--color_surface_alt);
+    color: var(--color_text_muted);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background-color: var(--color_surface_hover);
+      color: var(--color_text);
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    @include focus_ring;
+  }
+
   @media (max-width: 760px) {
     &_row {
-      grid-template-columns: 1.5rem minmax(0, 1fr);
+      grid-template-columns: 1.5rem minmax(0, 1fr) auto;
     }
   }
 }

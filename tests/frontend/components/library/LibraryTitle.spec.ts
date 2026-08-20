@@ -160,10 +160,33 @@ describe('LibraryTitle', () => {
     expect(
       wrapper.get('[data-testid="column-visible-title"]').attributes('disabled'),
     ).toBeDefined();
+    expect(wrapper.find('[data-testid="column-move-up-genre"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="column-move-down-genre"]').exists()).toBe(true);
 
     await wrapper.get('[data-testid="column-visible-format"]').setValue(true);
-    await wrapper.get('[data-testid="column-row-genre"]').trigger('dragstart');
-    await wrapper.get('[data-testid="column-row-cover"]').trigger('drop');
+    await wrapper.get('[data-testid="column-move-up-genre"]').trigger('click');
+
+    expect(settings.tableColumns.map((column) => column.key).slice(0, 6)).toEqual([
+      'cover',
+      'title',
+      'artist',
+      'album',
+      'genre',
+      'year',
+    ]);
+
+    const dataTransfer = {
+      effectAllowed: '',
+      values: new Map<string, string>(),
+      getData(type: string) {
+        return this.values.get(type) ?? '';
+      },
+      setData(type: string, value: string) {
+        this.values.set(type, value);
+      },
+    };
+    await wrapper.get('[data-testid="column-row-genre"]').trigger('dragstart', { dataTransfer });
+    await wrapper.get('[data-testid="column-row-cover"]').trigger('drop', { dataTransfer });
 
     expect(settings.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
     expect(settings.tableColumns.map((column) => column.key).slice(0, 3)).toEqual([

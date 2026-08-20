@@ -4,12 +4,9 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
-import AppSelect from '@/components/common/AppSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
-import { MISSING_INFO_FILTERS, type MissingInfoFilter } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
-import type { SelectOption } from '@/types/ui';
 
 defineProps<{ viewMode?: ViewMode | undefined }>();
 const emit = defineEmits<{ 'update:viewMode': [mode: ViewMode] }>();
@@ -20,18 +17,6 @@ const library = useLibraryStore();
 const searchValue = computed({
   get: () => library.query,
   set: (value: string) => library.setQuery(value),
-});
-
-const missingInfoFilterOptions = computed<SelectOption[]>(() =>
-  MISSING_INFO_FILTERS.map((value) => ({
-    value,
-    label: t(`library.toolbar.missingInfo.options.${value}`),
-  })),
-);
-
-const missingInfoFilter = computed({
-  get: () => library.missingInfoFilter,
-  set: (value: string) => library.setMissingInfoFilter(value as MissingInfoFilter),
 });
 </script>
 
@@ -54,19 +39,23 @@ const missingInfoFilter = computed({
       :placeholder="t('library.toolbar.searchPlaceholder')"
     />
 
-    <AppSelect
-      v-model="missingInfoFilter"
-      class="library_toolbar_missing_filter"
-      :label="t('library.toolbar.missingInfo.label')"
-      :options="missingInfoFilterOptions"
-    />
-
     <p class="library_toolbar_counts">
       <span data-testid="track-count">{{
         t('library.toolbar.count', { count: library.tracks.length }, library.tracks.length)
       }}</span>
       <span v-if="library.missingCount > 0" class="library_toolbar_missing">
         {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}
+      </span>
+      <span
+        v-if="library.missingInfoFilter !== 'all'"
+        class="library_toolbar_missing"
+        data-testid="missing-info-active"
+      >
+        {{
+          t('library.toolbar.missingInfo.active', {
+            filter: t(`library.toolbar.missingInfo.options.${library.missingInfoFilter}`),
+          })
+        }}
       </span>
     </p>
 
@@ -92,12 +81,9 @@ const missingInfoFilter = computed({
     max-width: 22rem;
   }
 
-  &_missing_filter {
-    flex: 0 0 12rem;
-  }
-
   &_counts {
     display: flex;
+    flex-wrap: wrap;
     gap: $space_sm;
     align-items: center;
     color: var(--color_text_muted);

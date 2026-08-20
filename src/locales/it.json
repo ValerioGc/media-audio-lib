@@ -108,6 +108,7 @@
       "menu": {
         "rename": "Rinomina",
         "verifyAll": "Verifica file",
+        "missingInfo": "Dati mancanti",
         "exportList": "Esporta elenco",
         "export": "Esporta libreria",
         "delete": "Elimina libreria"
@@ -151,6 +152,7 @@
       "addFolder": "Aggiungi cartella",
       "missingInfo": {
         "label": "Mancanti",
+        "active": "Mancanti: {filter}",
         "options": {
           "all": "Tutti",
           "file": "File",
@@ -161,6 +163,13 @@
           "genre": "Genere"
         }
       }
+    },
+    "missingInfo": {
+      "title": "Dati mancanti",
+      "description": "Filtra la libreria in base all'informazione da completare. Scegli Tutti per tornare alla vista normale.",
+      "label": "Informazione",
+      "result": "nessun brano trovato | 1 brano trovato | {count} brani trovati",
+      "close": "Chiudi"
     },
     "defaultPlayerBanner": {
       "title": "Puoi usare Media Audio Lib come player predefinito",
@@ -206,6 +215,10 @@
     "noMatches": {
       "title": "Nessun risultato",
       "message": "Nessun brano corrisponde alla ricerca «{query}»."
+    },
+    "noMissingInfo": {
+      "title": "Nessun dato mancante",
+      "message": "Nessun brano corrisponde al filtro sui dati mancanti."
     },
     "remove": {
       "title": "Rimuovere il brano?",

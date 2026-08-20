@@ -192,7 +192,10 @@ async function confirmRemoval() {
         role="tabpanel"
         :aria-labelledby="`library-tab-${activeTab}`"
       >
-        <LibraryEmptyState v-if="library.hasNoMatches" variant="noMatches" />
+        <LibraryEmptyState
+          v-if="library.hasNoMatches"
+          :variant="library.missingInfoFilter === 'all' ? 'noMatches' : 'noMissingInfo'"
+        />
         <PreviewGrid
           v-else-if="activeTab === 'tracks' && settings.viewMode === 'preview'"
           :tracks="library.visibleTracks"

@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
+import LibraryMissingInfoDialog from '@/components/library/LibraryMissingInfoDialog.vue';
 import LibrarySwitcherDialog from '@/components/library/LibrarySwitcherDialog.vue';
 import LibraryTrackListExportDialog from '@/components/library/LibraryTrackListExportDialog.vue';
 import { useLibraryStore } from '@/stores/library';
@@ -24,6 +25,7 @@ const displayName = computed(() => library.libraryName || t('library.title'));
 
 const pendingDeletion = ref<LibrarySummary | null>(null);
 const isSwitcherOpen = ref(false);
+const isMissingInfoOpen = ref(false);
 const isTrackListExportOpen = ref(false);
 
 /** Actions on the open library. Switching has a dedicated dialog next to the title. */
@@ -34,6 +36,12 @@ const menuItems = computed<MenuItem[]>(() => [
     label: t('library.name.menu.verifyAll'),
     icon: 'verify',
     disabled: library.tracks.length === 0 || library.isVerifying,
+  },
+  {
+    id: 'missingInfo',
+    label: t('library.name.menu.missingInfo'),
+    icon: 'search',
+    disabled: library.tracks.length === 0,
   },
   {
     id: 'exportList',
@@ -68,6 +76,11 @@ function run(id: string) {
 
   if (id === 'exportList') {
     isTrackListExportOpen.value = true;
+    return;
+  }
+
+  if (id === 'missingInfo') {
+    isMissingInfoOpen.value = true;
     return;
   }
 
@@ -170,6 +183,8 @@ async function submit() {
     />
 
     <LibrarySwitcherDialog :open="isSwitcherOpen" @close="isSwitcherOpen = false" />
+
+    <LibraryMissingInfoDialog :open="isMissingInfoOpen" @close="isMissingInfoOpen = false" />
 
     <LibraryTrackListExportDialog
       :open="isTrackListExportOpen"

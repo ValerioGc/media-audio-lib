@@ -108,6 +108,7 @@
       "menu": {
         "rename": "Rename",
         "verifyAll": "Verify files",
+        "missingInfo": "Missing data",
         "exportList": "Export list",
         "export": "Export library",
         "delete": "Delete library"
@@ -151,6 +152,7 @@
       "addFolder": "Add folder",
       "missingInfo": {
         "label": "Missing",
+        "active": "Missing: {filter}",
         "options": {
           "all": "All",
           "file": "File",
@@ -161,6 +163,13 @@
           "genre": "Genre"
         }
       }
+    },
+    "missingInfo": {
+      "title": "Missing data",
+      "description": "Filter the library by the information that still needs to be completed. Choose All to return to the normal view.",
+      "label": "Information",
+      "result": "no tracks found | 1 track found | {count} tracks found",
+      "close": "Close"
     },
     "defaultPlayerBanner": {
       "title": "You can use Media Audio Lib as your default player",
@@ -206,6 +215,10 @@
     "noMatches": {
       "title": "No results",
       "message": "No track matches the search “{query}”."
+    },
+    "noMissingInfo": {
+      "title": "No missing data",
+      "message": "No track matches the missing-data filter."
     },
     "remove": {
       "title": "Remove this track?",

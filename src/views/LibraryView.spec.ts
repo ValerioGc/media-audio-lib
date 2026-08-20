@@ -181,6 +181,15 @@ describe('LibraryView', () => {
     expect(wrapper.get('.app_placeholder_title').text()).toBe('Nessun risultato');
   });
 
+  it('shows a specific empty state when the missing-data filter finds nothing', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [makeTrack({ artist: 'Artist' })];
+    store.setMissingInfoFilter('artist');
+    await flushPromises();
+
+    expect(wrapper.get('.app_placeholder_title').text()).toBe('Nessun dato mancante');
+  });
+
   it('shows the store error message', async () => {
     const { wrapper, store } = await mountView();
     store.errorKey = 'shellUnavailable';

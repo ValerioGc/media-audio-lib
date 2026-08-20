@@ -6,17 +6,23 @@ import AppButton from '@/components/common/AppButton.vue';
 import AppPlaceholder from '@/components/common/AppPlaceholder.vue';
 import { useLibraryStore } from '@/stores/library';
 
-const props = defineProps<{ variant: 'empty' | 'noMatches' }>();
+const props = defineProps<{ variant: 'empty' | 'noMatches' | 'noMissingInfo' }>();
 
 const { t } = useI18n();
 const library = useLibraryStore();
 
 const title = computed(() => t(`library.${props.variant}.title`));
-const message = computed(() =>
-  props.variant === 'empty'
-    ? t('library.empty.message')
-    : t('library.noMatches.message', { query: library.query }),
-);
+const message = computed(() => {
+  if (props.variant === 'empty') {
+    return t('library.empty.message');
+  }
+
+  if (props.variant === 'noMissingInfo') {
+    return t('library.noMissingInfo.message');
+  }
+
+  return t('library.noMatches.message', { query: library.query });
+});
 </script>
 
 <template>

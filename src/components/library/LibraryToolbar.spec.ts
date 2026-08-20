@@ -80,13 +80,20 @@ describe('LibraryToolbar', () => {
     expect(store.query).toBe('rock');
   });
 
-  it('updates the missing information filter', async () => {
+  it('keeps the missing information filter out of the toolbar', () => {
+    const wrapper = mount(LibraryToolbar, withPinia());
+
+    expect(wrapper.find('select').exists()).toBe(false);
+  });
+
+  it('shows the active missing information filter without adding another control', async () => {
     const options = withPinia();
     const store = useLibraryStore();
+    store.setMissingInfoFilter('artist');
 
     const wrapper = mount(LibraryToolbar, options);
-    await wrapper.get('select').setValue('artist');
+    await wrapper.vm.$nextTick();
 
-    expect(store.missingInfoFilter).toBe('artist');
+    expect(wrapper.get('[data-testid="missing-info-active"]').text()).toBe('Mancanti: Autore');
   });
 });

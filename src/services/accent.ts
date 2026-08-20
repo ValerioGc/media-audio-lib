@@ -78,9 +78,7 @@ function channelLuminance(channel: number): number {
 
 /** WCAG relative luminance, between 0 (black) and 1 (white). */
 export function relativeLuminance({ r, g, b }: Rgb): number {
-  return (
-    0.2126 * channelLuminance(r) + 0.7152 * channelLuminance(g) + 0.0722 * channelLuminance(b)
-  );
+  return 0.2126 * channelLuminance(r) + 0.7152 * channelLuminance(g) + 0.0722 * channelLuminance(b);
 }
 
 /** WCAG contrast ratio, between 1 (identical) and 21 (black on white). */
@@ -132,7 +130,11 @@ export function normalizeAccentColor(value: unknown): string | null {
 }
 
 /** Builds the accent tokens for one theme. Falls back to `fallback` on an invalid colour. */
-export function accentPalette(color: string, theme: ResolvedTheme, fallback = '#0067c0'): AccentPalette {
+export function accentPalette(
+  color: string,
+  theme: ResolvedTheme,
+  fallback = '#0067c0',
+): AccentPalette {
   const parsed = parseHex(color) ?? parseHex(fallback) ?? { r: 0, g: 103, b: 192 };
   const accent = readableOnSurface(parsed, theme);
   const surface = theme === 'dark' ? DARK_SURFACE : WHITE;

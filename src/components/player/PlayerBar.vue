@@ -8,7 +8,7 @@ import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayerControls from '@/components/player/PlayerControls.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
-import PlayerVolume from '@/components/player/PlayerVolume.vue';
+import PlayerSideControls from '@/components/player/PlayerSideControls.vue';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
@@ -53,7 +53,9 @@ const accentStyle = computed(() => ({
 
         <div class="player_bar_info">
           <p class="player_bar_title" :title="track.title">{{ track.title }}</p>
-          <p class="player_bar_artist">{{ track.artist ?? t('library.row.unknown') }}</p>
+          <p class="player_bar_artist" :title="track.artist ?? t('library.row.unknown')">
+            {{ track.artist ?? t('library.row.unknown') }}
+          </p>
         </div>
       </div>
 
@@ -66,7 +68,6 @@ const accentStyle = computed(() => ({
           :disabled="player.isLoading"
           @previous="player.previous()"
           @toggle="player.toggle()"
-          @stop="player.stop()"
           @next="player.next()"
           @toggle-shuffle="player.toggleShuffle()"
           @toggle-repeat-one="player.toggleRepeatOne()"
@@ -79,7 +80,12 @@ const accentStyle = computed(() => ({
       </div>
 
       <div class="player_bar_actions">
-        <PlayerVolume :model-value="player.volume" @update:model-value="player.setVolume($event)" />
+        <PlayerSideControls
+          :volume="player.volume"
+          :disabled="player.isLoading"
+          @stop="player.stop()"
+          @update:volume="player.setVolume($event)"
+        />
         <AppTooltip :text="t('player.expand')">
           <AppButton
             variant="ghost"
@@ -181,7 +187,7 @@ const accentStyle = computed(() => ({
 
   &_actions {
     display: flex;
-    gap: $space_xs;
+    gap: $space_sm;
     align-items: center;
   }
 }

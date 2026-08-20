@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createTestPinia, resetI18n } from '@tests/support/mount';
 import { i18n } from '@/i18n';
+import { accentPalette } from '@/services/accent';
 import type { SettingsStorage } from '@/services/settings-storage';
 import { DEFAULT_SETTINGS, type AppSettings } from '@/types/settings';
 
@@ -118,6 +119,64 @@ describe('useSettingsStore', () => {
     expect(store.theme).toBe(DEFAULT_SETTINGS.theme);
     expect(store.isReady).toBe(true);
     expect(consoleError).toHaveBeenCalledTimes(1);
+
+    store.dispose();
+  });
+
+  it('applies and persists the accent colour', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setAccentColor('#107c10');
+
+    expect(store.accentColor).toBe('#107c10');
+    expect(storage.saved.at(-1)?.accentColor).toBe('#107c10');
+    expect(document.documentElement.style.getPropertyValue('--color_accent')).toBe(
+      accentPalette('#107c10', store.resolvedTheme).accent,
+    );
+
+    store.dispose();
+  });
+
+  it('keeps the accent in place when the chosen colour is not one', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+    await store.setAccentColor('#107c10');
+    const saved = storage.saved.length;
+
+    await store.setAccentColor('verde');
+
+    expect(store.accentColor).toBe('#107c10');
+    expect(storage.saved).toHaveLength(saved);
+
+    store.dispose();
+  });
+
+  it('returns the accent to the default blue', async () => {
+    const store = useSettingsStore();
+    await store.initialize(createFakeStorage());
+    await store.setAccentColor('#e3008c');
+
+    await store.resetAccentColor();
+
+    expect(store.accentColor).toBe(DEFAULT_SETTINGS.accentColor);
+
+    store.dispose();
+  });
+
+  it('follows the theme: the same colour yields a different accent', async () => {
+    const store = useSettingsStore();
+    await store.initialize(createFakeStorage());
+    await store.setAccentColor('#0067c0');
+
+    await store.setTheme('light');
+    const light = document.documentElement.style.getPropertyValue('--color_accent');
+
+    await store.setTheme('dark');
+
+    expect(document.documentElement.style.getPropertyValue('--color_accent')).not.toBe(light);
 
     store.dispose();
   });

@@ -90,12 +90,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div
-    ref="list"
-    class="library_content_tabs"
-    role="tablist"
-    :aria-label="t('library.tabs.label')"
-  >
+  <div ref="list" class="library_content_tabs" role="tablist" :aria-label="t('library.tabs.label')">
     <button
       v-for="(tab, index) in LIBRARY_CONTENT_TABS"
       :id="`library-tab-${tab}`"

@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { accentPalette } from '@/services/accent';
 import {
   TEXT_SIZE_SCALE,
+  applyAccent,
   applyDocumentLocale,
   applyTextSize,
   applyTheme,
@@ -45,12 +47,44 @@ describe('appearance', () => {
     expect(root.lang).toBe('en');
   });
 
+  it('writes the four accent tokens', () => {
+    applyAccent('#107c10', 'light', root);
+
+    const palette = accentPalette('#107c10', 'light');
+
+    expect(root.style.getPropertyValue('--color_accent')).toBe(palette.accent);
+    expect(root.style.getPropertyValue('--color_accent_hover')).toBe(palette.accentHover);
+    expect(root.style.getPropertyValue('--color_accent_soft')).toBe(palette.accentSoft);
+    expect(root.style.getPropertyValue('--color_on_accent')).toBe(palette.onAccent);
+  });
+
+  it('derives a different accent for each theme', () => {
+    applyAccent('#0067c0', 'light', root);
+    const light = root.style.getPropertyValue('--color_accent_soft');
+
+    applyAccent('#0067c0', 'dark', root);
+
+    expect(root.style.getPropertyValue('--color_accent_soft')).not.toBe(light);
+  });
+
+  it('keeps the interface usable when the stored colour is broken', () => {
+    applyAccent('not a colour', 'light', root);
+
+    expect(root.style.getPropertyValue('--color_accent')).toBe(
+      accentPalette('#0067c0', 'light').accent,
+    );
+  });
+
   it('uses documentElement as the default root', () => {
     applyTheme('dark');
     applyTextSize('small');
     applyDocumentLocale('it');
+    applyAccent('#e3008c', 'dark');
 
     expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(document.documentElement.style.getPropertyValue('--color_accent')).toBe(
+      accentPalette('#e3008c', 'dark').accent,
+    );
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
     expect(document.documentElement.lang).toBe('it');
   });

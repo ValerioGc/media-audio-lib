@@ -47,6 +47,7 @@ describe('SettingsView', () => {
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
       'Dimensione testo',
       'Tema',
+      'Colore accent',
       'Sfondo da copertina',
     ]);
   });
@@ -105,6 +106,7 @@ describe('SettingsView', () => {
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
       'Text size',
       'Theme',
+      'Accent colour',
       'Cover background',
     ]);
   });

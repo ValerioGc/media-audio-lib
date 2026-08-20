@@ -28,14 +28,12 @@ describe('PlayerControls', () => {
 
     await wrapper.get('[data-testid="player-previous"]').trigger('click');
     await wrapper.get('[data-testid="player-toggle"]').trigger('click');
-    await wrapper.get('[data-testid="player-stop"]').trigger('click');
     await wrapper.get('[data-testid="player-next"]').trigger('click');
     await wrapper.get('[data-testid="player-shuffle"]').trigger('click');
     await wrapper.get('[data-testid="player-repeat-one"]').trigger('click');
 
     expect(wrapper.emitted('previous')).toHaveLength(1);
     expect(wrapper.emitted('toggle')).toHaveLength(1);
-    expect(wrapper.emitted('stop')).toHaveLength(1);
     expect(wrapper.emitted('next')).toHaveLength(1);
     expect(wrapper.emitted('toggleShuffle')).toHaveLength(1);
     expect(wrapper.emitted('toggleRepeatOne')).toHaveLength(1);
@@ -86,6 +84,30 @@ describe('PlayerControls', () => {
     const wrapper = mountControls({ disabled: true });
 
     expect(wrapper.get('[data-testid="player-toggle"]').attributes('disabled')).toBeDefined();
-    expect(wrapper.get('[data-testid="player-stop"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="player-shuffle"]').attributes('disabled')).toBeDefined();
+  });
+
+  it('leaves stop out of the group: it is not one of the transport commands', () => {
+    const wrapper = mountControls();
+
+    expect(wrapper.find('[data-testid="player-stop"]').exists()).toBe(false);
+  });
+
+  it('reads in the transport order, with play in the middle', () => {
+    const wrapper = mountControls();
+
+    expect(wrapper.findAll('button').map((button) => button.attributes('data-testid'))).toEqual([
+      'player-shuffle',
+      'player-previous',
+      'player-toggle',
+      'player-next',
+      'player-repeat-one',
+    ]);
+  });
+
+  it('enlarges the targets for the full page player', () => {
+    const wrapper = mountControls({ prominent: true });
+
+    expect(wrapper.get('.player_controls').classes()).toContain('player_controls_prominent');
   });
 });

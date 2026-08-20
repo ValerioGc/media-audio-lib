@@ -26,6 +26,27 @@ describe('AppTooltip', () => {
     expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
   });
 
+  it('sits above the trigger and against its right edge by default', async () => {
+    const wrapper = mount(AppTooltip, options);
+
+    await wrapper.trigger('mouseenter');
+
+    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_top');
+    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_end');
+  });
+
+  it('can hang under the trigger, for the controls on the top edge', async () => {
+    const wrapper = mount(AppTooltip, {
+      ...options,
+      props: { ...options.props, placement: 'bottom' as const, align: 'center' as const },
+    });
+
+    await wrapper.trigger('mouseenter');
+
+    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_bottom');
+    expect(wrapper.get('[role="tooltip"]').classes()).toContain('app_tooltip_bubble_center');
+  });
+
   it('also appears from keyboard, not only mouse', async () => {
     const wrapper = mount(AppTooltip, options);
 

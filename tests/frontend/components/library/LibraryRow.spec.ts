@@ -35,6 +35,22 @@ describe('LibraryRow', () => {
     expect(cells[5]?.text()).toBe('Jazz');
   });
 
+  it('carries the full value of the truncatable cells as a tooltip', () => {
+    const track = makeTrack({
+      title: 'A very long title that the column cannot show whole',
+      artist: 'Artist',
+      album: 'Album',
+    });
+
+    const texts = mountRow(track).findAll('.library_row_text');
+
+    expect(texts[0]?.attributes('title')).toBe(
+      'A very long title that the column cannot show whole',
+    );
+    expect(texts[1]?.attributes('title')).toBe('Artist');
+    expect(texts[2]?.attributes('title')).toBe('Album');
+  });
+
   it('shows a dash for missing fields', () => {
     const cells = mountRow(
       makeTrack({ artist: null, album: null, year: null, genre: null }),

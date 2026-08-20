@@ -18,8 +18,7 @@ const swatches = computed(() =>
 );
 
 const isCustom = computed(
-  () =>
-    !ACCENT_PRESETS.some((color) => color.toLowerCase() === settings.accentColor.toLowerCase()),
+  () => !ACCENT_PRESETS.some((color) => color.toLowerCase() === settings.accentColor.toLowerCase()),
 );
 
 const isDefault = computed(

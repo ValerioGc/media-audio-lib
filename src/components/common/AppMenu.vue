@@ -105,6 +105,7 @@ defineExpose({ close: closeMenu, open: openMenu });
       class="app_menu_trigger"
       type="button"
       :aria-label="props.label"
+      :title="props.label"
       :aria-expanded="isOpen"
       aria-haspopup="menu"
       @click="toggleMenu"

@@ -1,5 +1,10 @@
 import { accentPalette } from '@/services/accent';
-import { DEFAULT_ACCENT_COLOR, type Locale, type ResolvedTheme, type TextSize } from '@/types/settings';
+import {
+  DEFAULT_ACCENT_COLOR,
+  type Locale,
+  type ResolvedTheme,
+  type TextSize,
+} from '@/types/settings';
 
 export const TEXT_SIZE_SCALE: Record<TextSize, number> = {
   small: 0.875,

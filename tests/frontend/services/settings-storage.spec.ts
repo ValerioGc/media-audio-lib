@@ -60,6 +60,7 @@ describe('sanitizeSettings', () => {
       locale: 'en',
       textSize: 'large',
       theme: 'dark',
+      accentColor: '#107c10',
       viewMode: 'preview',
       mainLibraryId: 'lib-2',
       coverGradientEnabled: false,
@@ -81,6 +82,11 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
     });
+  });
+
+  it('normalizes the accent colour and refuses what is not one', () => {
+    expect(sanitizeSettings({ accentColor: '#0AF' }).accentColor).toBe('#00aaff');
+    expect(sanitizeSettings({ accentColor: 'blu' }).accentColor).toBe(DEFAULT_SETTINGS.accentColor);
   });
 
   it('clamps saved gradient, transparency and blur to valid values', () => {
@@ -155,6 +161,7 @@ describe('createTauriStorage', () => {
       locale: 'en',
       textSize: 'large',
       theme: 'dark',
+      accentColor: '#107c10',
       viewMode: 'preview',
       mainLibraryId: 'lib-2',
       coverGradientEnabled: false,

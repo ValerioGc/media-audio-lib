@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
+import AppTooltip from '@/components/common/AppTooltip.vue';
 import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
 import LibraryMissingInfoDialog from '@/components/library/LibraryMissingInfoDialog.vue';
@@ -157,6 +158,7 @@ async function submit() {
         class="library_title_action"
         type="submit"
         :aria-label="t('library.name.save')"
+        :title="t('library.name.save')"
         :disabled="library.isRenaming"
         data-testid="library-name-save"
       >
@@ -166,6 +168,7 @@ async function submit() {
         class="library_title_action"
         type="button"
         :aria-label="t('library.name.cancel')"
+        :title="t('library.name.cancel')"
         data-testid="library-name-cancel"
         @click="cancel"
       >
@@ -176,15 +179,17 @@ async function submit() {
     <!-- Renaming starts from the menu: no separate pen next to the name. -->
     <h1 v-else class="library_title_name">{{ displayName }}</h1>
 
-    <button
-      class="library_title_switch"
-      type="button"
-      :aria-label="t('library.catalog.switcher.open')"
-      data-testid="library-switcher-open"
-      @click="openSwitcher"
-    >
-      <AppIcon name="switch" />
-    </button>
+    <AppTooltip :text="t('library.catalog.switcher.open')" align="center">
+      <button
+        class="library_title_switch"
+        type="button"
+        :aria-label="t('library.catalog.switcher.open')"
+        data-testid="library-switcher-open"
+        @click="openSwitcher"
+      >
+        <AppIcon name="switch" />
+      </button>
+    </AppTooltip>
 
     <AppMenu :items="menuItems" :label="t('library.name.actions')" @select="run" />
 

@@ -32,6 +32,7 @@ const pendingRemoval = ref<TrackView | null>(null);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const activeTab = ref<LibraryContentTab>('tracks');
 const facetViewMode = ref<ViewMode>('preview');
+const groupModalViewMode = ref<ViewMode>('preview');
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   if (activeTab.value === 'artists') {
@@ -102,6 +103,11 @@ function askRemoval(track: TrackView) {
 function openEditor(track: TrackView) {
   selectedFacet.value = null;
   library.openEditor(track.id);
+}
+
+function openFacet(group: FacetGroupOpenPayload) {
+  groupModalViewMode.value = facetViewMode.value;
+  selectedFacet.value = group;
 }
 
 function setDisplayedViewMode(mode: ViewMode) {
@@ -216,7 +222,7 @@ async function confirmRemoval() {
           :tracks="library.visibleTracks"
           :field="activeFacet"
           :view-mode="facetViewMode"
-          @open="selectedFacet = $event"
+          @open="openFacet"
         />
       </section>
     </template>
@@ -238,11 +244,11 @@ async function confirmRemoval() {
               )
             }}
           </p>
-          <LibraryViewToggle v-model="facetViewMode" />
+          <LibraryViewToggle v-model="groupModalViewMode" />
         </div>
 
         <PreviewGrid
-          v-if="facetViewMode === 'preview'"
+          v-if="groupModalViewMode === 'preview'"
           :tracks="selectedFacetTracks"
           :selected-id="library.selectedId"
           :playing-id="player.currentTrack?.id ?? null"

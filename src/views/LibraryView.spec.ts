@@ -130,6 +130,28 @@ describe('LibraryView', () => {
     expect(dialog.text()).not.toContain('Red');
   });
 
+  it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A' }),
+      makeTrack({ title: 'Green', artist: 'Artist A' }),
+      makeTrack({ title: 'Red', artist: 'Artist B' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    const dialog = wrapper.get('[role="dialog"]');
+    await dialog.get('[data-testid="view-table"]').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(true);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(true);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
+  });
+
   it('marks the playing track in the library', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();

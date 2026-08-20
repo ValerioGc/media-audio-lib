@@ -113,6 +113,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       v-for="group in groups"
       :key="group.key"
       class="library_facet_card"
+      :class="{ library_facet_card_genre: field === 'genre' }"
       role="button"
       tabindex="0"
       :aria-label="t('library.groups.openLabel', { name: group.name })"
@@ -208,10 +209,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   padding-bottom: $space_md;
 
   @include scroll_area;
-
-  &_genre {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
-  }
 }
 
 .library_facet_card {
@@ -232,6 +229,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   @include focus_ring;
+
+  &_genre {
+    grid-column: span 2;
+    min-height: 6.25rem;
+    padding-block: $space_sm;
+  }
 
   &_body {
     display: flex;
@@ -261,6 +264,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     font-size: 0.875em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .library_facet_card_genre {
+    grid-column: span 1;
   }
 }
 

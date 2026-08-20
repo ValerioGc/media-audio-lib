@@ -62,7 +62,7 @@ describe('LibraryFacetList', () => {
     expect(wrapper.text()).not.toContain('Blue, Green');
   });
 
-  it('uses wider preview cards for genres', () => {
+  it('uses wider and shorter preview cards for genres', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {
@@ -72,9 +72,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    expect(wrapper.get('.library_facet_preview').classes()).toContain(
-      'library_facet_preview_genre',
-    );
+    expect(wrapper.get('.library_facet_card').classes()).toContain('library_facet_card_genre');
   });
 
   it('shows the artist on album groups', () => {

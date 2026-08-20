@@ -2,6 +2,8 @@ import { formatDuration } from '@/services/track-sorting';
 import { SORTABLE_COLUMNS, type SortableColumn, type TrackView } from '@/types/library';
 import type { TableColumnKey, TableColumnSetting } from '@/types/settings';
 
+const TABLE_ACTIONS_COLUMN_WIDTH = '5.5rem';
+
 export interface TableColumnView extends TableColumnSetting {
   label: string;
   sortable: boolean;
@@ -16,7 +18,10 @@ export function visibleTableColumns(columns: readonly TableColumnSetting[]): Tab
 }
 
 export function tableGridTemplate(columns: readonly TableColumnSetting[]): string {
-  return [...visibleTableColumns(columns).map((column) => `${column.width}px`), '5.5rem'].join(' ');
+  return [
+    ...visibleTableColumns(columns).map((column) => `${column.width}px`),
+    TABLE_ACTIONS_COLUMN_WIDTH,
+  ].join(' ');
 }
 
 export function tableColumnValue(

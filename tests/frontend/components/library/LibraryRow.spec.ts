@@ -137,6 +137,18 @@ describe('LibraryRow', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
+  it('opens the same actions menu from the right click menu', async () => {
+    const wrapper = mountRow(makeTrack());
+
+    await wrapper.trigger('contextmenu');
+
+    expect(wrapper.find('.library_row .app_menu_trigger').attributes('aria-expanded')).toBe('true');
+    expect(wrapper.findAll('.library_row .app_menu_item_label').map((item) => item.text())).toEqual(
+      ['Modifica', 'Verifica', 'Elimina'],
+    );
+    expect(wrapper.emitted('select')).toBeUndefined();
+  });
+
   it('emits the metadata edit request', async () => {
     const track = makeTrack();
     const wrapper = mountRow(track);

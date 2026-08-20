@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppMenu from '@/components/common/AppMenu.vue';
@@ -17,6 +17,7 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const menu = ref<InstanceType<typeof AppMenu> | null>(null);
 
 /** Short labels on screen, the full sentence only for screen readers. */
 const items = computed<MenuItem[]>(() => [
@@ -51,11 +52,18 @@ function run(id: string) {
     emit('remove', props.track);
   }
 }
+
+function openMenu() {
+  void menu.value?.open();
+}
+
+defineExpose({ open: openMenu });
 </script>
 
 <template>
   <div class="library_row_menu" @click.stop @dblclick.stop>
     <AppMenu
+      ref="menu"
       :items="items"
       :label="t('library.row.actions', { title: track.title })"
       @select="run"

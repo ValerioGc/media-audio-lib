@@ -95,7 +95,7 @@ onUnmounted(() => {
   document.removeEventListener('keydown', onDocumentKeydown);
 });
 
-defineExpose({ close: closeMenu });
+defineExpose({ close: closeMenu, open: openMenu });
 </script>
 
 <template>

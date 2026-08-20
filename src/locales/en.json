@@ -305,6 +305,7 @@
       "albumCount": "no albums | 1 album | {count} albums",
       "openLabel": "Open tracks linked to {name}",
       "albumArtist": "Artist: {artists}",
+      "albumGenres": "Genre: {genres}",
       "modalTitle": "Tracks linked to {name}",
       "detailTabs": "Linked detail",
       "expandAlbums": "Expand albums",
@@ -428,9 +429,9 @@
       },
       "metadata": {
         "title": "Editing metadata",
-        "where": "three dots menu on the track row or card.",
+        "where": "three dots menu on the track row or card, or right click the row.",
         "steps": [
-          "Open the three dots menu and choose Edit.",
+          "Open the three dots menu, or right click the row, and choose Edit.",
           "Edit name, artist, album, year and genre; the genre can be picked or typed.",
           "Use \"Choose image…\" to replace the cover (PNG or JPEG, up to 5 MB).",
           "Press \"Save\": the changes are written into the file tags, not just the library.",

@@ -34,14 +34,25 @@ const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const activeTab = ref<LibraryContentTab>('tracks');
-const facetViewMode = ref<ViewMode>('preview');
 const groupModalViewMode = ref<ViewMode>('preview');
+const facetViewModes = ref<Record<'artist' | 'album' | 'genre', ViewMode>>({
+  artist: 'preview',
+  album: 'table',
+  genre: 'preview',
+});
 const genreModalTab = ref<'tracks' | 'artists' | 'albums'>('tracks');
 const isArtistAlbumsExpanded = ref(false);
 const selectionAnchorId = ref<string | null>(null);
 const isBulkEditorOpen = ref(false);
 const artistModalHiddenColumnKeys = [
   'artist',
+  'genre',
+  'format',
+  'path',
+  'missing',
+] as const satisfies readonly TableColumnKey[];
+const albumModalHiddenColumnKeys = [
+  'album',
   'genre',
   'format',
   'path',
@@ -72,6 +83,22 @@ const selectedFacetTracks = computed(() => {
   }
 
   return library.visibleTracks.filter((track) => facetKeyOf(track, facet.field) === facet.key);
+});
+
+const selectedAlbumGenres = computed(() => {
+  if (selectedFacet.value?.field !== 'album') {
+    return [];
+  }
+
+  const genres = [
+    ...new Set(
+      selectedFacetTracks.value
+        .map((track) => track.genre?.trim() ?? '')
+        .filter((genre) => genre.length > 0),
+    ),
+  ].sort((left, right) => left.localeCompare(right));
+
+  return genres.length > 0 ? genres : [t('library.groups.unknown.genre')];
 });
 
 interface ModalAlbumGroup {
@@ -118,8 +145,12 @@ const selectedFacetAlbums = computed<ModalAlbumGroup[]>(() => {
     });
 });
 
+const activeFacetViewMode = computed(() =>
+  activeFacet.value === null ? 'preview' : facetViewModes.value[activeFacet.value],
+);
+
 const displayedViewMode = computed(() =>
-  activeTab.value === 'tracks' ? settings.viewMode : facetViewMode.value,
+  activeTab.value === 'tracks' ? settings.viewMode : activeFacetViewMode.value,
 );
 
 const { isDraggingOver } = useFileDrop((paths) => {
@@ -164,7 +195,7 @@ function openEditor(track: TrackView) {
 }
 
 function openFacet(group: FacetGroupOpenPayload) {
-  groupModalViewMode.value = facetViewMode.value;
+  groupModalViewMode.value = facetViewModes.value[group.field];
   genreModalTab.value = 'tracks';
   isArtistAlbumsExpanded.value = false;
   selectedFacet.value = group;
@@ -204,7 +235,9 @@ function setDisplayedViewMode(mode: ViewMode) {
     return;
   }
 
-  facetViewMode.value = mode;
+  if (activeFacet.value !== null) {
+    facetViewModes.value = { ...facetViewModes.value, [activeFacet.value]: mode };
+  }
 }
 
 async function confirmRemoval() {
@@ -318,7 +351,7 @@ async function confirmRemoval() {
           v-else-if="activeFacet !== null"
           :tracks="library.visibleTracks"
           :field="activeFacet"
-          :view-mode="facetViewMode"
+          :view-mode="activeFacetViewMode"
           :playing-track="player.currentTrack"
           @open="openFacet"
         />
@@ -333,15 +366,20 @@ async function confirmRemoval() {
     >
       <div class="library_view_group_modal">
         <div class="library_view_group_modal_header">
-          <p>
-            {{
-              t(
-                'library.groups.trackCount',
-                { count: selectedFacetTracks.length },
-                selectedFacetTracks.length,
-              )
-            }}
-          </p>
+          <div class="library_view_group_modal_summary">
+            <p>
+              {{
+                t(
+                  'library.groups.trackCount',
+                  { count: selectedFacetTracks.length },
+                  selectedFacetTracks.length,
+                )
+              }}
+            </p>
+            <p v-if="selectedFacet?.field === 'album'">
+              {{ t('library.groups.albumGenres', { genres: selectedAlbumGenres.join(', ') }) }}
+            </p>
+          </div>
           <LibraryViewToggle v-if="selectedFacet?.field === 'album'" v-model="groupModalViewMode" />
         </div>
 
@@ -502,6 +540,8 @@ async function confirmRemoval() {
             :sort="library.sort"
             :selected-ids="library.selectedIds"
             :playing-id="player.currentTrack?.id ?? null"
+            :hidden-column-keys="albumModalHiddenColumnKeys"
+            :show-column-settings="false"
             @sort="library.toggleSort($event)"
             @select="selectFromTracks($event, selectedFacetTracks)"
             @play="startFacetPlayback($event)"
@@ -613,6 +653,19 @@ async function confirmRemoval() {
       justify-content: space-between;
       color: var(--color_text_muted);
       font-size: 0.875em;
+    }
+
+    &_summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $space_xs $space_md;
+      min-width: 0;
+
+      p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     &_albums {

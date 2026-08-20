@@ -109,6 +109,21 @@ describe('LibraryView', () => {
     expect(wrapper.text()).toContain('Artist A');
   });
 
+  it('opens the albums tab in list view by default', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', album: 'Album A' }),
+      makeTrack({ title: 'Green', album: 'Album B' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+
+    expect(wrapper.find('.library_facet_list').exists()).toBe(true);
+    expect(wrapper.find('.library_facet_preview').exists()).toBe(false);
+    expect(wrapper.findAll('.library_facet_list_row')).toHaveLength(2);
+  });
+
   it('opens linked tracks from a facet group in a modal', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
@@ -170,16 +185,51 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
-    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await wrapper.findAll('.library_facet_list_row')[0]?.trigger('click');
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');
-    await dialog.get('[data-testid="view-table"]').trigger('click');
+    await dialog.get('[data-testid="view-preview"]').trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(true);
-    expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(true);
-    expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
+    expect(wrapper.get('[role="dialog"]').find('.preview_grid').exists()).toBe(true);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(true);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(false);
+  });
+
+  it('shows album genres once in the album modal and hides redundant table columns', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({
+        title: 'Blue',
+        artist: 'Artist A',
+        album: 'Album A',
+        genre: 'Jazz',
+        year: 1999,
+      }),
+      makeTrack({
+        title: 'Green',
+        artist: 'Artist B',
+        album: 'Album A',
+        genre: 'Fusion',
+        year: 2001,
+      }),
+      makeTrack({ title: 'Red', artist: 'Artist C', album: 'Album B', genre: 'Rock' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+    await wrapper.findAll('.library_facet_list_row')[0]?.trigger('click');
+    await flushPromises();
+
+    const dialog = wrapper.get('[role="dialog"]');
+    const headings = dialog
+      .findAll('.library_table_heading')
+      .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
+
+    expect(dialog.text()).toContain('Genere: Fusion, Jazz');
+    expect(headings).toEqual(['Copertina', 'Nome', 'Autore', 'Anno', 'Durata', '']);
+    expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
   });
 
   it('opens genre details with tracks, artists and albums tabs', async () => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
@@ -29,6 +29,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const player = usePlayerStore();
 const settings = useSettingsStore();
+const actions = ref<InstanceType<typeof LibraryRowActions> | null>(null);
 
 const accentStyle = computed(() =>
   props.playing && settings.coverGradientEnabled && player.coverAccent !== null
@@ -57,6 +58,12 @@ function select(event: MouseEvent | KeyboardEvent) {
     range: event.shiftKey,
   });
 }
+
+function openActionsMenu(event: MouseEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+  actions.value?.open();
+}
 </script>
 
 <template>
@@ -73,6 +80,7 @@ function select(event: MouseEvent | KeyboardEvent) {
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
     @click="select($event)"
+    @contextmenu="openActionsMenu"
     @dblclick="emit('play', track)"
     @keydown.enter="select($event)"
   >
@@ -100,6 +108,7 @@ function select(event: MouseEvent | KeyboardEvent) {
     </span>
     <span class="library_row_cell library_row_actions" role="cell">
       <LibraryRowActions
+        ref="actions"
         :track="track"
         @edit="emit('edit', $event)"
         @remove="emit('remove', $event)"

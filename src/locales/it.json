@@ -305,6 +305,7 @@
       "albumCount": "nessun album | 1 album | {count} album",
       "openLabel": "Apri i brani collegati a {name}",
       "albumArtist": "Autore: {artists}",
+      "albumGenres": "Genere: {genres}",
       "modalTitle": "Brani collegati a {name}",
       "detailTabs": "Dettaglio collegamenti",
       "expandAlbums": "Espandi album",
@@ -428,9 +429,9 @@
       },
       "metadata": {
         "title": "Modificare i metadati",
-        "where": "menu con i tre puntini sulla riga o sulla scheda del brano.",
+        "where": "menu con i tre puntini sulla riga o sulla scheda del brano, oppure click destro sulla riga.",
         "steps": [
-          "Apri il menu con i tre puntini e scegli Modifica.",
+          "Apri il menu con i tre puntini, o con click destro sulla riga, e scegli Modifica.",
           "Modifica nome, autore, album, anno e genere; il genere si può scegliere o scrivere.",
           "Con «Scegli immagine…» sostituisci la copertina (PNG o JPEG, fino a 5 MB).",
           "Premi «Salva»: le modifiche vengono scritte nei tag del file, non solo nella libreria.",

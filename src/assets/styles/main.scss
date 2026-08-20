@@ -20,6 +20,9 @@ html,
 body,
 #app {
   height: 100%;
+
+  // Nothing scrolls at the document level: the app shell is a fixed frame.
+  overflow: hidden;
 }
 
 body {

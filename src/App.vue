@@ -41,7 +41,10 @@ onBeforeUnmount(() => {
     <!-- The window is undecorated: this bar is both the system titlebar and the header. -->
     <TitleBar />
 
-    <main class="app_shell_content">
+    <main
+      class="app_shell_content"
+      :class="{ app_shell_content_locked: navigation.isLibrary || navigation.isPlayer }"
+    >
       <SettingsView v-if="navigation.isSettings" />
       <HelpView v-else-if="navigation.isHelp" />
       <div v-else-if="navigation.isPlayer" class="app_shell_player_only" />
@@ -55,17 +58,28 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .app_shell {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
+
+  // The window itself never scrolls: the shell is a fixed frame and every view scrolls
+  // the region that owns its content.
+  overflow: hidden;
 
   &_content {
     display: flex;
     flex: 1;
     flex-direction: column;
+    min-height: 0;
     padding: $page_gutter;
 
     @include scroll_area;
+  }
+
+  // The library fills the frame and scrolls the list or the grid from the inside, so the
+  // toolbar, the sections and the player stay where they are.
+  &_content_locked {
+    overflow: hidden;
   }
 
   &_player_only {

@@ -107,6 +107,7 @@
       "actions": "Opzioni della libreria",
       "menu": {
         "rename": "Rinomina",
+        "columns": "Colonne",
         "verifyAll": "Verifica file",
         "missingInfo": "Dati mancanti",
         "exportList": "Esporta elenco",
@@ -184,8 +185,21 @@
       "album": "Album",
       "year": "Anno",
       "genre": "Genere",
+      "format": "Formato",
+      "path": "Percorso",
+      "missing": "Stato file",
       "duration": "Durata",
-      "actions": "Azioni"
+      "actions": "Azioni",
+      "resize": "Ridimensiona {column}"
+    },
+    "columnSettings": {
+      "title": "Colonne elenco",
+      "description": "Scegli le colonne visibili, trascinale per riordinarle e regola la larghezza. Copertina, Nome e Durata sono obbligatorie.",
+      "width": "Larghezza",
+      "moveUp": "Sposta {column} su",
+      "moveDown": "Sposta {column} giù",
+      "reset": "Ripristina",
+      "close": "Fine"
     },
     "sort": {
       "sortBy": "Ordina per {column}",
@@ -196,6 +210,8 @@
       "unknown": "—",
       "noCover": "Nessuna copertina",
       "missing": "File non più presente su disco",
+      "missingShort": "Mancante",
+      "present": "Presente",
       "playing": "In riproduzione",
       "actions": "Azioni per {title}",
       "remove": "Rimuovi {title} dalla libreria",

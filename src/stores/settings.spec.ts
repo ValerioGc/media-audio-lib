@@ -133,16 +133,10 @@ describe('useSettingsStore', () => {
 
     expect(storage.saved).toHaveLength(3);
     expect(storage.saved.at(-1)).toEqual({
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'small',
       theme: 'light',
-      viewMode: 'preview',
-      mainLibraryId: null,
-      coverGradientEnabled: true,
-      coverGradientIntensity: 100,
-      playerTransparency: 12,
-      playerBlur: 12,
-      defaultPlayerBannerDismissed: false,
     });
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
@@ -172,6 +166,33 @@ describe('useSettingsStore', () => {
 
     expect(store.mainLibraryId).toBe('lib-2');
     expect(storage.saved.at(-1)?.mainLibraryId).toBe('lib-2');
+
+    store.dispose();
+  });
+
+  it('remembers table column visibility, width and order', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setTableColumnVisible('artist', false);
+    await store.setTableColumnVisible('format', true);
+    await store.setTableColumnVisible('title', false);
+    await store.setTableColumnWidth('title', 999);
+    await store.moveTableColumn('genre', 'artist');
+
+    expect(store.tableColumns.find((column) => column.key === 'artist')?.visible).toBe(false);
+    expect(store.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
+    expect(store.tableColumns.find((column) => column.key === 'title')?.visible).toBe(true);
+    expect(store.tableColumns.find((column) => column.key === 'title')?.width).toBe(520);
+    expect(store.tableColumns.map((column) => column.key).slice(0, 5)).toEqual([
+      'cover',
+      'title',
+      'genre',
+      'artist',
+      'album',
+    ]);
+    expect(storage.saved.at(-1)?.tableColumns).toEqual(store.tableColumns);
 
     store.dispose();
   });

@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
+import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
 import LibraryMissingInfoDialog from '@/components/library/LibraryMissingInfoDialog.vue';
 import LibrarySwitcherDialog from '@/components/library/LibrarySwitcherDialog.vue';
@@ -25,12 +26,18 @@ const displayName = computed(() => library.libraryName || t('library.title'));
 
 const pendingDeletion = ref<LibrarySummary | null>(null);
 const isSwitcherOpen = ref(false);
+const isColumnSettingsOpen = ref(false);
 const isMissingInfoOpen = ref(false);
 const isTrackListExportOpen = ref(false);
 
 /** Actions on the open library. Switching has a dedicated dialog next to the title. */
 const menuItems = computed<MenuItem[]>(() => [
   { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit' },
+  {
+    id: 'columns',
+    label: t('library.name.menu.columns'),
+    icon: 'settings',
+  },
   {
     id: 'verifyAll',
     label: t('library.name.menu.verifyAll'),
@@ -76,6 +83,11 @@ function run(id: string) {
 
   if (id === 'exportList') {
     isTrackListExportOpen.value = true;
+    return;
+  }
+
+  if (id === 'columns') {
+    isColumnSettingsOpen.value = true;
     return;
   }
 
@@ -183,6 +195,11 @@ async function submit() {
     />
 
     <LibrarySwitcherDialog :open="isSwitcherOpen" @close="isSwitcherOpen = false" />
+
+    <LibraryColumnSettingsDialog
+      :open="isColumnSettingsOpen"
+      @close="isColumnSettingsOpen = false"
+    />
 
     <LibraryMissingInfoDialog :open="isMissingInfoOpen" @close="isMissingInfoOpen = false" />
 

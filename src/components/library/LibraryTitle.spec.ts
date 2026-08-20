@@ -123,6 +123,7 @@ describe('LibraryTitle', () => {
 
     expect(items.map((item) => item.get('.app_menu_item_label').text())).toEqual([
       'Rinomina',
+      'Colonne',
       'Verifica file',
       'Dati mancanti',
       'Esporta elenco',
@@ -148,13 +149,32 @@ describe('LibraryTitle', () => {
     expect(wrapper.findAll('.library_title_action')).toHaveLength(0);
   });
 
+  it('opens the column settings from the library menu', async () => {
+    const { wrapper } = mountTitle();
+    const settings = useSettingsStore();
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
+
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Colonne elenco');
+    expect(
+      wrapper.get('[data-testid="column-visible-title"]').attributes('disabled'),
+    ).toBeDefined();
+
+    await wrapper.get('[data-testid="column-visible-format"]').setValue(true);
+    await wrapper.get('[data-testid="column-down-cover"]').trigger('click');
+
+    expect(settings.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
+    expect(settings.tableColumns[0]?.key).toBe('title');
+  });
+
   it('opens the missing information filter from the library menu', async () => {
     const { wrapper, library } = mountTitle();
     library.tracks = [{ ...makeTrack(), artist: null }];
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Dati mancanti');
 
@@ -168,7 +188,7 @@ describe('LibraryTitle', () => {
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
@@ -183,7 +203,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(verifyAllTracks).toHaveBeenCalledTimes(1);
   });
@@ -194,7 +214,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
 
     expect(document.body.textContent).toContain('Esporta elenco brani');
   });
@@ -204,7 +224,7 @@ describe('LibraryTitle', () => {
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Main');
     expect(deleteLibrary).not.toHaveBeenCalled();
@@ -225,7 +245,7 @@ describe('LibraryTitle', () => {
     const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
 
     expect(setMainLibraryId).toHaveBeenCalledWith('lib-2');

@@ -11,12 +11,16 @@ import {
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   DEFAULT_SETTINGS,
+  MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
+  TABLE_COLUMN_WIDTHS,
   type AppSettings,
   type Locale,
   type ResolvedTheme,
+  type TableColumnKey,
+  type TableColumnSetting,
   type TextSize,
   type ThemeChoice,
   type ViewMode,
@@ -33,6 +37,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
   const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
   const defaultPlayerBannerDismissed = ref(DEFAULT_SETTINGS.defaultPlayerBannerDismissed);
+  const tableColumns = ref<TableColumnSetting[]>(
+    DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
+  );
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -54,6 +61,7 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency: playerTransparency.value,
     playerBlur: playerBlur.value,
     defaultPlayerBannerDismissed: defaultPlayerBannerDismissed.value,
+    tableColumns: tableColumns.value,
   }));
 
   function apply() {
@@ -107,6 +115,7 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency.value = restored.playerTransparency;
     playerBlur.value = restored.playerBlur;
     defaultPlayerBannerDismissed.value = restored.defaultPlayerBannerDismissed;
+    tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
 
     apply();
     isReady.value = true;
@@ -169,6 +178,69 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  function isMandatoryTableColumn(key: TableColumnKey): boolean {
+    return MANDATORY_TABLE_COLUMN_KEYS.includes(
+      key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number],
+    );
+  }
+
+  async function setTableColumnVisible(key: TableColumnKey, visible: boolean) {
+    tableColumns.value = tableColumns.value.map((column) =>
+      column.key === key
+        ? { ...column, visible: isMandatoryTableColumn(key) ? true : visible }
+        : column,
+    );
+    await persist();
+  }
+
+  async function setTableColumnWidth(key: TableColumnKey, width: number) {
+    const limits = TABLE_COLUMN_WIDTHS[key];
+    tableColumns.value = tableColumns.value.map((column) =>
+      column.key === key
+        ? { ...column, width: Math.min(limits.max, Math.max(limits.min, width)) }
+        : column,
+    );
+    await persist();
+  }
+
+  async function moveTableColumn(key: TableColumnKey, targetKey: TableColumnKey) {
+    if (key === targetKey) {
+      return;
+    }
+
+    const columns = tableColumns.value.filter((column) => column.key !== key);
+    const moved = tableColumns.value.find((column) => column.key === key);
+    const targetIndex = columns.findIndex((column) => column.key === targetKey);
+
+    if (moved === undefined || targetIndex < 0) {
+      return;
+    }
+
+    columns.splice(targetIndex, 0, moved);
+    tableColumns.value = columns;
+    await persist();
+  }
+
+  async function nudgeTableColumn(key: TableColumnKey, direction: -1 | 1) {
+    const index = tableColumns.value.findIndex((column) => column.key === key);
+    const target = tableColumns.value[index + direction];
+
+    if (index < 0 || target === undefined) {
+      return;
+    }
+
+    const columns = [...tableColumns.value];
+    columns.splice(index, 1);
+    columns.splice(index + direction, 0, tableColumns.value[index]!);
+    tableColumns.value = columns;
+    await persist();
+  }
+
+  async function resetTableColumns() {
+    tableColumns.value = DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column }));
+    await persist();
+  }
+
   function dispose() {
     stopSystemWatch?.();
     stopSystemWatch = null;
@@ -185,6 +257,7 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency,
     playerBlur,
     defaultPlayerBannerDismissed,
+    tableColumns,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -200,6 +273,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setPlayerTransparency,
     setPlayerBlur,
     dismissDefaultPlayerBanner,
+    setTableColumnVisible,
+    setTableColumnWidth,
+    moveTableColumn,
+    nudgeTableColumn,
+    resetTableColumns,
     dispose,
   };
 });

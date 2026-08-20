@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
 import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
-import { useSettingsStore } from '@/stores/settings';
 import {
-  SORTABLE_COLUMNS,
-  type SortState,
-  type SortableColumn,
-  type TrackView,
-} from '@/types/library';
+  isSortableTableColumn,
+  tableGridTemplate,
+  visibleTableColumns,
+} from '@/services/table-columns';
+import { useSettingsStore } from '@/stores/settings';
+import { type SortState, type SortableColumn, type TrackView } from '@/types/library';
+import type { TableColumnKey } from '@/types/settings';
 
 const props = defineProps<{
   tracks: readonly TrackView[];
@@ -36,6 +37,11 @@ const settings = useSettingsStore();
 const viewport = ref<HTMLElement | null>(null);
 const trackCount = computed(() => props.tracks.length);
 const rowHeight = ref(remToPixels(LIBRARY_ROW_HEIGHT_REM));
+const resizing = ref<{
+  key: TableColumnKey;
+  startX: number;
+  startWidth: number;
+} | null>(null);
 const { range, onScroll, measure } = useVirtualList({
   itemCount: trackCount,
   itemHeight: rowHeight,
@@ -53,50 +59,96 @@ watch(
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
 
 const columns = computed(() =>
-  SORTABLE_COLUMNS.map((column) => ({
-    key: column,
-    label: t(`library.columns.${column}`),
-    active: props.sort.column === column,
+  visibleTableColumns(settings.tableColumns).map((column) => ({
+    ...column,
+    label: t(`library.columns.${column.key}`),
+    sortable: isSortableTableColumn(column.key),
+    active: props.sort.column === column.key,
   })),
 );
 
-function ariaSort(column: SortableColumn) {
-  if (props.sort.column !== column) {
+const gridStyle = computed(() => ({
+  '--library_grid_columns': tableGridTemplate(settings.tableColumns),
+}));
+
+function ariaSort(column: TableColumnKey) {
+  if (!isSortableTableColumn(column) || props.sort.column !== column) {
     return 'none';
   }
 
   return props.sort.direction === 'asc' ? 'ascending' : 'descending';
 }
 
+function sortColumn(column: TableColumnKey) {
+  if (isSortableTableColumn(column)) {
+    emit('sort', column);
+  }
+}
+
+function stopResize() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  document.removeEventListener('pointermove', resizeColumn);
+  document.removeEventListener('pointerup', stopResize);
+  resizing.value = null;
+}
+
+function resizeColumn(event: PointerEvent) {
+  const resize = resizing.value;
+
+  if (resize === null) {
+    return;
+  }
+
+  void settings.setTableColumnWidth(
+    resize.key,
+    resize.startWidth + Math.round(event.clientX - resize.startX),
+  );
+}
+
+function startResize(event: PointerEvent, key: TableColumnKey, width: number) {
+  event.preventDefault();
+  event.stopPropagation();
+  resizing.value = { key, startX: event.clientX, startWidth: width };
+  document.addEventListener('pointermove', resizeColumn);
+  document.addEventListener('pointerup', stopResize);
+}
+
 onMounted(() => measure(viewport.value));
+onUnmounted(stopResize);
 </script>
 
 <template>
-  <div class="library_table" role="table" :aria-rowcount="tracks.length">
+  <div class="library_table" role="table" :aria-rowcount="tracks.length" :style="gridStyle">
     <div class="library_table_head" role="row">
-      <span class="library_table_heading" role="columnheader">
-        {{ t('library.columns.cover') }}
-      </span>
       <span
         v-for="column in columns"
         :key="column.key"
         class="library_table_heading"
         role="columnheader"
-        :aria-sort="ariaSort(column.key)"
+        :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
       >
         <button
+          v-if="column.sortable"
           class="library_table_sort"
           :class="{ library_table_sort_active: column.active }"
           type="button"
           :aria-label="t('library.sort.sortBy', { column: column.label })"
-          @click="emit('sort', column.key)"
+          @click="sortColumn(column.key)"
         >
           {{ column.label }}
           <AppIcon v-if="column.active" :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'" />
         </button>
-      </span>
-      <span class="library_table_heading" role="columnheader">
-        {{ t('library.columns.duration') }}
+        <span v-else>{{ column.label }}</span>
+        <span
+          class="library_table_resize"
+          role="separator"
+          :aria-label="t('library.columns.resize', { column: column.label })"
+          aria-orientation="vertical"
+          @pointerdown="startResize($event, column.key, column.width)"
+        />
       </span>
       <span class="library_table_heading library_table_heading_hidden" role="columnheader">
         {{ t('library.columns.actions') }}
@@ -113,6 +165,7 @@ onMounted(() => measure(viewport.value));
             v-for="track in visibleTracks"
             :key="track.id"
             :track="track"
+            :columns="columns"
             :selected="track.id === selectedId"
             :playing="track.id === playingId"
             @select="emit('select', $event)"
@@ -130,8 +183,6 @@ onMounted(() => measure(viewport.value));
 <style scoped lang="scss">
 .library_table {
   --library_row_height: #{$library_row_height};
-  --library_grid_columns: 2.5rem minmax(0, 2fr) minmax(0, 1.5fr) minmax(0, 1.5fr) 4rem
-    minmax(0, 1fr) 4.5rem 5.5rem;
 
   display: flex;
   flex: 1;
@@ -157,6 +208,7 @@ onMounted(() => measure(viewport.value));
   }
 
   &_heading {
+    position: relative;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -188,6 +240,32 @@ onMounted(() => measure(viewport.value));
     }
 
     @include focus_ring;
+  }
+
+  &_resize {
+    position: absolute;
+    top: $space_xs;
+    right: -0.5rem;
+    bottom: $space_xs;
+    width: 0.75rem;
+    cursor: col-resize;
+
+    &::after {
+      position: absolute;
+      top: 0;
+      right: 0.35rem;
+      bottom: 0;
+      width: 1px;
+      background-color: var(--color_border_strong);
+      content: '';
+      opacity: 0;
+      transition: opacity $duration_fast ease;
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      opacity: 1;
+    }
   }
 
   &_viewport {

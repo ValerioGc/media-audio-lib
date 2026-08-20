@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { makeTrack } from '../../../tests/support/tracks';
 import { usePlayerStore } from '@/stores/player';
+import { useSettingsStore } from '@/stores/settings';
 
 import LibraryRow from './LibraryRow.vue';
 
@@ -49,6 +50,27 @@ describe('LibraryRow', () => {
     const wrapper = mountRow(makeTrack({ durationMs: 185_000 }));
 
     expect(wrapper.get('.library_row_duration').text()).toBe('3:05');
+  });
+
+  it('shows optional metadata columns when they are visible', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    await settings.setTableColumnVisible('format', true);
+    await settings.setTableColumnVisible('path', true);
+    await settings.setTableColumnVisible('missing', true);
+
+    const wrapper = mount(LibraryRow, {
+      ...options,
+      props: {
+        track: makeTrack({ format: 'flac', path: 'C:/music/song.flac', missing: true }),
+        selected: false,
+        playing: false,
+      },
+    });
+
+    expect(wrapper.text()).toContain('FLAC');
+    expect(wrapper.text()).toContain('C:/music/song.flac');
+    expect(wrapper.text()).toContain('Mancante');
   });
 
   it('reports files missing from disk', () => {

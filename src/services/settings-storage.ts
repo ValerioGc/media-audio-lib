@@ -1,14 +1,20 @@
 import { isTauriRuntime } from '@/config/app-config';
 import {
   DEFAULT_SETTINGS,
+  DEFAULT_TABLE_COLUMNS,
   LOCALES,
+  MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
+  TABLE_COLUMN_KEYS,
+  TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
   THEME_CHOICES,
   VIEW_MODES,
   type AppSettings,
+  type TableColumnKey,
+  type TableColumnSetting,
 } from '@/types/settings';
 
 const STORE_FILE = 'settings.json';
@@ -27,6 +33,59 @@ function pickNumber(value: unknown, fallback: number, min: number, max: number):
   return typeof value === 'number' && Number.isFinite(value)
     ? Math.min(max, Math.max(min, value))
     : fallback;
+}
+
+function isTableColumnKey(value: unknown): value is TableColumnKey {
+  return TABLE_COLUMN_KEYS.includes(value as TableColumnKey);
+}
+
+function isMandatoryTableColumn(key: TableColumnKey): boolean {
+  return MANDATORY_TABLE_COLUMN_KEYS.includes(key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number]);
+}
+
+function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
+  const stored = Array.isArray(value) ? value : [];
+  const byDefault = new Map(DEFAULT_TABLE_COLUMNS.map((column) => [column.key, column]));
+  const seen = new Set<TableColumnKey>();
+  const columns: TableColumnSetting[] = [];
+
+  for (const raw of stored) {
+    if (typeof raw !== 'object' || raw === null) {
+      continue;
+    }
+
+    const source = raw as Record<string, unknown>;
+
+    if (!isTableColumnKey(source.key) || seen.has(source.key)) {
+      continue;
+    }
+
+    const limits = TABLE_COLUMN_WIDTHS[source.key];
+    const fallback = byDefault.get(source.key) ?? {
+      key: source.key,
+      visible: true,
+      width: limits.default,
+    };
+
+    columns.push({
+      key: source.key,
+      visible: isMandatoryTableColumn(source.key)
+        ? true
+        : typeof source.visible === 'boolean'
+          ? source.visible
+          : fallback.visible,
+      width: pickNumber(source.width, fallback.width, limits.min, limits.max),
+    });
+    seen.add(source.key);
+  }
+
+  for (const column of DEFAULT_TABLE_COLUMNS) {
+    if (!seen.has(column.key)) {
+      columns.push({ ...column });
+    }
+  }
+
+  return columns;
 }
 
 /** Turns untrusted persisted data into a complete, valid settings object. */
@@ -63,6 +122,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.defaultPlayerBannerDismissed === 'boolean'
         ? source.defaultPlayerBannerDismissed
         : DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
+    tableColumns: sanitizeTableColumns(source.tableColumns),
   };
 }
 

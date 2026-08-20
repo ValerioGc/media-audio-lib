@@ -56,6 +56,48 @@ describe('LibraryTable', () => {
     expect(wrapper.emitted('sort')).toEqual([['artist']]);
   });
 
+  it('uses the saved column visibility and widths', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    await settings.setTableColumnVisible('artist', false);
+    await settings.setTableColumnVisible('format', true);
+    await settings.setTableColumnWidth('title', 320);
+
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: {
+        tracks: [makeTrack({ format: 'flac' })],
+        sort: DEFAULT_SORT,
+        selectedId: null,
+        playingId: null,
+      },
+    });
+    const headings = wrapper
+      .findAll('[role="columnheader"]')
+      .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
+
+    expect(headings).toContain('Formato');
+    expect(headings).not.toContain('Autore');
+    expect(wrapper.attributes('style')).toContain('320px');
+    expect(wrapper.text()).toContain('FLAC');
+  });
+
+  it('uses the saved column order', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    await settings.moveTableColumn('genre', 'artist');
+
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedId: null, playingId: null },
+    });
+    const headings = wrapper
+      .findAll('[role="columnheader"]')
+      .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
+
+    expect(headings.slice(0, 5)).toEqual(['Copertina', 'Nome', 'Genere', 'Autore', 'Album']);
+  });
+
   it('marks the active column for screen readers', () => {
     const wrapper = mountTable([makeTrack()], { column: 'year', direction: 'desc' });
     const headers = wrapper.findAll('[role="columnheader"]');

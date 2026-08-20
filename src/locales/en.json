@@ -107,6 +107,7 @@
       "actions": "Library options",
       "menu": {
         "rename": "Rename",
+        "columns": "Columns",
         "verifyAll": "Verify files",
         "missingInfo": "Missing data",
         "exportList": "Export list",
@@ -184,8 +185,21 @@
       "album": "Album",
       "year": "Year",
       "genre": "Genre",
+      "format": "Format",
+      "path": "Path",
+      "missing": "File status",
       "duration": "Duration",
-      "actions": "Actions"
+      "actions": "Actions",
+      "resize": "Resize {column}"
+    },
+    "columnSettings": {
+      "title": "List columns",
+      "description": "Choose visible columns, drag them to reorder them and adjust their width. Cover, Name and Duration are required.",
+      "width": "Width",
+      "moveUp": "Move {column} up",
+      "moveDown": "Move {column} down",
+      "reset": "Reset",
+      "close": "Done"
     },
     "sort": {
       "sortBy": "Sort by {column}",
@@ -196,6 +210,8 @@
       "unknown": "—",
       "noCover": "No cover",
       "missing": "File no longer on disk",
+      "missingShort": "Missing",
+      "present": "Present",
       "playing": "Now playing",
       "actions": "Actions for {title}",
       "remove": "Remove {title} from the library",

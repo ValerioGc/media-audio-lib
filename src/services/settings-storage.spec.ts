@@ -56,6 +56,7 @@ describe('sanitizeSettings', () => {
 
   it('keeps valid values', () => {
     const settings: AppSettings = {
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'large',
       theme: 'dark',
@@ -75,16 +76,10 @@ describe('sanitizeSettings', () => {
     const sanitized = sanitizeSettings({ locale: 'de', textSize: 'large', theme: 'neon' });
 
     expect(sanitized).toEqual({
+      ...DEFAULT_SETTINGS,
       locale: DEFAULT_SETTINGS.locale,
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
-      viewMode: DEFAULT_SETTINGS.viewMode,
-      mainLibraryId: DEFAULT_SETTINGS.mainLibraryId,
-      coverGradientEnabled: DEFAULT_SETTINGS.coverGradientEnabled,
-      coverGradientIntensity: DEFAULT_SETTINGS.coverGradientIntensity,
-      playerTransparency: DEFAULT_SETTINGS.playerTransparency,
-      playerBlur: DEFAULT_SETTINGS.playerBlur,
-      defaultPlayerBannerDismissed: DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
     });
   });
 
@@ -110,6 +105,7 @@ describe('createWebStorage', () => {
   it('round-trips settings', async () => {
     const storage = createWebStorage(createFakeStorage());
     const settings: AppSettings = {
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'small',
       theme: 'light',
@@ -137,6 +133,7 @@ describe('createTauriStorage', () => {
 
   it('reads settings from the plugin store', async () => {
     const settings: AppSettings = {
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'large',
       theme: 'dark',
@@ -179,6 +176,7 @@ describe('createSettingsStorage', () => {
   it('uses localStorage in the browser', async () => {
     const storage = createSettingsStorage();
     await storage.save({
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'small',
       theme: 'light',
@@ -192,6 +190,7 @@ describe('createSettingsStorage', () => {
     });
 
     await expect(storage.load()).resolves.toEqual({
+      ...DEFAULT_SETTINGS,
       locale: 'en',
       textSize: 'small',
       theme: 'light',

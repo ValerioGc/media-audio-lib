@@ -57,6 +57,8 @@ describe('LibraryFacetList', () => {
 
     expect(wrapper.find('.library_facet_list').exists()).toBe(false);
     expect(wrapper.findAll('.library_facet_card')).toHaveLength(1);
+    expect(wrapper.find('.library_facet_card_label').exists()).toBe(false);
+    expect(wrapper.find('.library_facet_card_cover.cover_image').exists()).toBe(true);
     expect(wrapper.get('.library_facet_card_title').text()).toBe('Kind of Blue');
     expect(wrapper.get('.library_facet_card').text()).toContain('2 brani');
     expect(wrapper.text()).not.toContain('Blue, Green');

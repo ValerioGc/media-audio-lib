@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import CoverImage from '@/components/library/CoverImage.vue';
 import { formatDuration } from '@/services/track-sorting';
 import type { TrackView } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
@@ -19,6 +20,7 @@ interface FacetGroup extends FacetGroupOpenPayload {
   albumCount: number;
   durationMs: number;
   artists: string[];
+  coverTrack: TrackView | null;
   isUnknown: boolean;
 }
 
@@ -79,6 +81,10 @@ const groups = computed<FacetGroup[]>(() => {
         albumCount: props.field === 'artist' ? uniquePresentValues(tracks, 'album').length : 0,
         durationMs: tracks.reduce((total, track) => total + track.durationMs, 0),
         artists: props.field === 'album' ? uniqueValues(tracks, 'artist') : [],
+        coverTrack:
+          props.field === 'album'
+            ? (tracks.find((track) => track.hasCover && !track.missing) ?? tracks[0] ?? null)
+            : null,
         isUnknown,
       };
     })
@@ -113,7 +119,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       v-for="group in groups"
       :key="group.key"
       class="library_facet_card"
-      :class="{ library_facet_card_genre: field === 'genre' }"
+      :class="{
+        library_facet_card_album: field === 'album',
+        library_facet_card_genre: field === 'genre',
+      }"
       role="button"
       tabindex="0"
       :aria-label="t('library.groups.openLabel', { name: group.name })"
@@ -121,8 +130,16 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       @keydown.enter="openGroupFromKeyboard($event, group)"
       @keydown.space="openGroupFromKeyboard($event, group)"
     >
+      <CoverImage
+        v-if="field === 'album' && group.coverTrack !== null"
+        class="library_facet_card_cover"
+        :track="group.coverTrack"
+        size="card"
+      />
       <div class="library_facet_card_body">
-        <p class="library_facet_card_label">{{ t(`library.groups.columns.${field}`) }}</p>
+        <p v-if="field !== 'album'" class="library_facet_card_label">
+          {{ t(`library.groups.columns.${field}`) }}
+        </p>
         <h3 class="library_facet_card_title">{{ group.name }}</h3>
         <p v-if="field === 'album'" class="library_facet_card_meta">
           {{ t('library.groups.albumArtist', { artists: group.artists.join(', ') }) }}
@@ -229,6 +246,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   @include focus_ring;
+
+  &_album {
+    min-height: 18rem;
+    padding: $space_sm;
+  }
+
+  &_cover {
+    flex-shrink: 0;
+  }
 
   &_genre {
     grid-column: span 2;

@@ -5,13 +5,15 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import LibraryCoverCell from '@/components/library/LibraryCoverCell.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
-import { formatDuration } from '@/services/track-sorting';
+import { tableColumnValue } from '@/services/table-columns';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
+import type { TableColumnSetting } from '@/types/settings';
 
 const props = defineProps<{
   track: TrackView;
+  columns?: readonly TableColumnSetting[];
   selected: boolean;
   playing: boolean;
 }>();
@@ -33,6 +35,20 @@ const accentStyle = computed(() =>
     ? { '--cover_row_gradient': player.coverAccent.rowGradient }
     : {},
 );
+
+const columns = computed(
+  () => props.columns ?? settings.tableColumns.filter((column) => column.visible),
+);
+
+function valueFor(column: TableColumnSetting): string {
+  return tableColumnValue(
+    props.track,
+    column.key,
+    t('library.row.unknown'),
+    t('library.row.missingShort'),
+    t('library.row.present'),
+  );
+}
 </script>
 
 <template>
@@ -52,26 +68,27 @@ const accentStyle = computed(() =>
     @dblclick="emit('play', track)"
     @keydown.enter="emit('select', track.id)"
   >
-    <span class="library_row_cell" role="cell">
-      <LibraryCoverCell :track="track" />
-    </span>
-    <span class="library_row_cell library_row_title" role="cell">
-      <span class="library_row_text">{{ track.title }}</span>
-      <span v-if="playing" class="library_row_badge library_row_badge_playing">
-        <AppIcon name="play" />
-        {{ t('library.row.playing') }}
+    <span v-for="column in columns" :key="column.key" class="library_row_cell" role="cell">
+      <LibraryCoverCell v-if="column.key === 'cover'" :track="track" />
+      <template v-else-if="column.key === 'title'">
+        <span class="library_row_title">
+          <span class="library_row_text">{{ track.title }}</span>
+          <span v-if="playing" class="library_row_badge library_row_badge_playing">
+            <AppIcon name="play" />
+            {{ t('library.row.playing') }}
+          </span>
+          <span v-if="track.missing" class="library_row_badge">
+            <AppIcon name="warning" />
+            {{ t('library.row.missing') }}
+          </span>
+        </span>
+      </template>
+      <span v-else-if="column.key === 'duration'" class="library_row_duration">
+        {{ valueFor(column) }}
       </span>
-      <span v-if="track.missing" class="library_row_badge">
-        <AppIcon name="warning" />
-        {{ t('library.row.missing') }}
+      <span v-else class="library_row_text">
+        {{ valueFor(column) }}
       </span>
-    </span>
-    <span class="library_row_cell" role="cell">{{ track.artist ?? t('library.row.unknown') }}</span>
-    <span class="library_row_cell" role="cell">{{ track.album ?? t('library.row.unknown') }}</span>
-    <span class="library_row_cell" role="cell">{{ track.year ?? t('library.row.unknown') }}</span>
-    <span class="library_row_cell" role="cell">{{ track.genre ?? t('library.row.unknown') }}</span>
-    <span class="library_row_cell library_row_duration" role="cell">
-      {{ formatDuration(track.durationMs) }}
     </span>
     <span class="library_row_cell library_row_actions" role="cell">
       <LibraryRowActions

@@ -12,7 +12,7 @@ vi.mock('@/services/library-api', () => ({
 const verifyTrackFile = vi.mocked(api.verifyTrackFile);
 
 describe('useTrackFileVerification', () => {
-  it('verifica una traccia usando il suo identificativo', async () => {
+  it('verifies a track using its identifier', async () => {
     const track = makeTrack({ missing: false });
     const verified = { ...track, missing: true };
     verifyTrackFile.mockResolvedValue(verified);

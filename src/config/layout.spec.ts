@@ -7,19 +7,19 @@ afterEach(() => {
 });
 
 describe('remToPixels', () => {
-  it('converte usando la dimensione del testo corrente', () => {
+  it('converts using the current text size', () => {
     document.documentElement.style.fontSize = '16px';
 
     expect(remToPixels(LIBRARY_ROW_HEIGHT_REM)).toBe(56);
   });
 
-  it('segue l ingrandimento del testo', () => {
+  it('follows text enlargement', () => {
     document.documentElement.style.fontSize = '20px';
 
     expect(remToPixels(LIBRARY_ROW_HEIGHT_REM)).toBe(70);
   });
 
-  it('ripiega su 16px quando la misura non e leggibile', () => {
+  it('falls back to 16px when the value is unreadable', () => {
     document.documentElement.style.fontSize = 'inherit';
 
     expect(remToPixels(2)).toBe(32);

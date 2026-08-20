@@ -30,7 +30,7 @@ function mountDialog() {
 }
 
 describe('LibraryTrackListExportDialog', () => {
-  it('mostra formato e campi esportabili', () => {
+  it('shows exportable format and fields', () => {
     mountDialog();
 
     expect(document.body.textContent).toContain('Esporta elenco brani');
@@ -39,7 +39,7 @@ describe('LibraryTrackListExportDialog', () => {
     expect(document.body.textContent).toContain('File mancante');
   });
 
-  it('esporta con formato e campi scelti', async () => {
+  it('exports with the selected format and fields', async () => {
     const { wrapper, library } = mountDialog();
     const exportTrackList = vi.spyOn(library, 'exportTrackList').mockResolvedValue(true);
 
@@ -54,7 +54,7 @@ describe('LibraryTrackListExportDialog', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
-  it('non permette di esportare senza campi', async () => {
+  it('does not allow exporting without fields', async () => {
     const { wrapper } = mountDialog();
 
     for (const checkbox of wrapper.findAll('input[type="checkbox"]')) {

@@ -9,7 +9,7 @@ const options = [
 ];
 
 describe('AppOptionGroup', () => {
-  it('mostra la legenda e un radio per opzione', () => {
+  it('shows the legend and one radio per option', () => {
     const wrapper = mount(AppOptionGroup, {
       props: { modelValue: 'light', options, legend: 'Tema' },
     });
@@ -18,7 +18,7 @@ describe('AppOptionGroup', () => {
     expect(wrapper.findAll('input[type="radio"]')).toHaveLength(2);
   });
 
-  it('marca come selezionata solo l opzione corrente', () => {
+  it('marks only the current option as selected', () => {
     const wrapper = mount(AppOptionGroup, {
       props: { modelValue: 'dark', options, legend: 'Tema' },
     });
@@ -29,7 +29,7 @@ describe('AppOptionGroup', () => {
     expect(items[1]?.classes()).toContain('app_option_group_item_selected');
   });
 
-  it('raggruppa i radio sotto lo stesso name', () => {
+  it('groups radios under the same name', () => {
     const wrapper = mount(AppOptionGroup, {
       props: { modelValue: 'light', options, legend: 'Tema' },
     });
@@ -39,7 +39,7 @@ describe('AppOptionGroup', () => {
     expect(new Set(names).size).toBe(1);
   });
 
-  it('emette il valore scelto', async () => {
+  it('emits the chosen value', async () => {
     const wrapper = mount(AppOptionGroup, {
       props: { modelValue: 'light', options, legend: 'Tema' },
     });

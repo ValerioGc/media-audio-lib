@@ -25,25 +25,25 @@ afterEach(() => {
 });
 
 describe('system-theme', () => {
-  it('riporta il tema scuro quando il sistema lo preferisce', () => {
+  it('reports dark theme when the system prefers it', () => {
     stubMatchMedia(createFakeQuery(true));
 
     expect(getSystemTheme()).toBe('dark');
   });
 
-  it('riporta il tema chiaro come impostazione predefinita', () => {
+  it('reports light theme as the default', () => {
     stubMatchMedia(createFakeQuery(false));
 
     expect(getSystemTheme()).toBe('light');
   });
 
-  it('riporta il tema chiaro quando matchMedia non e disponibile', () => {
+  it('reports light theme when matchMedia is unavailable', () => {
     stubMatchMedia(null);
 
     expect(getSystemTheme()).toBe('light');
   });
 
-  it('notifica i cambi di tema di sistema', () => {
+  it('notifies system theme changes', () => {
     const query = createFakeQuery(false);
     stubMatchMedia(query);
     const onChange = vi.fn();
@@ -60,7 +60,7 @@ describe('system-theme', () => {
     expect(onChange).toHaveBeenLastCalledWith('light');
   });
 
-  it('rimuove il listener quando si annulla la sottoscrizione', () => {
+  it('removes the listener when unsubscribing', () => {
     const query = createFakeQuery(false);
     stubMatchMedia(query);
 
@@ -70,7 +70,7 @@ describe('system-theme', () => {
     expect(query.removeEventListener).toHaveBeenCalledTimes(1);
   });
 
-  it('restituisce una funzione inerte quando matchMedia non e disponibile', () => {
+  it('returns a no-op function when matchMedia is unavailable', () => {
     stubMatchMedia(null);
 
     const unsubscribe = watchSystemTheme(vi.fn());

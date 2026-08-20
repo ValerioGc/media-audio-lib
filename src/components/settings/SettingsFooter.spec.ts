@@ -18,7 +18,7 @@ function mountFooter() {
 }
 
 describe('SettingsFooter', () => {
-  it('mostra nome e versione dell applicazione', () => {
+  it('shows app name and version', () => {
     const wrapper = mountFooter();
 
     expect(wrapper.get('.settings_footer_name').text()).toBe(APP_NAME);
@@ -31,7 +31,7 @@ describe('SettingsFooter', () => {
     expect(wrapper.get('[data-testid="github-link"]').text()).toContain('GitHub');
   });
 
-  it('apre il repository nel browser di sistema', async () => {
+  it('opens the repository in the system browser', async () => {
     const openExternal = vi.spyOn(externalLink, 'openExternal').mockResolvedValue(true);
     const wrapper = mountFooter();
 

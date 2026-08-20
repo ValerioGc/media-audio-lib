@@ -58,15 +58,15 @@ fn format_duration(duration_ms: u64) -> String {
 
 fn field_header(field: TrackListExportField) -> &'static str {
     match field {
-        TrackListExportField::Title => "Nome",
-        TrackListExportField::Artist => "Autore",
+        TrackListExportField::Title => "Name",
+        TrackListExportField::Artist => "Artist",
         TrackListExportField::Album => "Album",
-        TrackListExportField::Year => "Anno",
-        TrackListExportField::Genre => "Genere",
-        TrackListExportField::Duration => "Durata",
-        TrackListExportField::Format => "Formato",
-        TrackListExportField::Path => "Percorso",
-        TrackListExportField::Missing => "File mancante",
+        TrackListExportField::Year => "Year",
+        TrackListExportField::Genre => "Genre",
+        TrackListExportField::Duration => "Duration",
+        TrackListExportField::Format => "Format",
+        TrackListExportField::Path => "Path",
+        TrackListExportField::Missing => "Missing file",
     }
 }
 
@@ -86,7 +86,7 @@ fn field_value(track: &TrackView, field: TrackListExportField) -> String {
         TrackListExportField::Path => track.track.path.clone(),
         TrackListExportField::Missing => {
             if track.missing {
-                "si".to_owned()
+                "yes".to_owned()
             } else {
                 "no".to_owned()
             }
@@ -189,14 +189,12 @@ pub fn export_track_list(
     fields: Vec<TrackListExportField>,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
-        return Err(AppError::Validation(
-            "percorso di destinazione mancante".to_owned(),
-        ));
+        return Err(AppError::Validation("missing destination path".to_owned()));
     }
 
     if fields.is_empty() {
         return Err(AppError::Validation(
-            "seleziona almeno una informazione da esportare".to_owned(),
+            "select at least one field to export".to_owned(),
         ));
     }
 
@@ -219,92 +217,92 @@ mod tests {
     use crate::library::{Library, Track};
 
     #[test]
-    fn il_ciclo_completo_aggiunge_elenca_e_rimuove() {
+    fn complete_flow_adds_lists_and_removes() {
         let dir = TempDir::new("commands-library");
-        let brano = wav_with_tags(dir.path(), "brano.wav");
+        let track = wav_with_tags(dir.path(), "track.wav");
         let state = LibraryState::from_file(dir.path().join("library.json"));
 
         let report = state
             .update(|library| {
                 library::add_paths(
                     library,
-                    &[brano.display().to_string()],
+                    &[track.display().to_string()],
                     library::now_seconds(),
                 )
             })
-            .expect("import riuscito");
+            .expect("import succeeded");
         assert_eq!(report.added.len(), 1);
 
-        let views = state.read(library::to_views).expect("lettura riuscita");
+        let views = state.read(library::to_views).expect("read succeeded");
         assert_eq!(views.len(), 1);
         assert!(!views[0].missing);
 
         let id = views[0].track.id.clone();
         let removed = state
             .update(|library: &mut Library| library.remove(&id))
-            .expect("rimozione riuscita");
+            .expect("removal succeeded");
 
         assert!(removed);
-        assert!(state.read(Library::is_empty).expect("lettura riuscita"));
-        assert!(brano.exists());
+        assert!(state.read(Library::is_empty).expect("read succeeded"));
+        assert!(track.exists());
     }
 
     #[test]
-    fn rinomina_la_libreria_e_restituisce_le_info() {
+    fn renames_the_library_and_returns_info() {
         let dir = TempDir::new("commands-library-name");
         let state = LibraryState::from_file(dir.path().join("library.json"));
 
         state
-            .update(|library| library.rename("Archivio"))
-            .expect("update riuscito")
-            .expect("rinomina riuscita");
+            .update(|library| library.rename("Archive"))
+            .expect("update succeeded")
+            .expect("rename succeeded");
 
-        let info = state.read(info_of).expect("lettura riuscita");
+        let info = state.read(info_of).expect("read succeeded");
 
-        assert_eq!(info.name, "Archivio");
+        assert_eq!(info.name, "Archive");
     }
 
     #[test]
-    fn verifica_un_file_tracciato() {
+    fn verifies_a_tracked_file() {
         let dir = TempDir::new("commands-library-verify");
-        let brano = wav_with_tags(dir.path(), "brano.wav");
+        let track = wav_with_tags(dir.path(), "track.wav");
         let state = LibraryState::from_file(dir.path().join("library.json"));
         state
             .update(|library| {
                 library::add_paths(
                     library,
-                    &[brano.display().to_string()],
+                    &[track.display().to_string()],
                     library::now_seconds(),
                 )
             })
-            .expect("import riuscito");
+            .expect("import succeeded");
         let id = state
             .read(|library| library.tracks()[0].id.clone())
-            .expect("lettura riuscita");
+            .expect("read succeeded");
 
         let present = state
             .read(|library| library::view_of(library, &id))
-            .expect("lettura riuscita")
-            .expect("brano presente");
+            .expect("read succeeded")
+            .expect("track present");
         assert!(!present.missing);
 
-        std::fs::remove_file(&brano).expect("file rimosso");
+        std::fs::remove_file(&track).expect("file removed");
 
         let missing = state
             .read(|library| library::view_of(library, &id))
-            .expect("lettura riuscita")
-            .expect("brano presente");
+            .expect("read succeeded")
+            .expect("track present");
         assert!(missing.missing);
     }
 
     #[test]
-    fn esporta_elenco_brani_in_csv_con_escape() {
+    fn exports_track_list_as_csv_with_escaping() {
         let tracks = vec![TrackView {
             track: Track {
                 id: "aaa".to_owned(),
-                path: "C:/musica/brano,uno.mp3".to_owned(),
-                title: "Brano, \"uno\"".to_owned(),
-                artist: Some("Autore".to_owned()),
+                path: "C:/music/track,one.mp3".to_owned(),
+                title: "Track, \"one\"".to_owned(),
+                artist: Some("Artist".to_owned()),
                 album: None,
                 year: Some(2000),
                 genre: None,
@@ -328,17 +326,17 @@ mod tests {
 
         assert_eq!(
             contents,
-            "Nome,Percorso,File mancante\n\"Brano, \"\"uno\"\"\",\"C:/musica/brano,uno.mp3\",si"
+            "Name,Path,Missing file\n\"Track, \"\"one\"\"\",\"C:/music/track,one.mp3\",yes"
         );
     }
 
     #[test]
-    fn esporta_elenco_brani_in_txt() {
+    fn exports_track_list_as_txt() {
         let tracks = vec![TrackView {
             track: Track {
                 id: "aaa".to_owned(),
-                path: "C:/musica/brano.mp3".to_owned(),
-                title: "Brano".to_owned(),
+                path: "C:/music/track.mp3".to_owned(),
+                title: "Track".to_owned(),
                 artist: None,
                 album: None,
                 year: None,
@@ -357,6 +355,6 @@ mod tests {
             &[TrackListExportField::Title, TrackListExportField::Duration],
         );
 
-        assert_eq!(contents, "Nome: Brano\nDurata: 3:05");
+        assert_eq!(contents, "Name: Track\nDuration: 3:05");
     }
 }

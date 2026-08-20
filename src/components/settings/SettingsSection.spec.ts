@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import SettingsSection from './SettingsSection.vue';
 
 describe('SettingsSection', () => {
-  it('mostra titolo e descrizione', () => {
+  it('shows title and description', () => {
     const wrapper = mount(SettingsSection, {
       props: { title: 'Tema', description: 'Chiaro o scuro' },
     });
@@ -13,7 +13,7 @@ describe('SettingsSection', () => {
     expect(wrapper.get('.settings_section_description').text()).toBe('Chiaro o scuro');
   });
 
-  it('rende il contenuto dello slot', () => {
+  it('renders slot content', () => {
     const wrapper = mount(SettingsSection, {
       props: { title: 'Tema', description: 'Chiaro o scuro' },
       slots: { default: '<p class="controllo">contenuto</p>' },

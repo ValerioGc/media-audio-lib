@@ -6,8 +6,8 @@ import { useLibraryStore } from '@/stores/library';
 
 import LibraryList from './LibraryList.vue';
 
-const catalogo = [
-  { id: 'lib-1', name: 'Principale', trackCount: 2, active: true },
+const catalog = [
+  { id: 'lib-1', name: 'Main', trackCount: 2, active: true },
   { id: 'lib-2', name: 'Jazz', trackCount: 0, active: false },
 ];
 
@@ -15,7 +15,7 @@ beforeEach(() => {
   resetI18n();
 });
 
-function mountList(libraries = catalogo): {
+function mountList(libraries = catalog): {
   wrapper: VueWrapper;
   library: ReturnType<typeof useLibraryStore>;
 } {
@@ -28,24 +28,24 @@ function mountList(libraries = catalogo): {
 }
 
 describe('LibraryList', () => {
-  it('elenca le librerie con il numero di brani', () => {
+  it('lists libraries with the track count', () => {
     const { wrapper } = mountList();
-    const voci = wrapper.findAll('.library_list_item');
+    const items = wrapper.findAll('.library_list_item');
 
-    expect(voci).toHaveLength(2);
-    expect(voci[0]?.get('.library_list_item_name').text()).toBe('Principale');
-    expect(voci[0]?.get('.library_list_item_meta').text()).toContain('2 brani');
-    expect(voci[0]?.get('.library_list_item_meta').text()).toContain('in uso');
-    expect(voci[1]?.get('.library_list_item_meta').text()).toContain('nessun brano');
+    expect(items).toHaveLength(2);
+    expect(items[0]?.get('.library_list_item_name').text()).toBe('Main');
+    expect(items[0]?.get('.library_list_item_meta').text()).toContain('2 brani');
+    expect(items[0]?.get('.library_list_item_meta').text()).toContain('in uso');
+    expect(items[1]?.get('.library_list_item_meta').text()).toContain('nessun brano');
   });
 
-  it('non offre di aprire la libreria gia in uso', () => {
+  it('does not offer opening the library already in use', () => {
     const { wrapper } = mountList();
 
     expect(wrapper.findAll('[data-testid="open-library"]')).toHaveLength(1);
   });
 
-  it('apre un altra libreria', async () => {
+  it('opens another library', async () => {
     const { wrapper, library } = mountList();
     const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
 
@@ -54,7 +54,7 @@ describe('LibraryList', () => {
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('esporta la libreria scelta', async () => {
+  it('exports the chosen library', async () => {
     const { wrapper, library } = mountList();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
@@ -63,7 +63,7 @@ describe('LibraryList', () => {
     expect(exportLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('mostra dove e finito l export e lo chiude', async () => {
+  it('shows where export ended up and closes it', async () => {
     const { wrapper, library } = mountList();
     library.lastExport = 'C:/backup/jazz.json';
     await wrapper.vm.$nextTick();
@@ -75,7 +75,7 @@ describe('LibraryList', () => {
     expect(library.lastExport).toBeNull();
   });
 
-  it('elimina solo dopo conferma', async () => {
+  it('deletes only after confirmation', async () => {
     const { wrapper, library } = mountList();
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
@@ -87,30 +87,30 @@ describe('LibraryList', () => {
     expect(deleteLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('con una sola libreria l eliminazione e spenta', () => {
-    const { wrapper } = mountList([catalogo[0]!]);
+  it('keeps deletion disabled with a single library', () => {
+    const { wrapper } = mountList([catalog[0]!]);
 
     expect(wrapper.get('[data-testid="delete-library"]').attributes('disabled')).toBeDefined();
   });
 
-  it('crea una libreria e ripulisce il campo', async () => {
+  it('creates a library and clears the field', async () => {
     const { wrapper, library } = mountList();
     const createLibrary = vi.spyOn(library, 'createLibrary').mockResolvedValue(true);
 
-    await wrapper.get('input').setValue('Colonne sonore');
+    await wrapper.get('input').setValue('Soundtracks');
     await wrapper.get('.library_list_create').trigger('submit');
 
-    expect(createLibrary).toHaveBeenCalledWith('Colonne sonore');
+    expect(createLibrary).toHaveBeenCalledWith('Soundtracks');
     expect((wrapper.get('input').element as HTMLInputElement).value).toBe('');
   });
 
-  it('tiene il nome quando la creazione non riesce', async () => {
+  it('keeps the name when creation fails', async () => {
     const { wrapper, library } = mountList();
     vi.spyOn(library, 'createLibrary').mockResolvedValue(false);
 
-    await wrapper.get('input').setValue('Colonne sonore');
+    await wrapper.get('input').setValue('Soundtracks');
     await wrapper.get('.library_list_create').trigger('submit');
 
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Colonne sonore');
+    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Soundtracks');
   });
 });

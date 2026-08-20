@@ -46,17 +46,17 @@ afterEach(() => {
 });
 
 describe('createAudioEngine', () => {
-  it('carica una sorgente e la avvia', async () => {
+  it('loads a source and starts it', async () => {
     const engine = createAudioEngine(handlers());
 
-    engine.load('asset://brano.mp3');
+    engine.load('asset://track.mp3');
     await engine.play();
 
-    expect(lastElement().src).toContain('brano.mp3');
+    expect(lastElement().src).toContain('track.mp3');
     expect(lastElement().play).toHaveBeenCalledTimes(1);
   });
 
-  it('riporta avanzamento, durata e stato di riproduzione', () => {
+  it('reports progress, duration, and playback state', () => {
     const callbacks = handlers();
     createAudioEngine(callbacks);
     const element = lastElement();
@@ -74,7 +74,7 @@ describe('createAudioEngine', () => {
     expect(callbacks.onPlayingChange).toHaveBeenNthCalledWith(2, false);
   });
 
-  it('tratta una durata non finita come sconosciuta', () => {
+  it('treats a non-finite duration as unknown', () => {
     const callbacks = handlers();
     createAudioEngine(callbacks);
     const element = lastElement();
@@ -85,7 +85,7 @@ describe('createAudioEngine', () => {
     expect(callbacks.onDuration).toHaveBeenCalledWith(0);
   });
 
-  it('segnala la fine del brano', () => {
+  it('reports the end of the track', () => {
     const callbacks = handlers();
     createAudioEngine(callbacks);
 
@@ -94,7 +94,7 @@ describe('createAudioEngine', () => {
     expect(callbacks.onEnded).toHaveBeenCalledTimes(1);
   });
 
-  it('distingue il formato non supportato dagli altri errori', () => {
+  it('distinguishes unsupported format from other errors', () => {
     const callbacks = handlers();
     createAudioEngine(callbacks);
     const element = lastElement();
@@ -108,7 +108,7 @@ describe('createAudioEngine', () => {
     expect(callbacks.onError).toHaveBeenNthCalledWith(2, 'generic');
   });
 
-  it('sposta la posizione e imposta il volume', () => {
+  it('seeks and sets the volume', () => {
     const engine = createAudioEngine(handlers());
 
     engine.seek(42);
@@ -118,9 +118,9 @@ describe('createAudioEngine', () => {
     expect(lastElement().volume).toBe(0.25);
   });
 
-  it('libera la sorgente quando il player viene chiuso', () => {
+  it('releases the source when the player is closed', () => {
     const engine = createAudioEngine(handlers());
-    engine.load('asset://brano.mp3');
+    engine.load('asset://track.mp3');
 
     engine.release();
 

@@ -17,7 +17,7 @@ function mountHelp() {
 }
 
 describe('HelpView', () => {
-  it('documenta ogni funzionalita prevista', () => {
+  it('documents every planned feature', () => {
     const wrapper = mountHelp();
 
     const topics = wrapper.findAll('.help_topic').map((card) => card.attributes('data-topic'));
@@ -25,7 +25,7 @@ describe('HelpView', () => {
     expect(topics).toEqual([...HELP_TOPICS]);
   });
 
-  it('per ogni voce dice dove si trova e come si esegue', () => {
+  it('states where each item is and how to use it', () => {
     const wrapper = mountHelp();
 
     for (const card of wrapper.findAll('.help_topic')) {
@@ -35,18 +35,18 @@ describe('HelpView', () => {
     }
   });
 
-  it('elenca i passi nell ordine scritto nelle traduzioni', () => {
+  it('lists steps in the order written in translations', () => {
     const wrapper = mountHelp();
-    const primoArgomento = wrapper.get('.help_topic[data-topic="import"]');
+    const firstTopic = wrapper.get('.help_topic[data-topic="import"]');
 
-    const passi = primoArgomento.findAll('.help_topic_steps li').map((step) => step.text());
+    const steps = firstTopic.findAll('.help_topic_steps li').map((step) => step.text());
 
-    expect(passi[0]).toContain('Aggiungi brani');
-    expect(passi.some((passo) => passo.includes('Aggiungi cartella'))).toBe(true);
-    expect(passi.some((passo) => passo.includes('trascina'))).toBe(true);
+    expect(steps[0]).toContain('Aggiungi brani');
+    expect(steps.some((step) => step.includes('Aggiungi cartella'))).toBe(true);
+    expect(steps.some((step) => step.includes('trascina'))).toBe(true);
   });
 
-  it('traduce l intera guida quando cambia la lingua', async () => {
+  it('translates the whole guide when the language changes', async () => {
     const wrapper = mountHelp();
 
     setI18nLocale('en');
@@ -59,7 +59,7 @@ describe('HelpView', () => {
     expect(wrapper.get('.help_topic_where').text()).toContain('Where:');
   });
 
-  it('riporta alla libreria', async () => {
+  it('returns to the library', async () => {
     const wrapper = mountHelp();
     const navigation = useNavigationStore();
     navigation.go('help');

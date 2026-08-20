@@ -56,7 +56,7 @@ afterEach(() => {
 });
 
 describe('useSettingsStore', () => {
-  it('parte dai valori predefiniti', () => {
+  it('starts from default values', () => {
     const store = useSettingsStore();
 
     expect(store.textSize).toBe(DEFAULT_SETTINGS.textSize);
@@ -64,7 +64,7 @@ describe('useSettingsStore', () => {
     expect(store.isReady).toBe(false);
   });
 
-  it('ripristina le impostazioni salvate e le applica al documento', async () => {
+  it('restores saved settings and applies them to the document', async () => {
     const store = useSettingsStore();
 
     await store.initialize(createFakeStorage({ locale: 'en', textSize: 'large', theme: 'dark' }));
@@ -80,7 +80,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('scarta i valori salvati non validi', async () => {
+  it('discards invalid saved values', async () => {
     const store = useSettingsStore();
 
     await store.initialize(
@@ -92,7 +92,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('usa la lingua del browser al primo avvio', async () => {
+  it('uses the browser language on first launch', async () => {
     const store = useSettingsStore();
     vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-GB', 'it-IT']);
 
@@ -103,7 +103,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ricade sui valori predefiniti se la lettura fallisce', async () => {
+  it('ricade sui valori predefiniti se la read fallisce', async () => {
     const store = useSettingsStore();
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     const storage: SettingsStorage = {
@@ -122,7 +122,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('persiste ogni modifica', async () => {
+  it('persists every change', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();
     await store.initialize(storage);
@@ -147,7 +147,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ricorda la vista scelta per la libreria', async () => {
+  it('remembers the selected library view', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();
     await store.initialize(storage);
@@ -160,7 +160,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ripristina la vista salvata in una sessione precedente', async () => {
+  it('restores the view saved in a previous session', async () => {
     const store = useSettingsStore();
 
     await store.initialize(createFakeStorage({ viewMode: 'preview' }));
@@ -170,7 +170,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('scarta una vista sconosciuta tornando all elenco', async () => {
+  it('discards an unknown view and returns to the list', async () => {
     const store = useSettingsStore();
 
     await store.initialize(
@@ -182,7 +182,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ricorda se il gradiente della copertina e disabilitato', async () => {
+  it('remembers whether the cover gradient is disabled', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();
     await store.initialize(storage);
@@ -195,7 +195,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ricorda trasparenza e blur del player', async () => {
+  it('remembers player transparency and blur', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();
     await store.initialize(storage);
@@ -211,7 +211,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('non propaga gli errori di scrittura', async () => {
+  it('does not propagate write errors', async () => {
     const store = useSettingsStore();
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     await store.initialize({
@@ -228,7 +228,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('risolve il tema di sistema quando la scelta e "system"', async () => {
+  it('resolves the system theme when the choice is "system"', async () => {
     stubSystemTheme(true);
     const store = useSettingsStore();
 
@@ -241,7 +241,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('segue i cambi di tema del sistema', async () => {
+  it('follows system theme changes', async () => {
     const store = useSettingsStore();
     await store.initialize(createFakeStorage({ theme: 'system' }));
 
@@ -255,7 +255,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ignora il tema di sistema quando la scelta e esplicita', async () => {
+  it('ignores the system theme when the choice is explicit', async () => {
     const store = useSettingsStore();
     await store.initialize(createFakeStorage({ theme: 'light' }));
 
@@ -267,7 +267,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('smette di ascoltare il sistema dopo dispose', async () => {
+  it('stops listening to the system after dispose', async () => {
     const store = useSettingsStore();
     await store.initialize(createFakeStorage({ theme: 'system' }));
 

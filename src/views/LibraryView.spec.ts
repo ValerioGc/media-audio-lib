@@ -38,20 +38,20 @@ async function mountView() {
 }
 
 describe('LibraryView', () => {
-  it('carica la libreria all apertura', async () => {
+  it('loads the library on open', async () => {
     const { load } = await mountView();
 
     expect(load).toHaveBeenCalledTimes(1);
   });
 
-  it('mostra lo stato vuoto senza brani', async () => {
+  it('shows the empty state with no tracks', async () => {
     const { wrapper } = await mountView();
 
     expect(wrapper.get('.app_placeholder_title').text()).toBe('La libreria è vuota');
     expect(wrapper.find('.library_table').exists()).toBe(false);
   });
 
-  it('mostra la tabella quando ci sono brani', async () => {
+  it('shows the table when there are tracks', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);
     await flushPromises();
@@ -59,11 +59,11 @@ describe('LibraryView', () => {
     expect(wrapper.findAll('.library_row')).toHaveLength(2);
   });
 
-  it('cambia dalla tab brani alla tab autori', async () => {
+  it('switches from the tracks tab to the artists tab', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
-      makeTrack({ title: 'Uno', artist: 'Autore A' }),
-      makeTrack({ title: 'Due', artist: 'Autore B' }),
+      makeTrack({ title: 'Uno', artist: 'Artist A' }),
+      makeTrack({ title: 'Due', artist: 'Artist B' }),
     ];
     await flushPromises();
 
@@ -80,10 +80,10 @@ describe('LibraryView', () => {
     expect(wrapper.find('.library_table').exists()).toBe(false);
     expect(wrapper.find('.library_facet_list').exists()).toBe(true);
     expect(wrapper.findAll('.library_facet_list_row')).toHaveLength(2);
-    expect(wrapper.text()).toContain('Autore A');
+    expect(wrapper.text()).toContain('Artist A');
   });
 
-  it('indica il brano in riproduzione nella libreria', async () => {
+  it('marks the playing track in the library', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();
     const player = usePlayerStore();
@@ -95,15 +95,15 @@ describe('LibraryView', () => {
     expect(wrapper.get('.library_row_playing').text()).toContain(track.title);
   });
 
-  it('usa il nome della libreria come titolo quando disponibile', async () => {
+  it('uses the library name as the title when available', async () => {
     const { wrapper, store } = await mountView();
-    store.libraryName = 'Archivio jazz';
+    store.libraryName = 'Jazz Archive';
     await flushPromises();
 
-    expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
+    expect(wrapper.get('.library_title_name').text()).toBe('Jazz Archive');
   });
 
-  it('mostra lo stato senza risultati quando il filtro non trova nulla', async () => {
+  it('shows the no-results state when the filter finds nothing', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);
     store.setQuery('inesistente');
@@ -112,7 +112,7 @@ describe('LibraryView', () => {
     expect(wrapper.get('.app_placeholder_title').text()).toBe('Nessun risultato');
   });
 
-  it('mostra il messaggio di errore dello store', async () => {
+  it('shows the store error message', async () => {
     const { wrapper, store } = await mountView();
     store.errorKey = 'shellUnavailable';
     await flushPromises();
@@ -120,7 +120,7 @@ describe('LibraryView', () => {
     expect(wrapper.get('[role="alert"]').text()).toContain('applicazione desktop');
   });
 
-  it('mostra e chiude l esito di un importazione', async () => {
+  it('shows and closes an import result', async () => {
     const { wrapper, store } = await mountView();
     store.lastReport = { added: [makeTrack()], duplicates: [], failed: [] };
     await flushPromises();
@@ -131,7 +131,7 @@ describe('LibraryView', () => {
     expect(store.lastReport).toBeNull();
   });
 
-  it('mostra e chiude l esito dell import libreria', async () => {
+  it('shows and closes the library import result', async () => {
     const { wrapper, store } = await mountView();
     store.lastLibraryImport = { added: 2, updated: 1, skipped: 0, missing: [], total: 3 };
     await flushPromises();
@@ -142,7 +142,7 @@ describe('LibraryView', () => {
     expect(store.lastLibraryImport).toBeNull();
   });
 
-  it('mostra e chiude il riepilogo della verifica file', async () => {
+  it('shows and closes the file verification summary', async () => {
     const { wrapper, store } = await mountView();
     store.lastVerification = { total: 3, missing: 1 };
     await flushPromises();
@@ -153,7 +153,7 @@ describe('LibraryView', () => {
     expect(store.lastVerification).toBeNull();
   });
 
-  it('chiede conferma prima di rimuovere un brano', async () => {
+  it('asks for confirmation before removing a track', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();
     store.tracks = [track];
@@ -172,7 +172,7 @@ describe('LibraryView', () => {
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
   });
 
-  it('annulla la rimozione senza toccare la libreria', async () => {
+  it('cancels removal without touching the library', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [makeTrack()];
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
@@ -186,16 +186,16 @@ describe('LibraryView', () => {
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
   });
 
-  it('importa i file trascinati sulla finestra', async () => {
+  it('imports files dropped on the window', async () => {
     const { store } = await mountView();
     const addPaths = vi.spyOn(store, 'addPaths').mockResolvedValue(null);
 
-    drop.onDrop?.(['C:/musica/brano.mp3']);
+    drop.onDrop?.(['C:/music/track.mp3']);
 
-    expect(addPaths).toHaveBeenCalledWith(['C:/musica/brano.mp3']);
+    expect(addPaths).toHaveBeenCalledWith(['C:/music/track.mp3']);
   });
 
-  it('apre l editor dei metadati dalla riga', async () => {
+  it('opens the metadata editor from the row', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();
     store.tracks = [track];
@@ -212,7 +212,7 @@ describe('LibraryView', () => {
     expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(true);
   });
 
-  it('verifica il collegamento del file dalla riga', async () => {
+  it('verifies the file link from the row', async () => {
     const { wrapper, store } = await mountView();
     const track = makeTrack();
     store.tracks = [track];
@@ -225,7 +225,7 @@ describe('LibraryView', () => {
     expect(verifyTrack).toHaveBeenCalledWith(track);
   });
 
-  it('ordina la tabella dalle intestazioni', async () => {
+  it('sorts the table from the headers', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);
     await flushPromises();
@@ -235,7 +235,7 @@ describe('LibraryView', () => {
     expect(store.sort).toEqual({ column: 'year', direction: 'asc' });
   });
 
-  it('offre le stesse azioni anche nella vista anteprima', async () => {
+  it('offers the same actions in preview view', async () => {
     const { wrapper, store } = await mountView();
     const settings = useSettingsStore();
     settings.viewMode = 'preview';

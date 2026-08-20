@@ -13,13 +13,13 @@ beforeEach(() => {
 function mountPanel() {
   const options = withPinia();
   const library = useLibraryStore();
-  library.libraries = [{ id: 'lib-1', name: 'Principale', trackCount: 0, active: true }];
+  library.libraries = [{ id: 'lib-1', name: 'Main', trackCount: 0, active: true }];
 
   return { wrapper: mount(ImportExportPanel, options), library };
 }
 
 describe('ImportExportPanel', () => {
-  it('importa con la strategia selezionata', async () => {
+  it('imports with the selected strategy', async () => {
     const { wrapper, library } = mountPanel();
     const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
 
@@ -29,7 +29,7 @@ describe('ImportExportPanel', () => {
     expect(importLibrary).toHaveBeenCalledWith('replace');
   });
 
-  it('esporta la libreria attiva', async () => {
+  it('exports the active library', async () => {
     const { wrapper, library } = mountPanel();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
@@ -38,7 +38,7 @@ describe('ImportExportPanel', () => {
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
 
-  it('mostra e chiude il riepilogo di import', async () => {
+  it('shows and closes the import summary', async () => {
     const { wrapper, library } = mountPanel();
     library.lastLibraryImport = {
       added: 2,

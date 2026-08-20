@@ -20,42 +20,42 @@ function mountReport(report: Partial<AddReport>) {
 }
 
 describe('LibraryImportReport', () => {
-  it('non compare quando non c e nulla da segnalare', () => {
+  it('does not appear when there is nothing to report', () => {
     const wrapper = mountReport({});
 
     expect(wrapper.find('[data-testid="import-report"]').exists()).toBe(false);
   });
 
-  it('riporta i brani aggiunti al plurale corretto', () => {
+  it('reports added tracks with the correct plural', () => {
     const wrapper = mountReport({ added: [makeTrack(), makeTrack()] });
 
     expect(wrapper.get('[data-testid="report-added"]').text()).toBe('2 brani aggiunti');
   });
 
-  it('riporta i duplicati al singolare', () => {
-    const wrapper = mountReport({ duplicates: ['C:/musica/brano.mp3'] });
+  it('reports duplicates in singular', () => {
+    const wrapper = mountReport({ duplicates: ['C:/music/track.mp3'] });
 
     expect(wrapper.get('[data-testid="report-duplicates"]').text()).toBe('1 file già in libreria');
   });
 
-  it('elenca i file non importati con il motivo', () => {
+  it('lists files not imported with the reason', () => {
     const wrapper = mountReport({
-      failed: [{ path: 'C:/musica/rotto.mp3', reason: 'file audio illeggibile' }],
+      failed: [{ path: 'C:/music/rotto.mp3', reason: 'unreadable audio file' }],
     });
 
     expect(wrapper.get('[data-testid="report-failed"]').text()).toBe('1 file non importato');
-    expect(wrapper.get('.library_report_failures').text()).toContain('file audio illeggibile');
+    expect(wrapper.get('.library_report_failures').text()).toContain('unreadable audio file');
     expect(wrapper.get('.library_report_failures').text()).toContain('rotto.mp3');
   });
 
-  it('mostra solo le voci con almeno un elemento', () => {
+  it('shows only items with at least one element', () => {
     const wrapper = mountReport({ added: [makeTrack()] });
 
     expect(wrapper.find('[data-testid="report-added"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="report-duplicates"]').exists()).toBe(false);
   });
 
-  it('chiede la chiusura', async () => {
+  it('requests close', async () => {
     const wrapper = mountReport({ added: [makeTrack()] });
 
     await wrapper.get('button').trigger('click');

@@ -7,7 +7,7 @@ use serde::{Serialize, Serializer};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
-    #[error("file non trovato: {0}")]
+    #[error("file not found: {0}")]
     NotFound(String),
 
     #[error("formato non supportato: {0}")]
@@ -19,10 +19,10 @@ pub enum AppError {
     #[error("dati non validi: {0}")]
     Validation(String),
 
-    #[error("file in sola lettura: {0}")]
+    #[error("file in sola read: {0}")]
     ReadOnly(String),
 
-    #[error("libreria non accessibile: {0}")]
+    #[error("library unavailable: {0}")]
     State(String),
 
     #[error("errore di I/O: {0}")]
@@ -48,38 +48,35 @@ mod tests {
     use super::*;
 
     #[test]
-    fn not_found_ha_un_messaggio_leggibile() {
-        let error = AppError::NotFound("C:/musica/brano.mp3".to_owned());
+    fn not_found_has_a_readable_message() {
+        let error = AppError::NotFound("C:/music/track.mp3".to_owned());
 
-        assert_eq!(error.to_string(), "file non trovato: C:/musica/brano.mp3");
+        assert_eq!(error.to_string(), "file not found: C:/music/track.mp3");
     }
 
     #[test]
-    fn unsupported_format_ha_un_messaggio_leggibile() {
+    fn unsupported_format_has_a_readable_message() {
         let error = AppError::UnsupportedFormat("mid".to_owned());
 
         assert_eq!(error.to_string(), "formato non supportato: mid");
     }
 
     #[test]
-    fn invalid_audio_ha_un_messaggio_leggibile() {
+    fn invalid_audio_has_a_readable_message() {
         let error = AppError::InvalidAudio("tag corrotti".to_owned());
 
         assert_eq!(error.to_string(), "file audio illeggibile: tag corrotti");
     }
 
     #[test]
-    fn state_ha_un_messaggio_leggibile() {
-        let error = AppError::State("lock avvelenato".to_owned());
+    fn state_has_a_readable_message() {
+        let error = AppError::State("poisoned lock".to_owned());
 
-        assert_eq!(
-            error.to_string(),
-            "libreria non accessibile: lock avvelenato"
-        );
+        assert_eq!(error.to_string(), "library unavailable: poisoned lock");
     }
 
     #[test]
-    fn gli_errori_di_io_sono_convertiti_automaticamente() {
+    fn io_errors_are_converted_automatically() {
         let io_error = std::io::Error::new(std::io::ErrorKind::PermissionDenied, "accesso negato");
         let error: AppError = io_error.into();
 
@@ -88,7 +85,7 @@ mod tests {
     }
 
     #[test]
-    fn gli_errori_di_serializzazione_sono_convertiti_automaticamente() {
+    fn serialization_errors_are_converted_automatically() {
         let json_error = serde_json::from_str::<serde_json::Value>("{ non valido").unwrap_err();
         let error: AppError = json_error.into();
 
@@ -96,11 +93,11 @@ mod tests {
     }
 
     #[test]
-    fn l_errore_e_serializzato_come_stringa() {
-        let error = AppError::NotFound("brano.mp3".to_owned());
+    fn error_is_serialized_as_a_string() {
+        let error = AppError::NotFound("track.mp3".to_owned());
 
         let json = serde_json::to_string(&error).expect("serializzazione riuscita");
 
-        assert_eq!(json, "\"file non trovato: brano.mp3\"");
+        assert_eq!(json, "\"file not found: track.mp3\"");
     }
 }

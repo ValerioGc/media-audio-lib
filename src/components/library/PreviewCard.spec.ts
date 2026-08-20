@@ -16,36 +16,36 @@ function mountCard(track: TrackView = makeTrack(), selected = false, playing = f
 }
 
 describe('PreviewCard', () => {
-  it('mostra titolo, autore e album', () => {
-    const wrapper = mountCard(makeTrack({ title: 'Brano', artist: 'Autore', album: 'Album' }));
+  it('shows title, artist, and album', () => {
+    const wrapper = mountCard(makeTrack({ title: 'Track', artist: 'Artist', album: 'Album' }));
 
-    expect(wrapper.get('.preview_card_title').text()).toBe('Brano');
+    expect(wrapper.get('.preview_card_title').text()).toBe('Track');
     expect(wrapper.findAll('.preview_card_meta').map((meta) => meta.text())).toEqual([
-      'Autore',
+      'Artist',
       'Album',
     ]);
   });
 
-  it('usa un trattino per i campi mancanti', () => {
+  it('uses a dash for missing fields', () => {
     const wrapper = mountCard(makeTrack({ artist: null, album: null }));
 
     expect(wrapper.findAll('.preview_card_meta').map((meta) => meta.text())).toEqual(['—', '—']);
   });
 
-  it('include la copertina in formato scheda', () => {
+  it('includes the cover in card format', () => {
     const wrapper = mountCard();
 
     expect(wrapper.find('.cover_image_card').exists()).toBe(true);
   });
 
-  it('evidenzia la scheda selezionata', () => {
+  it('highlights the selected card', () => {
     const wrapper = mountCard(makeTrack(), true);
 
     expect(wrapper.classes()).toContain('preview_card_selected');
     expect(wrapper.attributes('aria-selected')).toBe('true');
   });
 
-  it('indica la scheda in riproduzione', () => {
+  it('marks the playing card', () => {
     const wrapper = mountCard(makeTrack(), false, true);
 
     expect(wrapper.classes()).toContain('preview_card_playing');
@@ -53,13 +53,13 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_badge_playing').text()).toContain('In riproduzione');
   });
 
-  it('segnala i file spariti dal disco', () => {
+  it('reports files missing from disk', () => {
     const wrapper = mountCard(makeTrack({ missing: true }));
 
     expect(wrapper.get('.preview_card_badge').text()).toContain('File non più presente su disco');
   });
 
-  it('emette la selezione al click e con Invio', async () => {
+  it('emits selection on click and Enter', async () => {
     const track = makeTrack();
     const wrapper = mountCard(track);
 
@@ -69,17 +69,17 @@ describe('PreviewCard', () => {
     expect(wrapper.emitted('select')).toEqual([[track.id], [track.id]]);
   });
 
-  it('offre dal menu le stesse azioni della vista elenco', async () => {
-    const wrapper = mountCard(makeTrack({ title: 'Brano' }));
+  it('offers the same actions as list view from the menu', async () => {
+    const wrapper = mountCard(makeTrack({ title: 'Track' }));
 
     await wrapper.get('.app_menu_trigger').trigger('click');
 
     expect(
-      wrapper.findAll('.app_menu_item').map((voce) => voce.get('.app_menu_item_label').text()),
+      wrapper.findAll('.app_menu_item').map((item) => item.get('.app_menu_item_label').text()),
     ).toEqual(['Modifica', 'Verifica', 'Elimina']);
   });
 
-  it('emette modifica, verifica ed eliminazione senza selezionare la scheda', async () => {
+  it('emits edit, verify, and remove without selecting the card', async () => {
     const track = makeTrack();
     const wrapper = mountCard(track);
 
@@ -96,7 +96,7 @@ describe('PreviewCard', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('non fa modificare un file sparito dal disco', async () => {
+  it('does not allow editing a file missing from disk', async () => {
     const wrapper = mountCard(makeTrack({ missing: true }));
 
     await wrapper.get('.app_menu_trigger').trigger('click');

@@ -172,116 +172,111 @@ mod tests {
     }
 
     #[test]
-    fn legge_la_copertina_e_la_deposita_in_cache() {
+    fn reads_the_cover_and_stores_it_in_cache() {
         let dir = TempDir::new("cache-store");
         let cache = cache(&dir);
-        let brano = wav_with_cover(dir.path(), "brano.wav");
+        let track = wav_with_cover(dir.path(), "track.wav");
 
-        let cover = cache.load(&brano).expect("lettura").expect("copertina");
+        let cover = cache.load(&track).expect("read").expect("cover");
 
         assert_eq!(cover.mime_type, "image/png");
         assert!(cache
             .directory()
-            .join(format!("{}.png", CoverCache::entry_key(&brano)))
+            .join(format!("{}.png", CoverCache::entry_key(&track)))
             .is_file());
     }
 
     #[test]
-    fn la_seconda_lettura_arriva_dalla_cache() {
+    fn second_read_comes_from_cache() {
         let dir = TempDir::new("cache-hit");
         let cache = cache(&dir);
-        let brano = wav_with_cover(dir.path(), "brano.wav");
+        let track = wav_with_cover(dir.path(), "track.wav");
 
-        // Una voce fasulla scritta a mano: se venisse riletto il file audio,
-        // il contenuto restituito sarebbe diverso.
-        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        // A fake entry written by hand: if the audio file were reread,
+        // the returned content would be different.
+        std::fs::create_dir_all(cache.directory()).expect("directory created");
         std::fs::write(
             cache
                 .directory()
-                .join(format!("{}.png", CoverCache::entry_key(&brano))),
-            b"copertina-finta",
+                .join(format!("{}.png", CoverCache::entry_key(&track))),
+            b"fake-cover",
         )
-        .expect("voce scritta");
+        .expect("entry written");
 
-        let cover = cache.load(&brano).expect("lettura").expect("copertina");
+        let cover = cache.load(&track).expect("read").expect("cover");
         let bytes = base64::engine::general_purpose::STANDARD
             .decode(&cover.data)
             .expect("base64 valido");
 
-        assert_eq!(bytes, b"copertina-finta");
+        assert_eq!(bytes, b"fake-cover");
     }
 
     #[test]
-    fn ricorda_i_file_senza_copertina_senza_riaprirli() {
+    fn remembers_files_without_cover_without_reopening_them() {
         let dir = TempDir::new("cache-none");
         let cache = cache(&dir);
-        let brano = wav_with_tags(dir.path(), "brano.wav");
+        let track = wav_with_tags(dir.path(), "track.wav");
 
-        assert_eq!(cache.load(&brano).expect("lettura"), None);
+        assert_eq!(cache.load(&track).expect("read"), None);
         assert!(cache
             .directory()
-            .join(format!("{}.none", CoverCache::entry_key(&brano)))
+            .join(format!("{}.none", CoverCache::entry_key(&track)))
             .is_file());
-        assert_eq!(cache.load(&brano).expect("seconda lettura"), None);
+        assert_eq!(cache.load(&track).expect("second read"), None);
     }
 
     #[test]
-    fn una_modifica_al_file_invalida_la_voce() {
+    fn file_change_invalidates_the_entry() {
         let dir = TempDir::new("cache-invalidate");
         let cache = cache(&dir);
-        let brano = mp3_with_tags(dir.path(), "brano.mp3");
+        let track = mp3_with_tags(dir.path(), "track.mp3");
 
-        cache.load(&brano).expect("prima lettura");
-        let vecchia_chiave = CoverCache::entry_key(&brano);
+        cache.load(&track).expect("first read");
+        let old_key = CoverCache::entry_key(&track);
 
-        // Riscrive il file con una copertina: cambia il momento di modifica.
+        // Rewrites the file with a cover: the modification time changes.
         std::thread::sleep(std::time::Duration::from_millis(1100));
         crate::metadata::write_cover(
-            &brano,
+            &track,
             Some(&Cover {
                 mime_type: "image/png".to_owned(),
                 data: crate::fixtures::png_cover_base64(),
             }),
         )
-        .expect("copertina scritta");
+        .expect("cover written");
 
-        let nuova_chiave = CoverCache::entry_key(&brano);
-        assert_ne!(vecchia_chiave, nuova_chiave);
+        let new_key = CoverCache::entry_key(&track);
+        assert_ne!(old_key, new_key);
 
-        assert!(cache.load(&brano).expect("seconda lettura").is_some());
-        assert!(!cache
-            .directory()
-            .join(format!("{vecchia_chiave}.none"))
-            .exists());
+        assert!(cache.load(&track).expect("second read").is_some());
+        assert!(!cache.directory().join(format!("{old_key}.none")).exists());
     }
 
     #[test]
-    fn una_cache_non_scrivibile_non_impedisce_la_lettura() {
+    fn unwritable_cache_does_not_prevent_reading() {
         let dir = TempDir::new("cache-readonly");
-        let brano = wav_with_cover(dir.path(), "brano.wav");
+        let track = wav_with_cover(dir.path(), "track.wav");
         // Un file al posto della cartella: ogni scrittura in cache fallira'.
-        let percorso_occupato = dir.path().join("occupato");
-        std::fs::write(&percorso_occupato, b"non sono una cartella").expect("file scritto");
-        let cache = CoverCache::new(percorso_occupato);
+        let path_occupato = dir.path().join("occupato");
+        std::fs::write(&path_occupato, b"non sono una cartella").expect("file written");
+        let cache = CoverCache::new(path_occupato);
 
-        assert!(cache.load(&brano).expect("lettura riuscita").is_some());
+        assert!(cache.load(&track).expect("read succeeded").is_some());
     }
 
     #[test]
-    fn propaga_l_errore_di_un_file_inesistente() {
+    fn propagates_the_error_for_a_missing_file() {
         let dir = TempDir::new("cache-missing");
 
-        assert!(cache(&dir)
-            .load(Path::new("C:/musica/assente.mp3"))
-            .is_err());
+        assert!(cache(&dir).load(Path::new("C:/music/assente.mp3")).is_err());
     }
 
     #[test]
-    fn svuota_la_cache_su_richiesta() {
+    fn clears_the_cache_on_request() {
         let dir = TempDir::new("cache-clear");
         let cache = cache(&dir);
-        let brano = wav_with_cover(dir.path(), "brano.wav");
-        cache.load(&brano).expect("lettura");
+        let track = wav_with_cover(dir.path(), "track.wav");
+        cache.load(&track).expect("read");
 
         cache.clear().expect("pulizia riuscita");
 
@@ -294,7 +289,7 @@ mod tests {
     }
 
     #[test]
-    fn svuotare_una_cache_mai_creata_non_e_un_errore() {
+    fn clearing_a_never_created_cache_is_not_an_error() {
         let dir = TempDir::new("cache-clear-empty");
 
         assert!(cache(&dir).clear().is_ok());

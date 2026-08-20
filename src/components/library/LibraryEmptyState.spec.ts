@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe('LibraryEmptyState', () => {
-  it('invita ad aggiungere brani quando la libreria e vuota', () => {
+  it('invites adding tracks when the library is empty', () => {
     const wrapper = mount(LibraryEmptyState, { ...withPinia(), props: { variant: 'empty' } });
 
     expect(wrapper.get('.app_placeholder_title').text()).toBe('La libreria è vuota');
@@ -19,7 +19,7 @@ describe('LibraryEmptyState', () => {
     expect(wrapper.get('.library_empty_hint').text()).toContain('trascinare');
   });
 
-  it('apre il dialog di sistema dal pulsante', async () => {
+  it('opens the system dialog from the button', async () => {
     const options = withPinia();
     const pickAndAdd = vi.spyOn(useLibraryStore(), 'pickAndAdd').mockResolvedValue(null);
 
@@ -29,7 +29,7 @@ describe('LibraryEmptyState', () => {
     expect(pickAndAdd).toHaveBeenCalledTimes(1);
   });
 
-  it('riporta la ricerca senza risultati', () => {
+  it('reports search with no results', () => {
     const options = withPinia();
     useLibraryStore().setQuery('metal');
 

@@ -4,14 +4,14 @@ import { describe, expect, it } from 'vitest';
 import AppInput from './AppInput.vue';
 
 describe('AppInput', () => {
-  it('collega la label al campo', () => {
+  it('links the label to the field', () => {
     const wrapper = mount(AppInput, { props: { modelValue: '', label: 'Cerca' } });
 
     expect(wrapper.get('label').attributes('for')).toBe(wrapper.get('input').attributes('id'));
     expect(wrapper.get('label').text()).toBe('Cerca');
   });
 
-  it('mantiene la label accessibile anche quando e nascosta', () => {
+  it('keeps the label accessible when hidden', () => {
     const wrapper = mount(AppInput, {
       props: { modelValue: '', label: 'Cerca', hideLabel: true },
     });
@@ -20,7 +20,7 @@ describe('AppInput', () => {
     expect(wrapper.get('label').text()).toBe('Cerca');
   });
 
-  it('emette il valore digitato', async () => {
+  it('emits the typed value', async () => {
     const wrapper = mount(AppInput, { props: { modelValue: '', label: 'Cerca' } });
 
     await wrapper.get('input').setValue('rock');
@@ -28,12 +28,12 @@ describe('AppInput', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([['rock']]);
   });
 
-  it('applica tipo e placeholder', () => {
+  it('applies type and placeholder', () => {
     const wrapper = mount(AppInput, {
-      props: { modelValue: '', label: 'Cerca', type: 'search', placeholder: 'Titolo' },
+      props: { modelValue: '', label: 'Cerca', type: 'search', placeholder: 'Title' },
     });
 
     expect(wrapper.get('input').attributes('type')).toBe('search');
-    expect(wrapper.get('input').attributes('placeholder')).toBe('Titolo');
+    expect(wrapper.get('input').attributes('placeholder')).toBe('Title');
   });
 });

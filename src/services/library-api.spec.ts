@@ -32,7 +32,7 @@ import {
   writeMetadata,
 } from './library-api';
 
-const update = { title: 'Titolo', artist: 'Autore', album: null, year: 1999, genre: 'Rock' };
+const update = { title: 'Title', artist: 'Artist', album: null, year: 1999, genre: 'Rock' };
 
 const scopedWindow = window as unknown as Record<string, unknown>;
 
@@ -52,12 +52,12 @@ afterEach(() => {
 });
 
 describe('listTracks', () => {
-  it('restituisce una lista vuota fuori dalla shell', async () => {
+  it('returns an empty list outside the shell', async () => {
     await expect(listTracks()).resolves.toEqual([]);
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 
-  it('interroga il comando Rust dentro la shell', async () => {
+  it('calls the Rust command inside the shell', async () => {
     withShell();
     mocks.invoke.mockResolvedValue([{ id: 'a' }]);
 
@@ -67,25 +67,25 @@ describe('listTracks', () => {
 });
 
 describe('libraryInfo', () => {
-  it('usa il nome dell app fuori dalla shell', async () => {
+  it('uses the app name outside the shell', async () => {
     await expect(libraryInfo()).resolves.toEqual({ name: 'Media Audio Lib' });
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 
-  it('interroga il comando Rust dentro la shell', async () => {
+  it('calls the Rust command inside the shell', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ name: 'Archivio' });
+    mocks.invoke.mockResolvedValue({ name: 'Archive' });
 
-    await expect(libraryInfo()).resolves.toEqual({ name: 'Archivio' });
+    await expect(libraryInfo()).resolves.toEqual({ name: 'Archive' });
     expect(mocks.invoke).toHaveBeenCalledWith('library_info');
   });
 });
 
-describe('comandi che richiedono la shell', () => {
-  it('rifiutano fuori dalla shell', async () => {
+describe('commands requiring the shell', () => {
+  it('reject outside the shell', async () => {
     await expect(addTracks(['a.mp3'])).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(removeTrack('id')).rejects.toBeInstanceOf(ShellUnavailableError);
-    await expect(renameLibrary('Archivio')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(renameLibrary('Archive')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(verifyTrackFile('id')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(getCover('a.mp3')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickAudioFiles()).rejects.toBeInstanceOf(ShellUnavailableError);
@@ -94,25 +94,25 @@ describe('comandi che richiedono la shell', () => {
     await expect(createLibrary('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(switchLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(deleteLibrary('lib-1')).rejects.toBeInstanceOf(ShellUnavailableError);
-    await expect(exportLibrary('lib-1', 'copia.json')).rejects.toBeInstanceOf(
+    await expect(exportLibrary('lib-1', 'copy.json')).rejects.toBeInstanceOf(
       ShellUnavailableError,
     );
-    await expect(importLibrary('copia.json', 'merge')).rejects.toBeInstanceOf(
+    await expect(importLibrary('copy.json', 'merge')).rejects.toBeInstanceOf(
       ShellUnavailableError,
     );
     await expect(pickExportFile('Jazz')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickImportFile()).rejects.toBeInstanceOf(ShellUnavailableError);
   });
 
-  it('inoltra la modifica dei metadati', async () => {
+  it('forwards metadata edits', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ id: 'abc', title: 'Titolo' });
+    mocks.invoke.mockResolvedValue({ id: 'abc', title: 'Title' });
 
-    await expect(writeMetadata('abc', update)).resolves.toEqual({ id: 'abc', title: 'Titolo' });
+    await expect(writeMetadata('abc', update)).resolves.toEqual({ id: 'abc', title: 'Title' });
     expect(mocks.invoke).toHaveBeenCalledWith('write_metadata', { id: 'abc', update });
   });
 
-  it('inoltra la scrittura e la rimozione della copertina', async () => {
+  it('forwards cover writes and removal', async () => {
     withShell();
     mocks.invoke.mockResolvedValue({ id: 'abc' });
     const cover = { mimeType: 'image/png', data: 'AAA' };
@@ -124,18 +124,18 @@ describe('comandi che richiedono la shell', () => {
     expect(mocks.invoke).toHaveBeenLastCalledWith('write_cover', { id: 'abc', cover: null });
   });
 
-  it('inoltra i percorsi al comando di import', async () => {
+  it('forwards paths to the import command', async () => {
     withShell();
     mocks.invoke.mockResolvedValue({ added: [], duplicates: [], failed: [] });
 
-    await addTracks(['C:/musica/brano.mp3']);
+    await addTracks(['C:/music/track.mp3']);
 
     expect(mocks.invoke).toHaveBeenCalledWith('add_tracks', {
-      paths: ['C:/musica/brano.mp3'],
+      paths: ['C:/music/track.mp3'],
     });
   });
 
-  it('inoltra l identificativo alla rimozione', async () => {
+  it('forwards the identifier to removal', async () => {
     withShell();
     mocks.invoke.mockResolvedValue(true);
 
@@ -143,15 +143,15 @@ describe('comandi che richiedono la shell', () => {
     expect(mocks.invoke).toHaveBeenCalledWith('remove_track', { id: 'abc' });
   });
 
-  it('inoltra il nome della libreria', async () => {
+  it('forwards the library name', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ name: 'Archivio' });
+    mocks.invoke.mockResolvedValue({ name: 'Archive' });
 
-    await expect(renameLibrary('Archivio')).resolves.toEqual({ name: 'Archivio' });
-    expect(mocks.invoke).toHaveBeenCalledWith('rename_library', { name: 'Archivio' });
+    await expect(renameLibrary('Archive')).resolves.toEqual({ name: 'Archive' });
+    expect(mocks.invoke).toHaveBeenCalledWith('rename_library', { name: 'Archive' });
   });
 
-  it('inoltra la verifica del file tracciato', async () => {
+  it('forwards verification of the tracked file', async () => {
     withShell();
     mocks.invoke.mockResolvedValue({ id: 'abc', missing: true });
 
@@ -159,11 +159,11 @@ describe('comandi che richiedono la shell', () => {
     expect(mocks.invoke).toHaveBeenCalledWith('verify_track_file', { id: 'abc' });
   });
 
-  it('richiede la copertina per percorso', async () => {
+  it('requests the cover by path', async () => {
     withShell();
     mocks.invoke.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
 
-    await expect(getCover('C:/musica/brano.mp3')).resolves.toEqual({
+    await expect(getCover('C:/music/track.mp3')).resolves.toEqual({
       mimeType: 'image/png',
       data: 'AAA',
     });
@@ -173,25 +173,25 @@ describe('comandi che richiedono la shell', () => {
 describe('pickAudioFiles', () => {
   beforeEach(withShell);
 
-  it('restituisce una lista vuota quando l utente annulla', async () => {
+  it('returns an empty list when the user cancels', async () => {
     mocks.open.mockResolvedValue(null);
 
     await expect(pickAudioFiles()).resolves.toEqual([]);
   });
 
-  it('normalizza una selezione singola in una lista', async () => {
-    mocks.open.mockResolvedValue('C:/musica/brano.mp3');
+  it('normalizes a single selection into a list', async () => {
+    mocks.open.mockResolvedValue('C:/music/track.mp3');
 
-    await expect(pickAudioFiles()).resolves.toEqual(['C:/musica/brano.mp3']);
+    await expect(pickAudioFiles()).resolves.toEqual(['C:/music/track.mp3']);
   });
 
-  it('restituisce la selezione multipla', async () => {
+  it('returns multiple selection', async () => {
     mocks.open.mockResolvedValue(['a.mp3', 'b.flac']);
 
     await expect(pickAudioFiles()).resolves.toEqual(['a.mp3', 'b.flac']);
   });
 
-  it('filtra il dialog sui formati supportati', async () => {
+  it('filters the dialog to supported formats', async () => {
     await pickAudioFiles();
 
     expect(mocks.open).toHaveBeenCalledWith(
@@ -204,20 +204,20 @@ describe('pickAudioFiles', () => {
 });
 
 describe('coverDataUrl', () => {
-  it('compone una data URL utilizzabile in un tag img', () => {
+  it('builds a data URL usable in an img tag', () => {
     expect(coverDataUrl({ mimeType: 'image/png', data: 'AAAA' })).toBe(
       'data:image/png;base64,AAAA',
     );
   });
 });
 
-describe('catalogo delle librerie', () => {
-  it('senza shell non conosce nessuna libreria', async () => {
+describe('library catalog', () => {
+  it('knows no libraries without the shell', async () => {
     await expect(listLibraries()).resolves.toEqual([]);
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 
-  it('inoltra elenco, creazione, apertura ed eliminazione', async () => {
+  it('forwards list, create, open, and delete', async () => {
     withShell();
     mocks.invoke.mockResolvedValue([]);
 
@@ -232,7 +232,7 @@ describe('catalogo delle librerie', () => {
     expect(mocks.invoke).toHaveBeenNthCalledWith(4, 'delete_library', { id: 'lib-2' });
   });
 
-  it('esporta verso il file scelto', async () => {
+  it('exports to the chosen file', async () => {
     withShell();
     mocks.invoke.mockResolvedValue('C:/backup/jazz.json');
 
@@ -245,7 +245,7 @@ describe('catalogo delle librerie', () => {
     });
   });
 
-  it('importa dal file scelto con la strategia selezionata', async () => {
+  it('imports from the chosen file with the selected strategy', async () => {
     withShell();
     mocks.invoke.mockResolvedValue({ added: 1, updated: 0, skipped: 0, missing: [], total: 1 });
 
@@ -262,7 +262,7 @@ describe('catalogo delle librerie', () => {
     });
   });
 
-  it('propone un nome file e filtra il dialog sul JSON', async () => {
+  it('suggests a file name and filters the dialog to JSON', async () => {
     withShell();
     mocks.save.mockResolvedValue('C:/backup/jazz.json');
 
@@ -273,7 +273,7 @@ describe('catalogo delle librerie', () => {
     });
   });
 
-  it('sceglie un file JSON da importare', async () => {
+  it('chooses a JSON file to import', async () => {
     withShell();
     mocks.open.mockResolvedValue('C:/backup/jazz.json');
 
@@ -284,7 +284,7 @@ describe('catalogo delle librerie', () => {
     });
   });
 
-  it('normalizza selezioni multiple inattese nel picker di import', async () => {
+  it('normalizes unexpected multiple selections in the import picker', async () => {
     withShell();
     mocks.open.mockResolvedValue(['C:/backup/jazz.json']);
 

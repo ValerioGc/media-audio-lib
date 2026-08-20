@@ -3,27 +3,27 @@ import { describe, expect, it } from 'vitest';
 
 import AppModal from './AppModal.vue';
 
-const props = { open: true, title: 'Rimuovere il brano?' };
+const props = { open: true, title: 'Rimuovere il track?' };
 
 describe('AppModal', () => {
-  it('non rende nulla da chiuso', () => {
+  it('renders nothing when closed', () => {
     const wrapper = mount(AppModal, { props: { ...props, open: false } });
 
     expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
   });
 
-  it('rende titolo, contenuto e azioni', () => {
+  it('renders title, content, and actions', () => {
     const wrapper = mount(AppModal, {
       props,
       slots: { default: 'Sei sicuro?', actions: '<button>Conferma</button>' },
     });
 
-    expect(wrapper.get('.app_modal_title').text()).toBe('Rimuovere il brano?');
+    expect(wrapper.get('.app_modal_title').text()).toBe('Rimuovere il track?');
     expect(wrapper.get('.app_modal_body').text()).toBe('Sei sicuro?');
     expect(wrapper.get('.app_modal_actions button').text()).toBe('Conferma');
   });
 
-  it('dichiara il dialog agli screen reader', () => {
+  it('declares the dialog to screen readers', () => {
     const wrapper = mount(AppModal, { props });
     const dialog = wrapper.get('[role="dialog"]');
 
@@ -33,7 +33,7 @@ describe('AppModal', () => {
     );
   });
 
-  it('chiede la chiusura cliccando sullo sfondo', async () => {
+  it('requests close when clicking the backdrop', async () => {
     const wrapper = mount(AppModal, { props });
 
     await wrapper.get('.app_modal').trigger('click');
@@ -41,7 +41,7 @@ describe('AppModal', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
-  it('chiede la chiusura con Escape', async () => {
+  it('requests close with Escape', async () => {
     const wrapper = mount(AppModal, { props, attachTo: document.body });
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
@@ -50,7 +50,7 @@ describe('AppModal', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
-  it('ignora gli altri tasti', async () => {
+  it('ignores other keys', async () => {
     const wrapper = mount(AppModal, { props, attachTo: document.body });
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));

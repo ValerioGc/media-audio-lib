@@ -47,7 +47,7 @@ beforeEach(() => {
     handlers = given;
     return engine;
   });
-  mocks.playbackUrl.mockResolvedValue('asset://brano.mp3');
+  mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
 });
 
 afterEach(() => {
@@ -56,7 +56,7 @@ afterEach(() => {
 });
 
 describe('usePlayerStore', () => {
-  it('parte senza nulla in riproduzione', () => {
+  it('starts with nothing playing', () => {
     const player = usePlayerStore();
 
     expect(player.currentTrack).toBeNull();
@@ -65,20 +65,20 @@ describe('usePlayerStore', () => {
     expect(mocks.createAudioEngine).not.toHaveBeenCalled();
   });
 
-  it('carica e avvia il brano scelto', async () => {
+  it('loads and starts the selected track', async () => {
     const player = usePlayerStore();
-    const track = makeTrack({ title: 'Brano' });
+    const track = makeTrack({ title: 'Track' });
 
     await player.play(track);
 
     expect(mocks.playbackUrl).toHaveBeenCalledWith(track.id);
-    expect(engine.load).toHaveBeenCalledWith('asset://brano.mp3');
+    expect(engine.load).toHaveBeenCalledWith('asset://track.mp3');
     expect(engine.play).toHaveBeenCalledTimes(1);
-    expect(player.currentTrack?.title).toBe('Brano');
+    expect(player.currentTrack?.title).toBe('Track');
     expect(player.isLoading).toBe(false);
   });
 
-  it('usa la durata dei metadati finche il file non dichiara la sua', async () => {
+  it('uses metadata duration until the file declares its own', async () => {
     const player = usePlayerStore();
 
     await player.play(makeTrack({ durationMs: 185_000 }));
@@ -90,7 +90,7 @@ describe('usePlayerStore', () => {
     expect(player.duration).toBe(184.2);
   });
 
-  it('prende la lista visibile come coda', async () => {
+  it('uses the visible list as the queue', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(3);
     const secondo = tracks[1];
@@ -103,7 +103,7 @@ describe('usePlayerStore', () => {
     expect(player.hasNext).toBe(true);
   });
 
-  it('prepara una coda casuale mantenendo per primo il brano scelto', async () => {
+  it('prepares a shuffled queue while keeping the selected track first', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(4);
     vi.spyOn(Math, 'random').mockReturnValue(0);
@@ -121,7 +121,7 @@ describe('usePlayerStore', () => {
     ]);
   });
 
-  it('ripristina l ordine della libreria quando si disattiva la coda casuale', async () => {
+  it('restores library order when shuffled queue is disabled', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(3);
     vi.spyOn(Math, 'random').mockReturnValue(0);
@@ -135,7 +135,7 @@ describe('usePlayerStore', () => {
     expect(player.currentTrack?.id).toBe(tracks[0]?.id);
   });
 
-  it('ignora un brano che non e nella lista', async () => {
+  it('ignores a track that is not in the list', async () => {
     const player = usePlayerStore();
 
     await player.playFrom(makeTracks(2), 'id-assente');
@@ -143,7 +143,7 @@ describe('usePlayerStore', () => {
     expect(player.isActive).toBe(false);
   });
 
-  it('scorre la coda avanti e indietro', async () => {
+  it('moves through the queue forward and backward', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(3);
     await player.playFrom(tracks, tracks[0]?.id ?? '');
@@ -156,7 +156,7 @@ describe('usePlayerStore', () => {
     expect(player.hasPrevious).toBe(false);
   });
 
-  it('si ferma alla fine della coda', async () => {
+  it('stops at the end of the queue', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(2);
     const ultimo = tracks[1];
@@ -171,7 +171,7 @@ describe('usePlayerStore', () => {
     expect(engine.pause).toHaveBeenCalled();
   });
 
-  it('ripete il brano corrente invece di fermarsi a fine coda', async () => {
+  it('repeats the current track instead of stopping at the end of the queue', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(2);
     const ultimo = tracks[1];
@@ -187,7 +187,7 @@ describe('usePlayerStore', () => {
     expect(engine.load).toHaveBeenCalledTimes(2);
   });
 
-  it('passa al brano successivo quando quello corrente finisce', async () => {
+  it('moves to the next track when the current one ends', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(2);
     await player.playFrom(tracks, tracks[0]?.id ?? '');
@@ -198,7 +198,7 @@ describe('usePlayerStore', () => {
     expect(player.currentTrack?.id).toBe(tracks[1]?.id);
   });
 
-  it('il precedente riparte dall inizio se il brano e gia avviato', async () => {
+  it('previous restarts from the beginning if the track already started', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(2);
     const secondo = tracks[1];
@@ -212,7 +212,7 @@ describe('usePlayerStore', () => {
     expect(engine.seek).toHaveBeenCalledWith(0);
   });
 
-  it('mette in pausa e riprende con lo stesso comando', async () => {
+  it('pauses and resumes with the same command', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack());
     engineHandlers().onPlayingChange(true);
@@ -225,7 +225,7 @@ describe('usePlayerStore', () => {
     expect(engine.play).toHaveBeenCalledTimes(2);
   });
 
-  it('interrompe riportando la posizione a zero', async () => {
+  it('stops and resets position to zero', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack());
     engineHandlers().onProgress(45);
@@ -237,7 +237,7 @@ describe('usePlayerStore', () => {
     expect(engine.seek).toHaveBeenCalledWith(0);
   });
 
-  it('limita la posizione cercata alla durata del brano', async () => {
+  it('clamps the seek position to track duration', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack({ durationMs: 100_000 }));
 
@@ -249,7 +249,7 @@ describe('usePlayerStore', () => {
     expect(engine.seek).toHaveBeenLastCalledWith(100);
   });
 
-  it('calcola l avanzamento come frazione della durata', async () => {
+  it('computes progress as a fraction of duration', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack({ durationMs: 200_000 }));
 
@@ -258,7 +258,7 @@ describe('usePlayerStore', () => {
     expect(player.progress).toBe(0.25);
   });
 
-  it('tiene il volume tra zero e uno e lo applica al player', async () => {
+  it('keeps volume between zero and one and applies it to the player', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack());
 
@@ -270,7 +270,7 @@ describe('usePlayerStore', () => {
     expect(engine.setVolume).toHaveBeenLastCalledWith(0);
   });
 
-  it('applica il volume scelto prima dell avvio', async () => {
+  it('applica il volume scelto first dell avvio', async () => {
     const player = usePlayerStore();
     player.setVolume(0.3);
 
@@ -279,7 +279,7 @@ describe('usePlayerStore', () => {
     expect(engine.setVolume).toHaveBeenCalledWith(0.3);
   });
 
-  it('non prova a riprodurre un file sparito dal disco', async () => {
+  it('does not try to play a file missing from disk', async () => {
     const player = usePlayerStore();
 
     await player.play(makeTrack({ missing: true }));
@@ -289,7 +289,7 @@ describe('usePlayerStore', () => {
     expect(mocks.createAudioEngine).not.toHaveBeenCalled();
   });
 
-  it('spiega che nel browser non si riproduce nulla', async () => {
+  it('explains that nothing plays in the browser', async () => {
     mocks.playbackUrl.mockRejectedValue(new ShellUnavailableError());
     const player = usePlayerStore();
 
@@ -300,7 +300,7 @@ describe('usePlayerStore', () => {
     expect(player.isLoading).toBe(false);
   });
 
-  it('segnala un avvio non riuscito', async () => {
+  it('reports a failed start', async () => {
     mocks.playbackUrl.mockRejectedValue(new Error('permesso negato'));
     const player = usePlayerStore();
 
@@ -309,7 +309,7 @@ describe('usePlayerStore', () => {
     expect(player.errorKey).toBe('generic');
   });
 
-  it('riporta il formato non riproducibile segnalato dal player', async () => {
+  it('reports the unplayable format from the player', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack());
 
@@ -319,7 +319,7 @@ describe('usePlayerStore', () => {
     expect(player.isPlaying).toBe(false);
   });
 
-  it('cancella l errore quando si riparte', async () => {
+  it('clears the error when starting again', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack({ missing: true }));
 
@@ -328,7 +328,7 @@ describe('usePlayerStore', () => {
     expect(player.errorKey).toBeNull();
   });
 
-  it('chiudendo il player libera la sorgente e svuota la coda', async () => {
+  it('closing the player releases the source and clears the queue', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(2);
     await player.playFrom(tracks, tracks[0]?.id ?? '');
@@ -343,7 +343,7 @@ describe('usePlayerStore', () => {
     expect(player.position).toBe(0);
   });
 
-  it('ricrea la sorgente dopo la chiusura', async () => {
+  it('recreates the source after closing', async () => {
     const player = usePlayerStore();
     await player.play(makeTrack());
     player.close();
@@ -353,7 +353,7 @@ describe('usePlayerStore', () => {
     expect(mocks.createAudioEngine).toHaveBeenCalledTimes(2);
   });
 
-  it('espande e riduce la vista', () => {
+  it('expands and collapses the view', () => {
     const player = usePlayerStore();
 
     player.toggleExpanded();

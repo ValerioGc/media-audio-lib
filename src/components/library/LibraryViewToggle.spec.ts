@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe('LibraryViewToggle', () => {
-  it('offre un pulsante per ogni vista, senza testo', () => {
+  it('offers one button per view, without text', () => {
     const wrapper = mount(LibraryViewToggle, withPinia());
     const buttons = wrapper.findAll('button');
 
@@ -26,7 +26,7 @@ describe('LibraryViewToggle', () => {
     expect(buttons[1]?.text()).toBe(ICON_GLYPHS.grid);
   });
 
-  it('descrive le due viste agli screen reader', () => {
+  it('describes both views to screen readers', () => {
     const wrapper = mount(LibraryViewToggle, withPinia());
 
     expect(wrapper.get('[data-testid="view-table"]').attributes('aria-label')).toBe('Elenco');
@@ -34,7 +34,7 @@ describe('LibraryViewToggle', () => {
     expect(wrapper.get('[role="group"]').attributes('aria-label')).toBe('Vista');
   });
 
-  it('marca come premuta la vista attiva', () => {
+  it('marks the active view as pressed', () => {
     const wrapper = mount(LibraryViewToggle, withPinia());
 
     expect(wrapper.get('[data-testid="view-table"]').attributes('aria-pressed')).toBe('true');
@@ -44,7 +44,7 @@ describe('LibraryViewToggle', () => {
     );
   });
 
-  it('cambia vista al click', async () => {
+  it('changes view on click', async () => {
     const options = withPinia();
     const settings = useSettingsStore();
     const setViewMode = vi.spyOn(settings, 'setViewMode');
@@ -56,7 +56,7 @@ describe('LibraryViewToggle', () => {
     expect(settings.viewMode).toBe('preview');
   });
 
-  it('riflette la vista gia salvata nelle preferenze', async () => {
+  it('reflects the view already saved in preferences', async () => {
     const options = withPinia();
     await useSettingsStore().setViewMode('preview');
 

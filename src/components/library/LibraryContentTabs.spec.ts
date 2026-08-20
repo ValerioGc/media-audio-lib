@@ -15,7 +15,7 @@ function mountTabs(modelValue: LibraryContentTab = 'tracks') {
 }
 
 describe('LibraryContentTabs', () => {
-  it('rende le sezioni della libreria', () => {
+  it('renders library sections', () => {
     const wrapper = mountTabs();
 
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
@@ -35,7 +35,7 @@ describe('LibraryContentTabs', () => {
     );
   });
 
-  it('emette il cambio di sezione', async () => {
+  it('emits section changes', async () => {
     const wrapper = mountTabs();
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');

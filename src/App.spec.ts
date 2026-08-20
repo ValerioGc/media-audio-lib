@@ -30,21 +30,21 @@ async function mountApp() {
 }
 
 describe('App', () => {
-  it('mostra la titlebar personalizzata al posto di quella di sistema', async () => {
+  it('shows the custom titlebar instead of the system one', async () => {
     const wrapper = await mountApp();
 
     expect(wrapper.get('.titlebar_name').text()).toBe('Media Audio Lib');
     expect(wrapper.find('[data-testid="window-close"]').exists()).toBe(true);
   });
 
-  it('parte dalla libreria', async () => {
+  it('starts on the library', async () => {
     const wrapper = await mountApp();
 
     expect(wrapper.find('.library_view').exists()).toBe(true);
     expect(wrapper.find('.settings_view').exists()).toBe(false);
   });
 
-  it('apre le impostazioni dall icona nella titlebar', async () => {
+  it('opens settings from the titlebar icon', async () => {
     const wrapper = await mountApp();
 
     await wrapper.get('[data-testid="open-settings"]').trigger('click');
@@ -54,7 +54,7 @@ describe('App', () => {
     expect(wrapper.find('.library_view').exists()).toBe(false);
   });
 
-  it('dalla stessa icona si torna alla libreria', async () => {
+  it('returns to the library from the same icon', async () => {
     const wrapper = await mountApp();
     useNavigationStore().go('settings');
     await flushPromises();
@@ -66,18 +66,18 @@ describe('App', () => {
     expect(wrapper.find('.library_view').exists()).toBe(true);
   });
 
-  it('mostra il player in basso solo quando c e qualcosa in riproduzione', async () => {
+  it('shows the bottom player only when something is playing', async () => {
     const wrapper = await mountApp();
 
     expect(wrapper.find('.player_bar').exists()).toBe(false);
 
-    usePlayerStore().play(makeTrack({ title: 'Brano' }));
+    usePlayerStore().play(makeTrack({ title: 'Track' }));
     await flushPromises();
 
-    expect(wrapper.get('.player_bar_title').text()).toBe('Brano');
+    expect(wrapper.get('.player_bar_title').text()).toBe('Track');
   });
 
-  it('rilascia l ascolto del tema di sistema allo smontaggio', async () => {
+  it('releases the system theme listener on unmount', async () => {
     const wrapper = await mountApp();
     const dispose = vi.spyOn(useSettingsStore(), 'dispose');
 
@@ -86,7 +86,7 @@ describe('App', () => {
     expect(dispose).toHaveBeenCalledTimes(1);
   });
 
-  it('applica al documento le impostazioni salvate', async () => {
+  it('applies saved settings to the document', async () => {
     await mountApp();
 
     expect(document.documentElement.dataset.theme).toBe('light');

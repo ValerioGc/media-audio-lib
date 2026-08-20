@@ -20,21 +20,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn e_stabile_per_lo_stesso_input() {
-        assert_eq!(fnv1a_hex("brano.mp3"), fnv1a_hex("brano.mp3"));
+    fn is_stable_for_the_same_input() {
+        assert_eq!(fnv1a_hex("track.mp3"), fnv1a_hex("track.mp3"));
     }
 
     #[test]
-    fn distingue_input_diversi() {
+    fn distinguishes_different_inputs() {
         assert_ne!(fnv1a_hex("uno"), fnv1a_hex("due"));
     }
 
     #[test]
-    fn produce_sempre_sedici_caratteri() {
+    fn always_produces_sixteen_characters() {
         assert_eq!(fnv1a_hex("").len(), 16);
-        assert_eq!(
-            fnv1a_hex("percorso/molto/lungo/verso/un/brano.flac").len(),
-            16
-        );
+        assert_eq!(fnv1a_hex("very/long/path/to/a/track.flac").len(), 16);
     }
 }

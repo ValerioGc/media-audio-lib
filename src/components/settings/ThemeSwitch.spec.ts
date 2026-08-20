@@ -22,7 +22,7 @@ describe('ThemeSwitch', () => {
     expect(wrapper.findAll('input[type="radio"]')).toHaveLength(THEME_CHOICES.length);
   });
 
-  it('mostra il tema rilevato solo con la scelta "sistema"', async () => {
+  it('shows the detected theme only with the "system" choice', async () => {
     const wrapper = mount(ThemeSwitch, withPinia());
     const store = useSettingsStore();
 

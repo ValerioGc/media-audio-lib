@@ -52,7 +52,7 @@ impl Catalog {
 
         if catalog.version > CATALOG_VERSION {
             return Err(AppError::UnsupportedFormat(format!(
-                "catalogo con schema v{} (supportato fino a v{CATALOG_VERSION})",
+                "catalog con schema v{} (supported up to v{CATALOG_VERSION})",
                 catalog.version
             )));
         }
@@ -82,7 +82,7 @@ impl Catalog {
 
     pub fn active_entry(&self) -> AppResult<&CatalogEntry> {
         self.entry(&self.active)
-            .ok_or_else(|| AppError::State(format!("libreria attiva sconosciuta: {}", self.active)))
+            .ok_or_else(|| AppError::State(format!("unknown active library: {}", self.active)))
     }
 
     pub fn add(&mut self, entry: CatalogEntry) {
@@ -105,7 +105,7 @@ impl Catalog {
     pub fn remove(&mut self, id: &str) -> AppResult<CatalogEntry> {
         if self.entries.len() <= 1 {
             return Err(AppError::Validation(
-                "l'ultima libreria non puo essere eliminata".to_owned(),
+                "the last library cannot be deleted".to_owned(),
             ));
         }
 
@@ -152,7 +152,7 @@ pub fn bootstrap(directory: &Path, legacy_file: &Path) -> Catalog {
         });
     }
 
-    let id = library_id("prima");
+    let id = library_id("first");
     let file = library_file(directory, &id);
 
     Catalog::with_entry(CatalogEntry {
@@ -181,7 +181,7 @@ impl CatalogState {
 
         let catalog = if file.exists() {
             Catalog::load(&file).unwrap_or_else(|error| {
-                eprintln!("catalogo non caricato ({error}), se ne crea uno nuovo");
+                eprintln!("catalog non caricato ({error}), se ne crea uno nuovo");
                 bootstrap(&directory, legacy_file)
             })
         } else {
@@ -191,7 +191,7 @@ impl CatalogState {
         let state = Self::new(directory, catalog);
 
         if let Err(error) = state.save() {
-            eprintln!("catalogo non salvato: {error}");
+            eprintln!("catalog non salvato: {error}");
         }
 
         state
@@ -256,10 +256,10 @@ mod tests {
     }
 
     #[test]
-    fn il_catalogo_parte_dalla_libreria_gia_esistente() {
-        let directory = TempDir::new("catalogo");
+    fn catalog_starts_from_the_existing_library() {
+        let directory = TempDir::new("catalog");
         let legacy = directory.path().join("library.json");
-        Library::new().save(&legacy).expect("libreria salvata");
+        Library::new().save(&legacy).expect("library saved");
 
         let catalog = bootstrap(directory.path(), &legacy);
 
@@ -269,8 +269,8 @@ mod tests {
     }
 
     #[test]
-    fn senza_nulla_su_disco_crea_la_prima_libreria_nella_sua_cartella() {
-        let directory = TempDir::new("catalogo");
+    fn with_nothing_on_disk_creates_the_first_library_in_its_folder() {
+        let directory = TempDir::new("catalog");
 
         let catalog = bootstrap(directory.path(), &directory.path().join("library.json"));
 
@@ -283,27 +283,27 @@ mod tests {
     }
 
     #[test]
-    fn il_catalogo_sopravvive_al_salvataggio_e_alla_rilettura() {
-        let directory = TempDir::new("catalogo");
+    fn catalog_survives_saving_and_rereading() {
+        let directory = TempDir::new("catalog");
         let file = directory.path().join(CATALOG_FILE_NAME);
         let mut catalog = Catalog::with_entry(entry("uno"));
         catalog.add(entry("due"));
 
-        catalog.save(&file).expect("catalogo salvato");
-        let riletto = Catalog::load(&file).expect("catalogo riletto");
+        catalog.save(&file).expect("catalog salvato");
+        let riletto = Catalog::load(&file).expect("catalog riletto");
 
         assert_eq!(riletto, catalog);
     }
 
     #[test]
-    fn rifiuta_un_catalogo_di_una_versione_futura() {
-        let directory = TempDir::new("catalogo");
+    fn rejects_a_catalog_from_a_future_version() {
+        let directory = TempDir::new("catalog");
         let file = directory.path().join(CATALOG_FILE_NAME);
         std::fs::write(
             &file,
             r#"{"version":99,"active":"uno","entries":[{"id":"uno","file":"a.json"}]}"#,
         )
-        .expect("catalogo scritto");
+        .expect("catalog scritto");
 
         let error = Catalog::load(&file).expect_err("schema troppo recente");
 
@@ -311,17 +311,17 @@ mod tests {
     }
 
     #[test]
-    fn cambia_la_libreria_attiva() {
+    fn changes_the_active_library() {
         let mut catalog = Catalog::with_entry(entry("uno"));
         catalog.add(entry("due"));
 
-        catalog.set_active("due").expect("libreria attivata");
+        catalog.set_active("due").expect("library activated");
 
         assert_eq!(catalog.active, "due");
     }
 
     #[test]
-    fn rifiuta_di_attivare_una_libreria_sconosciuta() {
+    fn refuses_to_activate_an_unknown_library() {
         let mut catalog = Catalog::with_entry(entry("uno"));
 
         let error = catalog.set_active("ignota").expect_err("id sconosciuto");
@@ -330,12 +330,12 @@ mod tests {
     }
 
     #[test]
-    fn eliminando_la_libreria_attiva_ne_attiva_un_altra() {
+    fn deleting_the_active_library_activates_another_one() {
         let mut catalog = Catalog::with_entry(entry("uno"));
         catalog.add(entry("due"));
-        catalog.set_active("due").expect("libreria attivata");
+        catalog.set_active("due").expect("library activated");
 
-        let removed = catalog.remove("due").expect("libreria eliminata");
+        let removed = catalog.remove("due").expect("library deleted");
 
         assert_eq!(removed.id, "due");
         assert_eq!(catalog.active, "uno");
@@ -343,17 +343,17 @@ mod tests {
     }
 
     #[test]
-    fn l_ultima_libreria_non_si_elimina() {
+    fn does_not_delete_the_last_library() {
         let mut catalog = Catalog::with_entry(entry("uno"));
 
-        let error = catalog.remove("uno").expect_err("ultima libreria");
+        let error = catalog.remove("uno").expect_err("last library");
 
         assert!(matches!(error, AppError::Validation(_)));
         assert_eq!(catalog.entries.len(), 1);
     }
 
     #[test]
-    fn eliminare_una_libreria_sconosciuta_e_un_errore() {
+    fn deleting_an_unknown_library_is_an_error() {
         let mut catalog = Catalog::with_entry(entry("uno"));
         catalog.add(entry("due"));
 
@@ -363,8 +363,8 @@ mod tests {
     }
 
     #[test]
-    fn lo_stato_scrive_il_catalogo_al_primo_avvio() {
-        let directory = TempDir::new("catalogo");
+    fn state_writes_the_catalog_on_first_start() {
+        let directory = TempDir::new("catalog");
 
         let state = CatalogState::open(
             directory.path().to_path_buf(),
@@ -372,24 +372,24 @@ mod tests {
         );
 
         assert!(state.file().exists());
-        assert!(!state.active_file().expect("libreria attiva").exists());
+        assert!(!state.active_file().expect("active library").exists());
     }
 
     #[test]
-    fn lo_stato_rilegge_il_catalogo_gia_scritto() {
-        let directory = TempDir::new("catalogo");
+    fn state_rereads_the_already_written_catalog() {
+        let directory = TempDir::new("catalog");
         let legacy = directory.path().join("library.json");
-        let prima = CatalogState::open(directory.path().to_path_buf(), &legacy);
-        let atteso = prima.active_file().expect("libreria attiva");
+        let first = CatalogState::open(directory.path().to_path_buf(), &legacy);
+        let expected = first.active_file().expect("active library");
 
-        let seconda = CatalogState::open(directory.path().to_path_buf(), &legacy);
+        let second = CatalogState::open(directory.path().to_path_buf(), &legacy);
 
-        assert_eq!(seconda.active_file().expect("libreria attiva"), atteso);
+        assert_eq!(second.active_file().expect("active library"), expected);
     }
 
     #[test]
-    fn ogni_modifica_del_catalogo_finisce_su_disco() {
-        let directory = TempDir::new("catalogo");
+    fn every_catalog_change_lands_on_disk() {
+        let directory = TempDir::new("catalog");
         let state = CatalogState::open(
             directory.path().to_path_buf(),
             &directory.path().join("library.json"),
@@ -397,22 +397,22 @@ mod tests {
 
         state
             .update(|catalog| catalog.add(entry("due")))
-            .expect("catalogo aggiornato");
+            .expect("catalog aggiornato");
 
-        let riletto = Catalog::load(&state.file()).expect("catalogo riletto");
+        let riletto = Catalog::load(&state.file()).expect("catalog riletto");
         assert_eq!(riletto.entries.len(), 2);
     }
 
     #[test]
-    fn conosce_il_file_di_ogni_libreria() {
-        let directory = TempDir::new("catalogo");
+    fn knows_the_file_of_each_library() {
+        let directory = TempDir::new("catalog");
         let state = CatalogState::open(
             directory.path().to_path_buf(),
             &directory.path().join("library.json"),
         );
         state
             .update(|catalog| catalog.add(entry("due")))
-            .expect("catalogo aggiornato");
+            .expect("catalog aggiornato");
 
         let file = state.file_of("due").expect("file trovato");
 

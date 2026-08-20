@@ -17,7 +17,7 @@ afterEach(() => {
 });
 
 describe('SettingsView', () => {
-  it('divide le impostazioni in generale e libreria', () => {
+  it('splits settings between general and library', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
@@ -26,7 +26,7 @@ describe('SettingsView', () => {
     ]);
   });
 
-  it('raccoglie lingua, testo e tema sotto la prima tab', () => {
+  it('groups language, text, and theme under the first tab', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
@@ -34,7 +34,7 @@ describe('SettingsView', () => {
     expect(titles).toEqual(['Lingua', 'Dimensione testo', 'Tema', 'Sfondo da copertina']);
   });
 
-  it('mostra la rinomina nella tab libreria', async () => {
+  it('shows rename in the library tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
@@ -43,7 +43,7 @@ describe('SettingsView', () => {
     expect(wrapper.find('.library_name_form').exists()).toBe(true);
   });
 
-  it('mostra l elenco delle librerie nella tab libreria', async () => {
+  it('shows the library list in the library tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
@@ -57,14 +57,14 @@ describe('SettingsView', () => {
     expect(wrapper.find('.library_list').exists()).toBe(true);
   });
 
-  it('mostra nome, versione e collegamento al progetto in fondo', () => {
+  it('shows name, version, and project link at the bottom', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     expect(wrapper.get('.settings_footer_name').text()).toBe(APP_NAME);
     expect(wrapper.find('[data-testid="github-link"]').exists()).toBe(true);
   });
 
-  it('traduce tab e sezioni quando cambia la lingua', async () => {
+  it('translates tabs and sections when the language changes', async () => {
     const wrapper = mount(SettingsView, withPinia());
     const store = useSettingsStore();
 
@@ -84,7 +84,7 @@ describe('SettingsView', () => {
     ]);
   });
 
-  it('riporta alla libreria', async () => {
+  it('returns to the library', async () => {
     const options = withPinia();
     const navigation = useNavigationStore();
     navigation.go('settings');

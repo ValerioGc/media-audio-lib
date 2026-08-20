@@ -135,7 +135,7 @@ impl Library {
 
         if library.version > SCHEMA_VERSION {
             return Err(AppError::UnsupportedFormat(format!(
-                "libreria con schema v{} (supportato fino a v{SCHEMA_VERSION})",
+                "library with schema v{} (supported up to v{SCHEMA_VERSION})",
                 library.version
             )));
         }
@@ -170,9 +170,8 @@ impl Library {
     }
 
     pub fn rename(&mut self, name: &str) -> AppResult<String> {
-        let name = clean_library_name(name).ok_or_else(|| {
-            AppError::Validation("il nome della libreria non puo essere vuoto".to_owned())
-        })?;
+        let name = clean_library_name(name)
+            .ok_or_else(|| AppError::Validation("library name cannot be empty".to_owned()))?;
 
         self.name = name.clone();
 
@@ -453,8 +452,8 @@ mod tests {
     fn sample_track(id: &str) -> Track {
         Track {
             id: id.to_owned(),
-            path: format!("C:/musica/{id}.mp3"),
-            title: "Titolo".to_owned(),
+            path: format!("C:/music/{id}.mp3"),
+            title: "Title".to_owned(),
             artist: None,
             album: None,
             year: None,
@@ -467,7 +466,7 @@ mod tests {
     }
 
     #[test]
-    fn una_libreria_nuova_e_vuota_e_versionata() {
+    fn new_library_is_empty_and_versioned() {
         let library = Library::new();
 
         assert!(library.is_empty());
@@ -476,33 +475,32 @@ mod tests {
     }
 
     #[test]
-    fn il_file_mancante_produce_una_libreria_vuota() {
+    fn missing_file_produces_an_empty_library() {
         let dir = TempDir::new("library-missing");
 
-        let library =
-            Library::load(&dir.path().join("library.json")).expect("caricamento riuscito");
+        let library = Library::load(&dir.path().join("library.json")).expect("loading riuscito");
 
         assert!(library.is_empty());
     }
 
     #[test]
-    fn esegue_il_round_trip_su_disco() {
+    fn round_trips_on_disk() {
         let dir = TempDir::new("library-roundtrip");
         let file = dir.path().join("nested").join("library.json");
         let mut library = Library::new();
-        library.rename("Archivio jazz").expect("rinomina riuscita");
+        library.rename("Jazz Archive").expect("rename succeeded");
         library.add(sample_track("aaa"));
         library.add(sample_track("bbb"));
 
-        library.save(&file).expect("salvataggio riuscito");
-        let reloaded = Library::load(&file).expect("caricamento riuscito");
+        library.save(&file).expect("save succeeded");
+        let reloaded = Library::load(&file).expect("loading riuscito");
 
         assert_eq!(reloaded, library);
         assert!(!file.with_file_name("library.json.tmp").exists());
     }
 
     #[test]
-    fn sovrascrive_il_file_esistente() {
+    fn overwrites_the_existing_file() {
         let dir = TempDir::new("library-overwrite");
         let file = dir.path().join("library.json");
         let mut library = Library::new();
@@ -512,16 +510,14 @@ mod tests {
         library.remove("aaa");
         library.save(&file).expect("secondo salvataggio");
 
-        assert!(Library::load(&file)
-            .expect("caricamento riuscito")
-            .is_empty());
+        assert!(Library::load(&file).expect("loading riuscito").is_empty());
     }
 
     #[test]
-    fn un_file_illeggibile_e_un_errore_di_serializzazione() {
+    fn unreadable_file_is_a_serialization_error() {
         let dir = TempDir::new("library-broken");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, "{ non valido").expect("file scritto");
+        std::fs::write(&file, "{ non valido").expect("file written");
 
         assert!(matches!(
             Library::load(&file).unwrap_err(),
@@ -530,10 +526,10 @@ mod tests {
     }
 
     #[test]
-    fn rifiuta_uno_schema_piu_recente() {
+    fn rejects_a_newer_schema() {
         let dir = TempDir::new("library-future");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, r#"{"version":99,"tracks":[]}"#).expect("file scritto");
+        std::fs::write(&file, r#"{"version":99,"tracks":[]}"#).expect("file written");
 
         assert!(matches!(
             Library::load(&file).unwrap_err(),
@@ -542,49 +538,49 @@ mod tests {
     }
 
     #[test]
-    fn accetta_uno_schema_precedente_riallineando_la_versione() {
+    fn accepts_an_older_schema_by_realigning_the_version() {
         let dir = TempDir::new("library-old");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, r#"{"version":0,"tracks":[]}"#).expect("file scritto");
+        std::fs::write(&file, r#"{"version":0,"tracks":[]}"#).expect("file written");
 
-        let library = Library::load(&file).expect("caricamento riuscito");
+        let library = Library::load(&file).expect("loading riuscito");
 
         assert_eq!(library.version, SCHEMA_VERSION);
     }
 
     #[test]
-    fn legge_una_libreria_v2_senza_nome() {
+    fn reads_a_v2_library_without_a_name() {
         let dir = TempDir::new("library-v2");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, r#"{"version":2,"tracks":[]}"#).expect("file scritto");
+        std::fs::write(&file, r#"{"version":2,"tracks":[]}"#).expect("file written");
 
-        let library = Library::load(&file).expect("caricamento riuscito");
+        let library = Library::load(&file).expect("loading riuscito");
 
         assert_eq!(library.name, DEFAULT_LIBRARY_NAME);
         assert_eq!(library.version, SCHEMA_VERSION);
     }
 
     #[test]
-    fn legge_una_libreria_v1_senza_il_campo_autore() {
+    fn reads_a_v1_library_without_the_artist_field() {
         let dir = TempDir::new("library-v1");
         let file = dir.path().join("library.json");
         std::fs::write(
             &file,
-            r#"{"version":1,"tracks":[{"id":"aaa","path":"C:/musica/aaa.mp3",
-               "title":"Titolo","album":null,"year":null,"genre":null,
+            r#"{"version":1,"tracks":[{"id":"aaa","path":"C:/music/aaa.mp3",
+               "title":"Title","album":null,"year":null,"genre":null,
                "durationMs":1000,"format":"mp3","hasCover":false,"addedAt":42}]}"#,
         )
-        .expect("file scritto");
+        .expect("file written");
 
-        let library = Library::load(&file).expect("caricamento riuscito");
+        let library = Library::load(&file).expect("loading riuscito");
 
         assert_eq!(library.len(), 1);
-        assert_eq!(library.get("aaa").expect("presente").artist, None);
+        assert_eq!(library.get("aaa").expect("present").artist, None);
         assert_eq!(library.version, SCHEMA_VERSION);
     }
 
     #[test]
-    fn aggiunge_e_rimuove_i_brani() {
+    fn adds_and_removes_tracks() {
         let mut library = Library::new();
 
         assert!(library.add(sample_track("aaa")));
@@ -595,23 +591,23 @@ mod tests {
     }
 
     #[test]
-    fn rinomina_la_libreria_validando_il_nome() {
+    fn renames_the_library_validating_the_name() {
         let mut library = Library::new();
 
         assert_eq!(
-            library.rename("  Archivio personale  ").expect("rinomina"),
-            "Archivio personale"
+            library.rename("  Personal Archive  ").expect("rename"),
+            "Personal Archive"
         );
-        assert_eq!(library.name, "Archivio personale");
+        assert_eq!(library.name, "Personal Archive");
         assert!(matches!(
             library.rename("   ").unwrap_err(),
             AppError::Validation(_)
         ));
-        assert_eq!(library.name, "Archivio personale");
+        assert_eq!(library.name, "Personal Archive");
     }
 
     #[test]
-    fn ignora_la_rimozione_di_un_id_sconosciuto() {
+    fn ignores_removal_of_an_unknown_id() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
 
@@ -620,12 +616,12 @@ mod tests {
     }
 
     #[test]
-    fn importa_sostituendo_la_libreria_corrente() {
+    fn imports_by_replacing_the_current_library() {
         let mut library = Library::new();
-        library.rename("Vecchia").expect("nome valido");
+        library.rename("Vecchia").expect("valid name");
         library.add(sample_track("aaa"));
         let mut imported = Library::new();
-        imported.rename("Nuova").expect("nome valido");
+        imported.rename("Nuova").expect("valid name");
         imported.add(sample_track("bbb"));
 
         let report = library.import(imported, LibraryImportStrategy::Replace);
@@ -638,7 +634,7 @@ mod tests {
     }
 
     #[test]
-    fn importa_unendo_e_aggiornando_i_duplicati() {
+    fn imports_by_merging_and_updating_duplicates() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
         let mut imported = Library::new();
@@ -651,13 +647,13 @@ mod tests {
         let report = library.import(imported, LibraryImportStrategy::Merge);
 
         assert_eq!(library.len(), 2);
-        assert_eq!(library.get("aaa").expect("presente").title, "Aggiornato");
+        assert_eq!(library.get("aaa").expect("present").title, "Aggiornato");
         assert_eq!(report.updated, 1);
         assert_eq!(report.added, 1);
     }
 
     #[test]
-    fn importa_unendo_e_saltando_i_duplicati() {
+    fn imports_by_merging_and_skipping_duplicates() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
         let mut imported = Library::new();
@@ -670,24 +666,24 @@ mod tests {
         let report = library.import(imported, LibraryImportStrategy::MergeSkipDuplicates);
 
         assert_eq!(library.len(), 2);
-        assert_eq!(library.get("aaa").expect("presente").title, "Titolo");
+        assert_eq!(library.get("aaa").expect("present").title, "Title");
         assert_eq!(report.skipped, 1);
         assert_eq!(report.added, 1);
     }
 
     #[test]
-    fn l_import_segnala_i_file_mancanti_su_disco() {
+    fn import_reports_files_missing_on_disk() {
         let mut library = Library::new();
         let mut imported = Library::new();
         imported.add(sample_track("aaa"));
 
         let report = library.import(imported, LibraryImportStrategy::Merge);
 
-        assert_eq!(report.missing, vec!["C:/musica/aaa.mp3"]);
+        assert_eq!(report.missing, vec!["C:/music/aaa.mp3"]);
     }
 
     #[test]
-    fn rifiuta_i_duplicati() {
+    fn rejects_duplicates() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
 
@@ -696,25 +692,25 @@ mod tests {
     }
 
     #[test]
-    fn l_id_dipende_solo_dal_file_indicato() {
+    fn id_depends_only_on_the_given_file() {
         let dir = TempDir::new("library-id");
-        let path = wav_with_tags(dir.path(), "brano.wav");
-        let same_file = dir.path().join(".").join("brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        let same_file = dir.path().join(".").join("track.wav");
 
         assert_eq!(track_id(&path), track_id(&same_file));
         assert_ne!(track_id(&path), track_id(&dir.path().join("altro.wav")));
     }
 
     #[test]
-    fn la_chiave_canonica_normalizza_i_separatori() {
-        let key = canonical_key(Path::new("C:\\musica\\brano.mp3"));
+    fn canonical_key_normalizes_separators() {
+        let key = canonical_key(Path::new("C:\\music\\track.mp3"));
 
         assert!(!key.contains('\\'));
         assert!(!key.starts_with("//?/"));
     }
 
     #[test]
-    fn importa_i_file_validi_e_riporta_gli_scarti() {
+    fn imports_valid_files_and_reports_skipped_ones() {
         let dir = TempDir::new("library-import");
         let valido = wav_with_tags(dir.path(), "valido.wav");
         let rotto = corrupted_file(dir.path(), "rotto.mp3");
@@ -725,7 +721,7 @@ mod tests {
             &[
                 valido.display().to_string(),
                 rotto.display().to_string(),
-                "C:/musica/assente.mp3".to_owned(),
+                "C:/music/assente.mp3".to_owned(),
                 valido.display().to_string(),
             ],
             7,
@@ -735,12 +731,12 @@ mod tests {
         assert_eq!(report.duplicates.len(), 1);
         assert_eq!(report.failed.len(), 2);
         assert_eq!(library.len(), 1);
-        assert_eq!(report.added[0].title, "Titolo di prova");
+        assert_eq!(report.added[0].title, "Test Title");
         assert_eq!(report.added[0].added_at, 7);
     }
 
     #[test]
-    fn usa_il_nome_del_file_quando_manca_il_titolo() {
+    fn uses_the_file_name_when_title_is_missing() {
         let dir = TempDir::new("library-fallback");
         let path = wav_without_tags(dir.path(), "senza-tag.wav");
         let mut library = Library::new();
@@ -751,37 +747,37 @@ mod tests {
     }
 
     #[test]
-    fn segnala_i_file_spariti_dal_disco() {
+    fn reports_files_missing_from_disk() {
         let dir = TempDir::new("library-views");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
         let mut library = Library::new();
         add_paths(&mut library, &[path.display().to_string()], 0);
 
         assert!(!to_views(&library)[0].missing);
 
-        std::fs::remove_file(&path).expect("file rimosso");
+        std::fs::remove_file(&path).expect("file removed");
 
         assert!(to_views(&library)[0].missing);
     }
 
     #[test]
-    fn verifica_un_singolo_file_tracciato() {
+    fn verifies_one_tracked_file() {
         let dir = TempDir::new("library-view-one");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
         let mut library = Library::new();
         add_paths(&mut library, &[path.display().to_string()], 0);
         let id = library.tracks()[0].id.clone();
 
-        assert!(!view_of(&library, &id).expect("presente").missing);
+        assert!(!view_of(&library, &id).expect("present").missing);
         assert!(view_of(&library, "zzz").is_none());
 
-        std::fs::remove_file(&path).expect("file rimosso");
+        std::fs::remove_file(&path).expect("file removed");
 
-        assert!(view_of(&library, &id).expect("presente").missing);
+        assert!(view_of(&library, &id).expect("present").missing);
     }
 
     #[test]
-    fn riflette_i_tag_riscritti_sul_brano_tracciato() {
+    fn reflects_rewritten_tags_on_the_tracked_file() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
 
@@ -789,8 +785,8 @@ mod tests {
             &mut library,
             "aaa",
             TrackMetadata {
-                title: Some("Titolo nuovo".to_owned()),
-                artist: Some("Autore nuovo".to_owned()),
+                title: Some("Title nuovo".to_owned()),
+                artist: Some("New Artist".to_owned()),
                 album: Some("Album nuovo".to_owned()),
                 year: Some(2011),
                 genre: Some("Blues".to_owned()),
@@ -799,46 +795,46 @@ mod tests {
                 has_cover: true,
             },
         )
-        .expect("brano presente");
+        .expect("track present");
 
-        assert_eq!(updated.title, "Titolo nuovo");
-        assert_eq!(library.get("aaa").expect("presente").year, Some(2011));
-        assert!(library.get("aaa").expect("presente").has_cover);
-        assert_eq!(library.get("aaa").expect("presente").duration_ms, 4242);
+        assert_eq!(updated.title, "Title nuovo");
+        assert_eq!(library.get("aaa").expect("present").year, Some(2011));
+        assert!(library.get("aaa").expect("present").has_cover);
+        assert_eq!(library.get("aaa").expect("present").duration_ms, 4242);
     }
 
     #[test]
-    fn usa_il_nome_del_file_se_i_tag_restano_senza_titolo() {
+    fn uses_the_file_name_if_tags_still_have_no_title() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
 
         let updated =
-            apply_metadata(&mut library, "aaa", TrackMetadata::default()).expect("brano presente");
+            apply_metadata(&mut library, "aaa", TrackMetadata::default()).expect("track present");
 
         assert_eq!(updated.title, "aaa");
     }
 
     #[test]
-    fn ignora_l_aggiornamento_di_un_id_sconosciuto() {
+    fn ignores_update_of_an_unknown_id() {
         let mut library = Library::new();
 
         assert!(apply_metadata(&mut library, "zzz", TrackMetadata::default()).is_none());
     }
 
     #[test]
-    fn espone_il_percorso_di_un_brano_tracciato() {
+    fn exposes_the_path_of_a_tracked_track() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));
 
         assert_eq!(
             path_of(&library, "aaa"),
-            Some(PathBuf::from("C:/musica/aaa.mp3"))
+            Some(PathBuf::from("C:/music/aaa.mp3"))
         );
         assert_eq!(path_of(&library, "zzz"), None);
     }
 
     #[test]
-    fn il_momento_di_aggiunta_e_un_epoch_plausibile() {
+    fn added_time_is_a_plausible_epoch() {
         assert!(now_seconds() > 1_700_000_000);
     }
 }

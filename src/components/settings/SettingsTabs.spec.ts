@@ -20,7 +20,7 @@ function mountTabs() {
 }
 
 describe('SettingsTabs', () => {
-  it('rende una tab per sezione', () => {
+  it('renders one tab per section', () => {
     const wrapper = mountTabs();
 
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
@@ -30,14 +30,14 @@ describe('SettingsTabs', () => {
     ]);
   });
 
-  it('mostra solo il pannello della tab attiva', () => {
+  it('shows only the active tab panel', () => {
     const wrapper = mountTabs();
 
     expect(wrapper.findAll('[role="tabpanel"]')).toHaveLength(1);
     expect(wrapper.get('.pannello').text()).toBe('contenuto lingua');
   });
 
-  it('parte dalla prima tab', () => {
+  it('starts from the first tab', () => {
     const wrapper = mountTabs();
     const first = wrapper.findAll('[role="tab"]')[0];
 
@@ -63,7 +63,7 @@ describe('SettingsTabs', () => {
     expect(panel.attributes('aria-labelledby')).toBe(tab?.attributes('id'));
   });
 
-  it('si sposta con le frecce, tornando in cima a fine elenco', async () => {
+  it('moves with arrows, wrapping to the top at the end', async () => {
     const wrapper = mountTabs();
 
     await wrapper.findAll('[role="tab"]')[0]?.trigger('keydown', { key: 'ArrowRight' });
@@ -76,7 +76,7 @@ describe('SettingsTabs', () => {
     expect(wrapper.get('.pannello').text()).toBe('contenuto tema');
   });
 
-  it('ignora gli altri tasti', async () => {
+  it('ignores other keys', async () => {
     const wrapper = mountTabs();
 
     await wrapper.findAll('[role="tab"]')[0]?.trigger('keydown', { key: 'Enter' });
@@ -84,7 +84,7 @@ describe('SettingsTabs', () => {
     expect(wrapper.get('.pannello').text()).toBe('contenuto lingua');
   });
 
-  it('tiene fuori dal giro di tabulazione le tab non attive', () => {
+  it('keeps inactive tabs out of the tab order', () => {
     const wrapper = mountTabs();
     const tabButtons = wrapper.findAll('[role="tab"]');
 

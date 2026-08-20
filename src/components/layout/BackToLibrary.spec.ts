@@ -17,7 +17,7 @@ describe('BackToLibrary', () => {
     expect(wrapper.text()).toContain('Torna alla libreria');
   });
 
-  it('apre la libreria da qualunque vista', async () => {
+  it('opens the library from any view', async () => {
     const options = withPinia();
     const navigation = useNavigationStore();
     navigation.go('settings');

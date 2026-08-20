@@ -1,7 +1,7 @@
 [package]
 name = "media-audio-lib"
 version = "0.1.0"
-description = "Gestore di libreria audio con editing dei metadati e player integrato."
+description = "Audio library manager with metadata editing and an integrated player."
 authors = ["media-audio-lib"]
 edition = "2021"
 rust-version = "1.85"

@@ -30,24 +30,24 @@ function fieldAt(wrapper: Awaited<ReturnType<typeof mountEditor>>['wrapper'], in
 }
 
 describe('MetadataEditor', () => {
-  it('precompila i campi con i valori del brano', async () => {
+  it('prefills fields with track values', async () => {
     const track = makeTrack({
-      title: 'Brano',
-      artist: 'Autore',
+      title: 'Track',
+      artist: 'Artist',
       album: 'Album',
       year: 1999,
       genre: 'Jazz',
     });
     const { wrapper } = await mountEditor(track);
 
-    expect((fieldAt(wrapper, 0)?.element as HTMLInputElement).value).toBe('Brano');
-    expect((fieldAt(wrapper, 1)?.element as HTMLInputElement).value).toBe('Autore');
+    expect((fieldAt(wrapper, 0)?.element as HTMLInputElement).value).toBe('Track');
+    expect((fieldAt(wrapper, 1)?.element as HTMLInputElement).value).toBe('Artist');
     expect((fieldAt(wrapper, 2)?.element as HTMLInputElement).value).toBe('Album');
     expect((fieldAt(wrapper, 3)?.element as HTMLInputElement).value).toBe('1999');
     expect((wrapper.get('.genre_select_input').element as HTMLInputElement).value).toBe('Jazz');
   });
 
-  it('lascia vuoti i campi assenti', async () => {
+  it('leaves missing fields empty', async () => {
     const { wrapper } = await mountEditor(
       makeTrack({ artist: null, album: null, year: null, genre: null }),
     );
@@ -57,7 +57,7 @@ describe('MetadataEditor', () => {
     expect((fieldAt(wrapper, 3)?.element as HTMLInputElement).value).toBe('');
   });
 
-  it('blocca il salvataggio con un titolo vuoto', async () => {
+  it('blocks saving with an empty title', async () => {
     const { wrapper, saveMetadata } = await mountEditor();
 
     await fieldAt(wrapper, 0)?.setValue('   ');
@@ -69,7 +69,7 @@ describe('MetadataEditor', () => {
     expect(saveMetadata).not.toHaveBeenCalled();
   });
 
-  it('blocca il salvataggio con un anno non plausibile', async () => {
+  it('blocks saving with an implausible year', async () => {
     const { wrapper } = await mountEditor();
 
     await fieldAt(wrapper, 3)?.setValue('12');
@@ -77,19 +77,19 @@ describe('MetadataEditor', () => {
     expect(wrapper.get('[data-testid="metadata-save"]').attributes('disabled')).toBeDefined();
   });
 
-  it('salva i campi modificati e chiude', async () => {
-    const track = makeTrack({ title: 'Vecchio', year: 1999 });
+  it('saves edited fields and closes', async () => {
+    const track = makeTrack({ title: 'Old', year: 1999 });
     const { wrapper, saveMetadata, saveCover } = await mountEditor(track);
 
-    await fieldAt(wrapper, 0)?.setValue('Nuovo titolo');
-    await fieldAt(wrapper, 1)?.setValue('Nuovo autore');
+    await fieldAt(wrapper, 0)?.setValue('New title');
+    await fieldAt(wrapper, 1)?.setValue('New Artist');
     await fieldAt(wrapper, 3)?.setValue('2001');
     await wrapper.get('[data-testid="metadata-save"]').trigger('click');
     await flushPromises();
 
     expect(saveMetadata).toHaveBeenCalledWith(track.id, {
-      title: 'Nuovo titolo',
-      artist: 'Nuovo autore',
+      title: 'New title',
+      artist: 'New Artist',
       album: 'Album',
       year: 2001,
       genre: 'Rock',
@@ -98,7 +98,7 @@ describe('MetadataEditor', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
-  it('azzera i campi lasciati vuoti', async () => {
+  it('clears fields left empty', async () => {
     const { wrapper, saveMetadata } = await mountEditor();
 
     await fieldAt(wrapper, 1)?.setValue('');
@@ -113,7 +113,7 @@ describe('MetadataEditor', () => {
     );
   });
 
-  it('non tocca la copertina se l utente non la modifica', async () => {
+  it('does not touch the cover if the user does not edit it', async () => {
     const { wrapper, saveCover } = await mountEditor();
 
     await wrapper.get('[data-testid="metadata-save"]').trigger('click');
@@ -122,7 +122,7 @@ describe('MetadataEditor', () => {
     expect(saveCover).not.toHaveBeenCalled();
   });
 
-  it('salva la rimozione della copertina esistente', async () => {
+  it('saves removal of the existing cover', async () => {
     const track = makeTrack({ hasCover: true });
     const options = withPinia();
     const store = useLibraryStore();
@@ -140,7 +140,7 @@ describe('MetadataEditor', () => {
     expect(saveCover).toHaveBeenCalledWith(track.id, null);
   });
 
-  it('non chiude se il salvataggio fallisce', async () => {
+  it('does not close if saving fails', async () => {
     const { wrapper, store } = await mountEditor();
     vi.spyOn(store, 'saveMetadata').mockResolvedValue(null);
 
@@ -150,7 +150,7 @@ describe('MetadataEditor', () => {
     expect(wrapper.emitted('close')).toBeUndefined();
   });
 
-  it('chiede la chiusura dal pulsante Annulla', async () => {
+  it('requests close from the Cancel button', async () => {
     const { wrapper } = await mountEditor();
 
     await wrapper.get('.app_modal_actions button').trigger('click');

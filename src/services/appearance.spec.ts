@@ -9,38 +9,38 @@ describe('appearance', () => {
     root = document.createElement('div');
   });
 
-  it('scrive il tema come attributo e come color-scheme', () => {
+  it('writes the theme as an attribute and color-scheme', () => {
     applyTheme('dark', root);
 
     expect(root.dataset.theme).toBe('dark');
     expect(root.style.colorScheme).toBe('dark');
   });
 
-  it('sostituisce il tema precedente', () => {
+  it('replaces the previous theme', () => {
     applyTheme('dark', root);
     applyTheme('light', root);
 
     expect(root.dataset.theme).toBe('light');
   });
 
-  it('applica la scala tipografica come variabile CSS', () => {
+  it('applies the text scale as a CSS variable', () => {
     applyTextSize('large', root);
 
     expect(root.style.getPropertyValue('--app_font_scale')).toBe(String(TEXT_SIZE_SCALE.large));
   });
 
-  it('usa scale crescenti e distinte per ogni dimensione', () => {
+  it('uses increasing and distinct scales for each size', () => {
     expect(TEXT_SIZE_SCALE.small).toBeLessThan(TEXT_SIZE_SCALE.medium);
     expect(TEXT_SIZE_SCALE.medium).toBeLessThan(TEXT_SIZE_SCALE.large);
   });
 
-  it('imposta la lingua del documento', () => {
+  it('sets the document language', () => {
     applyDocumentLocale('en', root);
 
     expect(root.lang).toBe('en');
   });
 
-  it('usa documentElement come radice predefinita', () => {
+  it('uses documentElement as the default root', () => {
     applyTheme('dark');
     applyTextSize('small');
     applyDocumentLocale('it');

@@ -23,7 +23,7 @@ function mountControls(props: Partial<InstanceType<typeof PlayerControls>['$prop
 }
 
 describe('PlayerControls', () => {
-  it('emette il comando di ogni pulsante', async () => {
+  it('emits each button command', async () => {
     const wrapper = mountControls();
 
     await wrapper.get('[data-testid="player-previous"]').trigger('click');
@@ -41,7 +41,7 @@ describe('PlayerControls', () => {
     expect(wrapper.emitted('toggleRepeatOne')).toHaveLength(1);
   });
 
-  it('mostra riproduci quando e in pausa e pausa quando suona', async () => {
+  it('shows play when paused and pause when playing', async () => {
     const wrapper = mountControls();
     const pulsante = wrapper.get('[data-testid="player-toggle"]');
 
@@ -55,13 +55,13 @@ describe('PlayerControls', () => {
     expect(pulsante.attributes('aria-pressed')).toBe('true');
   });
 
-  it('spegne il brano successivo alla fine della coda', () => {
+  it('disables next at the end of the queue', () => {
     const wrapper = mountControls({ hasNext: false });
 
     expect(wrapper.get('[data-testid="player-next"]').attributes('disabled')).toBeDefined();
   });
 
-  it('mostra shuffle e ripetizione come opzioni attive', () => {
+  it('shows shuffle and repeat as active options', () => {
     const wrapper = mountControls({ isShuffleEnabled: true, isRepeatOneEnabled: true });
 
     expect(wrapper.get('[data-testid="player-shuffle"]').classes()).toContain(
@@ -76,13 +76,13 @@ describe('PlayerControls', () => {
     );
   });
 
-  it('lascia disponibile il precedente anche sul primo brano', () => {
+  it('keeps previous available even on the first track', () => {
     const wrapper = mountControls();
 
     expect(wrapper.get('[data-testid="player-previous"]').attributes('disabled')).toBeUndefined();
   });
 
-  it('blocca i comandi mentre il brano viene caricato', () => {
+  it('disables commands while the track is loading', () => {
     const wrapper = mountControls({ disabled: true });
 
     expect(wrapper.get('[data-testid="player-toggle"]').attributes('disabled')).toBeDefined();

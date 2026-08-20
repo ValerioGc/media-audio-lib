@@ -97,8 +97,8 @@ fn write_file(directory: &Path, name: &str, bytes: &[u8]) -> PathBuf {
 
 fn tag_with_values(tag_type: TagType) -> Tag {
     let mut tag = Tag::new(tag_type);
-    tag.set_title("Titolo di prova".to_owned());
-    tag.set_artist("Autore di prova".to_owned());
+    tag.set_title("Test Title".to_owned());
+    tag.set_artist("Test Artist".to_owned());
     tag.set_album("Album di prova".to_owned());
     tag.insert_text(ItemKey::RecordingDate, "1999".to_owned());
     tag.set_genre("Rock".to_owned());

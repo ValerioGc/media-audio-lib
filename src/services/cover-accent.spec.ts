@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { coverAccentFromRgb } from './cover-accent';
 
 describe('coverAccentFromRgb', () => {
-  it('costruisce i gradienti dal colore medio', () => {
+  it('builds gradients from the average color', () => {
     const accent = coverAccentFromRgb(12.2, 99.8, 260);
 
     expect(accent.rgb).toBe('20 108 255');

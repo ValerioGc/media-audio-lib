@@ -26,52 +26,52 @@ const tracks = [
 ];
 
 describe('filterTracks', () => {
-  it('restituisce tutto quando la ricerca e vuota', () => {
+  it('returns everything when search is empty', () => {
     expect(filterTracks(tracks, '   ')).toHaveLength(3);
   });
 
-  it('cerca senza distinzione di maiuscole', () => {
+  it('searches case-insensitively', () => {
     expect(filterTracks(tracks, 'ZEB').map((track) => track.id)).toEqual(['a']);
   });
 
-  it('cerca anche in autore, album, genere e percorso', () => {
+  it('also searches artist, album, genre, and path', () => {
     expect(filterTracks(tracks, 'nero').map((track) => track.id)).toEqual(['b']);
     expect(filterTracks(tracks, 'jazz').map((track) => track.id)).toEqual(['a']);
     expect(filterTracks(tracks, 'verdi').map((track) => track.id)).toEqual(['a']);
-    expect(filterTracks(tracks, 'C:/musica').length).toBe(3);
+    expect(filterTracks(tracks, 'C:/music').length).toBe(3);
   });
 
-  it('ignora i campi vuoti senza errori', () => {
+  it('ignores empty fields without errors', () => {
     expect(filterTracks(tracks, 'inesistente')).toEqual([]);
   });
 });
 
 describe('sortTracks', () => {
-  it('ordina per titolo ignorando le maiuscole', () => {
+  it('sorts by title ignoring case', () => {
     const sorted = sortTracks(tracks, DEFAULT_SORT);
 
     expect(sorted.map((track) => track.title)).toEqual(['alfa', 'Mezzo', 'Zebra']);
   });
 
-  it('inverte l ordine in direzione discendente', () => {
+  it('reverses order in descending direction', () => {
     const sorted = sortTracks(tracks, { column: 'title', direction: 'desc' });
 
     expect(sorted.map((track) => track.title)).toEqual(['Zebra', 'Mezzo', 'alfa']);
   });
 
-  it('ordina per autore tenendo in fondo i brani senza', () => {
+  it('sorts by artist keeping tracks without one at the bottom', () => {
     const sorted = sortTracks(tracks, { column: 'artist', direction: 'asc' });
 
     expect(sorted.map((track) => track.artist)).toEqual(['Bianchi', 'Verdi', null]);
   });
 
-  it('ordina per anno in modo numerico', () => {
+  it('sorts by year numerically', () => {
     const sorted = sortTracks(tracks, { column: 'year', direction: 'asc' });
 
     expect(sorted.map((track) => track.year)).toEqual([1999, 2020, null]);
   });
 
-  it('tiene i campi vuoti in fondo in entrambe le direzioni', () => {
+  it('keeps empty fields at the bottom in both directions', () => {
     const ascending = sortTracks(tracks, { column: 'album', direction: 'asc' });
     const descending = sortTracks(tracks, { column: 'album', direction: 'desc' });
 
@@ -79,7 +79,7 @@ describe('sortTracks', () => {
     expect(descending.at(-1)?.album).toBeNull();
   });
 
-  it('non modifica l array originale', () => {
+  it('does not mutate the original array', () => {
     const original = [...tracks];
 
     sortTracks(tracks, { column: 'year', direction: 'desc' });
@@ -87,7 +87,7 @@ describe('sortTracks', () => {
     expect(tracks).toEqual(original);
   });
 
-  it('usa il titolo come criterio di parita', () => {
+  it('uses the title as the tie-breaker', () => {
     const sameYear = [
       makeTrack({ title: 'Beta', year: 2001 }),
       makeTrack({ title: 'Alfa', year: 2001 }),
@@ -100,7 +100,7 @@ describe('sortTracks', () => {
 });
 
 describe('filterAndSort', () => {
-  it('applica prima il filtro e poi l ordinamento', () => {
+  it('applica first il filtro e poi l ordinamento', () => {
     const result = filterAndSort(tracks, 'a', { column: 'title', direction: 'asc' });
 
     expect(result.map((track) => track.id)).toEqual(['b', 'c', 'a']);

@@ -14,14 +14,14 @@ function mountProgress(position: number, duration: number) {
 }
 
 describe('PlayerProgress', () => {
-  it('mostra il tempo trascorso e la durata', () => {
+  it('shows elapsed time and duration', () => {
     const wrapper = mountProgress(65, 185);
 
     expect(wrapper.get('[data-testid="player-position"]').text()).toBe('1:05');
     expect(wrapper.get('[data-testid="player-duration"]').text()).toBe('3:05');
   });
 
-  it('chiede la nuova posizione in secondi', async () => {
+  it('requests the new position in seconds', async () => {
     const wrapper = mountProgress(0, 185);
 
     await wrapper.get('input').setValue('42');
@@ -29,14 +29,14 @@ describe('PlayerProgress', () => {
     expect(wrapper.emitted('seek')).toEqual([[42]]);
   });
 
-  it('usa la durata come limite della barra', () => {
+  it('uses duration as the bar limit', () => {
     const wrapper = mountProgress(10, 185);
 
     expect(wrapper.get('input').attributes('max')).toBe('185');
     expect(wrapper.get('input').attributes('aria-valuetext')).toBe('0:10 / 3:05');
   });
 
-  it('non lascia cercare in un brano di durata sconosciuta', () => {
+  it('does not allow seeking in a track with unknown duration', () => {
     const wrapper = mountProgress(0, 0);
 
     expect(wrapper.get('input').attributes('disabled')).toBeDefined();

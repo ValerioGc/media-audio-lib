@@ -133,9 +133,7 @@ pub fn export(
     destination: &str,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
-        return Err(AppError::Validation(
-            "percorso di destinazione mancante".to_owned(),
-        ));
+        return Err(AppError::Validation("missing destination path".to_owned()));
     }
 
     let source = catalog.file_of(id)?;
@@ -162,9 +160,7 @@ pub fn import(
     strategy: LibraryImportStrategy,
 ) -> AppResult<LibraryImportReport> {
     if source.trim().is_empty() {
-        return Err(AppError::Validation(
-            "percorso di import mancante".to_owned(),
-        ));
+        return Err(AppError::Validation("missing import path".to_owned()));
     }
 
     let (mut imported, stored_version) = Library::load_with_version(&PathBuf::from(source))?;
@@ -243,12 +239,12 @@ mod tests {
     }
 
     fn setup() -> Setup {
-        let directory = TempDir::new("catalogo-comandi");
+        let directory = TempDir::new("catalog-commands");
         let catalog = CatalogState::open(
             directory.path().to_path_buf(),
             &directory.path().join("library.json"),
         );
-        let state = LibraryState::from_file(catalog.active_file().expect("libreria attiva"));
+        let state = LibraryState::from_file(catalog.active_file().expect("active library"));
 
         Setup {
             _directory: directory,
@@ -258,10 +254,10 @@ mod tests {
     }
 
     #[test]
-    fn elenca_la_sola_libreria_iniziale() {
+    fn lists_the_initial_library_only() {
         let setup = setup();
 
-        let libraries = summaries(&setup.catalog, &setup.state).expect("elenco");
+        let libraries = summaries(&setup.catalog, &setup.state).expect("list");
 
         assert_eq!(libraries.len(), 1);
         assert!(libraries[0].active);
@@ -269,11 +265,11 @@ mod tests {
     }
 
     #[test]
-    fn crea_una_libreria_senza_aprirla() {
+    fn creates_a_library_without_opening_it() {
         let setup = setup();
 
-        let created = create(&setup.catalog, "  Jazz  ").expect("libreria creata");
-        let libraries = summaries(&setup.catalog, &setup.state).expect("elenco");
+        let created = create(&setup.catalog, "  Jazz  ").expect("library created");
+        let libraries = summaries(&setup.catalog, &setup.state).expect("list");
 
         assert_eq!(created.name, "Jazz");
         assert!(!created.active);
@@ -283,71 +279,69 @@ mod tests {
     }
 
     #[test]
-    fn due_librerie_con_lo_stesso_nome_restano_distinte() {
+    fn two_libraries_with_the_same_name_stay_distinct() {
         let setup = setup();
 
-        let prima = create(&setup.catalog, "Jazz").expect("prima libreria");
-        let seconda = create(&setup.catalog, "Jazz").expect("seconda libreria");
+        let first = create(&setup.catalog, "Jazz").expect("first library");
+        let second = create(&setup.catalog, "Jazz").expect("second library");
 
-        assert_ne!(prima.id, seconda.id);
+        assert_ne!(first.id, second.id);
         assert_eq!(
-            summaries(&setup.catalog, &setup.state)
-                .expect("elenco")
-                .len(),
+            summaries(&setup.catalog, &setup.state).expect("list").len(),
             3
         );
     }
 
     #[test]
-    fn rifiuta_una_libreria_senza_nome() {
+    fn rejects_a_library_without_a_name() {
         let setup = setup();
 
-        let error = create(&setup.catalog, "   ").expect_err("nome vuoto");
+        let error = create(&setup.catalog, "   ").expect_err("empty name");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
 
     #[test]
-    fn apre_la_libreria_scelta() {
+    fn opens_the_chosen_library() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("libreria creata");
+        let created = create(&setup.catalog, "Jazz").expect("library created");
 
-        let info = switch(&setup.catalog, &setup.state, &created.id).expect("libreria aperta");
+        let info = switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
 
         assert_eq!(info.name, "Jazz");
-        let libraries = summaries(&setup.catalog, &setup.state).expect("elenco");
+        let libraries = summaries(&setup.catalog, &setup.state).expect("list");
         assert!(libraries
             .iter()
             .any(|library| library.id == created.id && library.active));
     }
 
     #[test]
-    fn i_brani_seguono_la_libreria_aperta() {
+    fn tracks_follow_the_open_library() {
         let setup = setup();
         setup
             .state
-            .update(|library| library.rename("Principale"))
-            .expect("stato aggiornato")
-            .expect("nome valido");
-        let created = create(&setup.catalog, "Jazz").expect("libreria creata");
+            .update(|library| library.rename("Main"))
+            .expect("state updated")
+            .expect("valid name");
+        let created = create(&setup.catalog, "Jazz").expect("library created");
 
-        switch(&setup.catalog, &setup.state, &created.id).expect("libreria aperta");
+        switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
 
-        let nome = setup
+        let name = setup
             .state
             .read(|library| library.name.clone())
-            .expect("lettura");
-        assert_eq!(nome, "Jazz");
+            .expect("read");
+        assert_eq!(name, "Jazz");
     }
 
     #[test]
-    fn eliminando_la_libreria_aperta_ne_apre_un_altra() {
+    fn deleting_the_open_library_opens_another_one() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("libreria creata");
-        switch(&setup.catalog, &setup.state, &created.id).expect("libreria aperta");
+        let created = create(&setup.catalog, "Jazz").expect("library created");
+        switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
         let file = setup.catalog.file_of(&created.id).expect("file");
 
-        let libraries = delete(&setup.catalog, &setup.state, &created.id).expect("eliminata");
+        let libraries = delete(&setup.catalog, &setup.state, &created.id).expect("deleted");
 
         assert_eq!(libraries.len(), 1);
         assert!(libraries[0].active);
@@ -355,46 +349,46 @@ mod tests {
     }
 
     #[test]
-    fn l_ultima_libreria_resta() {
+    fn keeps_the_last_library() {
         let setup = setup();
-        let attiva = summaries(&setup.catalog, &setup.state).expect("elenco")[0]
+        let active = summaries(&setup.catalog, &setup.state).expect("list")[0]
             .id
             .clone();
 
-        let error = delete(&setup.catalog, &setup.state, &attiva).expect_err("ultima libreria");
+        let error = delete(&setup.catalog, &setup.state, &active).expect_err("last library");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
 
     #[test]
-    fn esporta_la_libreria_attiva_dalla_memoria() {
+    fn exports_the_active_library_from_memory() {
         let setup = setup();
         setup
             .state
-            .update(|library| library.rename("Principale"))
-            .expect("stato aggiornato")
-            .expect("nome valido");
-        let attiva = summaries(&setup.catalog, &setup.state).expect("elenco")[0]
+            .update(|library| library.rename("Main"))
+            .expect("state updated")
+            .expect("valid name");
+        let active = summaries(&setup.catalog, &setup.state).expect("list")[0]
             .id
             .clone();
-        let destination = setup._directory.path().join("copia.json");
+        let destination = setup._directory.path().join("copy.json");
 
         export(
             &setup.catalog,
             &setup.state,
-            &attiva,
+            &active,
             &destination.to_string_lossy(),
         )
-        .expect("libreria esportata");
+        .expect("library exported");
 
-        let esportata = Library::load(&destination).expect("copia leggibile");
-        assert_eq!(esportata.name, "Principale");
+        let exported = Library::load(&destination).expect("readable copy");
+        assert_eq!(exported.name, "Main");
     }
 
     #[test]
-    fn esporta_una_libreria_non_aperta_dal_suo_file() {
+    fn exports_a_closed_library_from_its_file() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("libreria creata");
+        let created = create(&setup.catalog, "Jazz").expect("library created");
         let destination = setup._directory.path().join("jazz.json");
 
         export(
@@ -403,36 +397,36 @@ mod tests {
             &created.id,
             &destination.to_string_lossy(),
         )
-        .expect("libreria esportata");
+        .expect("library exported");
 
         assert_eq!(
-            Library::load(&destination).expect("copia leggibile").name,
+            Library::load(&destination).expect("readable copy").name,
             "Jazz"
         );
     }
 
     #[test]
-    fn rifiuta_un_export_senza_destinazione() {
+    fn rejects_export_without_destination() {
         let setup = setup();
-        let attiva = summaries(&setup.catalog, &setup.state).expect("elenco")[0]
+        let active = summaries(&setup.catalog, &setup.state).expect("list")[0]
             .id
             .clone();
 
-        let error = export(&setup.catalog, &setup.state, &attiva, "  ").expect_err("destinazione");
+        let error = export(&setup.catalog, &setup.state, &active, "  ").expect_err("destination");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
 
     #[test]
-    fn importa_una_libreria_nella_libreria_attiva() {
+    fn imports_a_library_into_the_active_library() {
         let setup = setup();
-        let source = setup._directory.path().join("importata.json");
+        let source = setup._directory.path().join("imported.json");
         let mut imported = Library::new();
-        imported.rename("Importata").expect("nome valido");
+        imported.rename("Imported").expect("valid name");
         imported.add(crate::library::Track {
             id: "aaa".to_owned(),
-            path: "C:/musica/aaa.mp3".to_owned(),
-            title: "Brano".to_owned(),
+            path: "C:/music/aaa.mp3".to_owned(),
+            title: "Track".to_owned(),
             artist: None,
             album: None,
             year: None,
@@ -442,44 +436,44 @@ mod tests {
             has_cover: false,
             added_at: 1,
         });
-        imported.save(&source).expect("fixture salvata");
+        imported.save(&source).expect("fixture saved");
 
         let report = import(
             &setup.state,
             &source.to_string_lossy(),
             LibraryImportStrategy::Replace,
         )
-        .expect("import riuscito");
+        .expect("import succeeded");
 
         assert_eq!(report.added, 1);
         assert_eq!(
             setup
                 .state
                 .read(|library| library.name.clone())
-                .expect("lettura"),
-            "Importata"
+                .expect("read"),
+            "Imported"
         );
     }
 
     #[test]
-    fn rifiuta_un_import_senza_sorgente() {
+    fn rejects_import_without_source() {
         let setup = setup();
 
-        let error = import(&setup.state, "  ", LibraryImportStrategy::Merge).expect_err("sorgente");
+        let error = import(&setup.state, "  ", LibraryImportStrategy::Merge).expect_err("source");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
 
     #[test]
-    fn rifiuta_le_operazioni_su_una_libreria_sconosciuta() {
+    fn rejects_operations_on_an_unknown_library() {
         let setup = setup();
 
         assert!(matches!(
-            switch(&setup.catalog, &setup.state, "ignota"),
+            switch(&setup.catalog, &setup.state, "unknown"),
             Err(AppError::NotFound(_))
         ));
         assert!(matches!(
-            export(&setup.catalog, &setup.state, "ignota", "copia.json"),
+            export(&setup.catalog, &setup.state, "unknown", "copy.json"),
             Err(AppError::NotFound(_))
         ));
     }

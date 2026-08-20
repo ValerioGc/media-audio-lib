@@ -85,18 +85,18 @@ impl LibraryState {
         match self.update(crate::library::refresh_metadata) {
             Ok(refreshed) => {
                 eprintln!(
-                    "libreria migrata a v{}: {refreshed} brani riletti dai file",
+                    "library migrated to v{}: {refreshed} tracks reread from files",
                     crate::library::SCHEMA_VERSION
                 );
             }
-            Err(error) => eprintln!("migrazione della libreria non riuscita: {error}"),
+            Err(error) => eprintln!("library migration failed: {error}"),
         }
     }
 }
 
 fn load_or_empty(file: &Path) -> (Library, u32) {
     Library::load_with_version(file).unwrap_or_else(|error| {
-        eprintln!("libreria non caricata ({error}), si riparte da una vuota");
+        eprintln!("library not loaded ({error}), starting from an empty one");
         (Library::new(), crate::library::SCHEMA_VERSION)
     })
 }
@@ -110,8 +110,8 @@ mod tests {
     fn sample_track() -> Track {
         Track {
             id: "aaa".to_owned(),
-            path: "C:/musica/brano.mp3".to_owned(),
-            title: "Titolo".to_owned(),
+            path: "C:/music/track.mp3".to_owned(),
+            title: "Title".to_owned(),
             artist: None,
             album: None,
             year: None,
@@ -124,121 +124,121 @@ mod tests {
     }
 
     #[test]
-    fn parte_da_una_libreria_vuota_quando_il_file_non_esiste() {
+    fn starts_from_an_empty_library_when_file_does_not_exist() {
         let dir = TempDir::new("state-empty");
         let state = LibraryState::from_file(dir.path().join("library.json"));
 
-        assert_eq!(state.read(Library::len).expect("lettura riuscita"), 0);
+        assert_eq!(state.read(Library::len).expect("read succeeded"), 0);
     }
 
     #[test]
-    fn ricarica_la_libreria_gia_salvata() {
+    fn reloads_the_saved_library() {
         let dir = TempDir::new("state-reload");
         let file = dir.path().join("library.json");
         let mut library = Library::new();
         library.add(sample_track());
-        library.save(&file).expect("salvataggio riuscito");
+        library.save(&file).expect("save succeeded");
 
         let state = LibraryState::from_file(file);
 
-        assert_eq!(state.read(Library::len).expect("lettura riuscita"), 1);
+        assert_eq!(state.read(Library::len).expect("read succeeded"), 1);
     }
 
     #[test]
-    fn riparte_da_vuota_se_il_file_e_illeggibile() {
+    fn starts_empty_when_file_is_unreadable() {
         let dir = TempDir::new("state-broken");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, "{ non valido").expect("file scritto");
+        std::fs::write(&file, "{ non valido").expect("file written");
 
         let state = LibraryState::from_file(file);
 
-        assert_eq!(state.read(Library::len).expect("lettura riuscita"), 0);
+        assert_eq!(state.read(Library::len).expect("read succeeded"), 0);
     }
 
     #[test]
-    fn ogni_modifica_finisce_su_disco() {
+    fn every_change_lands_on_disk() {
         let dir = TempDir::new("state-update");
         let file = dir.path().join("library.json");
         let state = LibraryState::from_file(file.clone());
 
         let added = state
             .update(|library| library.add(sample_track()))
-            .expect("aggiornamento riuscito");
+            .expect("update succeeded");
 
         assert!(added);
-        assert_eq!(Library::load(&file).expect("caricamento").len(), 1);
+        assert_eq!(Library::load(&file).expect("loading").len(), 1);
     }
 
     #[test]
-    fn una_libreria_v1_viene_migrata_rileggendo_i_tag_dal_file() {
+    fn v1_library_is_migrated_by_rereading_tags_from_file() {
         let dir = TempDir::new("state-migration");
         let file = dir.path().join("library.json");
-        let brano = crate::fixtures::wav_with_tags(dir.path(), "brano.wav");
-        let id = crate::library::track_id(&brano);
+        let track = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
+        let id = crate::library::track_id(&track);
 
-        // Una libreria v1: il campo autore non esisteva ancora.
+        // A v1 library: the artist field did not exist yet.
         std::fs::write(
             &file,
             format!(
                 r#"{{"version":1,"tracks":[{{"id":"{id}","path":{path},
-                   "title":"Titolo","album":null,"year":null,"genre":null,
+                   "title":"Title","album":null,"year":null,"genre":null,
                    "durationMs":0,"format":"wav","hasCover":false,"addedAt":42}}]}}"#,
-                path = serde_json::to_string(&brano.display().to_string()).expect("percorso"),
+                path = serde_json::to_string(&track.display().to_string()).expect("path"),
             ),
         )
-        .expect("file scritto");
+        .expect("file written");
 
         let state = LibraryState::from_file(file.clone());
 
         let track = state
             .read(|library| library.get(&id).cloned())
-            .expect("lettura riuscita")
-            .expect("brano presente");
-        assert_eq!(track.artist.as_deref(), Some("Autore di prova"));
-        assert_eq!(track.title, "Titolo di prova");
+            .expect("read succeeded")
+            .expect("track present");
+        assert_eq!(track.artist.as_deref(), Some("Test Artist"));
+        assert_eq!(track.title, "Test Title");
 
-        // La migrazione è persistita: al riavvio non serve rifarla.
-        let reloaded = Library::load(&file).expect("ricaricata");
+        // The migration is persisted: restart does not need to run it again.
+        let reloaded = Library::load(&file).expect("reloaded");
         assert_eq!(
-            reloaded.get(&id).expect("presente").artist.as_deref(),
-            Some("Autore di prova")
+            reloaded.get(&id).expect("present").artist.as_deref(),
+            Some("Test Artist")
         );
         assert_eq!(reloaded.version, crate::library::SCHEMA_VERSION);
     }
 
     #[test]
-    fn una_libreria_gia_aggiornata_non_viene_rimaneggiata() {
+    fn already_updated_library_is_not_reworked() {
         let dir = TempDir::new("state-no-migration");
         let file = dir.path().join("library.json");
-        let brano = crate::fixtures::wav_with_tags(dir.path(), "brano.wav");
+        let track = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
 
-        // Voce allo schema corrente, con un titolo diverso da quello nei tag del file:
-        // se partisse una rilettura, verrebbe sovrascritto.
+        // Current-schema entry, with a title different from the file tags:
+        // if a reread started, it would be overwritten.
         let mut library = Library::new();
         library.add(Track {
-            id: crate::library::track_id(&brano),
-            path: brano.display().to_string(),
-            title: "Titolo scelto dall'utente".to_owned(),
+            id: crate::library::track_id(&track),
+            path: track.display().to_string(),
+            title: "User chosen title".to_owned(),
             ..sample_track()
         });
-        library.save(&file).expect("salvataggio riuscito");
+        library.save(&file).expect("save succeeded");
 
         let state = LibraryState::from_file(file);
 
         assert_eq!(
             state
                 .read(|library| library.tracks()[0].title.clone())
-                .expect("lettura"),
-            "Titolo scelto dall'utente"
+                .expect("read"),
+            "User chosen title"
         );
     }
 
     #[test]
-    fn espone_il_percorso_del_file_di_libreria() {
+    fn exposes_the_library_file_path() {
         let dir = TempDir::new("state-path");
         let file = dir.path().join("library.json");
         let state = LibraryState::new(file.clone(), Library::new());
 
-        assert_eq!(state.file().expect("percorso letto"), file);
+        assert_eq!(state.file().expect("path read"), file);
     }
 }

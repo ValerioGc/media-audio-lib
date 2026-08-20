@@ -126,7 +126,7 @@ export async function pickTrackListExportFile(
   const filterName = format === 'csv' ? 'CSV' : 'TXT';
 
   return save({
-    defaultPath: `${defaultName}-brani.${extension}`,
+    defaultPath: `${defaultName}-tracks.${extension}`,
     filters: [{ name: filterName, extensions: [extension] }],
   });
 }

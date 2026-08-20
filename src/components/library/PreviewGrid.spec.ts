@@ -20,20 +20,20 @@ function mountGrid(
 }
 
 describe('PreviewGrid', () => {
-  it('rende una scheda per brano', () => {
+  it('renders one card per track', () => {
     const wrapper = mountGrid(makeTracks(5));
 
     expect(wrapper.findAll('.preview_card')).toHaveLength(5);
     expect(wrapper.attributes('aria-rowcount')).toBe('5');
   });
 
-  it('non rende nulla con una lista vuota', () => {
+  it('renders nothing for an empty list', () => {
     const wrapper = mountGrid([]);
 
     expect(wrapper.findAll('.preview_card')).toHaveLength(0);
   });
 
-  it('marca come selezionata solo la scheda corrente', () => {
+  it('marks only the current card as selected', () => {
     const tracks = makeTracks(3);
     const selectedTrack = tracks[1];
     const wrapper = mountGrid(tracks, selectedTrack?.id ?? null);
@@ -44,7 +44,7 @@ describe('PreviewGrid', () => {
     expect(selected[0]?.get('.preview_card_title').text()).toBe(selectedTrack?.title);
   });
 
-  it('marca come in riproduzione solo la scheda corrente', () => {
+  it('marks only the current card as playing', () => {
     const tracks = makeTracks(3);
     const playingTrack = tracks[2];
     const wrapper = mountGrid(tracks, null, playingTrack?.id ?? null);
@@ -55,7 +55,7 @@ describe('PreviewGrid', () => {
     expect(playing[0]?.get('.preview_card_title').text()).toBe(playingTrack?.title);
   });
 
-  it('inoltra selezione e azioni del menu', async () => {
+  it('forwards selection and menu actions', async () => {
     const track = makeTrack();
     const wrapper = mountGrid([track]);
 

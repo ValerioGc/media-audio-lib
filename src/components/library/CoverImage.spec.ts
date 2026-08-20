@@ -36,7 +36,7 @@ afterEach(() => {
 });
 
 describe('CoverImage', () => {
-  it('mostra un segnaposto quando il brano non ha copertina', async () => {
+  it('shows a placeholder when the track has no cover', async () => {
     const wrapper = mount(CoverImage, {
       ...withPinia(),
       props: { track: makeTrack({ hasCover: false }) },
@@ -47,7 +47,7 @@ describe('CoverImage', () => {
     expect(wrapper.get('.cover_image_fallback').attributes('aria-label')).toBe('Nessuna copertina');
   });
 
-  it('mostra la copertina caricata dallo store', async () => {
+  it('shows the cover loaded from the store', async () => {
     const options = withPinia();
     vi.spyOn(useLibraryStore(), 'loadCover').mockResolvedValue('data:image/png;base64,AAA');
 
@@ -66,7 +66,7 @@ describe('CoverImage', () => {
     expect(wrapper.classes()).toContain('cover_image_card');
   });
 
-  it('non carica nulla finche l immagine resta fuori dallo schermo', async () => {
+  it('loads nothing while the image remains offscreen', async () => {
     scope.IntersectionObserver = NeverVisibleObserver;
     const options = withPinia();
     const loadCover = vi.spyOn(useLibraryStore(), 'loadCover').mockResolvedValue(null);
@@ -78,7 +78,7 @@ describe('CoverImage', () => {
     expect(loadCover).not.toHaveBeenCalled();
   });
 
-  it('carica subito quando e dichiarata prioritaria', async () => {
+  it('loads immediately when marked as priority', async () => {
     scope.IntersectionObserver = NeverVisibleObserver;
     const options = withPinia();
     const loadCover = vi.spyOn(useLibraryStore(), 'loadCover').mockResolvedValue(null);
@@ -90,7 +90,7 @@ describe('CoverImage', () => {
     expect(loadCover).toHaveBeenCalledTimes(1);
   });
 
-  it('ricarica la copertina quando cambia il brano', async () => {
+  it('reloads the cover when the track changes', async () => {
     const options = withPinia();
     const loadCover = vi.spyOn(useLibraryStore(), 'loadCover').mockResolvedValue(null);
 

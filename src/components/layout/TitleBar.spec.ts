@@ -14,19 +14,19 @@ beforeEach(() => {
 });
 
 describe('TitleBar', () => {
-  it('mostra il nome dell applicazione', () => {
+  it('shows the app name', () => {
     const wrapper = mount(TitleBar, withPinia());
 
     expect(wrapper.get('.titlebar_name').text()).toBe(APP_NAME);
   });
 
-  it('dichiara l area trascinabile alla finestra', () => {
+  it('declares the draggable area to the window', () => {
     const wrapper = mount(TitleBar, withPinia());
 
     expect(wrapper.get('.titlebar_drag').attributes('data-tauri-drag-region')).toBeDefined();
   });
 
-  it('espone i tre comandi di finestra con etichetta', () => {
+  it('exposes the three window commands with labels', () => {
     const wrapper = mount(TitleBar, withPinia());
 
     expect(wrapper.get('[data-testid="window-minimize"]').attributes('aria-label')).toBe(
@@ -40,7 +40,7 @@ describe('TitleBar', () => {
     );
   });
 
-  it('invoca il comando corrispondente a ogni pulsante', async () => {
+  it('invokes the command matching each button', async () => {
     const minimize = vi.spyOn(windowControls, 'minimizeWindow').mockResolvedValue(true);
     const toggle = vi.spyOn(windowControls, 'toggleMaximizeWindow').mockResolvedValue(true);
     const close = vi.spyOn(windowControls, 'closeWindow').mockResolvedValue(true);
@@ -55,7 +55,7 @@ describe('TitleBar', () => {
     expect(close).toHaveBeenCalledTimes(1);
   });
 
-  it('massimizza al doppio click sulla barra', async () => {
+  it('maximizes on double click on the bar', async () => {
     const toggle = vi.spyOn(windowControls, 'toggleMaximizeWindow').mockResolvedValue(true);
     const wrapper = mount(TitleBar, withPinia());
 
@@ -64,7 +64,7 @@ describe('TitleBar', () => {
     expect(toggle).toHaveBeenCalledTimes(1);
   });
 
-  it('apre le impostazioni e ci torna indietro', async () => {
+  it('opens settings and toggles back', async () => {
     const options = withPinia();
     const navigation = useNavigationStore();
     const wrapper = mount(TitleBar, options);
@@ -76,7 +76,7 @@ describe('TitleBar', () => {
     expect(navigation.view).toBe('library');
   });
 
-  it('apre la guida e ci torna indietro', async () => {
+  it('opens help and toggles back', async () => {
     const options = withPinia();
     const navigation = useNavigationStore();
     const wrapper = mount(TitleBar, options);
@@ -88,7 +88,7 @@ describe('TitleBar', () => {
     expect(navigation.view).toBe('library');
   });
 
-  it('passa dalle impostazioni alla guida senza tornare alla libreria', async () => {
+  it('switches from settings to help without returning to the library', async () => {
     const options = withPinia();
     const navigation = useNavigationStore();
     navigation.go('settings');
@@ -99,7 +99,7 @@ describe('TitleBar', () => {
     expect(navigation.view).toBe('help');
   });
 
-  it('segnala quando le impostazioni sono aperte', async () => {
+  it('reports when settings are open', async () => {
     const options = withPinia();
     useNavigationStore().go('settings');
 

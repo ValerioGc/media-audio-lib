@@ -24,7 +24,7 @@ const wrappers: VueWrapper[] = [];
 beforeEach(() => {
   resetI18n();
   vi.clearAllMocks();
-  mocks.playbackUrl.mockResolvedValue('asset://brano.mp3');
+  mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
   mocks.createAudioEngine.mockReturnValue({
     load: vi.fn(),
     play: vi.fn().mockResolvedValue(undefined),
@@ -52,27 +52,27 @@ function mountDock(options: ReturnType<typeof withPinia> = withPinia(), attachTo
 }
 
 describe('PlayerDock', () => {
-  it('resta invisibile finche non si riproduce nulla', () => {
+  it('stays invisible until something plays', () => {
     const wrapper = mountDock();
 
     expect(wrapper.find('.player_bar').exists()).toBe(false);
     expect(wrapper.find('.player_full').exists()).toBe(false);
   });
 
-  it('mostra la barra in basso quando parte un brano', async () => {
+  it('shows the bottom bar when a track starts', async () => {
     const options = withPinia();
     const player = usePlayerStore();
 
     const wrapper = mountDock(options);
-    player.play(makeTrack({ title: 'Brano', artist: 'Autore' }));
+    player.play(makeTrack({ title: 'Track', artist: 'Artist' }));
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('.player_bar_title').text()).toBe('Brano');
-    expect(wrapper.get('.player_bar_artist').text()).toBe('Autore');
+    expect(wrapper.get('.player_bar_title').text()).toBe('Track');
+    expect(wrapper.get('.player_bar_artist').text()).toBe('Artist');
     expect(wrapper.find('.player_full').exists()).toBe(false);
   });
 
-  it('applica il gradiente della copertina al player', async () => {
+  it('applies the cover gradient to the player', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     const library = useLibraryStore();
@@ -87,7 +87,7 @@ describe('PlayerDock', () => {
     expect(wrapper.get('.player_bar').classes()).toContain('player_bar_accented');
   });
 
-  it('non carica il colore quando il gradiente e disabilitato', async () => {
+  it('does not load the color when the gradient is disabled', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     const settings = useSettingsStore();
@@ -106,16 +106,16 @@ describe('PlayerDock', () => {
     expect(player.coverAccent).toBeNull();
   });
 
-  it('passa a tutta pagina con la freccia e torna indietro', async () => {
+  it('switches to full page with the arrow and back', async () => {
     const options = withPinia();
     const player = usePlayerStore();
-    player.play(makeTrack({ title: 'Brano' }));
+    player.play(makeTrack({ title: 'Track' }));
 
     const wrapper = mountDock(options);
     await wrapper.get('[data-testid="player-expand"]').trigger('click');
 
     expect(player.isExpanded).toBe(true);
-    expect(wrapper.get('.player_full_title').text()).toBe('Brano');
+    expect(wrapper.get('.player_full_title').text()).toBe('Track');
     expect(wrapper.find('.player_bar').exists()).toBe(false);
 
     await wrapper.get('[data-testid="player-collapse"]').trigger('click');
@@ -124,7 +124,7 @@ describe('PlayerDock', () => {
     expect(wrapper.find('.player_bar').exists()).toBe(true);
   });
 
-  it('chiude il player dalla barra', async () => {
+  it('closes the player from the bar', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     player.play(makeTrack());
@@ -136,7 +136,7 @@ describe('PlayerDock', () => {
     expect(wrapper.find('.player_bar').exists()).toBe(false);
   });
 
-  it('riduce la vista a tutta pagina con Escape', async () => {
+  it('collapses the full page view with Escape', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     player.play(makeTrack());
@@ -149,10 +149,10 @@ describe('PlayerDock', () => {
     expect(player.isExpanded).toBe(false);
   });
 
-  it('mette titolo e autore sopra la copertina', async () => {
+  it('puts title and artist above the cover', async () => {
     const options = withPinia();
     const player = usePlayerStore();
-    await player.play(makeTrack({ title: 'Brano', artist: 'Autore' }));
+    await player.play(makeTrack({ title: 'Track', artist: 'Artist' }));
     player.expand();
 
     const wrapper = mountDock(options);
@@ -160,12 +160,12 @@ describe('PlayerDock', () => {
       .findAll('.player_full_heading, .player_full_cover, .player_full_details')
       .map((blocco) => blocco.classes()[0]);
 
-    expect(wrapper.get('.player_full_title').text()).toBe('Brano');
-    expect(wrapper.get('.player_full_artist').text()).toBe('Autore');
+    expect(wrapper.get('.player_full_title').text()).toBe('Track');
+    expect(wrapper.get('.player_full_artist').text()).toBe('Artist');
     expect(ordine).toEqual(['player_full_heading', 'player_full_cover', 'player_full_details']);
   });
 
-  it('elenca album, anno e genere sotto la copertina', async () => {
+  it('lists album, year, and genre under the cover', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     await player.play(makeTrack({ album: 'Album', year: 2000, genre: 'Rock' }));
@@ -173,19 +173,19 @@ describe('PlayerDock', () => {
 
     const wrapper = mountDock(options);
 
-    expect(wrapper.findAll('.player_full_detail_label').map((voce) => voce.text())).toEqual([
+    expect(wrapper.findAll('.player_full_detail_label').map((item) => item.text())).toEqual([
       'Album',
       'Anno',
       'Genere',
     ]);
-    expect(wrapper.findAll('.player_full_detail_value').map((voce) => voce.text())).toEqual([
+    expect(wrapper.findAll('.player_full_detail_value').map((item) => item.text())).toEqual([
       'Album',
       '2000',
       'Rock',
     ]);
   });
 
-  it('mostra un segnaposto per le informazioni mancanti', async () => {
+  it('shows a placeholder for missing information', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     await player.play(makeTrack({ artist: null, album: null, year: null, genre: null }));
@@ -194,14 +194,14 @@ describe('PlayerDock', () => {
     const wrapper = mountDock(options);
 
     expect(wrapper.get('.player_full_artist').text()).toBe('—');
-    expect(wrapper.findAll('.player_full_detail_value').map((voce) => voce.text())).toEqual([
+    expect(wrapper.findAll('.player_full_detail_value').map((item) => item.text())).toEqual([
       '—',
       '—',
       '—',
     ]);
   });
 
-  it('comanda la riproduzione dalla barra', async () => {
+  it('controls playback from the bar', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     const tracks = makeTracks(2);
@@ -214,7 +214,7 @@ describe('PlayerDock', () => {
     expect(player.currentTrack?.id).toBe(tracks[1]?.id);
   });
 
-  it('mostra tempo trascorso e durata del brano corrente', async () => {
+  it('shows elapsed time and current track duration', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     await player.play(makeTrack({ durationMs: 185_000 }));
@@ -225,7 +225,7 @@ describe('PlayerDock', () => {
     expect(wrapper.get('[data-testid="player-position"]').text()).toBe('0:00');
   });
 
-  it('avvisa quando la riproduzione non parte', async () => {
+  it('warns when playback does not start', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     await player.play(makeTrack({ missing: true }));

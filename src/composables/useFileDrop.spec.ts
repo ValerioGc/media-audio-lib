@@ -29,13 +29,13 @@ afterEach(() => {
 });
 
 describe('useFileDrop', () => {
-  it('non si registra fuori dalla shell desktop', () => {
+  it('does not register outside the desktop shell', () => {
     mountHost(vi.fn());
 
     expect(mocks.onDragDropEvent).not.toHaveBeenCalled();
   });
 
-  it('evidenzia l area durante il trascinamento', () => {
+  it('highlights the area while dragging', () => {
     const wrapper = mountHost(vi.fn());
 
     wrapper.vm.handle({ type: 'enter' });
@@ -45,25 +45,25 @@ describe('useFileDrop', () => {
     expect(wrapper.vm.isDraggingOver).toBe(false);
   });
 
-  it('inoltra tutto il contenuto rilasciato, cartelle comprese', () => {
+  it('forwards all dropped content, including folders', () => {
     const onDrop = vi.fn();
     const wrapper = mountHost(onDrop);
 
     wrapper.vm.handle({
       type: 'drop',
-      paths: ['C:/musica/brano.mp3', 'C:/musica/Album 2020', 'C:/musica/altro.FLAC'],
+      paths: ['C:/music/track.mp3', 'C:/music/Album 2020', 'C:/music/altro.FLAC'],
     });
 
     // Solo il backend puo' guardare dentro una cartella, quindi non si filtra qui.
     expect(onDrop).toHaveBeenCalledWith([
-      'C:/musica/brano.mp3',
-      'C:/musica/Album 2020',
-      'C:/musica/altro.FLAC',
+      'C:/music/track.mp3',
+      'C:/music/Album 2020',
+      'C:/music/altro.FLAC',
     ]);
     expect(wrapper.vm.isDraggingOver).toBe(false);
   });
 
-  it('regge un evento di drop senza percorsi', () => {
+  it('handles a drop event without paths', () => {
     const onDrop = vi.fn();
     const wrapper = mountHost(onDrop);
 
@@ -72,7 +72,7 @@ describe('useFileDrop', () => {
     expect(onDrop).toHaveBeenCalledWith([]);
   });
 
-  it('si registra sulla finestra dentro la shell desktop', async () => {
+  it('registers on the window inside the desktop shell', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
     const unlisten = vi.fn();
     mocks.onDragDropEvent.mockResolvedValue(unlisten);
@@ -84,7 +84,7 @@ describe('useFileDrop', () => {
     expect(unlisten).toHaveBeenCalledTimes(1);
   });
 
-  it('non rompe l app se la registrazione fallisce', async () => {
+  it('does not break the app if registration fails', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
     mocks.onDragDropEvent.mockRejectedValue(new Error('boom'));
 

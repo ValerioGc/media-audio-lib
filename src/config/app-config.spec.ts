@@ -10,20 +10,20 @@ import {
 } from './app-config';
 
 describe('app-config', () => {
-  it('espone nome e versione dell applicazione', () => {
+  it('exposes the app name and version', () => {
     expect(APP_NAME).toBe('Media Audio Lib');
     expect(APP_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
-  it('include mp3 tra i formati supportati', () => {
+  it('includes mp3 among supported formats', () => {
     expect(SUPPORTED_EXTENSIONS).toContain('mp3');
   });
 
   describe('fileExtension', () => {
     it.each([
-      ['C:\\Musica\\brano.MP3', 'mp3'],
-      ['/home/utente/brano.flac', 'flac'],
-      ['brano.tar.ogg', 'ogg'],
+      ['C:\\Musica\\track.MP3', 'mp3'],
+      ['/home/utente/track.flac', 'flac'],
+      ['track.tar.ogg', 'ogg'],
       ['senza-estensione', ''],
       ['finisce-con-punto.', ''],
       ['.nascosto', ''],
@@ -34,23 +34,23 @@ describe('app-config', () => {
   });
 
   describe('isSupportedAudioFile', () => {
-    it('accetta i formati gestiti indipendentemente dal case', () => {
-      expect(isSupportedAudioFile('C:\\Musica\\brano.Mp3')).toBe(true);
-      expect(isSupportedAudioFile('/musica/brano.wav')).toBe(true);
+    it('accepts supported formats regardless of case', () => {
+      expect(isSupportedAudioFile('C:\\Musica\\track.Mp3')).toBe(true);
+      expect(isSupportedAudioFile('/musica/track.wav')).toBe(true);
     });
 
-    it('rifiuta i formati non gestiti', () => {
-      expect(isSupportedAudioFile('/musica/copertina.png')).toBe(false);
-      expect(isSupportedAudioFile('/musica/brano')).toBe(false);
+    it('rejects unsupported formats', () => {
+      expect(isSupportedAudioFile('/musica/cover.png')).toBe(false);
+      expect(isSupportedAudioFile('/musica/track')).toBe(false);
     });
   });
 
   describe('isTauriRuntime', () => {
-    it('e false nel browser di test', () => {
+    it('is false in the test browser', () => {
       expect(isTauriRuntime()).toBe(false);
     });
 
-    it('e true quando la shell Tauri ha iniettato il suo runtime', () => {
+    it('is true when the Tauri shell injected its runtime', () => {
       const scopedWindow = window as unknown as Record<string, unknown>;
       scopedWindow.__TAURI_INTERNALS__ = {};
 

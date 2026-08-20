@@ -17,12 +17,12 @@ afterEach(() => {
   wrappers.splice(0).forEach((wrapper) => wrapper.unmount());
 });
 
-const catalogo = [
-  { id: 'lib-1', name: 'Principale', trackCount: 2, active: true },
+const catalog = [
+  { id: 'lib-1', name: 'Main', trackCount: 2, active: true },
   { id: 'lib-2', name: 'Jazz', trackCount: 5, active: false },
 ];
 
-function mountTitle(libraries = catalogo) {
+function mountTitle(libraries = catalog) {
   const options = withPinia();
   const library = useLibraryStore();
   // The list normally arrives from the backend on mount.
@@ -38,38 +38,38 @@ function mountTitle(libraries = catalogo) {
 /** Renaming has one entry point: the menu next to the name. */
 async function openRename(wrapper: VueWrapper) {
   await wrapper.get('.app_menu_trigger').trigger('click');
-  const voce = wrapper
+  const item = wrapper
     .findAll('.app_menu_item')
     .find((item) => item.get('.app_menu_item_label').text() === 'Rinomina');
 
-  await voce?.trigger('click');
+  await item?.trigger('click');
 }
 
 describe('LibraryTitle', () => {
-  it('usa il nome della libreria e ripiega sul titolo generico', async () => {
+  it('uses the library name and falls back to the generic title', async () => {
     const { wrapper, library } = mountTitle();
 
     expect(wrapper.get('.library_title_name').text()).toBe('Libreria');
 
-    library.libraryName = 'Archivio jazz';
+    library.libraryName = 'Jazz Archive';
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
+    expect(wrapper.get('.library_title_name').text()).toBe('Jazz Archive');
   });
 
-  it('apre il campo di modifica dal menu', async () => {
+  it('opens the edit field from the menu', async () => {
     const { wrapper, library } = mountTitle();
-    library.libraryName = 'Archivio jazz';
+    library.libraryName = 'Jazz Archive';
     await wrapper.vm.$nextTick();
 
     await openRename(wrapper);
 
-    const campo = wrapper.get('[data-testid="library-name-field"]');
-    expect((campo.element as HTMLInputElement).value).toBe('Archivio jazz');
+    const field = wrapper.get('[data-testid="library-name-field"]');
+    expect((field.element as HTMLInputElement).value).toBe('Jazz Archive');
     expect(wrapper.find('.library_title_name').exists()).toBe(false);
   });
 
-  it('salva il nuovo nome e torna al titolo', async () => {
+  it('saves the new name and returns to the title', async () => {
     const { wrapper, library } = mountTitle();
     const rename = vi.spyOn(library, 'renameLibrary').mockImplementation(async (name) => {
       library.libraryName = name;
@@ -77,14 +77,14 @@ describe('LibraryTitle', () => {
     });
 
     await openRename(wrapper);
-    await wrapper.get('[data-testid="library-name-field"]').setValue('Colonne sonore');
+    await wrapper.get('[data-testid="library-name-field"]').setValue('Soundtracks');
     await wrapper.get('.library_title_form').trigger('submit');
 
-    expect(rename).toHaveBeenCalledWith('Colonne sonore');
-    expect(wrapper.get('.library_title_name').text()).toBe('Colonne sonore');
+    expect(rename).toHaveBeenCalledWith('Soundtracks');
+    expect(wrapper.get('.library_title_name').text()).toBe('Soundtracks');
   });
 
-  it('tiene aperto il campo quando il nome viene rifiutato', async () => {
+  it('keeps the field open when the name is rejected', async () => {
     const { wrapper, library } = mountTitle();
     vi.spyOn(library, 'renameLibrary').mockResolvedValue(false);
 
@@ -95,33 +95,33 @@ describe('LibraryTitle', () => {
     expect(wrapper.find('[data-testid="library-name-field"]').exists()).toBe(true);
   });
 
-  it('annulla la modifica con il pulsante e con Escape', async () => {
+  it('cancels editing with the button and Escape', async () => {
     const { wrapper, library } = mountTitle();
-    library.libraryName = 'Archivio jazz';
+    library.libraryName = 'Jazz Archive';
     const rename = vi.spyOn(library, 'renameLibrary');
     await wrapper.vm.$nextTick();
 
     await openRename(wrapper);
-    await wrapper.get('[data-testid="library-name-field"]').setValue('Altro');
+    await wrapper.get('[data-testid="library-name-field"]').setValue('Other');
     await wrapper.get('[data-testid="library-name-cancel"]').trigger('click');
 
-    expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
+    expect(wrapper.get('.library_title_name').text()).toBe('Jazz Archive');
 
     await openRename(wrapper);
     await wrapper.get('[data-testid="library-name-field"]').trigger('keydown.esc');
 
-    expect(wrapper.get('.library_title_name').text()).toBe('Archivio jazz');
+    expect(wrapper.get('.library_title_name').text()).toBe('Jazz Archive');
     expect(rename).not.toHaveBeenCalled();
   });
 
-  it('elenca le librerie e poi le azioni sulla libreria aperta', async () => {
+  it('lists libraries and then actions for the open library', async () => {
     const { wrapper } = mountTitle();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    const voci = wrapper.findAll('.app_menu_item');
+    const items = wrapper.findAll('.app_menu_item');
 
-    expect(voci.map((voce) => voce.get('.app_menu_item_label').text())).toEqual([
-      'Principale',
+    expect(items.map((item) => item.get('.app_menu_item_label').text())).toEqual([
+      'Main',
       'Jazz',
       'Rinomina',
       'Verifica file',
@@ -130,11 +130,11 @@ describe('LibraryTitle', () => {
       'Esporta libreria',
       'Elimina libreria',
     ]);
-    expect(voci[0]?.attributes('aria-checked')).toBe('true');
-    expect(voci[1]?.attributes('aria-checked')).toBe('false');
+    expect(items[0]?.attributes('aria-checked')).toBe('true');
+    expect(items[1]?.attributes('aria-checked')).toBe('false');
   });
 
-  it('apre la libreria scelta dal menu', async () => {
+  it('opens the library chosen from the menu', async () => {
     const { wrapper, library } = mountTitle();
     const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
 
@@ -144,14 +144,14 @@ describe('LibraryTitle', () => {
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('accanto al nome non c e piu una penna: si passa dal menu', () => {
+  it('there is no longer a pencil next to the name: use the menu', () => {
     const { wrapper } = mountTitle();
 
     expect(wrapper.find('[data-testid="library-name-edit"]').exists()).toBe(false);
     expect(wrapper.findAll('.library_title_action')).toHaveLength(0);
   });
 
-  it('esporta la libreria aperta', async () => {
+  it('exports the open library', async () => {
     const { wrapper, library } = mountTitle();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
@@ -161,7 +161,7 @@ describe('LibraryTitle', () => {
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
 
-  it('importa nella libreria aperta dal menu', async () => {
+  it('imports into the open library from the menu', async () => {
     const { wrapper, library } = mountTitle();
     const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
 
@@ -171,7 +171,7 @@ describe('LibraryTitle', () => {
     expect(importLibrary).toHaveBeenCalledWith('mergeSkipDuplicates');
   });
 
-  it('verifica tutti i file dal menu della libreria', async () => {
+  it('verifies all files from the library menu', async () => {
     const { wrapper, library } = mountTitle();
     library.tracks = [{ ...makeTrack(), missing: false }];
     const verifyAllTracks = vi.spyOn(library, 'verifyAllTracks').mockResolvedValue({
@@ -186,7 +186,7 @@ describe('LibraryTitle', () => {
     expect(verifyAllTracks).toHaveBeenCalledTimes(1);
   });
 
-  it('apre il dialog per esportare l elenco brani', async () => {
+  it('opens the dialog to export the track list', async () => {
     const { wrapper, library } = mountTitle();
     library.tracks = [{ ...makeTrack(), missing: false }];
     await wrapper.vm.$nextTick();
@@ -197,14 +197,14 @@ describe('LibraryTitle', () => {
     expect(document.body.textContent).toContain('Esporta elenco brani');
   });
 
-  it('chiede conferma prima di eliminare la libreria', async () => {
+  it('asks for confirmation before deleting the library', async () => {
     const { wrapper, library } = mountTitle();
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[7]?.trigger('click');
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Principale');
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Main');
     expect(deleteLibrary).not.toHaveBeenCalled();
 
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
@@ -212,12 +212,12 @@ describe('LibraryTitle', () => {
     expect(deleteLibrary).toHaveBeenCalledWith('lib-1');
   });
 
-  it('con una sola libreria l eliminazione resta spenta', async () => {
-    const { wrapper } = mountTitle([catalogo[0]!]);
+  it('keeps deletion disabled with a single library', async () => {
+    const { wrapper } = mountTitle([catalog[0]!]);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    const voci = wrapper.findAll('.app_menu_item');
+    const items = wrapper.findAll('.app_menu_item');
 
-    expect(voci.at(-1)?.attributes('disabled')).toBeDefined();
+    expect(items.at(-1)?.attributes('disabled')).toBeDefined();
   });
 });

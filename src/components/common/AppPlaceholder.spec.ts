@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import AppPlaceholder from './AppPlaceholder.vue';
 
 describe('AppPlaceholder', () => {
-  it('mostra titolo e messaggio ricevuti', () => {
+  it('shows the given title and message', () => {
     const wrapper = mount(AppPlaceholder, {
       props: { title: 'Libreria', message: 'In arrivo' },
     });

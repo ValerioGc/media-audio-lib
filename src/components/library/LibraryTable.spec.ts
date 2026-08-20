@@ -24,7 +24,7 @@ function mountTable(
 }
 
 describe('LibraryTable', () => {
-  it('espone le intestazioni delle colonne richieste', () => {
+  it('exposes the requested column headers', () => {
     const headings = mountTable([makeTrack()])
       .findAll('[role="columnheader"]')
       // The active column also renders the sort arrow.
@@ -42,13 +42,13 @@ describe('LibraryTable', () => {
     ]);
   });
 
-  it('dichiara il numero di righe', () => {
+  it('declares the row count', () => {
     const wrapper = mountTable(makeTracks(3));
 
     expect(wrapper.attributes('aria-rowcount')).toBe('3');
   });
 
-  it('chiede l ordinamento al click sull intestazione', async () => {
+  it('requests sorting on header click', async () => {
     const wrapper = mountTable([makeTrack()]);
 
     await wrapper.findAll('.library_table_sort')[1]?.trigger('click');
@@ -56,7 +56,7 @@ describe('LibraryTable', () => {
     expect(wrapper.emitted('sort')).toEqual([['artist']]);
   });
 
-  it('marca la colonna attiva per gli screen reader', () => {
+  it('marks the active column for screen readers', () => {
     const wrapper = mountTable([makeTrack()], { column: 'year', direction: 'desc' });
     const headers = wrapper.findAll('[role="columnheader"]');
 
@@ -64,7 +64,7 @@ describe('LibraryTable', () => {
     expect(headers[3]?.attributes('aria-sort')).toBe('none');
   });
 
-  it('rende solo una finestra di righe per liste lunghe', () => {
+  it('renders only a window of rows for long lists', () => {
     const wrapper = mountTable(makeTracks(500));
 
     const rendered = wrapper.findAll('.library_row').length;
@@ -73,7 +73,7 @@ describe('LibraryTable', () => {
     expect(rendered).toBeLessThan(500);
   });
 
-  it('marca solo la riga in riproduzione', () => {
+  it('marks only the playing row', () => {
     const tracks = makeTracks(3);
     const wrapper = mountTable(tracks, DEFAULT_SORT, tracks[1]?.id ?? null);
 
@@ -83,13 +83,13 @@ describe('LibraryTable', () => {
     expect(playing[0]?.text()).toContain(tracks[1]?.title);
   });
 
-  it('riserva lo spazio verticale dell intera lista', () => {
+  it('reserves vertical space for the whole list', () => {
     const wrapper = mountTable(makeTracks(100));
 
     expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 5600px');
   });
 
-  it('inoltra selezione, modifica, verifica e rimozione delle righe', async () => {
+  it('forwards row selection, edit, verify, and removal', async () => {
     const track = makeTrack();
     const wrapper = mountTable([track]);
 
@@ -107,7 +107,7 @@ describe('LibraryTable', () => {
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 
-  it('alza le righe quando il testo diventa piu grande', async () => {
+  it('raises row height when text gets larger', async () => {
     document.documentElement.style.fontSize = '16px';
     const wrapper = mountTable(makeTracks(100));
     const settings = useSettingsStore();

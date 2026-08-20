@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 describe('LibraryToolbar', () => {
-  it('conta i brani in libreria', async () => {
+  it('counts tracks in the library', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     store.tracks = makeTracks(3);
@@ -23,7 +23,7 @@ describe('LibraryToolbar', () => {
     expect(wrapper.get('[data-testid="track-count"]').text()).toBe('3 brani');
   });
 
-  it('usa il singolare per un solo brano', async () => {
+  it('uses singular for one track', async () => {
     const options = withPinia();
     useLibraryStore().tracks = makeTracks(1);
 
@@ -33,7 +33,7 @@ describe('LibraryToolbar', () => {
     expect(wrapper.get('[data-testid="track-count"]').text()).toBe('1 brano');
   });
 
-  it('segnala i file non trovati', async () => {
+  it('reports missing files', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     store.tracks = [
@@ -47,7 +47,7 @@ describe('LibraryToolbar', () => {
     expect(wrapper.get('.library_toolbar_missing').text()).toBe('1 file non trovato');
   });
 
-  it('apre il dialog di sistema dal pulsante di aggiunta', async () => {
+  it('opens the system dialog from the add button', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     const pickAndAdd = vi.spyOn(store, 'pickAndAdd').mockResolvedValue(null);
@@ -58,7 +58,7 @@ describe('LibraryToolbar', () => {
     expect(pickAndAdd).toHaveBeenCalledTimes(1);
   });
 
-  it('blocca il pulsante durante l importazione', async () => {
+  it('blocca il pulsante durante l import', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     store.isImporting = true;
@@ -70,7 +70,7 @@ describe('LibraryToolbar', () => {
     expect(wrapper.get('button').text()).toBe('Importazione in corso…');
   });
 
-  it('aggiorna la ricerca nello store', async () => {
+  it('updates search in the store', async () => {
     const options = withPinia();
     const store = useLibraryStore();
 
@@ -80,7 +80,7 @@ describe('LibraryToolbar', () => {
     expect(store.query).toBe('rock');
   });
 
-  it('aggiorna il filtro delle informazioni mancanti', async () => {
+  it('updates the missing information filter', async () => {
     const options = withPinia();
     const store = useLibraryStore();
 

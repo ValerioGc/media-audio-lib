@@ -11,15 +11,15 @@ beforeEach(() => {
 });
 
 describe('LibraryFacetList', () => {
-  it('raggruppa i brani per autore con conteggio e durata', () => {
+  it('groups tracks by artist with count and duration', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {
         field: 'artist',
         tracks: [
-          makeTrack({ title: 'Uno', artist: 'Autore B', durationMs: 120_000 }),
-          makeTrack({ title: 'Due', artist: 'Autore A', durationMs: 60_000 }),
-          makeTrack({ title: 'Tre', artist: 'Autore B', durationMs: 180_000 }),
+          makeTrack({ title: 'Uno', artist: 'Artist B', durationMs: 120_000 }),
+          makeTrack({ title: 'Due', artist: 'Artist A', durationMs: 60_000 }),
+          makeTrack({ title: 'Tre', artist: 'Artist B', durationMs: 180_000 }),
         ],
       },
     });
@@ -27,16 +27,16 @@ describe('LibraryFacetList', () => {
     const rows = wrapper.findAll('.library_facet_list_row');
 
     expect(rows).toHaveLength(2);
-    expect(rows[0]?.text()).toContain('Autore A');
+    expect(rows[0]?.text()).toContain('Artist A');
     expect(rows[0]?.text()).toContain('1 brano');
     expect(rows[0]?.text()).toContain('1:00');
-    expect(rows[1]?.text()).toContain('Autore B');
+    expect(rows[1]?.text()).toContain('Artist B');
     expect(rows[1]?.text()).toContain('2 brani');
     expect(rows[1]?.text()).toContain('5:00');
     expect(rows[1]?.text()).toContain('Uno, Tre');
   });
 
-  it('mette i valori mancanti in fondo con una label leggibile', () => {
+  it('puts missing values at the bottom with a readable label', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {

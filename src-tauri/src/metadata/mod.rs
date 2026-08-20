@@ -136,27 +136,27 @@ mod tests {
     };
 
     #[test]
-    fn estrae_l_estensione_in_minuscolo() {
-        assert_eq!(extension_of(Path::new("C:/musica/Brano.MP3")), "mp3");
-        assert_eq!(extension_of(Path::new("/musica/brano")), "");
+    fn extracts_the_lowercase_extension() {
+        assert_eq!(extension_of(Path::new("C:/music/Track.MP3")), "mp3");
+        assert_eq!(extension_of(Path::new("/musica/track")), "");
     }
 
     #[test]
-    fn riconosce_solo_i_formati_dichiarati() {
-        assert!(is_supported(Path::new("brano.mp3")));
-        assert!(is_supported(Path::new("brano.FLAC")));
-        assert!(!is_supported(Path::new("copertina.png")));
+    fn recognizes_only_declared_formats() {
+        assert!(is_supported(Path::new("track.mp3")));
+        assert!(is_supported(Path::new("track.FLAC")));
+        assert!(!is_supported(Path::new("cover.png")));
     }
 
     #[test]
-    fn rifiuta_i_file_inesistenti() {
-        let error = ensure_importable(Path::new("C:/musica/assente.mp3")).unwrap_err();
+    fn rejects_missing_files() {
+        let error = ensure_importable(Path::new("C:/music/assente.mp3")).unwrap_err();
 
         assert!(matches!(error, AppError::NotFound(_)));
     }
 
     #[test]
-    fn rifiuta_i_formati_non_supportati() {
+    fn rejects_unsupported_formats() {
         let dir = TempDir::new("metadata-unsupported");
         let path = dir.path().join("nota.txt");
         std::fs::write(&path, b"non audio").expect("file di test scritto");
@@ -167,7 +167,7 @@ mod tests {
     }
 
     #[test]
-    fn rifiuta_i_file_audio_corrotti() {
+    fn rejects_corrupted_audio_files() {
         let dir = TempDir::new("metadata-corrupted");
         let path = corrupted_file(dir.path(), "rotto.mp3");
 
@@ -177,14 +177,14 @@ mod tests {
     }
 
     #[test]
-    fn legge_i_tag_di_un_wav() {
+    fn reads_wav_tags() {
         let dir = TempDir::new("metadata-wav");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
 
-        let metadata = read_metadata(&path).expect("metadati letti");
+        let metadata = read_metadata(&path).expect("metadata read");
 
-        assert_eq!(metadata.title.as_deref(), Some("Titolo di prova"));
-        assert_eq!(metadata.artist.as_deref(), Some("Autore di prova"));
+        assert_eq!(metadata.title.as_deref(), Some("Test Title"));
+        assert_eq!(metadata.artist.as_deref(), Some("Test Artist"));
         assert_eq!(metadata.album.as_deref(), Some("Album di prova"));
         assert_eq!(metadata.year, Some(1999));
         assert_eq!(metadata.genre.as_deref(), Some("Rock"));
@@ -193,54 +193,54 @@ mod tests {
     }
 
     #[test]
-    fn legge_i_tag_di_un_mp3() {
+    fn reads_mp3_tags() {
         let dir = TempDir::new("metadata-mp3");
-        let path = mp3_with_tags(dir.path(), "brano.mp3");
+        let path = mp3_with_tags(dir.path(), "track.mp3");
 
-        let metadata = read_metadata(&path).expect("metadati letti");
+        let metadata = read_metadata(&path).expect("metadata read");
 
-        assert_eq!(metadata.title.as_deref(), Some("Titolo di prova"));
+        assert_eq!(metadata.title.as_deref(), Some("Test Title"));
         assert_eq!(metadata.format, "mp3");
     }
 
     #[test]
-    fn legge_i_tag_di_un_flac() {
+    fn reads_flac_tags() {
         let dir = TempDir::new("metadata-flac");
-        let path = flac_with_tags(dir.path(), "brano.flac");
+        let path = flac_with_tags(dir.path(), "track.flac");
 
-        let metadata = read_metadata(&path).expect("metadati letti");
+        let metadata = read_metadata(&path).expect("metadata read");
 
-        assert_eq!(metadata.title.as_deref(), Some("Titolo di prova"));
+        assert_eq!(metadata.title.as_deref(), Some("Test Title"));
         assert_eq!(metadata.format, "flac");
     }
 
     #[test]
-    fn riporta_una_durata_non_negativa() {
+    fn reports_a_non_negative_duration() {
         let dir = TempDir::new("metadata-duration");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
 
-        let metadata = read_metadata(&path).expect("metadati letti");
+        let metadata = read_metadata(&path).expect("metadata read");
 
         assert!(metadata.duration_ms > 0);
     }
 
     #[test]
-    fn non_restituisce_copertina_quando_non_c_e() {
+    fn returns_no_cover_when_there_is_none() {
         let dir = TempDir::new("cover-missing");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
 
-        assert_eq!(read_cover(&path).expect("lettura riuscita"), None);
+        assert_eq!(read_cover(&path).expect("read succeeded"), None);
     }
 
     #[test]
-    fn restituisce_la_copertina_codificata_in_base64() {
+    fn returns_the_cover_encoded_as_base64() {
         let dir = TempDir::new("cover-present");
-        let path = wav_with_cover(dir.path(), "brano.wav");
+        let path = wav_with_cover(dir.path(), "track.wav");
 
-        let metadata = read_metadata(&path).expect("metadati letti");
+        let metadata = read_metadata(&path).expect("metadata read");
         let cover = read_cover(&path)
-            .expect("lettura riuscita")
-            .expect("copertina presente");
+            .expect("read succeeded")
+            .expect("cover presente");
 
         assert!(metadata.has_cover);
         assert_eq!(cover.mime_type, "image/png");
@@ -255,8 +255,8 @@ mod tests {
     }
 
     #[test]
-    fn la_copertina_di_un_file_assente_e_un_errore() {
-        let error = read_cover(Path::new("C:/musica/assente.mp3")).unwrap_err();
+    fn cover_of_a_missing_file_is_an_error() {
+        let error = read_cover(Path::new("C:/music/assente.mp3")).unwrap_err();
 
         assert!(matches!(error, AppError::NotFound(_)));
     }

@@ -4,29 +4,29 @@ import { describe, expect, it } from 'vitest';
 import AppTooltip from './AppTooltip.vue';
 
 const options = {
-  props: { text: 'Rimuovi dalla libreria' },
+  props: { text: 'Remove from library' },
   slots: { default: '<button>✕</button>' },
 };
 
 describe('AppTooltip', () => {
-  it('resta nascosto finche non c e interazione', () => {
+  it('stays hidden until interaction', () => {
     const wrapper = mount(AppTooltip, options);
 
     expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
     expect(wrapper.get('button').text()).toBe('✕');
   });
 
-  it('compare al passaggio del mouse e sparisce all uscita', async () => {
+  it('appears on mouse hover and disappears on leave', async () => {
     const wrapper = mount(AppTooltip, options);
 
     await wrapper.trigger('mouseenter');
-    expect(wrapper.get('[role="tooltip"]').text()).toBe('Rimuovi dalla libreria');
+    expect(wrapper.get('[role="tooltip"]').text()).toBe('Remove from library');
 
     await wrapper.trigger('mouseleave');
     expect(wrapper.find('[role="tooltip"]').exists()).toBe(false);
   });
 
-  it('compare anche da tastiera, non solo col mouse', async () => {
+  it('also appears from keyboard, not only mouse', async () => {
     const wrapper = mount(AppTooltip, options);
 
     await wrapper.trigger('focusin');

@@ -10,7 +10,7 @@ beforeEach(() => {
 });
 
 describe('useNavigationStore', () => {
-  it('parte dalla libreria', () => {
+  it('starts on the library', () => {
     const navigation = useNavigationStore();
 
     expect(navigation.view).toBe('library');
@@ -18,7 +18,7 @@ describe('useNavigationStore', () => {
     expect(navigation.isSettings).toBe(false);
   });
 
-  it('apre la vista richiesta', () => {
+  it('opens the requested view', () => {
     const navigation = useNavigationStore();
 
     navigation.go('settings');
@@ -27,7 +27,7 @@ describe('useNavigationStore', () => {
     expect(navigation.isLibrary).toBe(false);
   });
 
-  it('l icona della guida fa da interruttore', () => {
+  it('the help icon toggles the view', () => {
     const navigation = useNavigationStore();
 
     navigation.toggleHelp();
@@ -38,7 +38,7 @@ describe('useNavigationStore', () => {
     expect(navigation.view).toBe('library');
   });
 
-  it('passa direttamente da una vista all altra', () => {
+  it('switches directly from one view to another', () => {
     const navigation = useNavigationStore();
     navigation.go('settings');
 
@@ -47,7 +47,7 @@ describe('useNavigationStore', () => {
     expect(navigation.view).toBe('help');
   });
 
-  it('l icona delle impostazioni fa da interruttore', () => {
+  it('the settings icon toggles the view', () => {
     const navigation = useNavigationStore();
 
     navigation.toggleSettings();

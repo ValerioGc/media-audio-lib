@@ -28,7 +28,7 @@ function mountActions(track = makeTrack()) {
 }
 
 describe('LibraryRowActions', () => {
-  it('apre e chiude il menu dal pulsante', async () => {
+  it('opens and closes the menu from the button', async () => {
     const wrapper = mountActions();
     const trigger = wrapper.get('.app_menu_trigger');
 
@@ -40,7 +40,7 @@ describe('LibraryRowActions', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('chiude il menu con Escape', async () => {
+  it('closes the menu with Escape', async () => {
     const wrapper = mountActions();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -50,7 +50,7 @@ describe('LibraryRowActions', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('chiude il menu al click fuori', async () => {
+  it('closes the menu on outside click', async () => {
     const wrapper = mountActions();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -60,7 +60,7 @@ describe('LibraryRowActions', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('emette modifica, verifica e rimozione', async () => {
+  it('emits edit, verify, and removal', async () => {
     const track = makeTrack();
     const wrapper = mountActions(track);
 
@@ -76,7 +76,7 @@ describe('LibraryRowActions', () => {
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 
-  it('mostra etichette brevi e la frase completa per gli screen reader', async () => {
+  it('shows short labels and the full phrase for screen readers', async () => {
     const wrapper = mountActions(makeTrack({ title: 'Blue in Green' }));
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -90,7 +90,7 @@ describe('LibraryRowActions', () => {
     expect(items[0]?.attributes('aria-label')).toBe('Modifica i metadati di Blue in Green');
   });
 
-  it('apre il menu da tastiera con freccia giu', async () => {
+  it('opens the menu from keyboard with ArrowDown', async () => {
     const wrapper = mountActions();
 
     await wrapper.get('.app_menu_trigger').trigger('keydown', { key: 'ArrowDown' });

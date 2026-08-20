@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe('CoverGradientToggle', () => {
-  it('mostra lo stato salvato', () => {
+  it('shows the saved state', () => {
     const options = withPinia();
     const settings = useSettingsStore();
     settings.coverGradientEnabled = false;
@@ -21,7 +21,7 @@ describe('CoverGradientToggle', () => {
     expect((wrapper.get('input').element as HTMLInputElement).checked).toBe(false);
   });
 
-  it('aggiorna l impostazione', async () => {
+  it('updates the setting', async () => {
     const options = withPinia();
     const settings = useSettingsStore();
     const setCoverGradientEnabled = vi
@@ -34,7 +34,7 @@ describe('CoverGradientToggle', () => {
     expect(setCoverGradientEnabled).toHaveBeenCalledWith(false);
   });
 
-  it('aggiorna trasparenza e blur del player', async () => {
+  it('updates player transparency and blur', async () => {
     const options = withPinia();
     const settings = useSettingsStore();
     const setPlayerTransparency = vi.spyOn(settings, 'setPlayerTransparency').mockResolvedValue();

@@ -4,35 +4,35 @@ import { describe, expect, it } from 'vitest';
 import MetadataField from './MetadataField.vue';
 
 describe('MetadataField', () => {
-  it('collega la label al campo', () => {
-    const wrapper = mount(MetadataField, { props: { modelValue: '', label: 'Nome' } });
+  it('links the label to the field', () => {
+    const wrapper = mount(MetadataField, { props: { modelValue: '', label: 'Name' } });
 
     expect(wrapper.get('label').attributes('for')).toBe(wrapper.get('input').attributes('id'));
   });
 
-  it('emette il valore digitato', async () => {
-    const wrapper = mount(MetadataField, { props: { modelValue: '', label: 'Nome' } });
+  it('emits the typed value', async () => {
+    const wrapper = mount(MetadataField, { props: { modelValue: '', label: 'Name' } });
 
-    await wrapper.get('input').setValue('Brano');
+    await wrapper.get('input').setValue('Track');
 
-    expect(wrapper.emitted('update:modelValue')).toEqual([['Brano']]);
+    expect(wrapper.emitted('update:modelValue')).toEqual([['Track']]);
   });
 
-  it('non segnala errori quando il campo e valido', () => {
-    const wrapper = mount(MetadataField, { props: { modelValue: 'Brano', label: 'Nome' } });
+  it('reports no errors when the field is valid', () => {
+    const wrapper = mount(MetadataField, { props: { modelValue: 'Track', label: 'Name' } });
 
     expect(wrapper.find('[role="alert"]').exists()).toBe(false);
     expect(wrapper.get('input').attributes('aria-invalid')).toBe('false');
   });
 
-  it('annuncia l errore e lo collega al campo', () => {
+  it('announces the error and links it to the field', () => {
     const wrapper = mount(MetadataField, {
-      props: { modelValue: '', label: 'Nome', error: 'Il nome non può essere vuoto.' },
+      props: { modelValue: '', label: 'Name', error: 'The name cannot be empty.' },
     });
 
     const alert = wrapper.get('[role="alert"]');
 
-    expect(alert.text()).toBe('Il nome non può essere vuoto.');
+    expect(alert.text()).toBe('The name cannot be empty.');
     expect(wrapper.get('input').attributes('aria-invalid')).toBe('true');
     expect(wrapper.get('input').attributes('aria-describedby')).toBe(alert.attributes('id'));
     expect(wrapper.get('input').classes()).toContain('metadata_field_input_invalid');

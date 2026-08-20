@@ -54,7 +54,7 @@ describe('sanitizeSettings', () => {
     expect(sanitizeSettings('non un oggetto')).toEqual(DEFAULT_SETTINGS);
   });
 
-  it('conserva i valori validi', () => {
+  it('keeps valid values', () => {
     const settings: AppSettings = {
       locale: 'en',
       textSize: 'large',
@@ -68,7 +68,7 @@ describe('sanitizeSettings', () => {
     expect(sanitizeSettings(settings)).toEqual(settings);
   });
 
-  it('scarta i singoli campi non validi mantenendo gli altri', () => {
+  it('discards individual invalid fields while keeping the others', () => {
     const sanitized = sanitizeSettings({ locale: 'de', textSize: 'large', theme: 'neon' });
 
     expect(sanitized).toEqual({
@@ -82,7 +82,7 @@ describe('sanitizeSettings', () => {
     });
   });
 
-  it('limita trasparenza e blur salvati a valori validi', () => {
+  it('clamps saved transparency and blur to valid values', () => {
     expect(sanitizeSettings({ playerTransparency: 80, playerBlur: -4 })).toEqual({
       ...DEFAULT_SETTINGS,
       playerTransparency: 45,
@@ -92,13 +92,13 @@ describe('sanitizeSettings', () => {
 });
 
 describe('createWebStorage', () => {
-  it('restituisce un oggetto vuoto quando non c e nulla di salvato', async () => {
+  it('returns an empty object when nothing is saved', async () => {
     const storage = createWebStorage(createFakeStorage());
 
     await expect(storage.load()).resolves.toEqual({});
   });
 
-  it('esegue il round-trip delle impostazioni', async () => {
+  it('round-trips settings', async () => {
     const storage = createWebStorage(createFakeStorage());
     const settings: AppSettings = {
       locale: 'en',
@@ -123,7 +123,7 @@ describe('createTauriStorage', () => {
     mocks.store.save.mockResolvedValue(undefined);
   });
 
-  it('legge le impostazioni dallo store del plugin', async () => {
+  it('reads settings from the plugin store', async () => {
     const settings: AppSettings = {
       locale: 'en',
       textSize: 'large',
@@ -139,11 +139,11 @@ describe('createTauriStorage', () => {
     expect(mocks.load).toHaveBeenCalledWith('settings.json', { autoSave: false });
   });
 
-  it('restituisce un oggetto vuoto quando la chiave non esiste', async () => {
+  it('returns an empty object when the key does not exist', async () => {
     await expect(createTauriStorage().load()).resolves.toEqual({});
   });
 
-  it('scrive e persiste su disco', async () => {
+  it('writes and persists to disk', async () => {
     await createTauriStorage().save(DEFAULT_SETTINGS);
 
     expect(mocks.store.set).toHaveBeenCalledWith('app-settings', DEFAULT_SETTINGS);
@@ -152,7 +152,7 @@ describe('createTauriStorage', () => {
 });
 
 describe('createSettingsStorage', () => {
-  it('usa il plugin Tauri quando l app gira nella shell', async () => {
+  it('uses the Tauri plugin when the app runs in the shell', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
     mocks.store.get.mockResolvedValue(undefined);
 
@@ -161,7 +161,7 @@ describe('createSettingsStorage', () => {
     expect(mocks.load).toHaveBeenCalledTimes(1);
   });
 
-  it('usa localStorage nel browser', async () => {
+  it('uses localStorage in the browser', async () => {
     const storage = createSettingsStorage();
     await storage.save({
       locale: 'en',

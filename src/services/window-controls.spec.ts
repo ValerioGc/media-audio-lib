@@ -30,8 +30,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('comandi della finestra', () => {
-  it('non fanno nulla fuori dalla shell desktop', async () => {
+describe('window commands', () => {
+  it('do nothing outside the desktop shell', async () => {
     await expect(minimizeWindow()).resolves.toBe(false);
     await expect(toggleMaximizeWindow()).resolves.toBe(false);
     await expect(closeWindow()).resolves.toBe(false);
@@ -53,7 +53,7 @@ describe('comandi della finestra', () => {
     expect(mocks.close).toHaveBeenCalledTimes(1);
   });
 
-  it('segnalano il fallimento senza propagare l errore', async () => {
+  it('report failure without propagating the error', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     mocks.close.mockRejectedValue(new Error('finestra gia chiusa'));

@@ -22,7 +22,7 @@ const renameLibrary = vi.mocked(api.renameLibrary);
 beforeEach(() => {
   resetI18n();
   libraryInfo.mockResolvedValue({ name: 'Media Audio Lib' });
-  renameLibrary.mockResolvedValue({ name: 'Archivio' });
+  renameLibrary.mockResolvedValue({ name: 'Archive' });
 });
 
 afterEach(() => {
@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 describe('LibraryNameForm', () => {
-  it('carica il nome quando non e ancora nello store', async () => {
+  it('loads the name when it is not in the store yet', async () => {
     const wrapper = mount(LibraryNameForm, withPinia());
     await flushPromises();
 
@@ -38,19 +38,19 @@ describe('LibraryNameForm', () => {
     expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Media Audio Lib');
   });
 
-  it('salva il nome ripulito dagli spazi', async () => {
+  it('saves the name trimmed of whitespace', async () => {
     const wrapper = mount(LibraryNameForm, withPinia());
     await flushPromises();
 
-    await wrapper.get('input').setValue('  Archivio  ');
+    await wrapper.get('input').setValue('  Archive  ');
     await wrapper.get('form').trigger('submit');
     await flushPromises();
 
-    expect(renameLibrary).toHaveBeenCalledWith('Archivio');
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Archivio');
+    expect(renameLibrary).toHaveBeenCalledWith('Archive');
+    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Archive');
   });
 
-  it('mostra la validazione per un nome vuoto', async () => {
+  it('shows validation for an empty name', async () => {
     const wrapper = mount(LibraryNameForm, withPinia());
     await flushPromises();
 

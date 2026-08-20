@@ -49,7 +49,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn app_info_espone_nome_e_versione_del_pacchetto() {
+    fn app_info_exposes_package_name_and_version() {
         let info = app_info();
 
         assert_eq!(info.name, "media-audio-lib");
@@ -57,7 +57,7 @@ mod tests {
     }
 
     #[test]
-    fn app_info_elenca_i_formati_supportati() {
+    fn app_info_lists_supported_formats() {
         let info = build_app_info();
 
         assert_eq!(info.supported_extensions.len(), SUPPORTED_EXTENSIONS.len());
@@ -65,7 +65,7 @@ mod tests {
     }
 
     #[test]
-    fn app_info_e_serializzabile_verso_il_frontend() {
+    fn app_info_is_serializable_for_the_frontend() {
         let json = serde_json::to_string(&build_app_info()).expect("serializzazione riuscita");
 
         assert!(json.contains("\"supportedExtensions\""));

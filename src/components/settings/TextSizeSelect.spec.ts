@@ -16,19 +16,19 @@ afterEach(() => {
 });
 
 describe('TextSizeSelect', () => {
-  it('offre una scelta per ogni dimensione disponibile', () => {
+  it('offers one choice for each available size', () => {
     const wrapper = mount(TextSizeSelect, withPinia());
 
     expect(wrapper.findAll('input[type="radio"]')).toHaveLength(TEXT_SIZES.length);
   });
 
-  it('mostra un testo di anteprima', () => {
+  it('shows preview text', () => {
     const wrapper = mount(TextSizeSelect, withPinia());
 
     expect(wrapper.get('[data-testid="text-size-preview"]').text().length).toBeGreaterThan(0);
   });
 
-  it('aggiorna lo store e la scala del documento', async () => {
+  it('updates the store and document scale', async () => {
     const wrapper = mount(TextSizeSelect, withPinia());
     const store = useSettingsStore();
 

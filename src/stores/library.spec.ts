@@ -63,7 +63,7 @@ const emptyReport: AddReport = { added: [], duplicates: [], failed: [] };
 beforeEach(() => {
   setActivePinia(createTestPinia());
   libraryInfo.mockResolvedValue({ name: 'Media Audio Lib' });
-  renameLibrary.mockResolvedValue({ name: 'Archivio' });
+  renameLibrary.mockResolvedValue({ name: 'Archive' });
   listTracks.mockResolvedValue([]);
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
@@ -76,8 +76,8 @@ beforeEach(() => {
   pickTrackListExportFile.mockResolvedValue(null);
 });
 
-const catalogo = [
-  { id: 'lib-1', name: 'Principale', trackCount: 2, active: true },
+const catalog = [
+  { id: 'lib-1', name: 'Main', trackCount: 2, active: true },
   { id: 'lib-2', name: 'Jazz', trackCount: 0, active: false },
 ];
 
@@ -85,15 +85,15 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('caricamento', () => {
-  it('parte vuoto e senza errori', () => {
+describe('loading', () => {
+  it('starts empty and without errors', () => {
     const store = useLibraryStore();
 
     expect(store.isEmpty).toBe(true);
     expect(store.errorKey).toBeNull();
   });
 
-  it('carica i brani dal backend', async () => {
+  it('loads tracks from the backend', async () => {
     const store = useLibraryStore();
     listTracks.mockResolvedValue([makeTrack(), makeTrack()]);
 
@@ -103,16 +103,16 @@ describe('caricamento', () => {
     expect(store.isLoading).toBe(false);
   });
 
-  it('carica il nome della libreria dal backend', async () => {
+  it('loads the library name from the backend', async () => {
     const store = useLibraryStore();
-    libraryInfo.mockResolvedValue({ name: 'Archivio jazz' });
+    libraryInfo.mockResolvedValue({ name: 'Jazz Archive' });
 
     await store.load();
 
-    expect(store.libraryName).toBe('Archivio jazz');
+    expect(store.libraryName).toBe('Jazz Archive');
   });
 
-  it('segnala l assenza della shell desktop', async () => {
+  it('reports the missing desktop shell', async () => {
     const store = useLibraryStore();
     listTracks.mockRejectedValue(new ShellUnavailableError());
 
@@ -121,7 +121,7 @@ describe('caricamento', () => {
     expect(store.errorKey).toBe('shellUnavailable');
   });
 
-  it('segnala un errore generico', async () => {
+  it('reports a generic error', async () => {
     const store = useLibraryStore();
     listTracks.mockRejectedValue(new Error('boom'));
 
@@ -131,18 +131,18 @@ describe('caricamento', () => {
   });
 });
 
-describe('rinomina', () => {
-  it('salva il nome ripulito dagli spazi', async () => {
+describe('rename', () => {
+  it('saves the name trimmed of whitespace', async () => {
     const store = useLibraryStore();
 
-    await expect(store.renameLibrary('  Archivio  ')).resolves.toBe(true);
+    await expect(store.renameLibrary('  Archive  ')).resolves.toBe(true);
 
-    expect(renameLibrary).toHaveBeenCalledWith('Archivio');
-    expect(store.libraryName).toBe('Archivio');
+    expect(renameLibrary).toHaveBeenCalledWith('Archive');
+    expect(store.libraryName).toBe('Archive');
     expect(store.isRenaming).toBe(false);
   });
 
-  it('rifiuta un nome vuoto senza chiamare il backend', async () => {
+  it('rejects an empty name without calling the backend', async () => {
     const store = useLibraryStore();
 
     await expect(store.renameLibrary('   ')).resolves.toBe(false);
@@ -151,27 +151,27 @@ describe('rinomina', () => {
     expect(store.errorKey).toBe('invalidLibraryName');
   });
 
-  it('mantiene il nome corrente se il backend fallisce', async () => {
+  it('keeps the current name if the backend fails', async () => {
     const store = useLibraryStore();
-    store.libraryName = 'Archivio';
+    store.libraryName = 'Archive';
     renameLibrary.mockRejectedValue(new Error('boom'));
 
-    await expect(store.renameLibrary('Nuovo')).resolves.toBe(false);
+    await expect(store.renameLibrary('New')).resolves.toBe(false);
 
-    expect(store.libraryName).toBe('Archivio');
+    expect(store.libraryName).toBe('Archive');
     expect(store.errorKey).toBe('generic');
   });
 });
 
-describe('importazione', () => {
-  it('non chiama il backend senza percorsi', async () => {
+describe('import', () => {
+  it('does not call the backend without paths', async () => {
     const store = useLibraryStore();
 
     await expect(store.addPaths([])).resolves.toBeNull();
     expect(addTracks).not.toHaveBeenCalled();
   });
 
-  it('importa e ricarica la lista', async () => {
+  it('imports and reloads the list', async () => {
     const store = useLibraryStore();
     const added = makeTrack();
     addTracks.mockResolvedValue({ added: [added], duplicates: [], failed: [] });
@@ -184,15 +184,15 @@ describe('importazione', () => {
     expect(store.isImporting).toBe(false);
   });
 
-  it('conserva l esito con duplicati e scarti', async () => {
+  it('keeps the result with duplicates and skipped files', async () => {
     const store = useLibraryStore();
     addTracks.mockResolvedValue({
       added: [],
-      duplicates: ['C:/musica/gia-presente.mp3'],
-      failed: [{ path: 'C:/musica/rotto.mp3', reason: 'file audio illeggibile' }],
+      duplicates: ['C:/music/gia-presente.mp3'],
+      failed: [{ path: 'C:/music/rotto.mp3', reason: 'unreadable audio file' }],
     });
 
-    await store.addPaths(['C:/musica/gia-presente.mp3', 'C:/musica/rotto.mp3']);
+    await store.addPaths(['C:/music/gia-presente.mp3', 'C:/music/rotto.mp3']);
 
     expect(store.lastReport?.duplicates).toHaveLength(1);
     expect(store.lastReport?.failed).toHaveLength(1);
@@ -201,7 +201,7 @@ describe('importazione', () => {
     expect(store.lastReport).toBeNull();
   });
 
-  it('registra l errore di importazione', async () => {
+  it('records the import error', async () => {
     const store = useLibraryStore();
     addTracks.mockRejectedValue(new Error('boom'));
 
@@ -210,23 +210,23 @@ describe('importazione', () => {
     expect(store.isImporting).toBe(false);
   });
 
-  it('importa i file scelti dal dialog di sistema', async () => {
+  it('imports files chosen from the system dialog', async () => {
     const store = useLibraryStore();
-    pickAudioFiles.mockResolvedValue(['C:/musica/brano.mp3']);
+    pickAudioFiles.mockResolvedValue(['C:/music/track.mp3']);
 
     await store.pickAndAdd();
 
-    expect(addTracks).toHaveBeenCalledWith(['C:/musica/brano.mp3']);
+    expect(addTracks).toHaveBeenCalledWith(['C:/music/track.mp3']);
   });
 
-  it('non fa nulla se il dialog viene annullato', async () => {
+  it('does nothing if the dialog is cancelled', async () => {
     const store = useLibraryStore();
 
     await expect(store.pickAndAdd()).resolves.toBeNull();
     expect(addTracks).not.toHaveBeenCalled();
   });
 
-  it('segnala il dialog non disponibile fuori dalla shell', async () => {
+  it('reports the dialog unavailable outside the shell', async () => {
     const store = useLibraryStore();
     pickAudioFiles.mockRejectedValue(new ShellUnavailableError());
 
@@ -236,8 +236,8 @@ describe('importazione', () => {
   });
 });
 
-describe('rimozione', () => {
-  it('toglie il brano dalla lista senza ricaricare tutto', async () => {
+describe('removal', () => {
+  it('removes the track from the list without reloading everything', async () => {
     const store = useLibraryStore();
     const [first, second] = [makeTrack(), makeTrack()];
     listTracks.mockResolvedValue([first, second]);
@@ -251,7 +251,7 @@ describe('rimozione', () => {
     expect(removeTrack).toHaveBeenCalledWith(first.id);
   });
 
-  it('mantiene la lista se il backend fallisce', async () => {
+  it('keeps the list if the backend fails', async () => {
     const store = useLibraryStore();
     const track = makeTrack();
     listTracks.mockResolvedValue([track]);
@@ -265,8 +265,8 @@ describe('rimozione', () => {
   });
 });
 
-describe('verifica collegamento', () => {
-  it('aggiorna lo stato su disco del brano verificato', async () => {
+describe('link verification', () => {
+  it('updates the disk status of the verified track', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ missing: false });
     listTracks.mockResolvedValue([track]);
@@ -280,7 +280,7 @@ describe('verifica collegamento', () => {
     expect(store.tracks[0]?.missing).toBe(true);
   });
 
-  it('segnala l errore senza cambiare la lista', async () => {
+  it('reports the error without changing the list', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ missing: false });
     listTracks.mockResolvedValue([track]);
@@ -293,7 +293,7 @@ describe('verifica collegamento', () => {
     expect(store.errorKey).toBe('generic');
   });
 
-  it('verifica in blocco tutti i brani e salva il riepilogo', async () => {
+  it('bulk verifies every track and saves the summary', async () => {
     const store = useLibraryStore();
     const [present, missing] = [makeTrack({ missing: false }), makeTrack({ missing: false })];
     listTracks.mockResolvedValue([present, missing]);
@@ -316,8 +316,8 @@ describe('verifica collegamento', () => {
   });
 });
 
-describe('ricerca e ordinamento', () => {
-  it('filtra la lista visibile', async () => {
+describe('search and sorting', () => {
+  it('filters the visible list', async () => {
     const store = useLibraryStore();
     listTracks.mockResolvedValue([makeTrack({ title: 'Alfa' }), makeTrack({ title: 'Beta' })]);
     await store.load();
@@ -331,7 +331,7 @@ describe('ricerca e ordinamento', () => {
     expect(store.hasNoMatches).toBe(true);
   });
 
-  it('inverte la direzione ricliccando la stessa colonna', () => {
+  it('reverses direction when clicking the same column again', () => {
     const store = useLibraryStore();
 
     store.toggleSort('title');
@@ -341,7 +341,7 @@ describe('ricerca e ordinamento', () => {
     expect(store.sort).toEqual({ column: 'title', direction: 'asc' });
   });
 
-  it('riparte da ascendente cambiando colonna', () => {
+  it('restarts from ascending when changing column', () => {
     const store = useLibraryStore();
     store.toggleSort('title');
 
@@ -350,7 +350,7 @@ describe('ricerca e ordinamento', () => {
     expect(store.sort).toEqual({ column: 'album', direction: 'asc' });
   });
 
-  it('conta i file non piu presenti su disco', async () => {
+  it('counts files no longer present on disk', async () => {
     const store = useLibraryStore();
     listTracks.mockResolvedValue([makeTrack({ missing: true }), makeTrack()]);
 
@@ -359,51 +359,51 @@ describe('ricerca e ordinamento', () => {
     expect(store.missingCount).toBe(1);
   });
 
-  it('filtra i brani per informazioni mancanti', async () => {
+  it('filters tracks by missing information', async () => {
     const store = useLibraryStore();
     listTracks.mockResolvedValue([
-      makeTrack({ title: 'Senza copertina', hasCover: false }),
-      makeTrack({ title: 'Senza autore', hasCover: true, artist: null }),
-      makeTrack({ title: 'Completo', hasCover: true }),
+      makeTrack({ title: 'Without cover', hasCover: false }),
+      makeTrack({ title: 'Without artist', hasCover: true, artist: null }),
+      makeTrack({ title: 'Complete', hasCover: true }),
     ]);
     await store.load();
 
     store.setMissingInfoFilter('cover');
-    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Senza copertina']);
+    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Without cover']);
 
     store.setMissingInfoFilter('artist');
-    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Senza autore']);
+    expect(store.visibleTracks.map((track) => track.title)).toEqual(['Without artist']);
 
     store.setMissingInfoFilter('all');
     expect(store.visibleTracks).toHaveLength(3);
   });
 });
 
-describe('modifica dei metadati', () => {
-  it('rimpiazza il brano modificato conservando lo stato su disco', async () => {
+describe('metadata editing', () => {
+  it('replaces the edited track while preserving disk status', async () => {
     const store = useLibraryStore();
-    const track = makeTrack({ title: 'Vecchio', missing: true });
+    const track = makeTrack({ title: 'Old', missing: true });
     listTracks.mockResolvedValue([track]);
     await store.load();
 
-    const { missing: _missing, ...saved } = { ...track, title: 'Nuovo' };
+    const { missing: _missing, ...saved } = { ...track, title: 'New' };
     writeMetadata.mockResolvedValue(saved);
 
     const result = await store.saveMetadata(track.id, {
-      title: 'Nuovo',
+      title: 'New',
       artist: null,
       album: null,
       year: null,
       genre: null,
     });
 
-    expect(result?.title).toBe('Nuovo');
-    expect(store.tracks[0]?.title).toBe('Nuovo');
+    expect(result?.title).toBe('New');
+    expect(store.tracks[0]?.title).toBe('New');
     expect(store.tracks[0]?.missing).toBe(true);
     expect(store.isSaving).toBe(false);
   });
 
-  it('invalida la copertina in cache dopo una modifica', async () => {
+  it('invalidates cached cover after an edit', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ hasCover: true });
     listTracks.mockResolvedValue([track]);
@@ -419,15 +419,15 @@ describe('modifica dei metadati', () => {
     expect(store.covers.get(track.id)).toBeUndefined();
   });
 
-  it('segnala l errore di scrittura senza modificare la lista', async () => {
+  it('reports the write error without changing the list', async () => {
     const store = useLibraryStore();
-    const track = makeTrack({ title: 'Intatto' });
+    const track = makeTrack({ title: 'Untouched' });
     listTracks.mockResolvedValue([track]);
     await store.load();
-    writeMetadata.mockRejectedValue(new Error('sola lettura'));
+    writeMetadata.mockRejectedValue(new Error('read only'));
 
     const result = await store.saveMetadata(track.id, {
-      title: 'Nuovo',
+      title: 'New',
       artist: null,
       album: null,
       year: null,
@@ -436,11 +436,11 @@ describe('modifica dei metadati', () => {
 
     expect(result).toBeNull();
     expect(store.errorKey).toBe('generic');
-    expect(store.tracks[0]?.title).toBe('Intatto');
+    expect(store.tracks[0]?.title).toBe('Untouched');
     expect(store.isSaving).toBe(false);
   });
 
-  it('apre e chiude l editor sul brano scelto', async () => {
+  it('opens and closes the editor on the selected track', async () => {
     const store = useLibraryStore();
     const track = makeTrack();
     listTracks.mockResolvedValue([track]);
@@ -456,22 +456,22 @@ describe('modifica dei metadati', () => {
   });
 });
 
-describe('copertine', () => {
-  it('non chiede la copertina se il brano non ne ha', async () => {
+describe('covers', () => {
+  it('does not request the cover if the track has none', async () => {
     const store = useLibraryStore();
 
     await expect(store.loadCover(makeTrack({ hasCover: false }))).resolves.toBeNull();
     expect(getCover).not.toHaveBeenCalled();
   });
 
-  it('non chiede la copertina di un file mancante', async () => {
+  it('does not request the cover for a missing file', async () => {
     const store = useLibraryStore();
 
     await expect(store.loadCover(makeTrack({ hasCover: true, missing: true }))).resolves.toBeNull();
     expect(getCover).not.toHaveBeenCalled();
   });
 
-  it('scarica la copertina una sola volta per brano', async () => {
+  it('downloads the cover only once per track', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ hasCover: true });
     getCover.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
@@ -484,7 +484,7 @@ describe('copertine', () => {
     expect(getCover).toHaveBeenCalledTimes(1);
   });
 
-  it('resta senza immagine se la lettura fallisce', async () => {
+  it('stays without an image if reading fails', async () => {
     const store = useLibraryStore();
     getCover.mockRejectedValue(new Error('boom'));
 
@@ -492,7 +492,7 @@ describe('copertine', () => {
     expect(store.errorKey).toBeNull();
   });
 
-  it('gestisce un brano senza immagine incorporata', async () => {
+  it('handles a track without embedded artwork', async () => {
     const store = useLibraryStore();
     getCover.mockResolvedValue(null);
 
@@ -500,9 +500,9 @@ describe('copertine', () => {
   });
 });
 
-describe('useLibraryStore - piu librerie', () => {
-  it('carica l elenco delle librerie', async () => {
-    listLibraries.mockResolvedValue(catalogo);
+describe('useLibraryStore - multiple libraries', () => {
+  it('loads the library list', async () => {
+    listLibraries.mockResolvedValue(catalog);
     const store = useLibraryStore();
 
     await store.loadLibraries();
@@ -512,8 +512,8 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.canDeleteLibrary).toBe(true);
   });
 
-  it('con una sola libreria non permette di eliminarla', async () => {
-    listLibraries.mockResolvedValue([catalogo[0]!]);
+  it('does not allow deleting the only library', async () => {
+    listLibraries.mockResolvedValue([catalog[0]!]);
     const store = useLibraryStore();
 
     await store.loadLibraries();
@@ -521,9 +521,9 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.canDeleteLibrary).toBe(false);
   });
 
-  it('crea una libreria e aggiorna l elenco', async () => {
+  it('creates a library and updates the list', async () => {
     createLibrary.mockResolvedValue({ id: 'lib-3', name: 'Rock', trackCount: 0, active: false });
-    listLibraries.mockResolvedValue(catalogo);
+    listLibraries.mockResolvedValue(catalog);
     const store = useLibraryStore();
 
     await expect(store.createLibrary('  Rock  ')).resolves.toBe(true);
@@ -532,7 +532,7 @@ describe('useLibraryStore - piu librerie', () => {
     expect(listLibraries).toHaveBeenCalled();
   });
 
-  it('rifiuta una libreria senza nome', async () => {
+  it('rejects an unnamed library', async () => {
     const store = useLibraryStore();
 
     await expect(store.createLibrary('   ')).resolves.toBe(false);
@@ -541,8 +541,8 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.errorKey).toBe('invalidLibraryName');
   });
 
-  it('aprendo un altra libreria ricarica brani e copertine', async () => {
-    listLibraries.mockResolvedValue(catalogo);
+  it('opening another library reloads tracks and covers', async () => {
+    listLibraries.mockResolvedValue(catalog);
     switchLibrary.mockResolvedValue({ name: 'Jazz' });
     libraryInfo.mockResolvedValue({ name: 'Jazz' });
     listTracks.mockResolvedValue([makeTrack()]);
@@ -561,8 +561,8 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.covers.size).toBe(0);
   });
 
-  it('non riapre la libreria gia aperta', async () => {
-    listLibraries.mockResolvedValue(catalogo);
+  it('does not reopen the already open library', async () => {
+    listLibraries.mockResolvedValue(catalog);
     const store = useLibraryStore();
     await store.loadLibraries();
 
@@ -571,9 +571,9 @@ describe('useLibraryStore - piu librerie', () => {
     expect(switchLibrary).not.toHaveBeenCalled();
   });
 
-  it('elimina una libreria non aperta senza toccare i brani', async () => {
-    listLibraries.mockResolvedValue(catalogo);
-    deleteLibrary.mockResolvedValue([catalogo[0]!]);
+  it('deletes a library that is not open without touching tracks', async () => {
+    listLibraries.mockResolvedValue(catalog);
+    deleteLibrary.mockResolvedValue([catalog[0]!]);
     const store = useLibraryStore();
     await store.loadLibraries();
     listTracks.mockClear();
@@ -584,9 +584,9 @@ describe('useLibraryStore - piu librerie', () => {
     expect(listTracks).not.toHaveBeenCalled();
   });
 
-  it('eliminando la libreria aperta ricarica quella rimasta', async () => {
-    listLibraries.mockResolvedValue(catalogo);
-    deleteLibrary.mockResolvedValue([{ ...catalogo[1]!, active: true }]);
+  it('deleting the open library reloads the remaining one', async () => {
+    listLibraries.mockResolvedValue(catalog);
+    deleteLibrary.mockResolvedValue([{ ...catalog[1]!, active: true }]);
     libraryInfo.mockResolvedValue({ name: 'Jazz' });
     const store = useLibraryStore();
     await store.loadLibraries();
@@ -598,8 +598,8 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.libraryName).toBe('Jazz');
   });
 
-  it('segnala il file scritto dall export', async () => {
-    listLibraries.mockResolvedValue(catalogo);
+  it('reports the file written by export', async () => {
+    listLibraries.mockResolvedValue(catalog);
     pickExportFile.mockResolvedValue('C:/backup/jazz.json');
     exportLibrary.mockResolvedValue('C:/backup/jazz.json');
     const store = useLibraryStore();
@@ -615,23 +615,23 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.lastExport).toBeNull();
   });
 
-  it('esporta l elenco brani nel formato scelto', async () => {
+  it('exports the track list in the selected format', async () => {
     const store = useLibraryStore();
-    store.libraryName = 'Archivio jazz';
-    pickTrackListExportFile.mockResolvedValue('C:/backup/brani.csv');
-    exportTrackList.mockResolvedValue('C:/backup/brani.csv');
+    store.libraryName = 'Jazz Archive';
+    pickTrackListExportFile.mockResolvedValue('C:/backup/tracks.csv');
+    exportTrackList.mockResolvedValue('C:/backup/tracks.csv');
 
     await expect(store.exportTrackList('csv', ['title', 'artist'])).resolves.toBe(true);
 
-    expect(pickTrackListExportFile).toHaveBeenCalledWith('Archivio jazz', 'csv');
-    expect(exportTrackList).toHaveBeenCalledWith('C:/backup/brani.csv', 'csv', [
+    expect(pickTrackListExportFile).toHaveBeenCalledWith('Jazz Archive', 'csv');
+    expect(exportTrackList).toHaveBeenCalledWith('C:/backup/tracks.csv', 'csv', [
       'title',
       'artist',
     ]);
-    expect(store.lastExport).toBe('C:/backup/brani.csv');
+    expect(store.lastExport).toBe('C:/backup/tracks.csv');
   });
 
-  it('non esporta l elenco brani senza campi selezionati', async () => {
+  it('does not export the track list without selected fields', async () => {
     const store = useLibraryStore();
 
     await expect(store.exportTrackList('txt', [])).resolves.toBe(false);
@@ -640,8 +640,8 @@ describe('useLibraryStore - piu librerie', () => {
     expect(exportTrackList).not.toHaveBeenCalled();
   });
 
-  it('annullando la scelta del file non esporta nulla', async () => {
-    listLibraries.mockResolvedValue(catalogo);
+  it('cancelling file selection exports nothing', async () => {
+    listLibraries.mockResolvedValue(catalog);
     pickExportFile.mockResolvedValue(null);
     const store = useLibraryStore();
     await store.loadLibraries();
@@ -652,13 +652,13 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.lastExport).toBeNull();
   });
 
-  it('importa una libreria JSON e ricarica stato ed elenco', async () => {
+  it('imports a JSON library and reloads state and list', async () => {
     const imported = { added: 2, updated: 1, skipped: 0, missing: ['C:/missing.mp3'], total: 3 };
     pickImportFile.mockResolvedValue('C:/backup/jazz.json');
     importLibrary.mockResolvedValue(imported);
-    libraryInfo.mockResolvedValue({ name: 'Importata' });
+    libraryInfo.mockResolvedValue({ name: 'Imported' });
     listTracks.mockResolvedValue([makeTrack()]);
-    listLibraries.mockResolvedValue(catalogo);
+    listLibraries.mockResolvedValue(catalog);
     const store = useLibraryStore();
 
     await expect(store.importLibrary('merge')).resolves.toBe(true);
@@ -666,15 +666,15 @@ describe('useLibraryStore - piu librerie', () => {
     expect(pickImportFile).toHaveBeenCalledTimes(1);
     expect(importLibrary).toHaveBeenCalledWith('C:/backup/jazz.json', 'merge');
     expect(store.lastLibraryImport).toEqual(imported);
-    expect(store.libraryName).toBe('Importata');
+    expect(store.libraryName).toBe('Imported');
     expect(store.tracks).toHaveLength(1);
-    expect(store.libraries).toEqual(catalogo);
+    expect(store.libraries).toEqual(catalog);
 
     store.dismissLibraryImport();
     expect(store.lastLibraryImport).toBeNull();
   });
 
-  it('annullando la scelta del file non importa nulla', async () => {
+  it('cancelling file selection imports nothing', async () => {
     pickImportFile.mockResolvedValue(null);
     const store = useLibraryStore();
 
@@ -685,9 +685,9 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.isLibraryImporting).toBe(false);
   });
 
-  it('riporta l errore se l import della libreria fallisce', async () => {
+  it('reports the error if library import fails', async () => {
     pickImportFile.mockResolvedValue('C:/backup/rotto.json');
-    importLibrary.mockRejectedValue(new Error('rotto'));
+    importLibrary.mockRejectedValue(new Error('broken'));
     const store = useLibraryStore();
 
     await expect(store.importLibrary('mergeSkipDuplicates')).resolves.toBe(false);
@@ -697,7 +697,7 @@ describe('useLibraryStore - piu librerie', () => {
     expect(store.isLibraryImporting).toBe(false);
   });
 
-  it('riporta l errore quando il catalogo non risponde', async () => {
+  it('reports the error when the catalog does not respond', async () => {
     listLibraries.mockRejectedValue(new ShellUnavailableError());
     const store = useLibraryStore();
 

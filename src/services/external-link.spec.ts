@@ -20,14 +20,14 @@ afterEach(() => {
 });
 
 describe('openExternal', () => {
-  it('usa il plugin di sistema dentro la shell', async () => {
+  it('uses the system plugin inside the shell', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
 
     await expect(openExternal(url)).resolves.toBe(true);
     expect(mocks.openUrl).toHaveBeenCalledWith(url);
   });
 
-  it('apre una nuova scheda nel browser', async () => {
+  it('opens a new browser tab', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
 
     await expect(openExternal(url)).resolves.toBe(true);
@@ -35,7 +35,7 @@ describe('openExternal', () => {
     expect(mocks.openUrl).not.toHaveBeenCalled();
   });
 
-  it('segnala il fallimento senza propagare l errore', async () => {
+  it('reports failure without propagating the error', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     mocks.openUrl.mockRejectedValue(new Error('nessun browser'));

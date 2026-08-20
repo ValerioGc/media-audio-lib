@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 
 describe('LibraryCoverCell', () => {
-  it('mostra un segnaposto quando non c e copertina', async () => {
+  it('shows a placeholder when there is no cover', async () => {
     const wrapper = mount(LibraryCoverCell, {
       ...withPinia(),
       props: { track: makeTrack({ hasCover: false }) },
@@ -23,7 +23,7 @@ describe('LibraryCoverCell', () => {
     expect(wrapper.get('.cover_image_fallback').attributes('aria-label')).toBe('Nessuna copertina');
   });
 
-  it('mostra la copertina caricata dallo store', async () => {
+  it('shows the cover loaded from the store', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     vi.spyOn(store, 'loadCover').mockResolvedValue('data:image/png;base64,AAA');
@@ -37,7 +37,7 @@ describe('LibraryCoverCell', () => {
     expect(wrapper.get('img').attributes('src')).toBe('data:image/png;base64,AAA');
   });
 
-  it('ricarica la copertina quando cambia il brano', async () => {
+  it('reloads the cover when the track changes', async () => {
     const options = withPinia();
     const store = useLibraryStore();
     const loadCover = vi.spyOn(store, 'loadCover').mockResolvedValue(null);

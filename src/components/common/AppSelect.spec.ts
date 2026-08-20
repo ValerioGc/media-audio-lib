@@ -9,7 +9,7 @@ const options = [
 ];
 
 describe('AppSelect', () => {
-  it('mostra tutte le opzioni con la corrente selezionata', () => {
+  it('shows all options with the current one selected', () => {
     const wrapper = mount(AppSelect, {
       props: { modelValue: 'en', options, label: 'Lingua' },
     });
@@ -18,7 +18,7 @@ describe('AppSelect', () => {
     expect(wrapper.get('select').element.value).toBe('en');
   });
 
-  it('collega la label al campo tramite id', () => {
+  it('links the label to the field tramite id', () => {
     const wrapper = mount(AppSelect, {
       props: { modelValue: 'it', options, label: 'Lingua' },
     });
@@ -27,7 +27,7 @@ describe('AppSelect', () => {
     expect(wrapper.get('label').text()).toBe('Lingua');
   });
 
-  it('emette il nuovo valore alla selezione', async () => {
+  it('emits the new value on selection', async () => {
     const wrapper = mount(AppSelect, {
       props: { modelValue: 'it', options, label: 'Lingua' },
     });

@@ -15,14 +15,14 @@ use crate::state::LibraryState;
 fn tracked_path(state: &LibraryState, id: &str) -> AppResult<PathBuf> {
     state
         .read(|library| library::path_of(library, id))?
-        .ok_or_else(|| AppError::NotFound(format!("brano {id} non presente in libreria")))
+        .ok_or_else(|| AppError::NotFound(format!("track {id} not present in the library")))
 }
 
 /// Mirrors freshly written tags onto the library entry and persists it.
 fn store_metadata(state: &LibraryState, id: &str, written: TrackMetadata) -> AppResult<Track> {
     state
         .update(|library| library::apply_metadata(library, id, written))?
-        .ok_or_else(|| AppError::NotFound(format!("brano {id} non presente in libreria")))
+        .ok_or_else(|| AppError::NotFound(format!("track {id} not present in the library")))
 }
 
 pub fn edit_metadata(state: &LibraryState, id: &str, update: &MetadataUpdate) -> AppResult<Track> {
@@ -83,19 +83,19 @@ mod tests {
         let state = LibraryState::from_file(dir.path().join("library.json"));
         state
             .update(|lib| library::add_paths(lib, &[file.display().to_string()], 0))
-            .expect("import riuscito");
+            .expect("import succeeded");
 
         let id = state
             .read(|lib| lib.tracks()[0].id.clone())
-            .expect("lettura riuscita");
+            .expect("read succeeded");
 
         (state, id)
     }
 
     fn update() -> MetadataUpdate {
         MetadataUpdate {
-            title: "Titolo modificato".to_owned(),
-            artist: Some("Autore modificato".to_owned()),
+            title: "Title modificato".to_owned(),
+            artist: Some("Edited Artist".to_owned()),
             album: Some("Album modificato".to_owned()),
             year: Some(2012),
             genre: Some("Blues".to_owned()),
@@ -103,22 +103,22 @@ mod tests {
     }
 
     #[test]
-    fn legge_i_metadati_da_un_percorso() {
+    fn reads_metadata_from_a_path() {
         let dir = TempDir::new("commands-metadata");
-        let path = wav_with_tags(dir.path(), "brano.wav");
+        let path = wav_with_tags(dir.path(), "track.wav");
 
-        let metadata = read_metadata(path.display().to_string()).expect("lettura riuscita");
+        let metadata = read_metadata(path.display().to_string()).expect("read succeeded");
 
-        assert_eq!(metadata.title.as_deref(), Some("Titolo di prova"));
+        assert_eq!(metadata.title.as_deref(), Some("Test Title"));
     }
 
     #[test]
-    fn legge_la_copertina_passando_dalla_cache() {
+    fn reads_cover_through_the_cache() {
         let dir = TempDir::new("commands-cover");
-        let path = wav_with_cover(dir.path(), "brano.wav");
+        let path = wav_with_cover(dir.path(), "track.wav");
         let cache = CoverCache::new(dir.path().join("cover-cache"));
 
-        let cover = cache.load(&path).expect("lettura riuscita");
+        let cover = cache.load(&path).expect("read succeeded");
 
         assert_eq!(
             cover.map(|cover| cover.mime_type),
@@ -127,48 +127,48 @@ mod tests {
     }
 
     #[test]
-    fn riporta_l_errore_per_un_percorso_inesistente() {
-        assert!(read_metadata("C:/musica/assente.mp3".to_owned()).is_err());
+    fn reports_the_error_for_a_missing_path() {
+        assert!(read_metadata("C:/music/assente.mp3".to_owned()).is_err());
     }
 
     #[test]
-    fn la_modifica_aggiorna_file_e_libreria() {
+    fn edit_updates_file_and_library() {
         let dir = TempDir::new("edit-metadata");
-        let file = wav_with_tags(dir.path(), "brano.wav");
+        let file = wav_with_tags(dir.path(), "track.wav");
         let (state, id) = state_with_track(&dir, file.clone());
 
-        let updated = edit_metadata(&state, &id, &update()).expect("modifica riuscita");
+        let updated = edit_metadata(&state, &id, &update()).expect("edit succeeded");
 
-        assert_eq!(updated.title, "Titolo modificato");
+        assert_eq!(updated.title, "Title modificato");
         assert_eq!(updated.year, Some(2012));
         assert_eq!(
             metadata::read_metadata(&file)
-                .expect("rilettura")
+                .expect("riread")
                 .title
                 .as_deref(),
-            Some("Titolo modificato")
+            Some("Title modificato")
         );
     }
 
     #[test]
-    fn la_modifica_resta_dopo_un_riavvio() {
+    fn edit_survives_restart() {
         let dir = TempDir::new("edit-persisted");
-        let file = wav_with_tags(dir.path(), "brano.wav");
+        let file = wav_with_tags(dir.path(), "track.wav");
         let (state, id) = state_with_track(&dir, file);
 
-        edit_metadata(&state, &id, &update()).expect("modifica riuscita");
+        edit_metadata(&state, &id, &update()).expect("edit succeeded");
 
-        let reloaded = Library::load(&dir.path().join("library.json")).expect("ricaricata");
+        let reloaded = Library::load(&dir.path().join("library.json")).expect("reloaded");
         assert_eq!(
-            reloaded.get(&id).expect("presente").title,
-            "Titolo modificato"
+            reloaded.get(&id).expect("present").title,
+            "Title modificato"
         );
     }
 
     #[test]
-    fn la_copertina_modificata_aggiorna_la_libreria() {
+    fn edited_cover_updates_the_library() {
         let dir = TempDir::new("edit-cover");
-        let file = crate::fixtures::mp3_with_tags(dir.path(), "brano.mp3");
+        let file = crate::fixtures::mp3_with_tags(dir.path(), "track.mp3");
         let (state, id) = state_with_track(&dir, file);
         let cover = Cover {
             mime_type: "image/png".to_owned(),
@@ -178,12 +178,12 @@ mod tests {
         let with_cover = edit_cover(&state, &id, Some(&cover)).expect("scrittura riuscita");
         assert!(with_cover.has_cover);
 
-        let without_cover = edit_cover(&state, &id, None).expect("rimozione riuscita");
+        let without_cover = edit_cover(&state, &id, None).expect("removal succeeded");
         assert!(!without_cover.has_cover);
     }
 
     #[test]
-    fn rifiuta_la_modifica_di_un_brano_non_tracciato() {
+    fn rejects_editing_an_untracked_track() {
         let dir = TempDir::new("edit-unknown");
         let state = LibraryState::from_file(dir.path().join("library.json"));
 
@@ -198,9 +198,9 @@ mod tests {
     }
 
     #[test]
-    fn un_aggiornamento_non_valido_lascia_la_libreria_invariata() {
+    fn invalid_update_leaves_the_library_unchanged() {
         let dir = TempDir::new("edit-invalid");
-        let file = wav_with_tags(dir.path(), "brano.wav");
+        let file = wav_with_tags(dir.path(), "track.wav");
         let (state, id) = state_with_track(&dir, file);
         let invalid = MetadataUpdate {
             title: "  ".to_owned(),
@@ -213,9 +213,9 @@ mod tests {
         ));
         assert_eq!(
             state
-                .read(|lib| lib.get(&id).expect("presente").title.clone())
-                .expect("lettura"),
-            "Titolo di prova"
+                .read(|lib| lib.get(&id).expect("present").title.clone())
+                .expect("read"),
+            "Test Title"
         );
     }
 }

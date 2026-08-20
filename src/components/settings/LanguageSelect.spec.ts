@@ -15,7 +15,7 @@ afterEach(() => {
 });
 
 describe('LanguageSelect', () => {
-  it('elenca le lingue supportate tradotte', () => {
+  it('lists supported languages translated', () => {
     const wrapper = mount(LanguageSelect, withPinia());
 
     const labels = wrapper.findAll('option').map((option) => option.text());
@@ -23,7 +23,7 @@ describe('LanguageSelect', () => {
     expect(labels).toEqual(['Italiano', 'Inglese']);
   });
 
-  it('riflette la lingua corrente dello store', async () => {
+  it('reflects the current store language', async () => {
     const wrapper = mount(LanguageSelect, withPinia());
     const store = useSettingsStore();
 
@@ -33,7 +33,7 @@ describe('LanguageSelect', () => {
     expect(wrapper.get('select').element.value).toBe('en');
   });
 
-  it('aggiorna lo store alla selezione', async () => {
+  it('updates the store on selection', async () => {
     const wrapper = mount(LanguageSelect, withPinia());
     const store = useSettingsStore();
 

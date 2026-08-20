@@ -5,7 +5,7 @@ import { defineComponent, ref } from 'vue';
 import { computeVirtualRange, useVirtualList } from './useVirtualList';
 
 describe('computeVirtualRange', () => {
-  it('non rende nulla per una lista vuota', () => {
+  it('renders nothing for an empty list', () => {
     expect(computeVirtualRange(0, 50, 500, 0)).toEqual({
       start: 0,
       end: 0,
@@ -14,18 +14,18 @@ describe('computeVirtualRange', () => {
     });
   });
 
-  it('calcola l altezza totale della lista', () => {
+  it('computes the total list height', () => {
     expect(computeVirtualRange(100, 50, 500, 0).totalHeight).toBe(5000);
   });
 
-  it('rende solo la finestra visibile piu il margine', () => {
+  it('renders only the visible window plus overscan', () => {
     const range = computeVirtualRange(1000, 50, 500, 0, 2);
 
     expect(range.start).toBe(0);
     expect(range.end).toBe(13);
   });
 
-  it('sposta la finestra seguendo lo scroll', () => {
+  it('moves the window following scroll', () => {
     const range = computeVirtualRange(1000, 50, 500, 2500, 2);
 
     expect(range.start).toBe(48);
@@ -33,18 +33,18 @@ describe('computeVirtualRange', () => {
     expect(range.end).toBeGreaterThan(50);
   });
 
-  it('non supera la fine della lista', () => {
+  it('does not exceed the end of the list', () => {
     const range = computeVirtualRange(20, 50, 500, 100_000);
 
     expect(range.end).toBe(20);
     expect(range.start).toBeLessThan(20);
   });
 
-  it('ignora uno scroll negativo', () => {
+  it('ignores negative scroll', () => {
     expect(computeVirtualRange(100, 50, 500, -300).start).toBe(0);
   });
 
-  it('si protegge da un altezza di riga non valida', () => {
+  it('guards against an invalid row height', () => {
     expect(computeVirtualRange(10, 0, 500, 0).end).toBe(0);
   });
 });
@@ -59,7 +59,7 @@ describe('useVirtualList', () => {
     template: '<div />',
   });
 
-  it('aggiorna la finestra allo scroll', () => {
+  it('updates the window on scroll', () => {
     const wrapper = mount(Host);
     const element = { scrollTop: 1000, clientHeight: 400 } as HTMLElement;
 
@@ -70,7 +70,7 @@ describe('useVirtualList', () => {
     expect(wrapper.vm.range.start).toBeGreaterThan(0);
   });
 
-  it('misura il contenitore, anche quando manca', () => {
+  it('measures the container, even when missing', () => {
     const wrapper = mount(Host);
 
     wrapper.vm.measure({ clientHeight: 320 } as HTMLElement);
@@ -80,7 +80,7 @@ describe('useVirtualList', () => {
     expect(wrapper.vm.viewportHeight).toBe(0);
   });
 
-  it('segue un altezza di riga che cambia', async () => {
+  it('follows a changing row height', async () => {
     const wrapper = mount(Host);
     expect(wrapper.vm.range.totalHeight).toBe(5000);
 

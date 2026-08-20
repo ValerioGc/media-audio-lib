@@ -49,7 +49,7 @@ mod tests {
         library.tracks.push(Track {
             id: "id-1".to_owned(),
             path: path.to_string_lossy().into_owned(),
-            title: "Brano".to_owned(),
+            title: "Track".to_owned(),
             artist: None,
             album: None,
             year: None,
@@ -64,18 +64,18 @@ mod tests {
     }
 
     #[test]
-    fn restituisce_il_percorso_di_un_brano_presente() {
+    fn returns_the_path_of_a_present_track() {
         let directory = TempDir::new("playback");
-        let file = mp3_with_tags(directory.path(), "brano");
+        let file = mp3_with_tags(directory.path(), "track");
         let library = library_with(&file);
 
-        let path = playable_path(&library, "id-1").expect("percorso risolto");
+        let path = playable_path(&library, "id-1").expect("path risolto");
 
         assert_eq!(path, file);
     }
 
     #[test]
-    fn rifiuta_un_id_sconosciuto() {
+    fn rejects_an_unknown_id() {
         let library = Library::new();
 
         let error = playable_path(&library, "id-ignoto").expect_err("id sconosciuto");
@@ -84,13 +84,13 @@ mod tests {
     }
 
     #[test]
-    fn rifiuta_un_brano_il_cui_file_e_sparito() {
+    fn rejects_a_track_whose_file_disappeared() {
         let directory = TempDir::new("playback");
         let file = mp3_with_tags(directory.path(), "sparito");
         let library = library_with(&file);
-        std::fs::remove_file(&file).expect("file rimosso");
+        std::fs::remove_file(&file).expect("file removed");
 
-        let error = playable_path(&library, "id-1").expect_err("file mancante");
+        let error = playable_path(&library, "id-1").expect_err("missing file");
 
         assert!(matches!(error, AppError::NotFound(_)));
     }

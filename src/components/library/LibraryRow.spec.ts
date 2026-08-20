@@ -16,10 +16,10 @@ function mountRow(track = makeTrack(), selected = false, playing = false) {
 }
 
 describe('LibraryRow', () => {
-  it('mostra i campi del brano nelle colonne', () => {
+  it('shows track fields in the columns', () => {
     const track = makeTrack({
-      title: 'Brano',
-      artist: 'Autore',
+      title: 'Track',
+      artist: 'Artist',
       album: 'Album',
       year: 1999,
       genre: 'Jazz',
@@ -27,14 +27,14 @@ describe('LibraryRow', () => {
 
     const cells = mountRow(track).findAll('[role="cell"]');
 
-    expect(cells[1]?.text()).toContain('Brano');
-    expect(cells[2]?.text()).toBe('Autore');
+    expect(cells[1]?.text()).toContain('Track');
+    expect(cells[2]?.text()).toBe('Artist');
     expect(cells[3]?.text()).toBe('Album');
     expect(cells[4]?.text()).toBe('1999');
     expect(cells[5]?.text()).toBe('Jazz');
   });
 
-  it('mostra un trattino per i campi mancanti', () => {
+  it('shows a dash for missing fields', () => {
     const cells = mountRow(
       makeTrack({ artist: null, album: null, year: null, genre: null }),
     ).findAll('[role="cell"]');
@@ -45,13 +45,13 @@ describe('LibraryRow', () => {
     expect(cells[5]?.text()).toBe('—');
   });
 
-  it('formatta la durata', () => {
+  it('formats duration', () => {
     const wrapper = mountRow(makeTrack({ durationMs: 185_000 }));
 
     expect(wrapper.get('.library_row_duration').text()).toBe('3:05');
   });
 
-  it('segnala i file spariti dal disco', () => {
+  it('reports files missing from disk', () => {
     const wrapper = mountRow(makeTrack({ missing: true }));
 
     expect(wrapper.classes()).toContain('library_row_missing');
@@ -59,14 +59,14 @@ describe('LibraryRow', () => {
     expect(wrapper.find('.library_row_badge .app_icon_warning').exists()).toBe(true);
   });
 
-  it('evidenzia la riga selezionata', () => {
+  it('highlights the selected row', () => {
     const wrapper = mountRow(makeTrack(), true);
 
     expect(wrapper.classes()).toContain('library_row_selected');
     expect(wrapper.attributes('aria-selected')).toBe('true');
   });
 
-  it('indica la riga in riproduzione', () => {
+  it('marks the playing row', () => {
     const wrapper = mountRow(makeTrack(), false, true);
 
     expect(wrapper.classes()).toContain('library_row_playing');
@@ -74,7 +74,7 @@ describe('LibraryRow', () => {
     expect(wrapper.get('.library_row_badge_playing').text()).toContain('In riproduzione');
   });
 
-  it('usa il gradiente della copertina sulla riga in riproduzione', () => {
+  it('uses the cover gradient on the playing row', () => {
     const options = withPinia();
     const player = usePlayerStore();
     player.setCoverAccent({
@@ -91,7 +91,7 @@ describe('LibraryRow', () => {
     expect(wrapper.attributes('style')).toContain('--cover_row_gradient');
   });
 
-  it('emette la selezione al click e con Invio', async () => {
+  it('emits selection on click and Enter', async () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
@@ -101,7 +101,7 @@ describe('LibraryRow', () => {
     expect(wrapper.emitted('select')).toEqual([[track.id], [track.id]]);
   });
 
-  it('emette la rimozione senza selezionare la riga', async () => {
+  it('emits removal without selecting the row', async () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
@@ -112,7 +112,7 @@ describe('LibraryRow', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('emette la richiesta di modifica dei metadati', async () => {
+  it('emits the metadata edit request', async () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
@@ -123,7 +123,7 @@ describe('LibraryRow', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('emette la verifica del collegamento', async () => {
+  it('emits link verification', async () => {
     const track = makeTrack();
     const wrapper = mountRow(track);
 
@@ -134,7 +134,7 @@ describe('LibraryRow', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('non permette di modificare un file mancante', async () => {
+  it('does not allow editing a missing file', async () => {
     const wrapper = mountRow(makeTrack({ missing: true }));
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
@@ -142,11 +142,11 @@ describe('LibraryRow', () => {
     expect(wrapper.findAll('.library_row .app_menu_item')[0]?.attributes('disabled')).toBeDefined();
   });
 
-  it('descrive il menu agli screen reader', async () => {
-    const wrapper = mountRow(makeTrack({ title: 'Brano' }));
+  it('describes the menu to screen readers', async () => {
+    const wrapper = mountRow(makeTrack({ title: 'Track' }));
 
     expect(wrapper.get('.library_row .app_menu_trigger').attributes('aria-label')).toBe(
-      'Azioni per Brano',
+      'Azioni per Track',
     );
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
@@ -159,9 +159,9 @@ describe('LibraryRow', () => {
     expect(
       wrapper.findAll('.library_row .app_menu_item').map((item) => item.attributes('aria-label')),
     ).toEqual([
-      'Modifica i metadati di Brano',
-      'Verifica collegamento di Brano',
-      'Rimuovi Brano dalla libreria',
+      'Modifica i metadati di Track',
+      'Verifica collegamento di Track',
+      'Rimuovi Track dalla libreria',
     ]);
   });
 });

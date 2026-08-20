@@ -10,14 +10,14 @@ beforeEach(() => {
 });
 
 describe('PlayerVolume', () => {
-  it('mostra il volume in percentuale', () => {
+  it('shows volume as a percentage', () => {
     const wrapper = mount(PlayerVolume, { ...withPinia(), props: { modelValue: 0.4 } });
 
     expect((wrapper.get('input').element as HTMLInputElement).value).toBe('40');
     expect(wrapper.get('input').attributes('aria-valuetext')).toBe('Volume 40%');
   });
 
-  it('riporta il valore nella scala del player', async () => {
+  it('reports the value in the player scale', async () => {
     const wrapper = mount(PlayerVolume, { ...withPinia(), props: { modelValue: 1 } });
 
     await wrapper.get('input').setValue('25');

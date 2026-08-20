@@ -34,14 +34,14 @@ function mountMenu() {
 }
 
 describe('AppMenu', () => {
-  it('tiene il pannello chiuso finche non viene aperto', () => {
+  it('keeps the panel closed until opened', () => {
     const wrapper = mountMenu();
 
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
     expect(wrapper.get('.app_menu_trigger').attributes('aria-label')).toBe('Opzioni');
   });
 
-  it('emette l identificativo della voce scelta', async () => {
+  it('emits the chosen item identifier', async () => {
     const wrapper = mountMenu();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -51,7 +51,7 @@ describe('AppMenu', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('ignora le voci disattivate', async () => {
+  it('ignores disabled items', async () => {
     const wrapper = mountMenu();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -64,7 +64,7 @@ describe('AppMenu', () => {
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
-  it('sposta il fuoco sulla prima voce utilizzabile', async () => {
+  it('moves focus to the first usable item', async () => {
     const wrapper = mountMenu();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -73,7 +73,7 @@ describe('AppMenu', () => {
     expect(document.activeElement).toBe(wrapper.findAll('.app_menu_item')[0]?.element);
   });
 
-  it('chiude il menu con Escape e al click fuori', async () => {
+  it('closes the menu with Escape and outside click', async () => {
     const wrapper = mountMenu();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
@@ -87,12 +87,12 @@ describe('AppMenu', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('segna la voce scelta di un gruppo di opzioni', async () => {
+  it('marks the chosen item in an option group', async () => {
     const wrapper = mount(AppMenu, {
       ...withPinia(),
       props: {
         items: [
-          { id: 'lib-1', label: 'Principale', checked: true },
+          { id: 'lib-1', label: 'Main', checked: true },
           { id: 'lib-2', label: 'Jazz', checked: false },
           { id: 'delete', label: 'Elimina', divider: true, danger: true },
         ],
@@ -103,15 +103,15 @@ describe('AppMenu', () => {
     wrappers.push(wrapper);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    const voci = wrapper.findAll('.app_menu_item');
+    const items = wrapper.findAll('.app_menu_item');
 
-    expect(voci[0]?.attributes('role')).toBe('menuitemradio');
-    expect(voci[0]?.attributes('aria-checked')).toBe('true');
-    expect(voci[2]?.attributes('role')).toBe('menuitem');
+    expect(items[0]?.attributes('role')).toBe('menuitemradio');
+    expect(items[0]?.attributes('aria-checked')).toBe('true');
+    expect(items[2]?.attributes('role')).toBe('menuitem');
     expect(wrapper.findAll('.app_menu_divider')).toHaveLength(1);
   });
 
-  it('apre il menu con la freccia giu', async () => {
+  it('opens the menu with ArrowDown', async () => {
     const wrapper = mountMenu();
 
     await wrapper.get('.app_menu_trigger').trigger('keydown', { key: 'ArrowDown' });

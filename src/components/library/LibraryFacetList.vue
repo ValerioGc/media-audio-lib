@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import { formatDuration } from '@/services/track-sorting';
 import type { TrackView } from '@/types/library';
@@ -23,13 +24,20 @@ interface FacetGroup extends FacetGroupOpenPayload {
   coverTrack: TrackView | null;
   coverTracks: TrackView[];
   isUnknown: boolean;
+  playing: boolean;
 }
 
-const props = defineProps<{
-  tracks: readonly TrackView[];
-  field: FacetField;
-  viewMode: ViewMode;
-}>();
+const props = withDefaults(
+  defineProps<{
+    tracks: readonly TrackView[];
+    field: FacetField;
+    viewMode: ViewMode;
+    playingTrack?: TrackView | null;
+  }>(),
+  {
+    playingTrack: null,
+  },
+);
 
 const emit = defineEmits<{
   open: [group: FacetGroupOpenPayload];
@@ -102,6 +110,7 @@ const groups = computed<FacetGroup[]>(() => {
   return [...grouped.entries()]
     .map(([key, tracks]) => {
       const isUnknown = key === '__unknown__';
+      const playingTrackId = props.playingTrack?.id ?? null;
 
       return {
         field: props.field,
@@ -120,6 +129,7 @@ const groups = computed<FacetGroup[]>(() => {
             : null,
         coverTracks: props.field === 'album' ? [] : representativeCoverTracks(tracks),
         isUnknown,
+        playing: playingTrackId !== null && tracks.some((track) => track.id === playingTrackId),
       };
     })
     .sort((left, right) => {
@@ -157,10 +167,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         library_facet_card_artist: field === 'artist',
         library_facet_card_album: field === 'album',
         library_facet_card_genre: field === 'genre',
+        library_facet_card_playing: group.playing,
       }"
       role="button"
       tabindex="0"
       :aria-label="t('library.groups.openLabel', { name: group.name })"
+      :aria-current="group.playing ? 'true' : undefined"
       @click="openGroup(group)"
       @keydown.enter="openGroupFromKeyboard($event, group)"
       @keydown.space="openGroupFromKeyboard($event, group)"
@@ -198,6 +210,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
           {{ t('library.groups.trackCount', { count: group.trackCount }, group.trackCount) }}
           <span aria-hidden="true"> · </span>
           {{ formatDuration(group.durationMs) }}
+        </p>
+        <p v-if="group.playing" class="library_facet_card_badge">
+          <AppIcon name="play" />
+          {{ t('library.row.playing') }}
         </p>
       </div>
     </article>
@@ -241,9 +257,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         v-for="group in groups"
         :key="group.key"
         class="library_facet_list_row"
+        :class="{ library_facet_list_row_playing: group.playing }"
         role="row"
         tabindex="0"
         :aria-label="t('library.groups.openLabel', { name: group.name })"
+        :aria-current="group.playing ? 'true' : undefined"
         @click="openGroup(group)"
         @keydown.enter="openGroupFromKeyboard($event, group)"
         @keydown.space="openGroupFromKeyboard($event, group)"
@@ -266,6 +284,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         </span>
         <span class="library_facet_list_cell library_facet_list_duration" role="cell">
           {{ formatDuration(group.durationMs) }}
+        </span>
+        <span v-if="group.playing" class="library_facet_list_badge" role="cell">
+          <AppIcon name="play" />
+          {{ t('library.row.playing') }}
         </span>
       </div>
     </div>
@@ -303,22 +325,26 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   @include focus_ring;
 
   &_album {
-    min-height: 18rem;
-    padding: $space_sm;
+    min-height: 19rem;
+    padding: $space_md;
+  }
+
+  &_playing {
+    border-color: var(--color_accent);
+    background-color: var(--color_accent_soft);
+    box-shadow: inset 0 0 0 1px var(--color_accent);
   }
 
   &_artist {
-    min-height: 16.5rem;
-    overflow: hidden;
+    min-height: 20rem;
 
     .library_facet_card_cover_mosaic {
-      height: clamp(8.5rem, 16vw, 12rem);
+      height: clamp(8rem, 14vw, 10.5rem);
       aspect-ratio: auto;
     }
 
     .library_facet_card_body {
-      flex: 0 0 auto;
-      min-height: 4.25rem;
+      flex: 1 0 auto;
     }
   }
 
@@ -368,6 +394,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     flex-direction: column;
     gap: $space_xs;
     min-width: 0;
+    padding-inline: $space_2xs;
   }
 
   &_label {
@@ -391,6 +418,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     font-size: 0.875em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &_badge {
+    display: flex;
+    gap: $space_xs;
+    align-items: center;
+    color: var(--color_accent);
+    font-size: 0.8em;
+    font-weight: 700;
   }
 }
 
@@ -462,6 +498,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     }
 
     @include focus_ring;
+
+    &_playing {
+      border-color: var(--color_accent);
+      background-color: var(--color_accent_soft);
+      box-shadow: inset 2px 0 0 var(--color_accent);
+    }
   }
 
   &_cell {
@@ -477,6 +519,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_duration {
     font-variant-numeric: tabular-nums;
+  }
+
+  &_badge {
+    display: none;
+    gap: $space_xs;
+    align-items: center;
+    color: var(--color_accent);
+    font-size: 0.75em;
+    font-weight: 700;
   }
 
   @media (max-width: 760px) {

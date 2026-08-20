@@ -319,6 +319,7 @@ async function confirmRemoval() {
           :tracks="library.visibleTracks"
           :field="activeFacet"
           :view-mode="facetViewMode"
+          :playing-track="player.currentTrack"
           @open="openFacet"
         />
       </section>
@@ -470,6 +471,7 @@ async function confirmRemoval() {
             :tracks="selectedFacetTracks"
             field="artist"
             view-mode="preview"
+            :playing-track="player.currentTrack"
             @open="openFacet"
           />
           <LibraryFacetList
@@ -477,6 +479,7 @@ async function confirmRemoval() {
             :tracks="selectedFacetTracks"
             field="album"
             view-mode="preview"
+            :playing-track="player.currentTrack"
             @open="openFacet"
           />
         </template>

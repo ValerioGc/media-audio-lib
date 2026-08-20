@@ -121,6 +121,58 @@ describe('LibraryFacetList', () => {
     expect(wrapper.text()).toContain('Autore: Miles Davis');
   });
 
+  it('marks the album card that contains the playing track', () => {
+    const playingTrack = makeTrack({
+      title: 'Blue',
+      artist: 'Miles Davis',
+      album: 'Kind of Blue',
+      durationMs: 60_000,
+    });
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'album',
+        viewMode: 'preview',
+        playingTrack,
+        tracks: [
+          playingTrack,
+          makeTrack({ title: 'Green', artist: 'Miles Davis', album: 'Kind of Blue' }),
+          makeTrack({ title: 'Other', artist: 'Other Artist', album: 'Other Album' }),
+        ],
+      },
+    });
+
+    const playingCards = wrapper.findAll('.library_facet_card_playing');
+
+    expect(playingCards).toHaveLength(1);
+    expect(playingCards[0]?.attributes('aria-current')).toBe('true');
+    expect(playingCards[0]?.text()).toContain('Kind of Blue');
+    expect(playingCards[0]?.text()).toContain('In riproduzione');
+  });
+
+  it('marks the album row that contains the playing track', () => {
+    const playingTrack = makeTrack({ title: 'Blue', album: 'Kind of Blue' });
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'album',
+        viewMode: 'table',
+        playingTrack,
+        tracks: [
+          playingTrack,
+          makeTrack({ title: 'Green', album: 'Kind of Blue' }),
+          makeTrack({ title: 'Other', album: 'Other Album' }),
+        ],
+      },
+    });
+
+    const playingRows = wrapper.findAll('.library_facet_list_row_playing');
+
+    expect(playingRows).toHaveLength(1);
+    expect(playingRows[0]?.attributes('aria-current')).toBe('true');
+    expect(playingRows[0]?.text()).toContain('Kind of Blue');
+  });
+
   it('opens the selected group from a card', async () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),

@@ -163,10 +163,8 @@ pub fn import(
         return Err(AppError::Validation("missing import path".to_owned()));
     }
 
-    let (mut imported, stored_version) = Library::load_with_version(&PathBuf::from(source))?;
-    if stored_version < crate::library::SCHEMA_VERSION {
-        crate::library::refresh_metadata(&mut imported);
-    }
+    let mut imported = Library::load(&PathBuf::from(source))?;
+    crate::library::maintain_from_disk(&mut imported);
 
     state.update(|library| library.import(imported, strategy))
 }

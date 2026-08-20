@@ -26,12 +26,13 @@ impl LibraryState {
 
     /// Loads the library from `file`, starting empty when it cannot be read.
     ///
-    /// Entries saved with an older schema are missing the fields added since, so their
-    /// tags are re-read from disk once and the file is rewritten.
+    /// Every app opening reconciles the saved list with the files on disk: ids are
+    /// realigned to canonical paths, duplicate entries are removed, and readable tags are
+    /// refreshed while missing files stay tracked for the UI to flag.
     pub fn from_file(file: PathBuf) -> Self {
-        let (library, stored_version) = load_or_empty(&file);
+        let library = load_or_empty(&file);
         let state = Self::new(file, library);
-        state.migrate_if_needed(stored_version);
+        state.maintain_from_disk();
 
         state
     }
@@ -64,7 +65,7 @@ impl LibraryState {
     /// The library left behind needs no flush: every change is already written when it
     /// happens.
     pub fn switch_to(&self, file: PathBuf) -> AppResult<()> {
-        let (library, stored_version) = load_or_empty(&file);
+        let library = load_or_empty(&file);
 
         {
             let mut active = self.lock()?;
@@ -72,32 +73,30 @@ impl LibraryState {
             active.library = library;
         }
 
-        self.migrate_if_needed(stored_version);
+        self.maintain_from_disk();
 
         Ok(())
     }
 
-    fn migrate_if_needed(&self, stored_version: u32) {
-        if stored_version >= crate::library::SCHEMA_VERSION {
-            return;
-        }
-
-        match self.update(crate::library::refresh_metadata) {
-            Ok(refreshed) => {
-                eprintln!(
-                    "library migrated to v{}: {refreshed} tracks reread from files",
-                    crate::library::SCHEMA_VERSION
-                );
+    fn maintain_from_disk(&self) {
+        match self.update(crate::library::maintain_from_disk) {
+            Ok(report) => {
+                if report != crate::library::LibraryMaintenanceReport::default() {
+                    eprintln!(
+                        "library refreshed from disk: {} tracks reread, {} duplicate entries removed, {} ids realigned",
+                        report.refreshed, report.deduplicated, report.ids_updated,
+                    );
+                }
             }
-            Err(error) => eprintln!("library migration failed: {error}"),
+            Err(error) => eprintln!("library refresh failed: {error}"),
         }
     }
 }
 
-fn load_or_empty(file: &Path) -> (Library, u32) {
-    Library::load_with_version(file).unwrap_or_else(|error| {
+fn load_or_empty(file: &Path) -> Library {
+    Library::load(file).unwrap_or_else(|error| {
         eprintln!("library not loaded ({error}), starting from an empty one");
-        (Library::new(), crate::library::SCHEMA_VERSION)
+        Library::new()
     })
 }
 
@@ -139,7 +138,7 @@ mod tests {
         library.add(sample_track());
         library.save(&file).expect("save succeeded");
 
-        let state = LibraryState::from_file(file);
+        let state = LibraryState::from_file(file.clone());
 
         assert_eq!(state.read(Library::len).expect("read succeeded"), 1);
     }
@@ -150,7 +149,7 @@ mod tests {
         let file = dir.path().join("library.json");
         std::fs::write(&file, "{ non valido").expect("file written");
 
-        let state = LibraryState::from_file(file);
+        let state = LibraryState::from_file(file.clone());
 
         assert_eq!(state.read(Library::len).expect("read succeeded"), 0);
     }
@@ -207,13 +206,11 @@ mod tests {
     }
 
     #[test]
-    fn already_updated_library_is_not_reworked() {
-        let dir = TempDir::new("state-no-migration");
+    fn current_schema_library_is_refreshed_from_file_tags() {
+        let dir = TempDir::new("state-refresh");
         let file = dir.path().join("library.json");
         let track = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
 
-        // Current-schema entry, with a title different from the file tags:
-        // if a reread started, it would be overwritten.
         let mut library = Library::new();
         library.add(Track {
             id: crate::library::track_id(&track),
@@ -223,14 +220,47 @@ mod tests {
         });
         library.save(&file).expect("save succeeded");
 
-        let state = LibraryState::from_file(file);
+        let state = LibraryState::from_file(file.clone());
 
         assert_eq!(
             state
                 .read(|library| library.tracks()[0].title.clone())
                 .expect("read"),
-            "User chosen title"
+            "Test Title"
         );
+
+        assert_eq!(
+            Library::load(&file).expect("reloaded").tracks()[0]
+                .title
+                .as_str(),
+            "Test Title"
+        );
+    }
+
+    #[test]
+    fn opening_a_library_removes_duplicate_entries_for_the_same_file() {
+        let dir = TempDir::new("state-deduplicate");
+        let file = dir.path().join("library.json");
+        let track = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
+        let mut library = Library::new();
+        library.tracks.push(Track {
+            id: "old-id".to_owned(),
+            path: track.display().to_string(),
+            title: "First".to_owned(),
+            ..sample_track()
+        });
+        library.tracks.push(Track {
+            id: "other-old-id".to_owned(),
+            path: track.display().to_string(),
+            title: "Duplicate".to_owned(),
+            ..sample_track()
+        });
+        library.save(&file).expect("save succeeded");
+
+        let state = LibraryState::from_file(file.clone());
+
+        assert_eq!(state.read(Library::len).expect("read"), 1);
+        assert_eq!(Library::load(&file).expect("reloaded").len(), 1);
     }
 
     #[test]

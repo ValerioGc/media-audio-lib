@@ -3,7 +3,8 @@
 //! Nothing is scanned automatically. The file is versioned so future schema
 //! changes can be migrated instead of discarded.
 
-use std::path::{Path, PathBuf};
+use std::collections::HashSet;
+use std::path::{Component, Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
@@ -92,6 +93,13 @@ pub struct LibraryImportReport {
     pub skipped: usize,
     pub missing: Vec<String>,
     pub total: usize,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct LibraryMaintenanceReport {
+    pub refreshed: usize,
+    pub deduplicated: usize,
+    pub ids_updated: usize,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -194,9 +202,16 @@ impl Library {
         self.get(id).is_some()
     }
 
+    pub fn contains_path(&self, path: &Path) -> bool {
+        let key = canonical_key(path);
+        self.tracks
+            .iter()
+            .any(|track| canonical_key(Path::new(&track.path)) == key)
+    }
+
     /// Adds a track unless the same file is already tracked. Returns false on duplicates.
     pub fn add(&mut self, track: Track) -> bool {
-        if self.contains(&track.id) {
+        if self.contains(&track.id) || self.contains_path(Path::new(&track.path)) {
             return false;
         }
 
@@ -215,10 +230,14 @@ impl Library {
         imported: Library,
         strategy: LibraryImportStrategy,
     ) -> LibraryImportReport {
+        let mut imported = imported;
+        update_track_ids(&mut imported);
+        let total = imported.tracks.len();
+        let (imported_tracks, duplicate_imports) = unique_tracks(imported.tracks);
         let mut report = LibraryImportReport {
-            total: imported.tracks.len(),
-            missing: imported
-                .tracks
+            total,
+            skipped: duplicate_imports,
+            missing: imported_tracks
                 .iter()
                 .filter(|track| !Path::new(&track.path).is_file())
                 .map(|track| track.path.clone())
@@ -227,17 +246,17 @@ impl Library {
         };
 
         if strategy == LibraryImportStrategy::Replace {
-            report.added = imported.tracks.len();
+            report.added = imported_tracks.len();
             self.name = imported.name;
-            self.tracks = imported.tracks;
+            self.tracks = imported_tracks;
             return report;
         }
 
-        for track in imported.tracks {
+        for track in imported_tracks {
             if let Some(existing) = self
                 .tracks
                 .iter_mut()
-                .find(|existing| existing.id == track.id)
+                .find(|existing| same_track_file(existing, &track))
             {
                 if strategy == LibraryImportStrategy::MergeSkipDuplicates {
                     report.skipped += 1;
@@ -275,6 +294,28 @@ fn temporary_path(path: &Path) -> PathBuf {
     path.with_file_name(name)
 }
 
+fn normalize_path(path: &Path) -> PathBuf {
+    let mut normalized = PathBuf::new();
+
+    for component in path.components() {
+        match component {
+            Component::CurDir => {}
+            Component::ParentDir => {
+                normalized.pop();
+            }
+            Component::Prefix(_) | Component::RootDir | Component::Normal(_) => {
+                normalized.push(component.as_os_str());
+            }
+        }
+    }
+
+    if normalized.as_os_str().is_empty() {
+        path.to_path_buf()
+    } else {
+        normalized
+    }
+}
+
 fn file_stem_of(path: &Path) -> String {
     path.file_stem()
         .and_then(|stem| stem.to_str())
@@ -283,7 +324,7 @@ fn file_stem_of(path: &Path) -> String {
 
 /// Path used to compare two entries: resolved when possible, case insensitive on Windows.
 pub fn canonical_key(path: &Path) -> String {
-    let resolved = std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf());
+    let resolved = std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path(path));
     let text = resolved.to_string_lossy().replace('\\', "/");
     let trimmed = text.strip_prefix("//?/").unwrap_or(&text).to_owned();
 
@@ -297,6 +338,28 @@ pub fn canonical_key(path: &Path) -> String {
 /// Stable identifier derived from the file location, so the same file keeps its id.
 pub fn track_id(path: &Path) -> String {
     crate::hash::fnv1a_hex(&canonical_key(path))
+}
+
+fn same_track_file(first: &Track, second: &Track) -> bool {
+    first.id == second.id
+        || canonical_key(Path::new(&first.path)) == canonical_key(Path::new(&second.path))
+}
+
+fn unique_tracks(tracks: Vec<Track>) -> (Vec<Track>, usize) {
+    let mut seen_ids = HashSet::new();
+    let mut seen_paths = HashSet::new();
+    let before = tracks.len();
+    let tracks = tracks
+        .into_iter()
+        .filter(|track| {
+            seen_ids.insert(track.id.clone())
+                && seen_paths.insert(canonical_key(Path::new(&track.path)))
+        })
+        .collect::<Vec<_>>();
+
+    let removed = before.saturating_sub(tracks.len());
+
+    (tracks, removed)
 }
 
 pub fn now_seconds() -> u64 {
@@ -383,6 +446,34 @@ pub fn add_paths(library: &mut Library, paths: &[String], added_at: u64) -> AddR
     report
 }
 
+pub fn update_track_ids(library: &mut Library) -> usize {
+    let mut updated = 0;
+
+    for track in &mut library.tracks {
+        let id = track_id(Path::new(&track.path));
+
+        if track.id != id {
+            track.id = id;
+            updated += 1;
+        }
+    }
+
+    updated
+}
+
+pub fn remove_duplicate_paths(library: &mut Library) -> usize {
+    let before = library.tracks.len();
+    let mut seen_ids = HashSet::new();
+    let mut seen_paths = HashSet::new();
+
+    library.tracks.retain(|track| {
+        seen_ids.insert(track.id.clone())
+            && seen_paths.insert(canonical_key(Path::new(&track.path)))
+    });
+
+    before.saturating_sub(library.tracks.len())
+}
+
 /// Mirrors freshly written tags onto the tracked entry. `None` when the id is unknown.
 pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) -> Option<Track> {
     let track = library.tracks.iter_mut().find(|track| track.id == id)?;
@@ -423,6 +514,18 @@ pub fn refresh_metadata(library: &mut Library) -> usize {
     }
 
     refreshed
+}
+
+pub fn maintain_from_disk(library: &mut Library) -> LibraryMaintenanceReport {
+    let ids_updated = update_track_ids(library);
+    let deduplicated = remove_duplicate_paths(library);
+    let refreshed = refresh_metadata(library);
+
+    LibraryMaintenanceReport {
+        refreshed,
+        deduplicated,
+        ids_updated,
+    }
 }
 
 pub fn path_of(library: &Library, id: &str) -> Option<PathBuf> {
@@ -627,8 +730,8 @@ mod tests {
         let report = library.import(imported, LibraryImportStrategy::Replace);
 
         assert_eq!(library.name, "Nuova");
-        assert!(library.get("aaa").is_none());
-        assert!(library.get("bbb").is_some());
+        assert_eq!(library.len(), 1);
+        assert_eq!(library.tracks()[0].path, "C:/music/bbb.mp3");
         assert_eq!(report.added, 1);
         assert_eq!(report.total, 1);
     }
@@ -647,7 +750,10 @@ mod tests {
         let report = library.import(imported, LibraryImportStrategy::Merge);
 
         assert_eq!(library.len(), 2);
-        assert_eq!(library.get("aaa").expect("present").title, "Aggiornato");
+        assert!(library
+            .tracks()
+            .iter()
+            .any(|track| track.path == "C:/music/aaa.mp3" && track.title == "Aggiornato"));
         assert_eq!(report.updated, 1);
         assert_eq!(report.added, 1);
     }
@@ -672,6 +778,58 @@ mod tests {
     }
 
     #[test]
+    fn imports_by_matching_duplicate_paths_even_when_ids_differ() {
+        let mut library = Library::new();
+        let existing = Track {
+            id: "old-id".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            title: "Old title".to_owned(),
+            ..sample_track("aaa")
+        };
+        let incoming = Track {
+            id: "new-id".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            title: "New title".to_owned(),
+            ..sample_track("bbb")
+        };
+        library.add(existing);
+        let mut imported = Library::new();
+        imported.tracks.push(incoming);
+
+        let report = library.import(imported, LibraryImportStrategy::Merge);
+
+        assert_eq!(library.len(), 1);
+        assert_eq!(library.tracks()[0].title, "New title");
+        assert_eq!(report.updated, 1);
+    }
+
+    #[test]
+    fn importing_by_replacement_keeps_one_entry_per_file() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+        let shared = Track {
+            id: "first".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            ..sample_track("bbb")
+        };
+        let duplicate = Track {
+            id: "second".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            ..sample_track("ccc")
+        };
+        let mut imported = Library::new();
+        imported.tracks.push(shared);
+        imported.tracks.push(duplicate);
+
+        let report = library.import(imported, LibraryImportStrategy::Replace);
+
+        assert_eq!(library.len(), 1);
+        assert_eq!(report.total, 2);
+        assert_eq!(report.added, 1);
+        assert_eq!(report.skipped, 1);
+    }
+
+    #[test]
     fn import_reports_files_missing_on_disk() {
         let mut library = Library::new();
         let mut imported = Library::new();
@@ -692,6 +850,20 @@ mod tests {
     }
 
     #[test]
+    fn rejects_tracks_pointing_to_the_same_file_even_with_different_ids() {
+        let mut library = Library::new();
+        let first = sample_track("aaa");
+        let duplicate = Track {
+            id: "different-id".to_owned(),
+            ..first.clone()
+        };
+
+        assert!(library.add(first));
+        assert!(!library.add(duplicate));
+        assert_eq!(library.len(), 1);
+    }
+
+    #[test]
     fn id_depends_only_on_the_given_file() {
         let dir = TempDir::new("library-id");
         let path = wav_with_tags(dir.path(), "track.wav");
@@ -707,6 +879,44 @@ mod tests {
 
         assert!(!key.contains('\\'));
         assert!(!key.starts_with("//?/"));
+    }
+
+    #[test]
+    fn canonical_key_normalizes_current_directory_segments() {
+        let dir = TempDir::new("library-key");
+        let path = dir.path().join(".").join("track.wav");
+
+        assert_eq!(
+            canonical_key(&path),
+            canonical_key(&dir.path().join("track.wav"))
+        );
+    }
+
+    #[test]
+    fn maintenance_realigns_ids_and_removes_duplicate_files() {
+        let mut library = Library::new();
+        let first = Track {
+            id: "old-id".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            ..sample_track("aaa")
+        };
+        let duplicate = Track {
+            id: "other-old-id".to_owned(),
+            path: "C:/music/shared.mp3".to_owned(),
+            ..sample_track("bbb")
+        };
+        library.tracks.push(first);
+        library.tracks.push(duplicate);
+
+        let report = maintain_from_disk(&mut library);
+
+        assert_eq!(library.len(), 1);
+        assert_eq!(
+            library.tracks()[0].id,
+            track_id(Path::new("C:/music/shared.mp3"))
+        );
+        assert_eq!(report.ids_updated, 2);
+        assert_eq!(report.deduplicated, 1);
     }
 
     #[test]

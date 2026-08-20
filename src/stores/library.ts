@@ -58,9 +58,7 @@ function uniqueTrackValues(
 ): string[] {
   return [
     ...new Set(
-      tracks
-        .map((track) => track[field]?.trim() ?? '')
-        .filter((value) => value.length > 0),
+      tracks.map((track) => track[field]?.trim() ?? '').filter((value) => value.length > 0),
     ),
   ].sort((left, right) => left.localeCompare(right));
 }

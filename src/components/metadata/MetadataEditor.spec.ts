@@ -57,7 +57,10 @@ describe('MetadataEditor', () => {
 
     expect(wrapper.findAll('.metadata_field datalist')[0]?.findAll('option')).toHaveLength(2);
     expect(
-      wrapper.findAll('.metadata_field datalist')[1]?.findAll('option').map((option) => option.attributes('value')),
+      wrapper
+        .findAll('.metadata_field datalist')[1]
+        ?.findAll('option')
+        .map((option) => option.attributes('value')),
     ).toEqual(['Album A', 'Album B']);
     expect(
       wrapper.findAll('.genre_select option').map((option) => option.attributes('value')),

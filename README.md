@@ -1,32 +1,95 @@
+<div align="center">
+
+<img src="src/assets/logo.svg" alt="" width="88" height="88">
+
 # Media Audio Lib
 
-Media Audio Lib is an open-source desktop application for managing a library of audio files on Windows and Linux. Add the tracks you care about, edit their tags and cover art, browse them by artist, album or genre, and play them without leaving the app. Everything runs entirely on your own computer, with **no internet connection required** and **no telemetry of any kind**.
+**Your audio library, on your own computer.**
+
+An open-source desktop application for Windows and Linux that keeps track of the music you
+choose, writes tags and cover art straight into the files, and plays it all without leaving
+the window.
+
+[![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Linux-0067c0)](#installation)
+[![Languages](https://img.shields.io/badge/languages-5-0067c0)](#languages)
+[![Licence](https://img.shields.io/badge/licence-Unlicense-0067c0)](LICENSE)
+[![Offline](https://img.shields.io/badge/telemetry-none-107c10)](#privacy)
+
+[Installation](#installation) · [Features](#what-it-does) · [Languages](#languages) ·
+[Privacy](#privacy) · [Development](DEVELOPMENT.md)
+
+</div>
 
 ![Media Audio Lib app screenshot](docs/screenshot/preview.png)
 
-## Key features
+---
 
-- **A library you decide**: no automatic folder scanning. The library holds only the files you add, one by one or by dropping them on the window. Several libraries can live side by side, switched from the menu next to the library name.
-- **Metadata editing**: title, artist, album, year, genre and cover art are edited from the app and written back into the file's tags, not just into the library file. Bulk editing applies the same field to a whole selection at once.
-- **List view and preview view**: the list shows columns you can sort, resize, reorder and hide as you please; the previews show the cover art on a grid. The chosen view is remembered between sessions.
-- **Browse by artist, album or genre**: the same tracks grouped by whichever of the three you need, each group opening a detail panel of its own.
-- **Built-in player**: docked at the bottom of the window and expandable to full page, with seeking, volume, shuffle and repeat-one. The queue is the list in front of you, filters and sorting included.
-- **Missing files reported**: a track whose file was moved or deleted is flagged rather than quietly disappearing, and can be checked in bulk.
-- **Import and export**: the track list exports to a portable file and imports back elsewhere, with duplicates handled on merge.
-- **Appearance you choose**: light, dark or system theme, three interface text sizes, an accent colour of your choosing, an ambient background built on that colour and glass surfaces, each switchable on its own.
-- **Bilingual**: interface available in Italian and English.
+## Why it exists
 
-## Privacy
+Most music managers start by scanning your disk and deciding for you what belongs in the
+library. This one starts empty. You add the files you actually care about, and it keeps
+nothing but a list of them — the audio itself never moves.
 
-**Media Audio Lib collects no data, sends no telemetry and requires no internet connection, ever.**
+The second difference is where the edits land. Changing an artist or a cover here rewrites
+the **tags inside the file**, not a private database that only this app can read. Open the
+same file anywhere else and the change is there.
 
-Browsing, editing and playing all happen on your own computer. There is no analytics, no crash reporting, no usage tracking and no cloud sync.
+Everything happens locally. No account, no sync, no connection, no telemetry.
 
-The only things the app stores are your preferences and the library files, kept locally. Your audio files are never copied anywhere: the app reads them and rewrites their tags where they already are.
+## What it does
+
+### Building the library
+
+Files are added one at a time, by folder, or by dropping them onto the window. Several
+libraries can live side by side and you switch between them from the menu next to the
+library name. Each one exports to a portable file and imports back elsewhere, duplicates
+handled. A track whose file was moved or deleted gets flagged rather than quietly
+disappearing, and the whole library can be checked in one pass.
+
+### Editing metadata
+
+Title, artist, album, year, genre and cover art are edited from the app and written back
+into the file's tags. Bulk editing applies the same field across a whole selection, and a
+new cover can be pushed to every track of the album at once.
+
+### Browsing and playing
+
+The **list view** gives columns you can sort, resize, reorder and hide; the **preview view**
+lays the cover art out on a grid. The same tracks regroup by artist, album or genre, each
+group opening a detail panel of its own. The player sits at the bottom of the window and
+expands to full page, with seeking, volume, shuffle and repeat — and its queue is simply the
+list in front of you, filters and sorting included.
+
+### Making it yours
+
+Light, dark or system theme, three interface text sizes, and an accent colour of your
+choosing that the interface adapts per theme so it stays readable. On top of that, an
+optional ambient background built from that same colour and optional glass surfaces, each
+switchable on its own.
+
+## Languages
+
+The interface is fully translated into five languages, switched from
+**Settings → General → Language** and applied immediately:
+
+|     | Language |     | Language |
+| :-: | -------- | :-: | -------- |
+| 🇮🇹  | Italiano | 🇪🇸  | Español  |
+| 🇬🇧  | English  | 🇩🇪  | Deutsch  |
+| 🇫🇷  | Français |     |          |
+
+The Windows installer speaks the same five and picks the one matching your system locale.
+
+## Supported formats
+
+`MP3` · `FLAC` · `M4A` · `OGG` · `WAV`
+
+Reading and writing tags goes through the same library for every format.
 
 ## Installation
 
-Download the package for your platform from the [Releases](https://github.com/ValerioGc/media-audio-lib/releases) section:
+Download the package for your platform from the
+[Releases](https://github.com/ValerioGc/media-audio-lib/releases) section:
 
 | Platform              | File                                              |
 | --------------------- | ------------------------------------------------- |
@@ -34,11 +97,13 @@ Download the package for your platform from the [Releases](https://github.com/Va
 | Linux (portable)      | `MediaAudioLib_x.x.x_linux_x64_portable.AppImage` |
 | Linux (Debian/Ubuntu) | `MediaAudioLib_x.x.x_linux_x64.deb`               |
 
-> **Windows SmartScreen notice:** the installer is not yet signed with a paid certificate, so SmartScreen may show a warning on first launch. Choose "More info" → "Run anyway" to proceed.
+> **Windows SmartScreen notice:** the installer is not yet signed with a paid certificate,
+> so SmartScreen may show a warning on first launch. Choose "More info" → "Run anyway" to
+> proceed.
 
-The distribution using Microsoft Store and Winget is not available yet, but is planned and it will be supported in the future.
+Distribution through the Microsoft Store and Winget is not available yet, but is planned.
 
-### Linux - AppImage
+### Linux — AppImage
 
 A self-contained portable binary that runs on any distribution without installation:
 
@@ -47,21 +112,29 @@ chmod +x MediaAudioLib_x.x.x_linux_x64_portable.AppImage
 ./MediaAudioLib_x.x.x_linux_x64_portable.AppImage
 ```
 
-## Supported formats
+## Privacy
 
-`MP3` · `FLAC` · `M4A` · `OGG` · `WAV`
+**Media Audio Lib collects no data, sends no telemetry and requires no internet connection,
+ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync.
 
-Reading and writing tags goes through the same library for every format.
+The only things stored are your preferences and the library files, kept locally. Your audio
+files are never copied anywhere: the app reads them and rewrites their tags where they
+already are.
 
 ## Current limitations
 
-- On **WAV**, a cover added by the app cannot be removed again: the container does not let the tag chunk shrink. On MP3, the priority format, the full cycle works.
-- Tags are re-read only when the library schema changes. A file edited by another program is not noticed until you edit it from the app.
+- On **WAV**, a cover added by the app cannot be removed again: the container does not let
+  the tag chunk shrink. On MP3, the priority format, the full cycle works.
+- Tags are re-read only when the library schema changes. A file edited by another program
+  is not noticed until you edit it from the app.
 
 ## Contributing or building from source
 
-All technical information (stack, project structure, development commands, testing and the release process) is in [DEVELOPMENT.md](DEVELOPMENT.md).
+All technical information — stack, project structure, development commands, testing and the
+release process — is in [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Licence
 
-Media Audio Lib is released into the public domain under [The Unlicense](LICENSE). You are free to copy, modify, publish, use, compile, sell or distribute it, in source or binary form, for any purpose, commercial or not, with no conditions attached.
+Media Audio Lib is released into the public domain under [The Unlicense](LICENSE). You are
+free to copy, modify, publish, use, compile, sell or distribute it, in source or binary
+form, for any purpose, commercial or not, with no conditions attached.

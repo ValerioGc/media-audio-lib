@@ -79,7 +79,7 @@ media-audio-lib/
 │  ├─ composables/             # list virtualisation, drag & drop
 │  ├─ config/                  # shared configuration, genres, icons, layout
 │  ├─ i18n/                    # vue-i18n instance and locale detection
-│  ├─ locales/                 # translation files (it, en)
+│  ├─ locales/                 # translation files (it, en, fr, es, de)
 │  ├─ services/                # preferences, appearance, colour, library commands, audio
 │  ├─ stores/                  # Pinia
 │  ├─ types/
@@ -163,7 +163,7 @@ npm run docker:sonar:down    # stop SonarQube
 
 ## GitHub Pages site
 
-The site text for both locales lives in `docs/site-content.json`. The HTML pages under `docs/`, `docs/it/` and `docs/en/` are **generated** by `scripts/build-pages.cjs`; do not edit them by hand. After changing the content:
+The site text for every locale lives in `docs/site-content.json`. The HTML pages under `docs/` and its per-language folders are **generated** by `scripts/build-pages.cjs`; do not edit them by hand. After changing the content:
 
 ```bash
 npm run build:pages
@@ -181,7 +181,7 @@ Deployment runs through `.github/workflows/pages.yml`, on push to `main` when th
 1. **test**: the whole quality chain — Prettier, ESLint, `vue-tsc`, `cargo fmt`, Clippy, both test suites with coverage, `docs/` verification and the frontend build.
 2. **verify-release**: checks that the tag is valid semver, that it points at a commit reachable from `main`, that the version matches `package.json`, `tauri.conf.json` and `Cargo.toml`, and that `CHANGELOG.txt` has a section for it.
 3. **build-windows / build-linux**: native bundles through `tauri build`.
-   - Windows: NSIS installer (`.exe`), Italian and English, install mode `both`.
+   - Windows: NSIS installer (`.exe`), in the five interface languages, install mode `both`.
    - Linux: AppImage (portable, any distribution) and `.deb`. The runner is pinned to `ubuntu-22.04`: the AppImage links against the runner's glibc, and a newer one would refuse to start on older distributions.
 4. **create-release**: publishes a GitHub Release with the bundles, their SHA-256 checksums and release notes taken from the changelog.
 

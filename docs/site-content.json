@@ -31,9 +31,18 @@
       "downloadHashCopied": "Copiato!",
       "summaryLabel": "In sintesi",
       "summary": [
-        { "term": "Piattaforme", "detail": "Windows · Linux" },
-        { "term": "Internet e telemetria", "detail": "Non richiesti, mai" },
-        { "term": "Licenza", "detail": "Open source" }
+        {
+          "term": "Piattaforme",
+          "detail": "Windows · Linux"
+        },
+        {
+          "term": "Internet e telemetria",
+          "detail": "Non richiesti, mai"
+        },
+        {
+          "term": "Licenza",
+          "detail": "Open source"
+        }
       ],
       "featuresKicker": "Cosa sa fare",
       "featuresTitle": "Funzionalità",
@@ -100,9 +109,18 @@
       "downloadHashCopied": "Copied!",
       "summaryLabel": "At a glance",
       "summary": [
-        { "term": "Platforms", "detail": "Windows · Linux" },
-        { "term": "Internet and telemetry", "detail": "Never required" },
-        { "term": "Licence", "detail": "Open source" }
+        {
+          "term": "Platforms",
+          "detail": "Windows · Linux"
+        },
+        {
+          "term": "Internet and telemetry",
+          "detail": "Never required"
+        },
+        {
+          "term": "Licence",
+          "detail": "Open source"
+        }
       ],
       "featuresKicker": "What it does",
       "featuresTitle": "Features",
@@ -143,6 +161,240 @@
       "smartScreenTitle": "Windows SmartScreen notice",
       "smartScreenBody": "The installer is not yet signed with a paid certificate, so SmartScreen may show a warning on first launch. Choose \"More info\" and then \"Run anyway\" to proceed.",
       "footerRepo": "Source code on GitHub"
+    },
+    "fr": {
+      "languageName": "Français",
+      "languageLabel": "Choisissez votre langue",
+      "shortName": "FR",
+      "screenshotAlt": "Media Audio Lib : la bibliothèque en vue liste avec un morceau en cours de lecture",
+      "pageTitle": "Media Audio Lib - Gestionnaire de bibliothèque audio pour Windows et Linux",
+      "metaDescription": "Application de bureau open source pour gérer une bibliothèque de fichiers audio : édition des métadonnées, pochettes, vues multiples et lecteur intégré. Tout se passe sur votre ordinateur, sans connexion et sans télémétrie.",
+      "navLabel": "Navigation du site",
+      "downloadNav": "Téléchargement",
+      "featuresNav": "Fonctionnalités",
+      "formatsNav": "Formats",
+      "githubNav": "GitHub",
+      "heroKicker": "Bureau · Windows et Linux",
+      "heroTitle": "Votre bibliothèque audio, sur votre ordinateur",
+      "heroLead": "Media Audio Lib suit les morceaux que vous ajoutez vous-même, modifie leurs tags et leurs pochettes directement dans les fichiers, et les lit sans quitter l'application. Aucune analyse automatique du disque, aucun compte, aucune connexion.",
+      "repoButton": "Voir sur GitHub",
+      "downloadKicker": "Dernière version",
+      "downloadTitle": "Télécharger Media Audio Lib",
+      "downloadFor": "Télécharger pour",
+      "downloadLoading": "Chargement…",
+      "downloadAll": "Toutes les versions",
+      "downloadVersion": "Version",
+      "downloadHashCopied": "Copié !",
+      "summaryLabel": "En bref",
+      "summary": [
+        {
+          "term": "Plateformes",
+          "detail": "Windows · Linux"
+        },
+        {
+          "term": "Internet et télémétrie",
+          "detail": "Jamais nécessaires"
+        },
+        {
+          "term": "Licence",
+          "detail": "Open source"
+        }
+      ],
+      "featuresKicker": "Ce qu'il fait",
+      "featuresTitle": "Fonctionnalités",
+      "features": [
+        {
+          "title": "Une bibliothèque que vous décidez",
+          "body": "Aucune analyse automatique des dossiers : la bibliothèque ne contient que les fichiers que vous ajoutez, un par un ou en les déposant sur la fenêtre. Vous pouvez en tenir plusieurs et passer de l'une à l'autre quand vous voulez."
+        },
+        {
+          "title": "Édition des métadonnées",
+          "body": "Titre, artiste, album, année, genre et pochette se modifient depuis l'application et sont réécrits dans les tags du fichier, pas seulement dans la base de la bibliothèque. L'édition multiple applique le même champ à plusieurs morceaux à la fois."
+        },
+        {
+          "title": "Vue liste et vue aperçus",
+          "body": "La liste affiche des colonnes que vous pouvez trier, redimensionner et masquer à votre guise ; les aperçus montrent les pochettes en grille. Les sections Artistes, Albums et Genres regroupent les mêmes morceaux selon vos besoins."
+        },
+        {
+          "title": "Lecteur intégré",
+          "body": "Un lecteur ancré en bas de la fenêtre, extensible en pleine page, avec progression, volume, lecture aléatoire et répétition. La file de lecture est la liste que vous avez sous les yeux, filtres et tri compris."
+        },
+        {
+          "title": "Apparence à votre goût",
+          "body": "Thème clair ou sombre, trois tailles de texte, couleur d'accentuation au choix et arrière-plan dégradé construit sur cette couleur, avec des surfaces en verre activables séparément."
+        },
+        {
+          "title": "Import et export",
+          "body": "La liste des morceaux s’exporte dans un fichier portable et se réimporte ailleurs, doublons gérés. Les fichiers déplacés ou supprimés sont signalés au lieu de disparaître en silence."
+        }
+      ],
+      "formatsKicker": "Compatibilité",
+      "formatsTitle": "Formats pris en charge",
+      "formatsLabel": "Liste des formats audio pris en charge",
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formatsNote": "La lecture et l'écriture des tags passent par la même bibliothèque pour tous les formats. Sur WAV, une pochette ajoutée par l'application ne peut plus être retirée : c'est une limite du format conteneur.",
+      "privacyKicker": "Confidentialité",
+      "privacyTitle": "Tout reste sur votre ordinateur",
+      "privacyBody": "Media Audio Lib ne collecte aucune donnée, n'envoie aucune télémétrie et n'a besoin d'aucune connexion internet pour la moindre fonction. Les seules choses enregistrées sont vos préférences et les fichiers de bibliothèque, gardés en local. Vos fichiers audio ne sont jamais copiés ailleurs : l'application les lit et réécrit leurs tags sur place.",
+      "smartScreenTitle": "Avertissement Windows SmartScreen",
+      "smartScreenBody": "L'installeur n'est pas encore signé avec un certificat payant, SmartScreen peut donc afficher un avertissement au premier lancement. Choisissez « Informations complémentaires » puis « Exécuter quand même » pour continuer.",
+      "footerRepo": "Code source sur GitHub"
+    },
+    "es": {
+      "languageName": "Español",
+      "languageLabel": "Elige tu idioma",
+      "shortName": "ES",
+      "screenshotAlt": "Media Audio Lib: la biblioteca en vista de lista con una pista en reproducción",
+      "pageTitle": "Media Audio Lib - Gestor de biblioteca de audio para Windows y Linux",
+      "metaDescription": "Aplicación de escritorio de código abierto para gestionar una biblioteca de archivos de audio: edición de metadatos, carátulas, varias vistas y reproductor integrado. Todo ocurre en tu ordenador, sin conexión y sin telemetría.",
+      "navLabel": "Navegación del sitio",
+      "downloadNav": "Descarga",
+      "featuresNav": "Funciones",
+      "formatsNav": "Formatos",
+      "githubNav": "GitHub",
+      "heroKicker": "Escritorio · Windows y Linux",
+      "heroTitle": "Tu biblioteca de audio, en tu ordenador",
+      "heroLead": "Media Audio Lib registra las pistas que añades tú, edita sus etiquetas y carátulas escribiéndolas directamente en los archivos, y las reproduce sin salir de la aplicación. Sin análisis automático del disco, sin cuenta, sin conexión.",
+      "repoButton": "Ver en GitHub",
+      "downloadKicker": "Última versión",
+      "downloadTitle": "Descargar Media Audio Lib",
+      "downloadFor": "Descargar para",
+      "downloadLoading": "Cargando…",
+      "downloadAll": "Todas las versiones",
+      "downloadVersion": "Versión",
+      "downloadHashCopied": "¡Copiado!",
+      "summaryLabel": "En resumen",
+      "summary": [
+        {
+          "term": "Plataformas",
+          "detail": "Windows · Linux"
+        },
+        {
+          "term": "Internet y telemetría",
+          "detail": "Nunca necesarios"
+        },
+        {
+          "term": "Licencia",
+          "detail": "Código abierto"
+        }
+      ],
+      "featuresKicker": "Qué hace",
+      "featuresTitle": "Funciones",
+      "features": [
+        {
+          "title": "Una biblioteca que decides tú",
+          "body": "Sin análisis automático de carpetas: la biblioteca contiene solo los archivos que añades, uno a uno o soltándolos sobre la ventana. Puedes tener varias y pasar de una a otra cuando quieras."
+        },
+        {
+          "title": "Edición de metadatos",
+          "body": "Título, artista, álbum, año, género y carátula se editan desde la aplicación y se reescriben en las etiquetas del archivo, no solo en la base de la biblioteca. La edición múltiple aplica el mismo campo a varias pistas a la vez."
+        },
+        {
+          "title": "Vista de lista y de vistas previas",
+          "body": "La lista muestra columnas que puedes ordenar, redimensionar y ocultar a tu gusto; las vistas previas muestran las carátulas en cuadrícula. Las secciones Artistas, Álbumes y Géneros agrupan las mismas pistas según lo que necesites."
+        },
+        {
+          "title": "Reproductor integrado",
+          "body": "Un reproductor anclado en la parte inferior de la ventana, ampliable a pantalla completa, con progreso, volumen, reproducción aleatoria y repetición. La cola es la lista que tienes delante, filtros y orden incluidos."
+        },
+        {
+          "title": "Aspecto a tu gusto",
+          "body": "Tema claro u oscuro, tres tamaños de texto, color de acento a elegir y fondo degradado construido sobre ese color, con superficies de cristal activables por separado."
+        },
+        {
+          "title": "Importar y exportar",
+          "body": "La lista de pistas se exporta a un archivo portable y se reimporta en otro sitio, con los duplicados gestionados. Los archivos movidos o borrados se señalan en lugar de desaparecer en silencio."
+        }
+      ],
+      "formatsKicker": "Compatibilidad",
+      "formatsTitle": "Formatos admitidos",
+      "formatsLabel": "Lista de formatos de audio admitidos",
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formatsNote": "La lectura y la escritura de etiquetas pasan por la misma biblioteca en todos los formatos. En WAV, una carátula añadida por la aplicación ya no puede quitarse: es un límite del formato contenedor.",
+      "privacyKicker": "Privacidad",
+      "privacyTitle": "Todo se queda en tu ordenador",
+      "privacyBody": "Media Audio Lib no recopila datos, no envía telemetría y no necesita conexión a internet para ninguna función. Lo único que guarda son tus preferencias y los archivos de biblioteca, en local. Tus archivos de audio nunca se copian a otro sitio: la aplicación los lee y reescribe sus etiquetas donde están.",
+      "smartScreenTitle": "Aviso de Windows SmartScreen",
+      "smartScreenBody": "El instalador todavía no está firmado con un certificado de pago, así que SmartScreen puede mostrar un aviso en el primer inicio. Elige «Más información» y luego «Ejecutar de todas formas» para continuar.",
+      "footerRepo": "Código fuente en GitHub"
+    },
+    "de": {
+      "languageName": "Deutsch",
+      "languageLabel": "Wählen Sie Ihre Sprache",
+      "shortName": "DE",
+      "screenshotAlt": "Media Audio Lib: die Bibliothek in der Listenansicht mit einem laufenden Titel",
+      "pageTitle": "Media Audio Lib - Verwaltung der Audiobibliothek für Windows und Linux",
+      "metaDescription": "Quelloffene Desktop-Anwendung zur Verwaltung einer Bibliothek von Audiodateien: Metadaten bearbeiten, Cover, mehrere Ansichten und ein eingebauter Player. Alles läuft auf Ihrem eigenen Rechner, ohne Verbindung und ohne Telemetrie.",
+      "navLabel": "Navigation der Website",
+      "downloadNav": "Download",
+      "featuresNav": "Funktionen",
+      "formatsNav": "Formate",
+      "githubNav": "GitHub",
+      "heroKicker": "Desktop · Windows und Linux",
+      "heroTitle": "Ihre Audiobibliothek, auf Ihrem eigenen Rechner",
+      "heroLead": "Media Audio Lib führt die Titel, die Sie selbst hinzufügen, bearbeitet ihre Tags und Cover direkt in den Dateien und spielt sie ab, ohne die Anwendung zu verlassen. Kein automatisches Durchsuchen der Festplatte, kein Konto, keine Verbindung.",
+      "repoButton": "Auf GitHub ansehen",
+      "downloadKicker": "Neueste Version",
+      "downloadTitle": "Media Audio Lib herunterladen",
+      "downloadFor": "Herunterladen für",
+      "downloadLoading": "Wird geladen…",
+      "downloadAll": "Alle Versionen",
+      "downloadVersion": "Version",
+      "downloadHashCopied": "Kopiert!",
+      "summaryLabel": "Auf einen Blick",
+      "summary": [
+        {
+          "term": "Plattformen",
+          "detail": "Windows · Linux"
+        },
+        {
+          "term": "Internet und Telemetrie",
+          "detail": "Nie erforderlich"
+        },
+        {
+          "term": "Lizenz",
+          "detail": "Open Source"
+        }
+      ],
+      "featuresKicker": "Was sie kann",
+      "featuresTitle": "Funktionen",
+      "features": [
+        {
+          "title": "Eine Bibliothek nach Ihrer Wahl",
+          "body": "Kein automatisches Durchsuchen von Ordnern: Die Bibliothek enthält nur die Dateien, die Sie hinzufügen, einzeln oder per Ziehen auf das Fenster. Sie können mehrere führen und jederzeit zwischen ihnen wechseln."
+        },
+        {
+          "title": "Metadaten bearbeiten",
+          "body": "Titel, Interpret, Album, Jahr, Genre und Cover werden in der Anwendung bearbeitet und in die Tags der Datei zurückgeschrieben, nicht nur in die Datenbank der Bibliothek. Die Mehrfachbearbeitung wendet dasselbe Feld auf mehrere Titel zugleich an."
+        },
+        {
+          "title": "Listen- und Vorschauansicht",
+          "body": "Die Liste zeigt Spalten, die Sie sortieren, in der Breite ändern und ausblenden können; die Vorschau zeigt die Cover im Raster. Die Bereiche Interpreten, Alben und Genres gruppieren dieselben Titel so, wie Sie es gerade brauchen."
+        },
+        {
+          "title": "Eingebauter Player",
+          "body": "Ein Player am unteren Rand des Fensters, auf ganze Seite erweiterbar, mit Fortschritt, Lautstärke, Zufallswiedergabe und Wiederholung. Die Warteschlange ist die Liste vor Ihnen, samt Filtern und Sortierung."
+        },
+        {
+          "title": "Erscheinungsbild nach Wunsch",
+          "body": "Helles oder dunkles Design, drei Textgrößen, frei wählbare Akzentfarbe und ein weicher Hintergrund auf Basis dieser Farbe, mit separat zuschaltbaren Glasflächen."
+        },
+        {
+          "title": "Import und Export",
+          "body": "Die Titelliste lässt sich in eine portable Datei exportieren und anderswo wieder einlesen, Duplikate inbegriffen. Verschobene oder gelöschte Dateien werden gemeldet, statt still zu verschwinden."
+        }
+      ],
+      "formatsKicker": "Kompatibilität",
+      "formatsTitle": "Unterstützte Formate",
+      "formatsLabel": "Liste der unterstützten Audioformate",
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formatsNote": "Das Lesen und Schreiben der Tags läuft bei allen Formaten über dieselbe Bibliothek. Bei WAV lässt sich ein von der Anwendung hinzugefügtes Cover nicht wieder entfernen: eine Grenze des Containerformats.",
+      "privacyKicker": "Datenschutz",
+      "privacyTitle": "Alles bleibt auf Ihrem Rechner",
+      "privacyBody": "Media Audio Lib erhebt keine Daten, sendet keine Telemetrie und benötigt für keine Funktion eine Internetverbindung. Gespeichert werden nur Ihre Einstellungen und die Bibliotheksdateien, lokal. Ihre Audiodateien werden nie anderswohin kopiert: Die Anwendung liest sie und schreibt ihre Tags dort, wo sie liegen.",
+      "smartScreenTitle": "Hinweis von Windows SmartScreen",
+      "smartScreenBody": "Der Installer ist noch nicht mit einem kostenpflichtigen Zertifikat signiert, daher kann SmartScreen beim ersten Start eine Warnung anzeigen. Wählen Sie „Weitere Informationen“ und dann „Trotzdem ausführen“, um fortzufahren.",
+      "footerRepo": "Quellcode auf GitHub"
     }
   }
 }

@@ -85,7 +85,7 @@ describe('PlayerDock', () => {
     const wrapper = mountDock(options);
     await flushPromises();
 
-    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('data:image/png;base64,AAA');
+    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('data:image/png;base64,AAA', 100);
     expect(player.coverAccent?.rgb).toBe('10 20 30');
     expect(wrapper.get('.player_bar').classes()).toContain('player_bar_accented');
   });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
@@ -62,8 +62,17 @@ const { isDraggingOver } = useFileDrop((paths) => {
 });
 
 onMounted(() => {
-  void library.load();
+  void library.loadHomeLibrary(settings.mainLibraryId);
 });
+
+watch(
+  () => settings.mainLibraryId,
+  (mainLibraryId) => {
+    if (settings.isReady && mainLibraryId !== null) {
+      void library.loadHomeLibrary(mainLibraryId);
+    }
+  },
+);
 
 /** The visible list becomes the queue, so previous and next follow what is on screen. */
 function startPlayback(track: TrackView) {

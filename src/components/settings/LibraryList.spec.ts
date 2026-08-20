@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 
 import LibraryList from './LibraryList.vue';
 
@@ -54,6 +55,26 @@ describe('LibraryList', () => {
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
 
+  it('marks a library as primary and opens it for the home', async () => {
+    const { wrapper, library } = mountList();
+    const settings = useSettingsStore();
+    const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
+    const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
+
+    await wrapper.findAll('[data-testid="set-main-library"]')[1]?.trigger('click');
+
+    expect(switchLibrary).toHaveBeenCalledWith('lib-2');
+    expect(setMainLibraryId).toHaveBeenCalledWith('lib-2');
+  });
+
+  it('shows the primary library marker', async () => {
+    const { wrapper } = mountList();
+    useSettingsStore().mainLibraryId = 'lib-2';
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.findAll('.library_list_item_meta')[1]?.text()).toContain('principale');
+  });
+
   it('exports the chosen library', async () => {
     const { wrapper, library } = mountList();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
@@ -85,6 +106,19 @@ describe('LibraryList', () => {
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
 
     expect(deleteLibrary).toHaveBeenCalledWith('lib-2');
+  });
+
+  it('clears the primary library when it is deleted', async () => {
+    const { wrapper, library } = mountList();
+    const settings = useSettingsStore();
+    settings.mainLibraryId = 'lib-2';
+    vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
+    const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
+
+    await wrapper.findAll('[data-testid="delete-library"]')[1]?.trigger('click');
+    await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
+
+    expect(setMainLibraryId).toHaveBeenCalledWith(library.activeLibraryId);
   });
 
   it('keeps deletion disabled with a single library', () => {

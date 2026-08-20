@@ -42,6 +42,7 @@
       "title": "Sfondo da copertina",
       "description": "Usa il colore dominante della copertina per lo sfondo del player e della riga in riproduzione.",
       "toggle": "Abilita gradiente dalla copertina",
+      "intensity": "Intensità",
       "transparency": "Trasparenza player",
       "blur": "Blur player"
     },
@@ -89,7 +90,7 @@
     },
     "libraries": {
       "title": "Librerie",
-      "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, esportarle o eliminarle."
+      "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, scegliere quella principale, esportarle o eliminarle."
     },
     "footer": {
       "version": "versione {version}",
@@ -108,7 +109,6 @@
         "rename": "Rinomina",
         "verifyAll": "Verifica file",
         "exportList": "Esporta elenco",
-        "import": "Importa",
         "export": "Esporta libreria",
         "delete": "Elimina libreria"
       }
@@ -118,9 +118,17 @@
       "trackCount": "nessun brano | 1 brano | {count} brani",
       "open": "Apri la libreria {name}",
       "openShort": "Apri",
+      "primary": "principale",
+      "primaryShort": "Principale",
+      "setPrimary": "Imposta {name} come libreria principale",
       "export": "Esporta la libreria {name}",
       "remove": "Elimina la libreria {name}",
       "exported": "Libreria esportata in {path}",
+      "switcher": {
+        "open": "Cambia libreria",
+        "title": "Scegli libreria",
+        "close": "Chiudi"
+      },
       "create": {
         "label": "Nuova libreria",
         "placeholder": "Nome della nuova libreria",

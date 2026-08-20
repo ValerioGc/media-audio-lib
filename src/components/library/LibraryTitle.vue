@@ -5,13 +5,16 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppMenu from '@/components/common/AppMenu.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
+import LibrarySwitcherDialog from '@/components/library/LibrarySwitcherDialog.vue';
 import LibraryTrackListExportDialog from '@/components/library/LibraryTrackListExportDialog.vue';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 import type { LibrarySummary } from '@/types/library';
 import type { MenuItem } from '@/types/menu';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const settings = useSettingsStore();
 
 const isEditing = ref(false);
 const draft = ref('');
@@ -20,17 +23,12 @@ const field = ref<HTMLInputElement | null>(null);
 const displayName = computed(() => library.libraryName || t('library.title'));
 
 const pendingDeletion = ref<LibrarySummary | null>(null);
+const isSwitcherOpen = ref(false);
 const isTrackListExportOpen = ref(false);
 
-/** The libraries to switch between, then the actions on the open one. */
+/** Actions on the open library. Switching has a dedicated dialog next to the title. */
 const menuItems = computed<MenuItem[]>(() => [
-  ...library.libraries.map((entry) => ({
-    id: `open:${entry.id}`,
-    label: entry.name,
-    checked: entry.active,
-    description: t('library.catalog.open', { name: entry.name }),
-  })),
-  { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit', divider: true },
+  { id: 'rename', label: t('library.name.menu.rename'), icon: 'edit' },
   {
     id: 'verifyAll',
     label: t('library.name.menu.verifyAll'),
@@ -43,14 +41,13 @@ const menuItems = computed<MenuItem[]>(() => [
     icon: 'list',
     disabled: library.tracks.length === 0,
   },
-  { id: 'import', label: t('library.name.menu.import'), icon: 'import' },
   { id: 'export', label: t('library.name.menu.export'), icon: 'export' },
   {
     id: 'delete',
     label: t('library.name.menu.delete'),
     icon: 'remove',
     danger: true,
-    disabled: !library.canDeleteLibrary,
+    disabled: !library.canDeleteLibraryId(library.activeLibraryId),
   },
 ]);
 
@@ -59,13 +56,6 @@ onMounted(() => {
 });
 
 function run(id: string) {
-  const opened = id.startsWith('open:') ? id.slice('open:'.length) : null;
-
-  if (opened !== null) {
-    void library.switchLibrary(opened);
-    return;
-  }
-
   if (id === 'rename') {
     void startEditing();
     return;
@@ -86,20 +76,23 @@ function run(id: string) {
     return;
   }
 
-  if (id === 'import') {
-    void library.importLibrary('mergeSkipDuplicates');
-    return;
-  }
-
-  if (id === 'delete') {
+  if (id === 'delete' && library.canDeleteLibraryId(library.activeLibraryId)) {
     pendingDeletion.value =
       library.libraries.find((entry) => entry.id === library.activeLibraryId) ?? null;
   }
 }
 
+function openSwitcher() {
+  isSwitcherOpen.value = true;
+  void library.loadLibraries();
+}
+
 async function confirmDeletion(id: string) {
   pendingDeletion.value = null;
-  await library.deleteLibrary(id);
+
+  if ((await library.deleteLibrary(id)) && settings.mainLibraryId === id) {
+    await settings.setMainLibraryId(library.activeLibraryId);
+  }
 }
 
 async function startEditing() {
@@ -158,6 +151,16 @@ async function submit() {
     <!-- Renaming starts from the menu: no separate pen next to the name. -->
     <h1 v-else class="library_title_name">{{ displayName }}</h1>
 
+    <button
+      class="library_title_switch"
+      type="button"
+      :aria-label="t('library.catalog.switcher.open')"
+      data-testid="library-switcher-open"
+      @click="openSwitcher"
+    >
+      <AppIcon name="switch" />
+    </button>
+
     <AppMenu :items="menuItems" :label="t('library.name.actions')" @select="run" />
 
     <LibraryDeleteDialog
@@ -165,6 +168,8 @@ async function submit() {
       @confirm="confirmDeletion"
       @cancel="pendingDeletion = null"
     />
+
+    <LibrarySwitcherDialog :open="isSwitcherOpen" @close="isSwitcherOpen = false" />
 
     <LibraryTrackListExportDialog
       :open="isTrackListExportOpen"
@@ -239,6 +244,31 @@ async function submit() {
     &:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+    }
+
+    @include focus_ring;
+  }
+
+  &_switch {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: $radius_md;
+    background-color: transparent;
+    color: var(--color_text_muted);
+    font: inherit;
+    cursor: pointer;
+    transition:
+      background-color $duration_fast ease,
+      color $duration_fast ease;
+
+    &:hover {
+      background-color: var(--color_surface_hover);
+      color: var(--color_text);
     }
 
     @include focus_ring;

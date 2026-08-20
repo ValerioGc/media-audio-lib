@@ -154,6 +154,25 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  function canDeleteLibraryId(id: string | null): boolean {
+    return id !== null && libraries.value.some((library) => library.id !== id);
+  }
+
+  async function loadHomeLibrary(mainLibraryId: string | null) {
+    await loadLibraries();
+
+    if (
+      mainLibraryId !== null &&
+      libraries.value.some((entry) => entry.id === mainLibraryId) &&
+      activeLibraryId.value !== mainLibraryId
+    ) {
+      await switchLibrary(mainLibraryId);
+      return;
+    }
+
+    await load();
+  }
+
   async function createLibrary(name: string): Promise<boolean> {
     const cleaned = name.trim();
 
@@ -552,6 +571,8 @@ export const useLibraryStore = defineStore('library', () => {
     load,
     renameLibrary,
     loadLibraries,
+    canDeleteLibraryId,
+    loadHomeLibrary,
     createLibrary,
     switchLibrary,
     deleteLibrary,

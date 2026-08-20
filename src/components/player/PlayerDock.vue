@@ -17,8 +17,12 @@ const settings = useSettingsStore();
 let accentRequest = 0;
 
 watch(
-  [() => player.currentTrack, () => settings.coverGradientEnabled],
-  async ([track, enabled]) => {
+  [
+    () => player.currentTrack,
+    () => settings.coverGradientEnabled,
+    () => settings.coverGradientIntensity,
+  ],
+  async ([track, enabled, intensity]) => {
     const request = ++accentRequest;
     player.setCoverAccent(null);
 
@@ -32,7 +36,7 @@ watch(
       return;
     }
 
-    const accent = await dominantCoverAccent(source);
+    const accent = await dominantCoverAccent(source, intensity);
 
     if (request === accentRequest) {
       player.setCoverAccent(accent);

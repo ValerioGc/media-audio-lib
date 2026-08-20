@@ -16,6 +16,7 @@ export const ICON_GLYPHS = {
   previous: '❮❮',
   next: '❯❯',
   shuffle: '⤨',
+  switch: '⇄',
   repeatOne: '↻1',
   list: '☰',
   grid: '▦',

@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { makeTrack } from '../../../tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 
 import LibraryTitle from './LibraryTitle.vue';
 
@@ -114,32 +115,27 @@ describe('LibraryTitle', () => {
     expect(rename).not.toHaveBeenCalled();
   });
 
-  it('lists libraries and then actions for the open library', async () => {
+  it('lists only actions in the library options menu', async () => {
     const { wrapper } = mountTitle();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
     const items = wrapper.findAll('.app_menu_item');
 
     expect(items.map((item) => item.get('.app_menu_item_label').text())).toEqual([
-      'Main',
-      'Jazz',
       'Rinomina',
       'Verifica file',
       'Esporta elenco',
-      'Importa',
       'Esporta libreria',
       'Elimina libreria',
     ]);
-    expect(items[0]?.attributes('aria-checked')).toBe('true');
-    expect(items[1]?.attributes('aria-checked')).toBe('false');
   });
 
-  it('opens the library chosen from the menu', async () => {
+  it('opens the library switcher from the title', async () => {
     const { wrapper, library } = mountTitle();
     const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
 
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
+    await wrapper.get('[data-testid="library-switcher-open"]').trigger('click');
+    await wrapper.findAll('[data-testid="switch-library"]')[1]?.trigger('click');
 
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
@@ -156,19 +152,9 @@ describe('LibraryTitle', () => {
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
-  });
-
-  it('imports into the open library from the menu', async () => {
-    const { wrapper, library } = mountTitle();
-    const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
-
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
-
-    expect(importLibrary).toHaveBeenCalledWith('mergeSkipDuplicates');
   });
 
   it('verifies all files from the library menu', async () => {
@@ -181,7 +167,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
 
     expect(verifyAllTracks).toHaveBeenCalledTimes(1);
   });
@@ -192,7 +178,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(document.body.textContent).toContain('Esporta elenco brani');
   });
@@ -202,7 +188,7 @@ describe('LibraryTitle', () => {
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[7]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Main');
     expect(deleteLibrary).not.toHaveBeenCalled();
@@ -210,6 +196,23 @@ describe('LibraryTitle', () => {
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
 
     expect(deleteLibrary).toHaveBeenCalledWith('lib-1');
+  });
+
+  it('updates the primary library after deleting it from the title menu', async () => {
+    const { wrapper, library } = mountTitle();
+    const settings = useSettingsStore();
+    settings.mainLibraryId = 'lib-1';
+    vi.spyOn(library, 'deleteLibrary').mockImplementation(async () => {
+      library.libraries = [{ ...catalog[1]!, active: true }];
+      return true;
+    });
+    const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
+
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
+
+    expect(setMainLibraryId).toHaveBeenCalledWith('lib-2');
   });
 
   it('keeps deletion disabled with a single library', async () => {

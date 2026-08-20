@@ -137,7 +137,9 @@ describe('useSettingsStore', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'preview',
+      mainLibraryId: null,
       coverGradientEnabled: true,
+      coverGradientIntensity: 100,
       playerTransparency: 12,
       playerBlur: 12,
       defaultPlayerBannerDismissed: false,
@@ -157,6 +159,19 @@ describe('useSettingsStore', () => {
 
     expect(store.viewMode).toBe('table');
     expect(storage.saved.at(-1)?.viewMode).toBe('table');
+
+    store.dispose();
+  });
+
+  it('remembers the primary library', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setMainLibraryId('lib-2');
+
+    expect(store.mainLibraryId).toBe('lib-2');
+    expect(storage.saved.at(-1)?.mainLibraryId).toBe('lib-2');
 
     store.dispose();
   });
@@ -196,16 +211,19 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('remembers player transparency and blur', async () => {
+  it('remembers cover gradient intensity, player transparency and blur', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();
     await store.initialize(storage);
 
+    await store.setCoverGradientIntensity(160);
     await store.setPlayerTransparency(30);
     await store.setPlayerBlur(18);
 
+    expect(store.coverGradientIntensity).toBe(160);
     expect(store.playerTransparency).toBe(30);
     expect(store.playerBlur).toBe(18);
+    expect(storage.saved.at(-1)?.coverGradientIntensity).toBe(160);
     expect(storage.saved.at(-1)?.playerTransparency).toBe(30);
     expect(storage.saved.at(-1)?.playerBlur).toBe(18);
 

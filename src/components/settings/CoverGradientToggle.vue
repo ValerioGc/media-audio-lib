@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useSettingsStore } from '@/stores/settings';
+import { MAX_PLAYER_BLUR } from '@/types/settings';
 
 const { t } = useI18n();
 const settings = useSettingsStore();
+const blurPercent = computed(() => Math.round((settings.playerBlur / MAX_PLAYER_BLUR) * 100));
 
 function onChange(event: Event) {
   void settings.setCoverGradientEnabled((event.target as HTMLInputElement).checked);
@@ -15,7 +18,12 @@ function onTransparencyChange(event: Event) {
 }
 
 function onBlurChange(event: Event) {
-  void settings.setPlayerBlur(Number((event.target as HTMLInputElement).value));
+  const percentage = Number((event.target as HTMLInputElement).value);
+  void settings.setPlayerBlur((percentage / 100) * MAX_PLAYER_BLUR);
+}
+
+function onIntensityChange(event: Event) {
+  void settings.setCoverGradientIntensity(Number((event.target as HTMLInputElement).value));
 }
 </script>
 
@@ -46,17 +54,31 @@ function onBlurChange(event: Event) {
     </label>
 
     <label class="cover_gradient_toggle_slider">
+      <span>{{ t('settings.coverGradient.intensity') }}</span>
+      <input
+        type="range"
+        min="40"
+        max="200"
+        step="1"
+        :value="settings.coverGradientIntensity"
+        data-testid="cover-gradient-intensity"
+        @input="onIntensityChange"
+      />
+      <strong>{{ settings.coverGradientIntensity }}%</strong>
+    </label>
+
+    <label class="cover_gradient_toggle_slider">
       <span>{{ t('settings.coverGradient.blur') }}</span>
       <input
         type="range"
         min="0"
-        max="28"
+        max="100"
         step="1"
-        :value="settings.playerBlur"
+        :value="blurPercent"
         data-testid="player-blur"
         @input="onBlurChange"
       />
-      <strong>{{ settings.playerBlur }}px</strong>
+      <strong>{{ blurPercent }}%</strong>
     </label>
   </div>
 </template>

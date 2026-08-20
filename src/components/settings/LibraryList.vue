@@ -7,10 +7,12 @@ import AppIcon from '@/components/common/AppIcon.vue';
 import AppInput from '@/components/common/AppInput.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 import type { LibrarySummary } from '@/types/library';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const settings = useSettingsStore();
 
 const newName = ref('');
 const pendingDeletion = ref<LibrarySummary | null>(null);
@@ -27,7 +29,20 @@ async function create() {
 
 async function confirmDeletion(id: string) {
   pendingDeletion.value = null;
-  await library.deleteLibrary(id);
+
+  if (await library.deleteLibrary(id)) {
+    if (settings.mainLibraryId === id) {
+      await settings.setMainLibraryId(library.activeLibraryId);
+    }
+  }
+}
+
+async function setMainLibrary(entry: LibrarySummary) {
+  if (!entry.active && !(await library.switchLibrary(entry.id))) {
+    return;
+  }
+
+  await settings.setMainLibraryId(entry.id);
 }
 </script>
 
@@ -46,6 +61,9 @@ async function confirmDeletion(id: string) {
           <span class="library_list_item_meta">
             {{ t('library.catalog.trackCount', entry.trackCount) }}
             <template v-if="entry.active"> · {{ t('library.catalog.active') }}</template>
+            <template v-if="entry.id === settings.mainLibraryId">
+              · {{ t('library.catalog.primary') }}
+            </template>
           </span>
         </div>
 
@@ -59,6 +77,15 @@ async function confirmDeletion(id: string) {
             {{ t('library.catalog.openShort') }}
           </AppButton>
           <AppButton
+            :disabled="entry.id === settings.mainLibraryId"
+            :aria-label="t('library.catalog.setPrimary', { name: entry.name })"
+            data-testid="set-main-library"
+            @click="setMainLibrary(entry)"
+          >
+            <AppIcon v-if="entry.id === settings.mainLibraryId" name="check" />
+            {{ t('library.catalog.primaryShort') }}
+          </AppButton>
+          <AppButton
             :aria-label="t('library.catalog.export', { name: entry.name })"
             data-testid="export-library"
             @click="library.exportLibrary(entry.id)"
@@ -69,7 +96,7 @@ async function confirmDeletion(id: string) {
           <AppButton
             variant="danger"
             :aria-label="t('library.catalog.remove', { name: entry.name })"
-            :disabled="!library.canDeleteLibrary"
+            :disabled="!library.canDeleteLibraryId(entry.id)"
             data-testid="delete-library"
             @click="pendingDeletion = entry"
           >

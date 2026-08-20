@@ -40,13 +40,15 @@ describe('SettingsView', () => {
     ]);
   });
 
-  it('shows rename in the library tab', async () => {
+  it('does not show rename in the library tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
-    expect(wrapper.get('.settings_section_title').text()).toBe('Nome della libreria');
-    expect(wrapper.find('.library_name_form').exists()).toBe(true);
+    expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).not.toContain(
+      'Nome della libreria',
+    );
+    expect(wrapper.find('.library_name_form').exists()).toBe(false);
   });
 
   it('shows the library list in the library tab', async () => {
@@ -55,7 +57,6 @@ describe('SettingsView', () => {
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
-      'Nome della libreria',
       'Import / Export',
       'Librerie',
     ]);

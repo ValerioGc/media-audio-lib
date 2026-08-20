@@ -34,17 +34,22 @@ describe('CoverGradientToggle', () => {
     expect(setCoverGradientEnabled).toHaveBeenCalledWith(false);
   });
 
-  it('updates player transparency and blur', async () => {
+  it('updates player transparency, gradient intensity and blur percentage', async () => {
     const options = withPinia();
     const settings = useSettingsStore();
     const setPlayerTransparency = vi.spyOn(settings, 'setPlayerTransparency').mockResolvedValue();
+    const setCoverGradientIntensity = vi
+      .spyOn(settings, 'setCoverGradientIntensity')
+      .mockResolvedValue();
     const setPlayerBlur = vi.spyOn(settings, 'setPlayerBlur').mockResolvedValue();
 
     const wrapper = mount(CoverGradientToggle, options);
     await wrapper.get('[data-testid="player-transparency"]').setValue(30);
-    await wrapper.get('[data-testid="player-blur"]').setValue(18);
+    await wrapper.get('[data-testid="cover-gradient-intensity"]').setValue(160);
+    await wrapper.get('[data-testid="player-blur"]').setValue(50);
 
     expect(setPlayerTransparency).toHaveBeenCalledWith(30);
-    expect(setPlayerBlur).toHaveBeenCalledWith(18);
+    expect(setCoverGradientIntensity).toHaveBeenCalledWith(160);
+    expect(setPlayerBlur).toHaveBeenCalledWith(14);
   });
 });

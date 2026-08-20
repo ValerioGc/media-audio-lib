@@ -6,9 +6,14 @@ export interface CoverAccent {
 
 const SAMPLE_SIZE = 32;
 const MIN_ALPHA = 32;
+const MAX_GRADIENT_ALPHA = 92;
 
 function clampChannel(value: number): number {
   return Math.min(255, Math.max(0, Math.round(value)));
+}
+
+function gradientAlpha(base: number, intensity: number): number {
+  return Math.min(MAX_GRADIENT_ALPHA, Math.max(0, Math.round((base * intensity) / 100)));
 }
 
 function liftDarkColor(red: number, green: number, blue: number): [number, number, number] {
@@ -23,14 +28,25 @@ function liftDarkColor(red: number, green: number, blue: number): [number, numbe
   return [red + lift * 0.7, green + lift * 0.7, blue + lift * 0.9];
 }
 
-export function coverAccentFromRgb(red: number, green: number, blue: number): CoverAccent {
+export function coverAccentFromRgb(
+  red: number,
+  green: number,
+  blue: number,
+  intensity = 100,
+): CoverAccent {
   const [visibleRed, visibleGreen, visibleBlue] = liftDarkColor(red, green, blue);
   const rgb = `${clampChannel(visibleRed)} ${clampChannel(visibleGreen)} ${clampChannel(visibleBlue)}`;
+  const surfaceStrong = gradientAlpha(58, intensity);
+  const surfaceMid = gradientAlpha(32, intensity);
+  const surfaceLinear = gradientAlpha(42, intensity);
+  const surfaceLinearSoft = gradientAlpha(18, intensity);
+  const rowStrong = gradientAlpha(44, intensity);
+  const rowSoft = gradientAlpha(24, intensity);
 
   return {
     rgb,
-    surfaceGradient: `radial-gradient(circle at 12% 18%, rgb(${rgb} / 58%), rgb(${rgb} / 32%) 34%, transparent 68%), linear-gradient(135deg, rgb(${rgb} / 42%), rgb(${rgb} / 18%) 54%, transparent 88%)`,
-    rowGradient: `linear-gradient(90deg, rgb(${rgb} / 44%), rgb(${rgb} / 24%) 48%, transparent 100%)`,
+    surfaceGradient: `radial-gradient(circle at 12% 18%, rgb(${rgb} / ${surfaceStrong}%), rgb(${rgb} / ${surfaceMid}%) 34%, transparent 68%), linear-gradient(135deg, rgb(${rgb} / ${surfaceLinear}%), rgb(${rgb} / ${surfaceLinearSoft}%) 54%, transparent 88%)`,
+    rowGradient: `linear-gradient(90deg, rgb(${rgb} / ${rowStrong}%), rgb(${rgb} / ${rowSoft}%) 48%, transparent 100%)`,
   };
 }
 
@@ -43,7 +59,10 @@ function imageFromSource(source: string): Promise<HTMLImageElement> {
   });
 }
 
-export async function dominantCoverAccent(source: string): Promise<CoverAccent | null> {
+export async function dominantCoverAccent(
+  source: string,
+  intensity = 100,
+): Promise<CoverAccent | null> {
   if (typeof document === 'undefined') {
     return null;
   }
@@ -80,7 +99,7 @@ export async function dominantCoverAccent(source: string): Promise<CoverAccent |
 
     return samples === 0
       ? null
-      : coverAccentFromRgb(red / samples, green / samples, blue / samples);
+      : coverAccentFromRgb(red / samples, green / samples, blue / samples, intensity);
   } catch {
     return null;
   }

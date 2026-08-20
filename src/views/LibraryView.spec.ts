@@ -29,7 +29,7 @@ beforeEach(() => {
 async function mountView() {
   const options = withPinia();
   const store = useLibraryStore();
-  const load = vi.spyOn(store, 'load').mockResolvedValue();
+  const load = vi.spyOn(store, 'loadHomeLibrary').mockResolvedValue();
 
   const wrapper = mount(LibraryView, options);
   await flushPromises();
@@ -41,7 +41,20 @@ describe('LibraryView', () => {
   it('loads the library on open', async () => {
     const { load } = await mountView();
 
-    expect(load).toHaveBeenCalledTimes(1);
+    expect(load).toHaveBeenCalledWith(null);
+  });
+
+  it('loads the primary library on open when configured', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const store = useLibraryStore();
+    settings.mainLibraryId = 'lib-2';
+    const load = vi.spyOn(store, 'loadHomeLibrary').mockResolvedValue();
+
+    mount(LibraryView, options);
+    await flushPromises();
+
+    expect(load).toHaveBeenCalledWith('lib-2');
   });
 
   it('shows the empty state with no tracks', async () => {

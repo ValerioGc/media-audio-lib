@@ -11,6 +11,9 @@ import {
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   DEFAULT_SETTINGS,
+  MAX_COVER_GRADIENT_INTENSITY,
+  MAX_PLAYER_BLUR,
+  MIN_COVER_GRADIENT_INTENSITY,
   type AppSettings,
   type Locale,
   type ResolvedTheme,
@@ -24,7 +27,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const textSize = ref<TextSize>(DEFAULT_SETTINGS.textSize);
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
+  const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
+  const coverGradientIntensity = ref(DEFAULT_SETTINGS.coverGradientIntensity);
   const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
   const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
   const defaultPlayerBannerDismissed = ref(DEFAULT_SETTINGS.defaultPlayerBannerDismissed);
@@ -43,7 +48,9 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize: textSize.value,
     theme: theme.value,
     viewMode: viewMode.value,
+    mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
+    coverGradientIntensity: coverGradientIntensity.value,
     playerTransparency: playerTransparency.value,
     playerBlur: playerBlur.value,
     defaultPlayerBannerDismissed: defaultPlayerBannerDismissed.value,
@@ -94,7 +101,9 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize.value = restored.textSize;
     theme.value = restored.theme;
     viewMode.value = restored.viewMode;
+    mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
+    coverGradientIntensity.value = restored.coverGradientIntensity;
     playerTransparency.value = restored.playerTransparency;
     playerBlur.value = restored.playerBlur;
     defaultPlayerBannerDismissed.value = restored.defaultPlayerBannerDismissed;
@@ -121,6 +130,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setMainLibraryId(id: string | null) {
+    mainLibraryId.value = id;
+    await persist();
+  }
+
   async function setTheme(next: ThemeChoice) {
     theme.value = next;
     apply();
@@ -132,13 +146,21 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setCoverGradientIntensity(next: number) {
+    coverGradientIntensity.value = Math.min(
+      MAX_COVER_GRADIENT_INTENSITY,
+      Math.max(MIN_COVER_GRADIENT_INTENSITY, next),
+    );
+    await persist();
+  }
+
   async function setPlayerTransparency(next: number) {
     playerTransparency.value = Math.min(45, Math.max(0, next));
     await persist();
   }
 
   async function setPlayerBlur(next: number) {
-    playerBlur.value = Math.min(28, Math.max(0, next));
+    playerBlur.value = Math.min(MAX_PLAYER_BLUR, Math.max(0, next));
     await persist();
   }
 
@@ -157,7 +179,9 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize,
     theme,
     viewMode,
+    mainLibraryId,
     coverGradientEnabled,
+    coverGradientIntensity,
     playerTransparency,
     playerBlur,
     defaultPlayerBannerDismissed,
@@ -170,7 +194,9 @@ export const useSettingsStore = defineStore('settings', () => {
     setTextSize,
     setTheme,
     setViewMode,
+    setMainLibraryId,
     setCoverGradientEnabled,
+    setCoverGradientIntensity,
     setPlayerTransparency,
     setPlayerBlur,
     dismissDefaultPlayerBanner,

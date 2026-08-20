@@ -42,6 +42,7 @@
       "title": "Cover background",
       "description": "Use the dominant cover color for the player background and the playing row.",
       "toggle": "Enable cover gradient",
+      "intensity": "Intensity",
       "transparency": "Player transparency",
       "blur": "Player blur"
     },
@@ -89,7 +90,7 @@
     },
     "libraries": {
       "title": "Libraries",
-      "description": "Each library has its own track list. You can create more, open, export or delete them."
+      "description": "Each library has its own track list. You can create more, open them, choose the primary one, export or delete them."
     },
     "footer": {
       "version": "version {version}",
@@ -108,7 +109,6 @@
         "rename": "Rename",
         "verifyAll": "Verify files",
         "exportList": "Export list",
-        "import": "Import",
         "export": "Export library",
         "delete": "Delete library"
       }
@@ -118,9 +118,17 @@
       "trackCount": "no tracks | 1 track | {count} tracks",
       "open": "Open the {name} library",
       "openShort": "Open",
+      "primary": "primary",
+      "primaryShort": "Primary",
+      "setPrimary": "Set {name} as the primary library",
       "export": "Export the {name} library",
       "remove": "Delete the {name} library",
       "exported": "Library exported to {path}",
+      "switcher": {
+        "open": "Switch library",
+        "title": "Choose library",
+        "close": "Close"
+      },
       "create": {
         "label": "New library",
         "placeholder": "Name of the new library",

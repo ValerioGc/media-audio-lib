@@ -510,6 +510,8 @@ describe('useLibraryStore - multiple libraries', () => {
     expect(store.libraries).toHaveLength(2);
     expect(store.activeLibraryId).toBe('lib-1');
     expect(store.canDeleteLibrary).toBe(true);
+    expect(store.canDeleteLibraryId('lib-1')).toBe(true);
+    expect(store.canDeleteLibraryId('lib-2')).toBe(true);
   });
 
   it('does not allow deleting the only library', async () => {
@@ -519,6 +521,8 @@ describe('useLibraryStore - multiple libraries', () => {
     await store.loadLibraries();
 
     expect(store.canDeleteLibrary).toBe(false);
+    expect(store.canDeleteLibraryId('lib-1')).toBe(false);
+    expect(store.canDeleteLibraryId(null)).toBe(false);
   });
 
   it('creates a library and updates the list', async () => {
@@ -539,6 +543,30 @@ describe('useLibraryStore - multiple libraries', () => {
 
     expect(createLibrary).not.toHaveBeenCalled();
     expect(store.errorKey).toBe('invalidLibraryName');
+  });
+
+  it('opens the primary library for the home view', async () => {
+    listLibraries.mockResolvedValue(catalog);
+    switchLibrary.mockResolvedValue({ name: 'Jazz' });
+    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    listTracks.mockResolvedValue([makeTrack()]);
+    const store = useLibraryStore();
+
+    await store.loadHomeLibrary('lib-2');
+
+    expect(switchLibrary).toHaveBeenCalledWith('lib-2');
+    expect(store.libraryName).toBe('Jazz');
+    expect(store.tracks).toHaveLength(1);
+  });
+
+  it('loads the active library when the primary library is missing', async () => {
+    listLibraries.mockResolvedValue(catalog);
+    const store = useLibraryStore();
+
+    await store.loadHomeLibrary('lib-missing');
+
+    expect(switchLibrary).not.toHaveBeenCalled();
+    expect(listTracks).toHaveBeenCalledTimes(1);
   });
 
   it('opening another library reloads tracks and covers', async () => {

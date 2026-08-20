@@ -60,7 +60,9 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: 'dark',
       viewMode: 'preview',
+      mainLibraryId: 'lib-2',
       coverGradientEnabled: false,
+      coverGradientIntensity: 150,
       playerTransparency: 30,
       playerBlur: 18,
       defaultPlayerBannerDismissed: true,
@@ -77,16 +79,21 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
       viewMode: DEFAULT_SETTINGS.viewMode,
+      mainLibraryId: DEFAULT_SETTINGS.mainLibraryId,
       coverGradientEnabled: DEFAULT_SETTINGS.coverGradientEnabled,
+      coverGradientIntensity: DEFAULT_SETTINGS.coverGradientIntensity,
       playerTransparency: DEFAULT_SETTINGS.playerTransparency,
       playerBlur: DEFAULT_SETTINGS.playerBlur,
       defaultPlayerBannerDismissed: DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
     });
   });
 
-  it('clamps saved transparency and blur to valid values', () => {
-    expect(sanitizeSettings({ playerTransparency: 80, playerBlur: -4 })).toEqual({
+  it('clamps saved gradient, transparency and blur to valid values', () => {
+    expect(
+      sanitizeSettings({ coverGradientIntensity: 400, playerTransparency: 80, playerBlur: -4 }),
+    ).toEqual({
       ...DEFAULT_SETTINGS,
+      coverGradientIntensity: 200,
       playerTransparency: 45,
       playerBlur: 0,
     });
@@ -107,7 +114,9 @@ describe('createWebStorage', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      mainLibraryId: null,
       coverGradientEnabled: true,
+      coverGradientIntensity: 100,
       playerTransparency: 12,
       playerBlur: 12,
       defaultPlayerBannerDismissed: false,
@@ -132,7 +141,9 @@ describe('createTauriStorage', () => {
       textSize: 'large',
       theme: 'dark',
       viewMode: 'preview',
+      mainLibraryId: 'lib-2',
       coverGradientEnabled: false,
+      coverGradientIntensity: 150,
       playerTransparency: 30,
       playerBlur: 18,
       defaultPlayerBannerDismissed: true,
@@ -172,7 +183,9 @@ describe('createSettingsStorage', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      mainLibraryId: 'lib-1',
       coverGradientEnabled: false,
+      coverGradientIntensity: 120,
       playerTransparency: 20,
       playerBlur: 10,
       defaultPlayerBannerDismissed: true,
@@ -183,7 +196,9 @@ describe('createSettingsStorage', () => {
       textSize: 'small',
       theme: 'light',
       viewMode: 'table',
+      mainLibraryId: 'lib-1',
       coverGradientEnabled: false,
+      coverGradientIntensity: 120,
       playerTransparency: 20,
       playerBlur: 10,
       defaultPlayerBannerDismissed: true,

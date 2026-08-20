@@ -8,7 +8,6 @@ import DefaultPlayerPanel from '@/components/settings/DefaultPlayerPanel.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
-import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
 import SettingsFooter from '@/components/settings/SettingsFooter.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import SettingsTabs from '@/components/settings/SettingsTabs.vue';
@@ -74,13 +73,6 @@ const tabs = computed(() => [
 
       <template #library>
         <div class="settings_view_group">
-          <SettingsSection
-            :title="t('settings.libraryName.title')"
-            :description="t('settings.libraryName.description')"
-          >
-            <LibraryNameForm />
-          </SettingsSection>
-
           <SettingsSection
             :title="t('settings.importExport.title')"
             :description="t('settings.importExport.description')"

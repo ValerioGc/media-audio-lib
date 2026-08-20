@@ -2,6 +2,9 @@ import { isTauriRuntime } from '@/config/app-config';
 import {
   DEFAULT_SETTINGS,
   LOCALES,
+  MAX_COVER_GRADIENT_INTENSITY,
+  MAX_PLAYER_BLUR,
+  MIN_COVER_GRADIENT_INTENSITY,
   TEXT_SIZES,
   THEME_CHOICES,
   VIEW_MODES,
@@ -35,17 +38,27 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     textSize: pickKnown(TEXT_SIZES, source.textSize, DEFAULT_SETTINGS.textSize),
     theme: pickKnown(THEME_CHOICES, source.theme, DEFAULT_SETTINGS.theme),
     viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
+    mainLibraryId:
+      typeof source.mainLibraryId === 'string' && source.mainLibraryId.trim().length > 0
+        ? source.mainLibraryId
+        : DEFAULT_SETTINGS.mainLibraryId,
     coverGradientEnabled:
       typeof source.coverGradientEnabled === 'boolean'
         ? source.coverGradientEnabled
         : DEFAULT_SETTINGS.coverGradientEnabled,
+    coverGradientIntensity: pickNumber(
+      source.coverGradientIntensity,
+      DEFAULT_SETTINGS.coverGradientIntensity,
+      MIN_COVER_GRADIENT_INTENSITY,
+      MAX_COVER_GRADIENT_INTENSITY,
+    ),
     playerTransparency: pickNumber(
       source.playerTransparency,
       DEFAULT_SETTINGS.playerTransparency,
       0,
       45,
     ),
-    playerBlur: pickNumber(source.playerBlur, DEFAULT_SETTINGS.playerBlur, 0, 28),
+    playerBlur: pickNumber(source.playerBlur, DEFAULT_SETTINGS.playerBlur, 0, MAX_PLAYER_BLUR),
     defaultPlayerBannerDismissed:
       typeof source.defaultPlayerBannerDismissed === 'boolean'
         ? source.defaultPlayerBannerDismissed

@@ -26,7 +26,7 @@ describe('LibraryRow', () => {
       genre: 'Jazz',
     });
 
-    const cells = mountRow(track).findAll('[role="cell"]');
+    const cells = mountRow(track).findAll('td');
 
     expect(cells[1]?.text()).toContain('Track');
     expect(cells[2]?.text()).toBe('Artist');
@@ -54,7 +54,7 @@ describe('LibraryRow', () => {
   it('shows a dash for missing fields', () => {
     const cells = mountRow(
       makeTrack({ artist: null, album: null, year: null, genre: null }),
-    ).findAll('[role="cell"]');
+    ).findAll('td');
 
     expect(cells[2]?.text()).toBe('—');
     expect(cells[3]?.text()).toBe('—');

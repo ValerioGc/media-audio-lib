@@ -89,9 +89,9 @@ describe('LibraryList', () => {
     library.lastExport = 'C:/backup/jazz.json';
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('[role="status"]').text()).toContain('C:/backup/jazz.json');
+    expect(wrapper.get('output').text()).toContain('C:/backup/jazz.json');
 
-    await wrapper.get('[role="status"] button').trigger('click');
+    await wrapper.get('output button').trigger('click');
 
     expect(library.lastExport).toBeNull();
   });

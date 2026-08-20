@@ -24,10 +24,23 @@ function mountTable(
   });
 }
 
+function reservedListHeight(wrapper: ReturnType<typeof mountTable>, rowHeight: number) {
+  const spacerHeight = wrapper.findAll('.library_table_spacer').reduce((total, spacer) => {
+    const height = Number.parseInt(
+      spacer.attributes('style')?.match(/height:\s*(\d+)px/)?.[1] ?? '0',
+      10,
+    );
+
+    return total + height;
+  }, 0);
+
+  return spacerHeight + wrapper.findAll('.library_row').length * rowHeight;
+}
+
 describe('LibraryTable', () => {
   it('exposes the requested column headers', () => {
     const headings = mountTable([makeTrack()])
-      .findAll('[role="columnheader"]')
+      .findAll('.library_table_heading')
       // The active column also renders the sort arrow.
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
@@ -46,7 +59,7 @@ describe('LibraryTable', () => {
   it('declares the row count', () => {
     const wrapper = mountTable(makeTracks(3));
 
-    expect(wrapper.attributes('aria-rowcount')).toBe('3');
+    expect(wrapper.get('table').attributes('aria-rowcount')).toBe('3');
   });
 
   it('requests sorting on header click', async () => {
@@ -74,7 +87,7 @@ describe('LibraryTable', () => {
       },
     });
     const headings = wrapper
-      .findAll('[role="columnheader"]')
+      .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
     expect(headings).toContain('Formato');
@@ -98,7 +111,7 @@ describe('LibraryTable', () => {
       },
     });
     const headings = wrapper
-      .findAll('[role="columnheader"]')
+      .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
     expect(headings).not.toContain('Autore');
@@ -184,7 +197,7 @@ describe('LibraryTable', () => {
       props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedIds: [], playingId: null },
     });
     const headings = wrapper
-      .findAll('[role="columnheader"]')
+      .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
     expect(headings.slice(0, 5)).toEqual(['Copertina', 'Nome', 'Genere', 'Autore', 'Album']);
@@ -192,7 +205,7 @@ describe('LibraryTable', () => {
 
   it('marks the active column for screen readers', () => {
     const wrapper = mountTable([makeTrack()], { column: 'year', direction: 'desc' });
-    const headers = wrapper.findAll('[role="columnheader"]');
+    const headers = wrapper.findAll('.library_table_heading');
 
     expect(headers[4]?.attributes('aria-sort')).toBe('descending');
     expect(headers[3]?.attributes('aria-sort')).toBe('none');
@@ -220,7 +233,7 @@ describe('LibraryTable', () => {
   it('reserves vertical space for the whole list', () => {
     const wrapper = mountTable(makeTracks(100));
 
-    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 5600px');
+    expect(reservedListHeight(wrapper, 56)).toBe(5600);
   });
 
   it('forwards row selection, edit, verify, and removal', async () => {
@@ -246,13 +259,13 @@ describe('LibraryTable', () => {
     const wrapper = mountTable(makeTracks(100));
     const settings = useSettingsStore();
 
-    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 5600px');
+    expect(reservedListHeight(wrapper, 56)).toBe(5600);
 
     document.documentElement.style.fontSize = '20px';
     settings.textSize = 'large';
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 7000px');
+    expect(reservedListHeight(wrapper, 70)).toBe(7000);
 
     document.documentElement.style.removeProperty('font-size');
   });
@@ -269,7 +282,7 @@ describe('LibraryTable', () => {
 
     // The rows and the windowing maths read the same value, so they cannot drift apart.
     expect(wrapper.attributes('style')).toContain('--library_row_height: 80px');
-    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 8000px');
+    expect(reservedListHeight(wrapper, 80)).toBe(8000);
 
     document.documentElement.style.removeProperty('font-size');
   });

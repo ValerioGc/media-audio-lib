@@ -38,7 +38,8 @@ function setMode(mode: ViewMode) {
 </script>
 
 <template>
-  <div class="library_view_toggle" role="group" :aria-label="t('library.view.label')">
+  <fieldset class="library_view_toggle">
+    <legend class="library_view_toggle_label">{{ t('library.view.label') }}</legend>
     <AppTooltip v-for="option in options" :key="option.mode" :text="option.label">
       <AppButton
         variant="ghost"
@@ -51,7 +52,7 @@ function setMode(mode: ViewMode) {
         <AppIcon :name="option.icon" />
       </AppButton>
     </AppTooltip>
-  </div>
+  </fieldset>
 </template>
 
 <style scoped lang="scss">
@@ -62,6 +63,10 @@ function setMode(mode: ViewMode) {
   border: 1px solid var(--color_border);
   border-radius: $radius_lg;
   background-color: var(--color_surface_alt);
+
+  &_label {
+    @include visually_hidden;
+  }
 
   &_active {
     background-color: var(--color_accent);

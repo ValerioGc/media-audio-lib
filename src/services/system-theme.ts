@@ -3,11 +3,14 @@ import type { ResolvedTheme } from '@/types/settings';
 const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
 function darkSchemeQuery(): MediaQueryList | null {
-  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+  if (
+    typeof globalThis.window === 'undefined' ||
+    typeof globalThis.window.matchMedia !== 'function'
+  ) {
     return null;
   }
 
-  return window.matchMedia(DARK_SCHEME_QUERY);
+  return globalThis.window.matchMedia(DARK_SCHEME_QUERY);
 }
 
 export function getSystemTheme(): ResolvedTheme {

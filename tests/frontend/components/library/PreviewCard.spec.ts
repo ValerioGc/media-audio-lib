@@ -59,11 +59,10 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_body').text()).not.toContain('In riproduzione');
   });
 
-  it('takes focus as an option of the grid, not as a document section', () => {
+  it('is an item of the grid list and can take focus', () => {
     const wrapper = mountCard();
 
-    expect(wrapper.element.tagName).toBe('DIV');
-    expect(wrapper.attributes('role')).toBe('option');
+    expect(wrapper.element.tagName).toBe('LI');
     expect(wrapper.attributes('tabindex')).toBe('0');
   });
 

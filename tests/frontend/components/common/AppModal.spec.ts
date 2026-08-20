@@ -9,7 +9,7 @@ describe('AppModal', () => {
   it('renders nothing when closed', () => {
     const wrapper = mount(AppModal, { props: { ...props, open: false } });
 
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    expect(wrapper.find('dialog').exists()).toBe(false);
   });
 
   it('renders title, content, and actions', () => {
@@ -25,7 +25,7 @@ describe('AppModal', () => {
 
   it('declares the dialog to screen readers', () => {
     const wrapper = mount(AppModal, { props });
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
 
     expect(dialog.attributes('aria-modal')).toBe('true');
     expect(dialog.attributes('aria-labelledby')).toBe(

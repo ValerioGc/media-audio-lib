@@ -15,7 +15,7 @@ const SUPPORTED_EXTENSION_LIST: readonly string[] = SUPPORTED_EXTENSIONS;
 
 /** True when the frontend runs inside the Tauri shell instead of a plain browser. */
 export function isTauriRuntime(): boolean {
-  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+  return typeof globalThis.window !== 'undefined' && '__TAURI_INTERNALS__' in globalThis.window;
 }
 
 /** Lowercase extension of a path, without the dot. Empty string when there is none. */

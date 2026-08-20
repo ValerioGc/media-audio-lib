@@ -78,7 +78,7 @@ describe('sanitizeSettings', () => {
   });
 
   it('discards individual invalid fields while keeping the others', () => {
-    const sanitized = sanitizeSettings({ locale: 'de', textSize: 'large', theme: 'neon' });
+    const sanitized = sanitizeSettings({ locale: 'pt', textSize: 'large', theme: 'neon' });
 
     expect(sanitized).toEqual({
       ...DEFAULT_SETTINGS,

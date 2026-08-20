@@ -37,11 +37,11 @@ watch(
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="app_modal" role="presentation" @click.self="emit('close')">
-      <div
+    <div v-if="open" class="app_modal" @click.self="emit('close')">
+      <dialog
+        open
         class="app_modal_panel"
         :class="{ app_modal_panel_wide: wide }"
-        role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
       >
@@ -52,7 +52,7 @@ watch(
         <footer class="app_modal_actions">
           <slot name="actions" />
         </footer>
-      </div>
+      </dialog>
     </div>
   </Teleport>
 </template>
@@ -75,6 +75,8 @@ watch(
     width: min(28rem, 100%);
     max-height: 100%;
     padding: $space_lg;
+    margin: 0;
+    color: var(--color_text);
     @include surface_panel($radius_lg);
     box-shadow: var(--shadow_raised);
 

@@ -15,14 +15,14 @@ describe('AccentColorPicker', () => {
   it('offers one swatch per preset', () => {
     const wrapper = mount(AccentColorPicker, withPinia());
 
-    expect(wrapper.findAll('[role="radio"]')).toHaveLength(ACCENT_PRESETS.length);
+    expect(wrapper.findAll('.accent_picker_swatch')).toHaveLength(ACCENT_PRESETS.length);
   });
 
   it('marks the accent in use', () => {
     const wrapper = mount(AccentColorPicker, withPinia());
     const swatch = wrapper.get(`[data-testid="accent-${DEFAULT_ACCENT_COLOR.slice(1)}"]`);
 
-    expect(swatch.attributes('aria-checked')).toBe('true');
+    expect(swatch.attributes('aria-pressed')).toBe('true');
     expect(swatch.classes()).toContain('accent_picker_swatch_selected');
   });
 

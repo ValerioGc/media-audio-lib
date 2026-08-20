@@ -25,7 +25,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    const rows = wrapper.findAll('.library_facet_list_row');
+    const rows = wrapper.findAll('.library_facet_list_body .library_facet_list_row');
 
     expect(rows).toHaveLength(2);
     expect(wrapper.findAll('.library_facet_list_heading').map((heading) => heading.text())).toEqual(
@@ -63,7 +63,7 @@ describe('LibraryFacetList', () => {
       'Durata',
     ]);
 
-    const rows = list.findAll('.library_facet_list_row');
+    const rows = list.findAll('.library_facet_list_body .library_facet_list_row');
     expect(rows[0]?.text()).toContain('2 autori');
     expect(rows[0]?.text()).toContain('2 album');
     expect(rows[1]?.text()).toContain('1 autore');
@@ -237,7 +237,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    const rows = wrapper.findAll('.library_facet_list_row');
+    const rows = wrapper.findAll('.library_facet_list_body .library_facet_list_row');
     const badge = rows[0]?.get('.library_facet_list_name .library_facet_list_badge');
 
     expect(badge?.text()).toContain('In riproduzione');
@@ -259,8 +259,8 @@ describe('LibraryFacetList', () => {
     });
 
     // The badge lives in the name cell: as a cell of its own it would add a column.
-    expect(wrapper.findAll('.library_facet_list_head [role="columnheader"]')).toHaveLength(4);
-    expect(wrapper.findAll('.library_facet_list_row [role="cell"]')).toHaveLength(4);
+    expect(wrapper.findAll('.library_facet_list_head th')).toHaveLength(4);
+    expect(wrapper.findAll('.library_facet_list_body .library_facet_list_row td')).toHaveLength(4);
   });
 
   it('marks the album row that contains the playing track', () => {
@@ -279,7 +279,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    const playingRows = wrapper.findAll('.library_facet_list_row_playing');
+    const playingRows = wrapper.findAll('.library_facet_list_body .library_facet_list_row_playing');
 
     expect(playingRows).toHaveLength(1);
     expect(playingRows[0]?.attributes('aria-current')).toBe('true');
@@ -313,7 +313,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    await wrapper.get('.library_facet_list_row').trigger('keydown.enter');
+    await wrapper.get('.library_facet_list_body .library_facet_list_row').trigger('keydown.enter');
 
     expect(wrapper.emitted('open')).toEqual([
       [{ field: 'artist', key: 'Artist A', name: 'Artist A' }],
@@ -330,7 +330,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    const rows = wrapper.findAll('.library_facet_list_row');
+    const rows = wrapper.findAll('.library_facet_list_body .library_facet_list_row');
 
     expect(rows[0]?.text()).toContain('Jazz');
     expect(rows[1]?.text()).toContain('Senza genere');

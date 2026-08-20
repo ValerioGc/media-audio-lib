@@ -80,8 +80,6 @@ watch(
   { immediate: true },
 );
 
-const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
-
 const columns = computed(() =>
   visibleTableColumns(settings.tableColumns)
     .filter((column) => !props.hiddenColumnKeys.includes(column.key))
@@ -93,6 +91,16 @@ const columns = computed(() =>
       active: props.sort.column === column.key,
     })),
 );
+
+const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
+const topSpacerHeight = computed(() => range.value.offsetTop);
+const bottomSpacerHeight = computed(() =>
+  Math.max(
+    0,
+    range.value.totalHeight - range.value.offsetTop - visibleTracks.value.length * rowHeight.value,
+  ),
+);
+const tableColumnCount = computed(() => columns.value.length + 1);
 
 const gridStyle = computed(() => ({
   '--library_grid_columns_fit': tableGridTemplate(columns.value, 'fit'),
@@ -166,98 +174,106 @@ onUnmounted(stopResize);
   <div
     class="library_table"
     :class="{ library_table_horizontal: allowHorizontalScroll }"
-    role="table"
-    :aria-rowcount="tracks.length"
     :style="gridStyle"
   >
     <div class="library_table_scroller">
-      <div class="library_table_head" role="row">
-        <span
-          v-for="column in columns"
-          :key="column.key"
-          class="library_table_heading"
-          :class="{ library_table_heading_resizing: resizing?.key === column.key }"
-          role="columnheader"
-          :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
-        >
-          <button
-            v-if="column.sortable"
-            class="library_table_sort"
-            :class="{ library_table_sort_active: column.active }"
-            type="button"
-            :aria-label="t('library.sort.sortBy', { column: column.label })"
-            :title="t('library.sort.sortBy', { column: column.label })"
-            @click="sortColumn(column.key)"
-          >
-            <span class="library_table_sort_label">{{ column.label }}</span>
-            <AppIcon
-              v-if="column.active"
-              :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'"
-            />
-          </button>
-          <span v-else :title="column.label">{{ column.label }}</span>
-          <span
-            v-if="column.resizable"
-            class="library_table_resize"
-            role="separator"
-            :aria-label="t('library.columns.resize', { column: column.label })"
-            :title="t('library.columns.resize', { column: column.label })"
-            aria-orientation="vertical"
-            @pointerdown="startResize($event, column.key, column.width)"
-          />
-        </span>
-        <span
-          class="library_table_heading library_table_heading_actions"
-          role="columnheader"
-          :aria-label="t('library.columns.actions')"
-        >
-          <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.fit')">
-            <button
-              class="library_table_tool"
-              type="button"
-              :aria-label="t('library.columnSettings.fit')"
-              data-testid="table-fit-columns"
-              @click="fitColumnsToContent"
+      <table class="library_table_grid" :aria-rowcount="tracks.length">
+        <thead class="library_table_head">
+          <tr class="library_table_head_row">
+            <th
+              v-for="column in columns"
+              :key="column.key"
+              class="library_table_heading"
+              :class="{ library_table_heading_resizing: resizing?.key === column.key }"
+              scope="col"
+              :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
             >
-              <AppIcon name="maximize" />
-            </button>
-          </AppTooltip>
-          <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.open')">
-            <button
-              class="library_table_tool"
-              type="button"
-              :aria-label="t('library.columnSettings.open')"
-              data-testid="table-column-settings"
-              @click="isColumnSettingsOpen = true"
+              <button
+                v-if="column.sortable"
+                class="library_table_sort"
+                :class="{ library_table_sort_active: column.active }"
+                type="button"
+                :aria-label="t('library.sort.sortBy', { column: column.label })"
+                :title="t('library.sort.sortBy', { column: column.label })"
+                @click="sortColumn(column.key)"
+              >
+                <span class="library_table_sort_label">{{ column.label }}</span>
+                <AppIcon
+                  v-if="column.active"
+                  :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'"
+                />
+              </button>
+              <span v-else :title="column.label">{{ column.label }}</span>
+              <hr
+                v-if="column.resizable"
+                class="library_table_resize"
+                :aria-label="t('library.columns.resize', { column: column.label })"
+                :title="t('library.columns.resize', { column: column.label })"
+                aria-orientation="vertical"
+                @pointerdown="startResize($event, column.key, column.width)"
+              />
+            </th>
+            <th
+              class="library_table_heading library_table_heading_actions"
+              scope="col"
+              :aria-label="t('library.columns.actions')"
             >
-              <AppIcon name="settings" />
-            </button>
-          </AppTooltip>
-        </span>
-      </div>
+              <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.fit')">
+                <button
+                  class="library_table_tool"
+                  type="button"
+                  :aria-label="t('library.columnSettings.fit')"
+                  data-testid="table-fit-columns"
+                  @click="fitColumnsToContent"
+                >
+                  <AppIcon name="maximize" />
+                </button>
+              </AppTooltip>
+              <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.open')">
+                <button
+                  class="library_table_tool"
+                  type="button"
+                  :aria-label="t('library.columnSettings.open')"
+                  data-testid="table-column-settings"
+                  @click="isColumnSettingsOpen = true"
+                >
+                  <AppIcon name="settings" />
+                </button>
+              </AppTooltip>
+            </th>
+          </tr>
+        </thead>
 
-      <div ref="viewport" class="library_table_viewport" @scroll="onScroll">
-        <div class="library_table_spacer" :style="{ height: `${range.totalHeight}px` }">
-          <div
-            class="library_table_window"
-            :style="{ transform: `translateY(${range.offsetTop}px)` }"
-          >
-            <LibraryRow
-              v-for="track in visibleTracks"
-              :key="track.id"
-              :track="track"
-              :columns="columns"
-              :selected="selectedIds.includes(track.id)"
-              :playing="track.id === playingId"
-              @select="emit('select', $event)"
-              @play="emit('play', $event)"
-              @edit="emit('edit', $event)"
-              @remove="emit('remove', $event)"
-              @verify="emit('verify', $event)"
+        <tbody ref="viewport" class="library_table_viewport" @scroll="onScroll">
+          <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+            <td
+              class="library_table_spacer"
+              :colspan="tableColumnCount"
+              :style="{ height: `${topSpacerHeight}px` }"
             />
-          </div>
-        </div>
-      </div>
+          </tr>
+          <LibraryRow
+            v-for="track in visibleTracks"
+            :key="track.id"
+            :track="track"
+            :columns="columns"
+            :selected="selectedIds.includes(track.id)"
+            :playing="track.id === playingId"
+            @select="emit('select', $event)"
+            @play="emit('play', $event)"
+            @edit="emit('edit', $event)"
+            @remove="emit('remove', $event)"
+            @verify="emit('verify', $event)"
+          />
+          <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+            <td
+              class="library_table_spacer"
+              :colspan="tableColumnCount"
+              :style="{ height: `${bottomSpacerHeight}px` }"
+            />
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <LibraryColumnSettingsDialog
@@ -295,7 +311,24 @@ onUnmounted(stopResize);
     overflow-x: auto;
   }
 
+  &_grid {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 100%;
+    min-height: 0;
+    border-collapse: collapse;
+  }
+
   &_head {
+    display: block;
+    border-bottom: 1px solid var(--color_border_strong);
+    background-color: var(--table_head_background);
+    color: var(--color_text_muted);
+    font-size: 0.875em;
+  }
+
+  &_head_row {
     display: grid;
     grid-template-columns: var(--library_grid_columns);
     gap: $space_sm;
@@ -305,16 +338,14 @@ onUnmounted(stopResize);
     // The body reserves the scrollbar gutter: without the same room here the columns of
     // the header no longer line up with the ones of the rows.
     padding-right: calc(#{$space_md} + #{$scrollbar_size});
-    border-bottom: 1px solid var(--color_border_strong);
-    background-color: var(--table_head_background);
-    font-size: 0.875em;
-    color: var(--color_text_muted);
   }
 
   &_heading {
     position: relative;
+    padding: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
     white-space: nowrap;
 
     &_actions {
@@ -376,6 +407,9 @@ onUnmounted(stopResize);
     right: calc(#{$space_md} / -2);
     bottom: 0;
     width: $space_md;
+    height: auto;
+    margin: 0;
+    border: 0;
     cursor: col-resize;
 
     &::before,
@@ -438,6 +472,7 @@ onUnmounted(stopResize);
   }
 
   &_viewport {
+    display: block;
     flex: 1;
     min-height: 0;
     overflow-x: hidden;
@@ -446,19 +481,8 @@ onUnmounted(stopResize);
   }
 
   &_spacer {
-    position: relative;
-  }
-
-  &_window {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-
-    // The window is moved on every step of the scroll: promoting it keeps the rows on
-    // whole pixels and takes their painting off the main scrolling work.
-    will-change: transform;
-    contain: layout style;
+    padding: 0;
+    border: 0;
   }
 }
 

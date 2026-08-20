@@ -157,11 +157,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 </script>
 
 <template>
-  <div
+  <section
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
     :class="{ library_facet_preview_genre: field === 'genre' }"
-    role="group"
     :aria-label="t(`library.groups.columns.${field}`)"
   >
     <!-- A real button rather than a card pretending to be one: Enter, Space and focus
@@ -222,9 +221,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         </p>
       </div>
     </button>
-  </div>
+  </section>
 
-  <div
+  <table
     v-else
     class="library_facet_list"
     :class="{
@@ -232,41 +231,41 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       library_facet_list_artist: field === 'artist',
       library_facet_list_genre: field === 'genre',
     }"
-    role="table"
     :aria-rowcount="groups.length"
   >
-    <div class="library_facet_list_head" role="row">
-      <span class="library_facet_list_heading" role="columnheader">
-        {{ t(`library.groups.columns.${field}`) }}
-      </span>
-      <span v-if="field === 'album'" class="library_facet_list_heading" role="columnheader">
-        {{ t('library.groups.columns.artist') }}
-      </span>
-      <span v-if="field === 'genre'" class="library_facet_list_heading" role="columnheader">
-        {{ t('library.groups.columns.artists') }}
-      </span>
-      <span
-        v-if="field === 'artist' || field === 'genre'"
-        class="library_facet_list_heading"
-        role="columnheader"
-      >
-        {{ t('library.groups.columns.albums') }}
-      </span>
-      <span class="library_facet_list_heading" role="columnheader">
-        {{ t('library.groups.columns.tracks') }}
-      </span>
-      <span class="library_facet_list_heading" role="columnheader">
-        {{ t('library.groups.columns.duration') }}
-      </span>
-    </div>
+    <thead class="library_facet_list_head">
+      <tr class="library_facet_list_row">
+        <th class="library_facet_list_heading" scope="col">
+          {{ t(`library.groups.columns.${field}`) }}
+        </th>
+        <th v-if="field === 'album'" class="library_facet_list_heading" scope="col">
+          {{ t('library.groups.columns.artist') }}
+        </th>
+        <th v-if="field === 'genre'" class="library_facet_list_heading" scope="col">
+          {{ t('library.groups.columns.artists') }}
+        </th>
+        <th
+          v-if="field === 'artist' || field === 'genre'"
+          class="library_facet_list_heading"
+          scope="col"
+        >
+          {{ t('library.groups.columns.albums') }}
+        </th>
+        <th class="library_facet_list_heading" scope="col">
+          {{ t('library.groups.columns.tracks') }}
+        </th>
+        <th class="library_facet_list_heading" scope="col">
+          {{ t('library.groups.columns.duration') }}
+        </th>
+      </tr>
+    </thead>
 
-    <div class="library_facet_list_body">
-      <div
+    <tbody class="library_facet_list_body">
+      <tr
         v-for="group in groups"
         :key="group.key"
         class="library_facet_list_row"
         :class="{ library_facet_list_row_playing: group.playing }"
-        role="row"
         tabindex="0"
         :aria-label="t('library.groups.openLabel', { name: group.name })"
         :aria-current="group.playing ? 'true' : undefined"
@@ -274,7 +273,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         @keydown.enter="openGroupFromKeyboard($event, group)"
         @keydown.space="openGroupFromKeyboard($event, group)"
       >
-        <span class="library_facet_list_cell library_facet_list_name" role="cell">
+        <td class="library_facet_list_cell library_facet_list_name">
           <span class="library_facet_list_name_text" :title="group.name">{{ group.name }}</span>
           <span
             v-if="group.playing"
@@ -284,29 +283,25 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
             <AppIcon name="play" :label="t('library.row.playing')" />
             <span class="library_facet_list_badge_label">{{ t('library.row.playing') }}</span>
           </span>
-        </span>
-        <span v-if="field === 'album'" class="library_facet_list_cell" role="cell">
+        </td>
+        <td v-if="field === 'album'" class="library_facet_list_cell">
           {{ group.artists.join(', ') }}
-        </span>
-        <span v-if="field === 'genre'" class="library_facet_list_cell" role="cell">
+        </td>
+        <td v-if="field === 'genre'" class="library_facet_list_cell">
           {{ t('library.groups.artistCount', { count: group.artistCount }, group.artistCount) }}
-        </span>
-        <span
-          v-if="field === 'artist' || field === 'genre'"
-          class="library_facet_list_cell"
-          role="cell"
-        >
+        </td>
+        <td v-if="field === 'artist' || field === 'genre'" class="library_facet_list_cell">
           {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
-        </span>
-        <span class="library_facet_list_cell" role="cell">
+        </td>
+        <td class="library_facet_list_cell">
           {{ t('library.groups.trackCount', { count: group.trackCount }, group.trackCount) }}
-        </span>
-        <span class="library_facet_list_cell library_facet_list_duration" role="cell">
+        </td>
+        <td class="library_facet_list_cell library_facet_list_duration">
           {{ formatDuration(group.durationMs) }}
-        </span>
-      </div>
-    </div>
-  </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <style scoped lang="scss">
@@ -492,7 +487,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   border: 1px solid var(--color_border);
   border-radius: $radius_md;
 
-  &_head,
   &_row {
     display: grid;
     grid-template-columns: minmax(10rem, 1.4fr) minmax(7rem, 0.55fr) minmax(6rem, 0.45fr);
@@ -502,16 +496,13 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     padding: 0 $space_md;
   }
 
-  &_album &_head,
   &_album &_row,
-  &_artist &_head,
   &_artist &_row {
     grid-template-columns:
       minmax(10rem, 1.2fr) minmax(10rem, 1fr) minmax(7rem, 0.45fr)
       minmax(6rem, 0.35fr);
   }
 
-  &_genre &_head,
   &_genre &_row {
     grid-template-columns:
       minmax(9rem, 1.1fr) minmax(6rem, 0.5fr) minmax(6rem, 0.5fr) minmax(6rem, 0.45fr)
@@ -519,18 +510,22 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_head {
+    display: block;
     border-bottom: 1px solid var(--color_border);
     background-color: var(--table_head_background);
   }
 
   &_heading {
+    padding: 0;
     color: var(--color_text_muted);
     font-size: 0.75em;
     font-weight: 600;
+    text-align: left;
     text-transform: uppercase;
   }
 
   &_body {
+    display: block;
     min-height: 0;
 
     @include scroll_area;
@@ -560,6 +555,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_cell {
     min-width: 0;
+    padding: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -614,11 +610,8 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       grid-template-columns: minmax(8rem, 1fr) minmax(5rem, auto) minmax(5rem, auto);
     }
 
-    &_album &_head,
     &_album &_row,
-    &_artist &_head,
     &_artist &_row,
-    &_genre &_head,
     &_genre &_row {
       grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(5rem, auto);
     }

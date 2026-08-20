@@ -161,7 +161,7 @@ describe('LibraryTitle', () => {
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Colonne elenco');
+    expect(wrapper.get('dialog').text()).toContain('Colonne elenco');
     expect(
       wrapper.get('[data-testid="column-visible-title"]').attributes('disabled'),
     ).toBeDefined();
@@ -218,7 +218,7 @@ describe('LibraryTitle', () => {
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Dati mancanti');
+    expect(wrapper.get('dialog').text()).toContain('Dati mancanti');
 
     await wrapper.get('[data-testid="missing-info-select"] select').setValue('artist');
 
@@ -268,7 +268,7 @@ describe('LibraryTitle', () => {
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Main');
+    expect(wrapper.get('dialog').text()).toContain('Main');
     expect(deleteLibrary).not.toHaveBeenCalled();
 
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');

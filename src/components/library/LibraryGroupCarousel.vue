@@ -60,32 +60,32 @@ const { t } = useI18n();
       </AppTooltip>
     </header>
 
-    <div class="library_group_carousel_track" role="list">
-      <button
-        v-for="group in props.groups"
-        :key="group.key"
-        class="library_group_carousel_card"
-        :class="{ library_group_carousel_card_playing: group.playing }"
-        type="button"
-        :aria-label="t('library.groups.openLabel', { name: group.name })"
-        :aria-current="group.playing ? 'true' : undefined"
-        @click="emit('open', group.key)"
-      >
-        <PlayingBubble v-if="group.playing" />
+    <ul class="library_group_carousel_track">
+      <li v-for="group in props.groups" :key="group.key" class="library_group_carousel_item">
+        <button
+          class="library_group_carousel_card"
+          :class="{ library_group_carousel_card_playing: group.playing }"
+          type="button"
+          :aria-label="t('library.groups.openLabel', { name: group.name })"
+          :aria-current="group.playing ? 'true' : undefined"
+          @click="emit('open', group.key)"
+        >
+          <PlayingBubble v-if="group.playing" />
 
-        <CoverImage
-          v-if="group.coverTrack !== null"
-          class="library_group_carousel_cover"
-          :track="group.coverTrack"
-          size="card"
-          eager
-        />
-        <span class="library_group_carousel_name" :title="group.name">{{ group.name }}</span>
-        <span v-if="group.meta !== null" class="library_group_carousel_meta">
-          {{ group.meta }}
-        </span>
-      </button>
-    </div>
+          <CoverImage
+            v-if="group.coverTrack !== null"
+            class="library_group_carousel_cover"
+            :track="group.coverTrack"
+            size="card"
+            eager
+          />
+          <span class="library_group_carousel_name" :title="group.name">{{ group.name }}</span>
+          <span v-if="group.meta !== null" class="library_group_carousel_meta">
+            {{ group.meta }}
+          </span>
+        </button>
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -120,9 +120,17 @@ const { t } = useI18n();
     display: flex;
     gap: $space_md;
     min-width: 0;
+    margin: 0;
     padding-bottom: $space_xs;
+    padding-left: 0;
     overflow-x: auto;
+    list-style: none;
     scroll-snap-type: x proximity;
+  }
+
+  &_item {
+    display: flex;
+    flex: 0 0 auto;
   }
 
   &_card {

@@ -56,7 +56,7 @@
     "windows": {
       "nsis": {
         "installMode": "both",
-        "languages": ["Italian", "English"]
+        "languages": ["Italian", "English", "French", "Spanish", "German"]
       }
     },
     "linux": {

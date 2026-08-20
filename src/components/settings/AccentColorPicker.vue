@@ -36,16 +36,16 @@ async function onCustomInput(event: Event) {
 
 <template>
   <div class="accent_picker">
-    <div class="accent_picker_swatches" role="radiogroup" :aria-label="t('settings.accent.title')">
+    <fieldset class="accent_picker_swatches">
+      <legend class="accent_picker_swatches_label">{{ t('settings.accent.title') }}</legend>
       <button
         v-for="swatch in swatches"
         :key="swatch.color"
         class="accent_picker_swatch"
         :class="{ accent_picker_swatch_selected: swatch.selected }"
         type="button"
-        role="radio"
         :style="{ '--accent_picker_color': swatch.color }"
-        :aria-checked="swatch.selected"
+        :aria-pressed="swatch.selected"
         :aria-label="t('settings.accent.swatch', { color: swatch.color })"
         :title="swatch.color"
         :data-testid="`accent-${swatch.color.slice(1)}`"
@@ -53,7 +53,7 @@ async function onCustomInput(event: Event) {
       >
         <AppIcon v-if="swatch.selected" name="check" />
       </button>
-    </div>
+    </fieldset>
 
     <div class="accent_picker_row">
       <label
@@ -96,6 +96,14 @@ async function onCustomInput(event: Event) {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(2.25rem, 2.5rem));
     gap: $space_sm;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  &_swatches_label {
+    @include visually_hidden;
   }
 
   &_swatch {

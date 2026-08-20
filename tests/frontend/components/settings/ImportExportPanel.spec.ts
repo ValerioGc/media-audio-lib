@@ -49,9 +49,9 @@ describe('ImportExportPanel', () => {
     };
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('[role="status"]').text()).toContain('6 brani letti');
+    expect(wrapper.get('output').text()).toContain('6 brani letti');
 
-    await wrapper.get('[role="status"] button').trigger('click');
+    await wrapper.get('output button').trigger('click');
 
     expect(library.lastLibraryImport).toBeNull();
   });

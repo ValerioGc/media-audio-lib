@@ -74,7 +74,7 @@ function openActionsMenu(event: MouseEvent) {
 </script>
 
 <template>
-  <div
+  <tr
     class="library_row"
     :class="{
       library_row_selected: selected,
@@ -82,7 +82,6 @@ function openActionsMenu(event: MouseEvent) {
       library_row_playing: playing,
     }"
     :style="accentStyle"
-    role="row"
     tabindex="0"
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
@@ -91,12 +90,11 @@ function openActionsMenu(event: MouseEvent) {
     @dblclick="emit('play', track)"
     @keydown.enter="select($event)"
   >
-    <span
+    <td
       v-for="column in columns"
       :key="column.key"
       class="library_row_cell"
       :class="{ library_row_cover: column.key === 'cover' }"
-      role="cell"
     >
       <LibraryCoverCell v-if="column.key === 'cover'" :track="track" />
       <template v-else-if="column.key === 'title'">
@@ -124,8 +122,8 @@ function openActionsMenu(event: MouseEvent) {
       <span v-else class="library_row_text" :title="valueFor(column)">
         {{ valueFor(column) }}
       </span>
-    </span>
-    <span class="library_row_cell library_row_actions" role="cell">
+    </td>
+    <td class="library_row_cell library_row_actions">
       <LibraryRowActions
         ref="actions"
         :track="track"
@@ -133,8 +131,8 @@ function openActionsMenu(event: MouseEvent) {
         @remove="emit('remove', $event)"
         @verify="emit('verify', $event)"
       />
-    </span>
-  </div>
+    </td>
+  </tr>
 </template>
 
 <style scoped lang="scss">
@@ -173,6 +171,7 @@ function openActionsMenu(event: MouseEvent) {
   }
 
   &_cell {
+    padding: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

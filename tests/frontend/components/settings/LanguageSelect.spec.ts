@@ -2,6 +2,9 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
+import flagDe from '@/assets/icons/flag-de.svg';
+import flagEs from '@/assets/icons/flag-es.svg';
+import flagFr from '@/assets/icons/flag-fr.svg';
 import flagGb from '@/assets/icons/flag-gb.svg';
 import flagIt from '@/assets/icons/flag-it.svg';
 import { useSettingsStore } from '@/stores/settings';
@@ -22,7 +25,7 @@ describe('LanguageSelect', () => {
 
     const labels = wrapper.findAll('.app_option_group_text').map((text) => text.text());
 
-    expect(labels).toEqual(['Italiano', 'Inglese']);
+    expect(labels).toEqual(['Italiano', 'Inglese', 'Francese', 'Spagnolo', 'Tedesco']);
   });
 
   it('shows the flag of each language before its name', () => {
@@ -31,10 +34,11 @@ describe('LanguageSelect', () => {
 
     // Vite inlines small SVGs as data URIs, so the mapping is checked against the assets
     // themselves rather than against a file name that does not survive the build.
-    expect(flags).toHaveLength(2);
-    expect(flags[0]?.attributes('src')).toBe(flagIt);
-    expect(flags[1]?.attributes('src')).toBe(flagGb);
-    expect(flagIt).not.toBe(flagGb);
+    const expected = [flagIt, flagGb, flagFr, flagEs, flagDe];
+
+    expect(flags.map((flag) => flag.attributes('src'))).toEqual(expected);
+    // One flag per language, none of them shared by two.
+    expect(new Set(expected).size).toBe(expected.length);
     // The name beside it already says which language this is.
     expect(flags[0]?.attributes('alt')).toBe('');
   });

@@ -26,12 +26,12 @@ describe('PreviewGrid', () => {
     expect(wrapper.findAll('.preview_card')).toHaveLength(5);
   });
 
-  it('is a listbox of selectable options, several at a time', () => {
+  it('is a list whose items can be selected several at a time', () => {
     const wrapper = mountGrid(makeTracks(2));
 
-    expect(wrapper.attributes('role')).toBe('listbox');
+    expect(wrapper.element.tagName).toBe('UL');
     expect(wrapper.attributes('aria-multiselectable')).toBe('true');
-    expect(wrapper.findAll('[role="option"]')).toHaveLength(2);
+    expect(wrapper.findAll('li.preview_card')).toHaveLength(2);
   });
 
   it('renders nothing for an empty list', () => {

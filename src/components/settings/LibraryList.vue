@@ -106,12 +106,12 @@ async function setMainLibrary(entry: LibrarySummary) {
       </li>
     </ul>
 
-    <p v-if="library.lastExport !== null" class="library_list_notice" role="status">
+    <output v-if="library.lastExport !== null" class="library_list_notice">
       {{ t('library.catalog.exported', { path: library.lastExport }) }}
       <AppButton variant="ghost" @click="library.dismissExport()">
         {{ t('library.report.dismiss') }}
       </AppButton>
-    </p>
+    </output>
 
     <form class="library_list_create" @submit.prevent="create">
       <AppInput

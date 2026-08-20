@@ -28,11 +28,7 @@ async function dismiss() {
 </script>
 
 <template>
-  <aside
-    class="default_player_banner"
-    role="region"
-    :aria-label="t('library.defaultPlayerBanner.title')"
-  >
+  <section class="default_player_banner" :aria-label="t('library.defaultPlayerBanner.title')">
     <div class="default_player_banner_content">
       <strong>{{ t('library.defaultPlayerBanner.title') }}</strong>
       <span>{{ t('library.defaultPlayerBanner.message') }}</span>
@@ -58,7 +54,7 @@ async function dismiss() {
         </AppButton>
       </AppTooltip>
     </div>
-  </aside>
+  </section>
 </template>
 
 <style scoped lang="scss">

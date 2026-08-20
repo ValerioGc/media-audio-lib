@@ -398,14 +398,14 @@ async function confirmRemoval() {
 
     <DefaultPlayerBanner v-if="!settings.defaultPlayerBannerDismissed" />
 
-    <p v-if="library.lastExport !== null" class="library_view_notice" role="status">
+    <output v-if="library.lastExport !== null" class="library_view_notice">
       {{ t('library.catalog.exported', { path: library.lastExport }) }}
       <AppButton variant="ghost" @click="library.dismissExport()">
         {{ t('library.report.dismiss') }}
       </AppButton>
-    </p>
+    </output>
 
-    <p v-if="library.lastLibraryImport !== null" class="library_view_notice" role="status">
+    <output v-if="library.lastLibraryImport !== null" class="library_view_notice">
       {{
         t('settings.importExport.report.summary', {
           total: library.lastLibraryImport.total,
@@ -418,9 +418,9 @@ async function confirmRemoval() {
       <AppButton variant="ghost" @click="library.dismissLibraryImport()">
         {{ t('library.report.dismiss') }}
       </AppButton>
-    </p>
+    </output>
 
-    <p v-if="library.lastVerification !== null" class="library_view_notice" role="status">
+    <output v-if="library.lastVerification !== null" class="library_view_notice">
       {{
         t('library.verification.summary', {
           total: library.lastVerification.total,
@@ -430,7 +430,7 @@ async function confirmRemoval() {
       <AppButton variant="ghost" @click="library.dismissVerification()">
         {{ t('library.report.dismiss') }}
       </AppButton>
-    </p>
+    </output>
 
     <LibraryImportReport
       v-if="library.lastReport !== null"

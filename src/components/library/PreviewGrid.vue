@@ -8,10 +8,6 @@ defineProps<{
   playingId: string | null;
 }>();
 
-/**
- * A listbox rather than a list: these cards are selected, one or several at a time, which
- * is what `aria-selected` on each of them reports.
- */
 const emit = defineEmits<{
   select: [intent: TrackSelectionIntent];
   play: [track: TrackView];
@@ -22,7 +18,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="preview_grid" role="listbox" aria-multiselectable="true">
+  <ul class="preview_grid" aria-multiselectable="true">
     <PreviewCard
       v-for="track in tracks"
       :key="track.id"
@@ -35,7 +31,7 @@ const emit = defineEmits<{
       @remove="emit('remove', $event)"
       @verify="emit('verify', $event)"
     />
-  </div>
+  </ul>
 </template>
 
 <style scoped lang="scss">
@@ -45,7 +41,10 @@ const emit = defineEmits<{
   gap: $space_md;
   flex: 1;
   min-height: 0;
+  margin: 0;
   padding-bottom: $space_md;
+  padding-left: 0;
+  list-style: none;
 
   @include scroll_area;
 }

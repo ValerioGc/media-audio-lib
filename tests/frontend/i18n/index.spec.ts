@@ -52,7 +52,8 @@ describe('isSupportedLocale', () => {
   });
 
   it('rejects unknown values', () => {
-    expect(isSupportedLocale('de')).toBe(false);
+    expect(isSupportedLocale('pt')).toBe(false);
+    expect(isSupportedLocale('')).toBe(false);
     expect(isSupportedLocale(42)).toBe(false);
   });
 });
@@ -60,7 +61,10 @@ describe('isSupportedLocale', () => {
 describe('detectLocale', () => {
   it('sceglie la first preferenza supportata', () => {
     expect(detectLocale(['en-US', 'it-IT'])).toBe('en');
-    expect(detectLocale(['de-DE', 'it-IT'])).toBe('it');
+    expect(detectLocale(['pt-BR', 'it-IT'])).toBe('it');
+    expect(detectLocale(['de-DE', 'it-IT'])).toBe('de');
+    expect(detectLocale(['es-MX'])).toBe('es');
+    expect(detectLocale(['fr-CA'])).toBe('fr');
   });
 
   it('ignores the region code', () => {
@@ -69,7 +73,7 @@ describe('detectLocale', () => {
 
   it('falls back to the default language', () => {
     expect(detectLocale([])).toBe(DEFAULT_SETTINGS.locale);
-    expect(detectLocale(['de', 'fr'])).toBe(DEFAULT_SETTINGS.locale);
+    expect(detectLocale(['pt', 'ja'])).toBe(DEFAULT_SETTINGS.locale);
   });
 
   it('reads browser preferences', () => {

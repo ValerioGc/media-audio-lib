@@ -55,7 +55,7 @@ const tabs = computed(() => [
 
       <template #appearance>
         <div class="settings_view_group">
-          <div class="settings_view_divider" role="presentation">
+          <div class="settings_view_divider">
             <span>{{ t('settings.appearance.application') }}</span>
           </div>
 
@@ -87,7 +87,7 @@ const tabs = computed(() => [
             <AmbienceToggle />
           </SettingsSection>
 
-          <div class="settings_view_divider" role="presentation">
+          <div class="settings_view_divider">
             <span>{{ t('settings.appearance.player') }}</span>
           </div>
 

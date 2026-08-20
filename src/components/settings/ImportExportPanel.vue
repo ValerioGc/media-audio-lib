@@ -62,7 +62,7 @@ async function exportActive() {
       </div>
     </div>
 
-    <div v-if="library.lastLibraryImport !== null" class="import_export_panel_report" role="status">
+    <output v-if="library.lastLibraryImport !== null" class="import_export_panel_report">
       <span>
         {{
           t('settings.importExport.report.summary', {
@@ -77,7 +77,7 @@ async function exportActive() {
       <AppButton variant="ghost" @click="library.dismissLibraryImport()">
         {{ t('library.report.dismiss') }}
       </AppButton>
-    </div>
+    </output>
   </div>
 </template>
 

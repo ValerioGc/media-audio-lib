@@ -137,7 +137,7 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
     expect(dialog.text()).toContain('Brani collegati a Artist A');
     expect(dialog.text()).toContain('2 brani');
     expect(dialog.text()).toContain('Blue');
@@ -158,7 +158,7 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
     const albumCards = dialog.findAll('.library_group_carousel_card');
 
     expect(dialog.find('[data-testid="artist-albums-carousel"]').exists()).toBe(true);
@@ -202,9 +202,7 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const playingAlbums = wrapper
-      .get('[role="dialog"]')
-      .findAll('.library_group_carousel_card_playing');
+    const playingAlbums = wrapper.get('dialog').findAll('.library_group_carousel_card_playing');
 
     expect(playingAlbums).toHaveLength(1);
     expect(playingAlbums[0]?.attributes('aria-current')).toBe('true');
@@ -227,13 +225,13 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
     expect(dialog.find('.library_table').exists()).toBe(true);
 
     await dialog.get('[data-testid="view-preview"]').trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('[role="dialog"]').find('.preview_grid').exists()).toBe(true);
+    expect(wrapper.get('dialog').find('.preview_grid').exists()).toBe(true);
     expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(true);
     expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
   });
@@ -263,7 +261,7 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
     const summary = dialog.get('.library_album_summary');
     const artistLinks = summary.findAll('.library_album_summary_artist');
     const headings = dialog
@@ -284,12 +282,12 @@ describe('LibraryView', () => {
     await artistLinks[0]?.trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Brani collegati a Artist A');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Artist A');
 
     await wrapper.get('[title="Torna al dettaglio precedente"]').trigger('click');
     await flushPromises();
 
-    const restoredDialog = wrapper.get('[role="dialog"]');
+    const restoredDialog = wrapper.get('dialog');
     expect(restoredDialog.text()).toContain('Brani collegati a Album A');
     expect(restoredDialog.get('.library_album_summary_genres').text()).toBe('Fusion, Jazz');
     expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
@@ -308,7 +306,7 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('dialog');
 
     expect(dialog.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
       'Brani',
@@ -334,25 +332,24 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    const modalTab = (index: number) =>
-      wrapper.get('[role="dialog"]').findAll('[role="tab"]')[index];
+    const modalTab = (index: number) => wrapper.get('dialog').findAll('[role="tab"]')[index];
 
     // Artists and albums are browsed by their covers, never as a table.
     await modalTab(1)?.trigger('click');
     await flushPromises();
-    expect(wrapper.get('[role="dialog"]').findAll('.library_facet_preview')).toHaveLength(1);
-    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(false);
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Artist A');
+    expect(wrapper.get('dialog').findAll('.library_facet_preview')).toHaveLength(1);
+    expect(wrapper.get('dialog').find('.library_table').exists()).toBe(false);
+    expect(wrapper.get('dialog').text()).toContain('Artist A');
 
     await modalTab(2)?.trigger('click');
     await flushPromises();
-    expect(wrapper.get('[role="dialog"]').findAll('.library_facet_preview')).toHaveLength(1);
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Album A');
+    expect(wrapper.get('dialog').findAll('.library_facet_preview')).toHaveLength(1);
+    expect(wrapper.get('dialog').text()).toContain('Album A');
 
     await modalTab(0)?.trigger('click');
     await flushPromises();
-    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(true);
-    expect(wrapper.get('[role="dialog"]').find('.library_facet_preview').exists()).toBe(false);
+    expect(wrapper.get('dialog').find('.library_table').exists()).toBe(true);
+    expect(wrapper.get('dialog').find('.library_facet_preview').exists()).toBe(false);
   });
 
   it('drills from a genre section into one of its artists', async () => {
@@ -367,12 +364,12 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    await wrapper.get('[role="dialog"]').findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.get('dialog').findAll('[role="tab"]')[1]?.trigger('click');
     await flushPromises();
-    await wrapper.get('[role="dialog"]').findAll('.library_facet_card')[0]?.trigger('click');
+    await wrapper.get('dialog').findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('[role="dialog"]').text()).toContain('Brani collegati a Artist A');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Artist A');
   });
 
   it('marks the playing track in the library', async () => {
@@ -437,9 +434,9 @@ describe('LibraryView', () => {
     store.lastLibraryImport = { added: 2, updated: 1, skipped: 0, missing: [], total: 3 };
     await flushPromises();
 
-    expect(wrapper.get('[role="status"]').text()).toContain('3 brani letti');
+    expect(wrapper.get('output').text()).toContain('3 brani letti');
 
-    await wrapper.get('[role="status"] button').trigger('click');
+    await wrapper.get('output button').trigger('click');
     expect(store.lastLibraryImport).toBeNull();
   });
 
@@ -448,9 +445,9 @@ describe('LibraryView', () => {
     store.lastVerification = { total: 3, missing: 1 };
     await flushPromises();
 
-    expect(wrapper.get('[role="status"]').text()).toContain('file mancanti 1 su 3 brani');
+    expect(wrapper.get('output').text()).toContain('file mancanti 1 su 3 brani');
 
-    await wrapper.get('[role="status"] button').trigger('click');
+    await wrapper.get('output button').trigger('click');
     expect(store.lastVerification).toBeNull();
   });
 
@@ -464,14 +461,14 @@ describe('LibraryView', () => {
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
     await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
-    expect(wrapper.get('[role="dialog"]').text()).toContain(track.title);
+    expect(wrapper.get('dialog').text()).toContain(track.title);
     expect(remove).not.toHaveBeenCalled();
 
     await wrapper.get('[data-testid="confirm-remove"]').trigger('click');
     await flushPromises();
 
     expect(remove).toHaveBeenCalledWith(track.id);
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    expect(wrapper.find('dialog').exists()).toBe(false);
   });
 
   it('cancels removal without touching the library', async () => {
@@ -486,7 +483,7 @@ describe('LibraryView', () => {
     await wrapper.get('.app_modal_actions button').trigger('click');
 
     expect(remove).not.toHaveBeenCalled();
-    expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+    expect(wrapper.find('dialog').exists()).toBe(false);
   });
 
   it('imports files dropped on the window', async () => {

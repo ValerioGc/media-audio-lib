@@ -31,7 +31,7 @@ describe('LibraryViewToggle', () => {
 
     expect(wrapper.get('[data-testid="view-table"]').attributes('aria-label')).toBe('Elenco');
     expect(wrapper.get('[data-testid="view-preview"]').attributes('aria-label')).toBe('Anteprime');
-    expect(wrapper.get('[role="group"]').attributes('aria-label')).toBe('Vista');
+    expect(wrapper.get('legend').text()).toBe('Vista');
   });
 
   it('marks the active view as pressed', () => {

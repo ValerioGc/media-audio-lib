@@ -120,8 +120,8 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
         <span>{{ t('library.columnSettings.fit') }}</span>
       </button>
 
-      <div class="library_column_settings_list" role="list">
-        <div
+      <ul class="library_column_settings_list">
+        <li
           v-for="column in columns"
           :key="column.key"
           class="library_column_settings_row"
@@ -129,7 +129,6 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
             library_column_settings_row_dragging: draggedKey === column.key,
             library_column_settings_row_locked: isLocked(column),
           }"
-          role="listitem"
           :draggable="!isLocked(column)"
           :data-testid="`column-row-${column.key}`"
           @dragstart="onDragStart($event, column)"
@@ -188,8 +187,8 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
               <AppIcon name="sortDesc" />
             </button>
           </div>
-        </div>
-      </div>
+        </li>
+      </ul>
     </div>
 
     <template #actions>
@@ -239,7 +238,10 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
     flex-direction: column;
     gap: $space_sm;
     max-height: min(22rem, 46vh);
+    margin: 0;
     padding-right: $space_xs;
+    padding-left: 0;
+    list-style: none;
 
     @include scroll_area;
   }

@@ -47,6 +47,26 @@ export default defineConfigWithVueTs(
   },
 
   {
+    // Build and release helpers: Node scripts in CommonJS, not browser code.
+    name: 'app/scripts',
+    files: ['scripts/**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        __dirname: 'readonly',
+        console: 'readonly',
+        module: 'writable',
+        process: 'readonly',
+        require: 'readonly',
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-console': 'off',
+    },
+  },
+
+  {
     name: 'app/tests',
     files: ['**/*.spec.ts'],
     rules: {

@@ -1,0 +1,148 @@
+{
+  "site": {
+    "name": "Media Audio Lib",
+    "basePath": "https://valeriogc.github.io/media-audio-lib/",
+    "defaultLocale": "it",
+    "repositoryUrl": "https://github.com/ValerioGc/media-audio-lib"
+  },
+  "locales": {
+    "it": {
+      "languageName": "Italiano",
+      "languageLabel": "Scegli la lingua",
+      "shortName": "IT",
+      "screenshotAlt": "Media Audio Lib: la libreria in vista elenco con il player in riproduzione",
+      "pageTitle": "Media Audio Lib - Gestore di librerie audio per Windows e Linux",
+      "metaDescription": "Applicazione desktop open source per gestire una libreria di file audio: modifica dei metadati, copertine, viste multiple e player integrato. Funziona interamente sul tuo computer, senza connessione e senza telemetria.",
+      "navLabel": "Navigazione del sito",
+      "downloadNav": "Download",
+      "featuresNav": "Funzionalità",
+      "formatsNav": "Formati",
+      "githubNav": "GitHub",
+      "heroKicker": "Desktop · Windows e Linux",
+      "heroTitle": "La tua libreria audio, sul tuo computer",
+      "heroLead": "Media Audio Lib tiene traccia dei brani che aggiungi tu, ne modifica i tag e le copertine scrivendoli direttamente nei file, e li riproduce senza uscire dall'applicazione. Nessuna scansione automatica del disco, nessun account, nessuna connessione.",
+      "repoButton": "Vedi su GitHub",
+      "downloadKicker": "Ultima versione",
+      "downloadTitle": "Scarica Media Audio Lib",
+      "downloadFor": "Scarica per",
+      "downloadLoading": "Caricamento…",
+      "downloadAll": "Tutte le versioni",
+      "downloadVersion": "Versione",
+      "downloadHashCopied": "Copiato!",
+      "summaryLabel": "In sintesi",
+      "summary": [
+        { "term": "Piattaforme", "detail": "Windows · Linux" },
+        { "term": "Internet e telemetria", "detail": "Non richiesti, mai" },
+        { "term": "Licenza", "detail": "Open source" }
+      ],
+      "featuresKicker": "Cosa sa fare",
+      "featuresTitle": "Funzionalità",
+      "features": [
+        {
+          "title": "Libreria che decidi tu",
+          "body": "Nessuna scansione automatica delle cartelle: la libreria contiene solo i file che aggiungi, singolarmente o trascinandoli nella finestra. Puoi tenerne più di una e passare dall'una all'altra quando vuoi."
+        },
+        {
+          "title": "Modifica dei metadati",
+          "body": "Titolo, autore, album, anno, genere e copertina si modificano dall'app e vengono riscritti nei tag del file, non solo nel database della libreria. La modifica multipla applica lo stesso campo a più brani insieme."
+        },
+        {
+          "title": "Vista elenco e vista anteprime",
+          "body": "L'elenco mostra colonne ordinabili, ridimensionabili e nascondibili a piacere; le anteprime mostrano le copertine a griglia. Le sezioni Autori, Album e Generi raggruppano gli stessi brani per quello che ti serve."
+        },
+        {
+          "title": "Player integrato",
+          "body": "Un player in fondo alla finestra, espandibile a tutta pagina, con avanzamento, volume, riproduzione casuale e ripetizione. La coda è l'elenco che hai davanti, filtri e ordinamento compresi."
+        },
+        {
+          "title": "Aspetto personalizzabile",
+          "body": "Tema chiaro o scuro, tre dimensioni del testo, colore d'accento a scelta e sfondo sfumato costruito su quel colore, con superfici in vetro attivabili a parte."
+        },
+        {
+          "title": "Import ed export",
+          "body": "L'elenco dei brani si esporta in un file portabile e si reimporta altrove, con gestione dei duplicati. I file spostati o cancellati vengono segnalati invece di sparire in silenzio."
+        }
+      ],
+      "formatsKicker": "Compatibilità",
+      "formatsTitle": "Formati supportati",
+      "formatsLabel": "Elenco dei formati audio supportati",
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formatsNote": "La lettura e la scrittura dei tag passano dalla stessa libreria per tutti i formati. Su WAV una copertina aggiunta dall'app non può essere rimossa di nuovo: è un limite del formato contenitore.",
+      "privacyKicker": "Privacy",
+      "privacyTitle": "Tutto resta sul tuo computer",
+      "privacyBody": "Media Audio Lib non raccoglie dati, non invia telemetria e non ha bisogno di una connessione a internet per nessuna funzione. Le uniche cose che salva sono le tue preferenze e i file di libreria, tenuti in locale. I tuoi file audio non vengono mai copiati altrove: l'app li legge e ne riscrive i tag dove sono.",
+      "smartScreenTitle": "Avviso di Windows SmartScreen",
+      "smartScreenBody": "L'installer non è ancora firmato con un certificato a pagamento, quindi al primo avvio SmartScreen può mostrare un avviso. Scegli \"Ulteriori informazioni\" e poi \"Esegui comunque\" per procedere.",
+      "footerRepo": "Codice sorgente su GitHub"
+    },
+    "en": {
+      "languageName": "English",
+      "languageLabel": "Choose your language",
+      "shortName": "EN",
+      "screenshotAlt": "Media Audio Lib: the library in list view with a track playing",
+      "pageTitle": "Media Audio Lib - Audio library manager for Windows and Linux",
+      "metaDescription": "Open source desktop application for managing a library of audio files: metadata editing, cover art, multiple views and a built-in player. Runs entirely on your own computer, with no connection and no telemetry.",
+      "navLabel": "Site navigation",
+      "downloadNav": "Download",
+      "featuresNav": "Features",
+      "formatsNav": "Formats",
+      "githubNav": "GitHub",
+      "heroKicker": "Desktop · Windows and Linux",
+      "heroTitle": "Your audio library, on your own computer",
+      "heroLead": "Media Audio Lib tracks the songs you add yourself, edits their tags and cover art straight into the files, and plays them without leaving the app. No automatic disk scanning, no account, no connection.",
+      "repoButton": "View on GitHub",
+      "downloadKicker": "Latest release",
+      "downloadTitle": "Download Media Audio Lib",
+      "downloadFor": "Download for",
+      "downloadLoading": "Loading…",
+      "downloadAll": "All releases",
+      "downloadVersion": "Version",
+      "downloadHashCopied": "Copied!",
+      "summaryLabel": "At a glance",
+      "summary": [
+        { "term": "Platforms", "detail": "Windows · Linux" },
+        { "term": "Internet and telemetry", "detail": "Never required" },
+        { "term": "Licence", "detail": "Open source" }
+      ],
+      "featuresKicker": "What it does",
+      "featuresTitle": "Features",
+      "features": [
+        {
+          "title": "A library you decide",
+          "body": "No automatic folder scanning: the library holds only the files you add, one by one or by dropping them on the window. You can keep several libraries and switch between them whenever you like."
+        },
+        {
+          "title": "Metadata editing",
+          "body": "Title, artist, album, year, genre and cover art are edited from the app and written back into the file's tags, not just into the library database. Bulk editing applies the same field to several tracks at once."
+        },
+        {
+          "title": "List view and preview view",
+          "body": "The list shows columns you can sort, resize and hide as you please; the previews show the cover art on a grid. The Artists, Albums and Genres sections group the same tracks by whatever you need."
+        },
+        {
+          "title": "Built-in player",
+          "body": "A player docked at the bottom of the window, expandable to full page, with progress, volume, shuffle and repeat. The queue is the list in front of you, filters and sorting included."
+        },
+        {
+          "title": "Appearance you choose",
+          "body": "Light or dark theme, three text sizes, an accent colour of your choosing and a soft background built on that colour, with glass surfaces you can switch on separately."
+        },
+        {
+          "title": "Import and export",
+          "body": "The track list exports to a portable file and imports back elsewhere, duplicates handled. Files that were moved or deleted are reported rather than quietly disappearing."
+        }
+      ],
+      "formatsKicker": "Compatibility",
+      "formatsTitle": "Supported formats",
+      "formatsLabel": "List of supported audio formats",
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formatsNote": "Reading and writing tags goes through the same library for every format. On WAV, a cover added by the app cannot be removed again: that is a limit of the container format.",
+      "privacyKicker": "Privacy",
+      "privacyTitle": "Everything stays on your computer",
+      "privacyBody": "Media Audio Lib collects no data, sends no telemetry and needs no internet connection for any feature. The only things it stores are your preferences and the library files, kept locally. Your audio files are never copied anywhere: the app reads them and rewrites their tags where they are.",
+      "smartScreenTitle": "Windows SmartScreen notice",
+      "smartScreenBody": "The installer is not yet signed with a paid certificate, so SmartScreen may show a warning on first launch. Choose \"More info\" and then \"Run anyway\" to proceed.",
+      "footerRepo": "Source code on GitHub"
+    }
+  }
+}

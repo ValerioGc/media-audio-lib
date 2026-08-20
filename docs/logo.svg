@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Media Audio Lib">
+  <rect width="64" height="64" rx="14" fill="#0067c0" />
+  <path
+    d="M26 42.5a6.5 6.5 0 1 1-4-6.02V19.6a2 2 0 0 1 1.55-1.95l16-3.55A2 2 0 0 1 42 16.05V36.4a6.5 6.5 0 1 1-4-6.02V22.6l-12 2.66Z"
+    fill="#ffffff"
+  />
+</svg>

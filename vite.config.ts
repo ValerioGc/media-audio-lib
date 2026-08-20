@@ -4,6 +4,10 @@ import { fileURLToPath, URL } from 'node:url';
 import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
+import combineSelectors from 'postcss-combine-duplicated-selectors';
+import purgecss from '@fullhuman/postcss-purgecss';
+import cssnano from 'cssnano';
+
 const DEV_SERVER_PORT = 1420;
 
 export default defineConfig({
@@ -24,6 +28,19 @@ export default defineConfig({
         loadPaths: [fileURLToPath(new URL('./src/assets/styles', import.meta.url))],
         additionalData: '@use "shared" as *;\n',
       },
+    },
+    postcss: {
+      plugins: [
+        combineSelectors({ removeDuplicatedProperties: true }),
+        purgecss({
+          content: ['./public/**/*.html', './src/**/*.vue', './src/**/*.ts', './src/**/*.scss'],
+          safelist: {
+            standard: [/^v-/, /^dark/],
+          },
+          defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) ?? [],
+        }),
+        cssnano({ preset: 'default' }),
+      ],
     },
   },
 

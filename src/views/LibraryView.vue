@@ -7,6 +7,7 @@ import AppModal from '@/components/common/AppModal.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryFacetList from '@/components/library/LibraryFacetList.vue';
+import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
@@ -18,12 +19,14 @@ import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackView } from '@/types/library';
+import type { FacetGroupOpenPayload } from '@/components/library/LibraryFacetList.vue';
 
 const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
 const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
+const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const activeTab = ref<LibraryContentTab>('tracks');
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
@@ -42,6 +45,16 @@ const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   return null;
 });
 
+const selectedFacetTracks = computed(() => {
+  const facet = selectedFacet.value;
+
+  if (facet === null) {
+    return [];
+  }
+
+  return library.visibleTracks.filter((track) => facetKeyOf(track, facet.field) === facet.key);
+});
+
 const { isDraggingOver } = useFileDrop((paths) => {
   void library.addPaths(paths);
 });
@@ -55,8 +68,23 @@ function startPlayback(track: TrackView) {
   void player.playFrom(library.visibleTracks, track.id);
 }
 
+function startFacetPlayback(track: TrackView) {
+  void player.playFrom(selectedFacetTracks.value, track.id);
+}
+
+function facetKeyOf(track: TrackView, field: 'artist' | 'album' | 'genre') {
+  const value = track[field]?.trim() ?? '';
+  return value.length > 0 ? value : '__unknown__';
+}
+
 function askRemoval(track: TrackView) {
+  selectedFacet.value = null;
   pendingRemoval.value = track;
+}
+
+function openEditor(track: TrackView) {
+  selectedFacet.value = null;
+  library.openEditor(track.id);
 }
 
 async function confirmRemoval() {
@@ -155,9 +183,66 @@ async function confirmRemoval() {
           @remove="askRemoval"
           @verify="library.verifyTrack($event)"
         />
-        <LibraryFacetList v-else-if="activeFacet !== null" :tracks="library.visibleTracks" :field="activeFacet" />
+        <LibraryFacetList
+          v-else-if="activeFacet !== null"
+          :tracks="library.visibleTracks"
+          :field="activeFacet"
+          :view-mode="settings.viewMode"
+          @open="selectedFacet = $event"
+        />
       </section>
     </template>
+
+    <AppModal
+      :open="selectedFacet !== null"
+      :title="t('library.groups.modalTitle', { name: selectedFacet?.name ?? '' })"
+      wide
+      @close="selectedFacet = null"
+    >
+      <div class="library_view_group_modal">
+        <div class="library_view_group_modal_header">
+          <p>
+            {{
+              t(
+                'library.groups.trackCount',
+                { count: selectedFacetTracks.length },
+                selectedFacetTracks.length,
+              )
+            }}
+          </p>
+          <LibraryViewToggle />
+        </div>
+
+        <PreviewGrid
+          v-if="settings.viewMode === 'preview'"
+          :tracks="selectedFacetTracks"
+          :selected-id="library.selectedId"
+          :playing-id="player.currentTrack?.id ?? null"
+          @select="library.select($event)"
+          @play="startFacetPlayback($event)"
+          @edit="openEditor"
+          @remove="askRemoval"
+          @verify="library.verifyTrack($event)"
+        />
+        <LibraryTable
+          v-else
+          :tracks="selectedFacetTracks"
+          :sort="library.sort"
+          :selected-id="library.selectedId"
+          :playing-id="player.currentTrack?.id ?? null"
+          @sort="library.toggleSort($event)"
+          @select="library.select($event)"
+          @play="startFacetPlayback($event)"
+          @edit="openEditor"
+          @remove="askRemoval"
+          @verify="library.verifyTrack($event)"
+        />
+      </div>
+
+      <template #actions>
+        <AppButton @click="selectedFacet = null">{{ t('library.groups.close') }}</AppButton>
+      </template>
+    </AppModal>
 
     <MetadataEditor
       v-if="library.editingTrack !== null"
@@ -228,6 +313,22 @@ async function confirmRemoval() {
     flex: 1;
     flex-direction: column;
     min-height: 0;
+  }
+
+  &_group_modal {
+    display: flex;
+    flex-direction: column;
+    gap: $space_md;
+    min-height: min(32rem, 70vh);
+
+    &_header {
+      display: flex;
+      gap: $space_md;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--color_text_muted);
+      font-size: 0.875em;
+    }
   }
 }
 </style>

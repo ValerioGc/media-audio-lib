@@ -136,7 +136,7 @@ describe('useSettingsStore', () => {
       locale: 'en',
       textSize: 'small',
       theme: 'light',
-      viewMode: 'table',
+      viewMode: 'preview',
       coverGradientEnabled: true,
       playerTransparency: 12,
       playerBlur: 12,
@@ -152,10 +152,10 @@ describe('useSettingsStore', () => {
     const storage = createFakeStorage();
     await store.initialize(storage);
 
-    await store.setViewMode('preview');
+    await store.setViewMode('table');
 
-    expect(store.viewMode).toBe('preview');
-    expect(storage.saved.at(-1)?.viewMode).toBe('preview');
+    expect(store.viewMode).toBe('table');
+    expect(storage.saved.at(-1)?.viewMode).toBe('table');
 
     store.dispose();
   });

@@ -243,13 +243,17 @@
     },
     "groups": {
       "trackCount": "no tracks | 1 track | {count} tracks",
+      "open": "View",
+      "modalTitle": "Tracks linked to {name}",
+      "close": "Close",
       "columns": {
         "artist": "Artist",
         "album": "Album",
         "genre": "Genre",
         "tracks": "Tracks",
         "duration": "Duration",
-        "examples": "Examples"
+        "examples": "Examples",
+        "actions": "Actions"
       },
       "unknown": {
         "artist": "No artist",

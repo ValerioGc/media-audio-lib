@@ -243,13 +243,17 @@
     },
     "groups": {
       "trackCount": "nessun brano | 1 brano | {count} brani",
+      "open": "Vedi",
+      "modalTitle": "Brani collegati a {name}",
+      "close": "Chiudi",
       "columns": {
         "artist": "Autore",
         "album": "Album",
         "genre": "Genere",
         "tracks": "Brani",
         "duration": "Durata",
-        "examples": "Esempi"
+        "examples": "Esempi",
+        "actions": "Azioni"
       },
       "unknown": {
         "artist": "Senza autore",

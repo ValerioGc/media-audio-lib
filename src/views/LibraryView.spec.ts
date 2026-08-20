@@ -51,12 +51,13 @@ describe('LibraryView', () => {
     expect(wrapper.find('.library_table').exists()).toBe(false);
   });
 
-  it('shows the table when there are tracks', async () => {
+  it('shows previews when there are tracks by default', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = makeTracks(2);
     await flushPromises();
 
-    expect(wrapper.findAll('.library_row')).toHaveLength(2);
+    expect(wrapper.findAll('.preview_card')).toHaveLength(2);
+    expect(wrapper.find('.library_table').exists()).toBe(false);
   });
 
   it('switches from the tracks tab to the artists tab', async () => {
@@ -73,14 +74,35 @@ describe('LibraryView', () => {
       'Album',
       'Generi',
     ]);
-    expect(wrapper.find('.library_table').exists()).toBe(true);
+    expect(wrapper.find('.preview_grid').exists()).toBe(true);
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
-    expect(wrapper.find('.library_table').exists()).toBe(false);
-    expect(wrapper.find('.library_facet_list').exists()).toBe(true);
-    expect(wrapper.findAll('.library_facet_list_row')).toHaveLength(2);
+    expect(wrapper.find('.preview_grid').exists()).toBe(false);
+    expect(wrapper.find('.library_facet_preview').exists()).toBe(true);
+    expect(wrapper.findAll('.library_facet_card')).toHaveLength(2);
     expect(wrapper.text()).toContain('Artist A');
+  });
+
+  it('opens linked tracks from a facet group in a modal', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A' }),
+      makeTrack({ title: 'Green', artist: 'Artist A' }),
+      makeTrack({ title: 'Red', artist: 'Artist B' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('.library_facet_card_open')[0]?.trigger('click');
+    await flushPromises();
+
+    const dialog = wrapper.get('[role="dialog"]');
+    expect(dialog.text()).toContain('Brani collegati a Artist A');
+    expect(dialog.text()).toContain('2 brani');
+    expect(dialog.text()).toContain('Blue');
+    expect(dialog.text()).toContain('Green');
+    expect(dialog.text()).not.toContain('Red');
   });
 
   it('marks the playing track in the library', async () => {
@@ -92,7 +114,7 @@ describe('LibraryView', () => {
     player.index = 0;
     await flushPromises();
 
-    expect(wrapper.get('.library_row_playing').text()).toContain(track.title);
+    expect(wrapper.get('.preview_card_playing').text()).toContain(track.title);
   });
 
   it('uses the library name as the title when available', async () => {
@@ -155,6 +177,7 @@ describe('LibraryView', () => {
 
   it('asks for confirmation before removing a track', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     const track = makeTrack();
     store.tracks = [track];
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
@@ -174,6 +197,7 @@ describe('LibraryView', () => {
 
   it('cancels removal without touching the library', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     store.tracks = [makeTrack()];
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
     await flushPromises();
@@ -197,6 +221,7 @@ describe('LibraryView', () => {
 
   it('opens the metadata editor from the row', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     const track = makeTrack();
     store.tracks = [track];
     vi.spyOn(store, 'loadCover').mockResolvedValue(null);
@@ -214,6 +239,7 @@ describe('LibraryView', () => {
 
   it('verifies the file link from the row', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     const track = makeTrack();
     store.tracks = [track];
     const verifyTrack = vi.spyOn(store, 'verifyTrack').mockResolvedValue(track);
@@ -227,6 +253,7 @@ describe('LibraryView', () => {
 
   it('sorts the table from the headers', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     store.tracks = makeTracks(2);
     await flushPromises();
 

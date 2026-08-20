@@ -4,6 +4,7 @@ import { useId, watch } from 'vue';
 const props = defineProps<{
   open: boolean;
   title: string;
+  wide?: boolean;
 }>();
 
 const emit = defineEmits<{ close: [] }>();
@@ -37,7 +38,13 @@ watch(
 <template>
   <Teleport to="body">
     <div v-if="open" class="app_modal" role="presentation" @click.self="emit('close')">
-      <div class="app_modal_panel" role="dialog" aria-modal="true" :aria-labelledby="titleId">
+      <div
+        class="app_modal_panel"
+        :class="{ app_modal_panel_wide: wide }"
+        role="dialog"
+        aria-modal="true"
+        :aria-labelledby="titleId"
+      >
         <h2 :id="titleId" class="app_modal_title">{{ title }}</h2>
         <div class="app_modal_body">
           <slot />
@@ -70,6 +77,10 @@ watch(
     padding: $space_lg;
     @include surface_panel($radius_lg);
     box-shadow: var(--shadow_raised);
+
+    &_wide {
+      width: min(62rem, 100%);
+    }
   }
 
   &_title {

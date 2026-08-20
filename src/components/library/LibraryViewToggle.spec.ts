@@ -37,9 +37,9 @@ describe('LibraryViewToggle', () => {
   it('marks the active view as pressed', () => {
     const wrapper = mount(LibraryViewToggle, withPinia());
 
-    expect(wrapper.get('[data-testid="view-table"]').attributes('aria-pressed')).toBe('true');
-    expect(wrapper.get('[data-testid="view-preview"]').attributes('aria-pressed')).toBe('false');
-    expect(wrapper.get('[data-testid="view-table"]').classes()).toContain(
+    expect(wrapper.get('[data-testid="view-table"]').attributes('aria-pressed')).toBe('false');
+    expect(wrapper.get('[data-testid="view-preview"]').attributes('aria-pressed')).toBe('true');
+    expect(wrapper.get('[data-testid="view-preview"]').classes()).toContain(
       'library_view_toggle_active',
     );
   });
@@ -50,10 +50,10 @@ describe('LibraryViewToggle', () => {
     const setViewMode = vi.spyOn(settings, 'setViewMode');
 
     const wrapper = mount(LibraryViewToggle, options);
-    await wrapper.get('[data-testid="view-preview"]').trigger('click');
+    await wrapper.get('[data-testid="view-table"]').trigger('click');
 
-    expect(setViewMode).toHaveBeenCalledWith('preview');
-    expect(settings.viewMode).toBe('preview');
+    expect(setViewMode).toHaveBeenCalledWith('table');
+    expect(settings.viewMode).toBe('table');
   });
 
   it('reflects the view already saved in preferences', async () => {

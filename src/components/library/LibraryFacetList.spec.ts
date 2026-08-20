@@ -11,11 +11,12 @@ beforeEach(() => {
 });
 
 describe('LibraryFacetList', () => {
-  it('groups tracks by artist with count and duration', () => {
+  it('groups tracks by artist with count and duration in list view', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {
         field: 'artist',
+        viewMode: 'table',
         tracks: [
           makeTrack({ title: 'Uno', artist: 'Artist B', durationMs: 120_000 }),
           makeTrack({ title: 'Due', artist: 'Artist A', durationMs: 60_000 }),
@@ -36,11 +37,48 @@ describe('LibraryFacetList', () => {
     expect(rows[1]?.text()).toContain('Uno, Tre');
   });
 
+  it('shows groups as preview cards', () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'album',
+        viewMode: 'preview',
+        tracks: [
+          makeTrack({ title: 'Blue', album: 'Kind of Blue', durationMs: 60_000 }),
+          makeTrack({ title: 'Green', album: 'Kind of Blue', durationMs: 120_000 }),
+        ],
+      },
+    });
+
+    expect(wrapper.find('.library_facet_list').exists()).toBe(false);
+    expect(wrapper.findAll('.library_facet_card')).toHaveLength(1);
+    expect(wrapper.get('.library_facet_card_title').text()).toBe('Kind of Blue');
+    expect(wrapper.get('.library_facet_card_meta').text()).toContain('2 brani');
+  });
+
+  it('opens the selected group', async () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'artist',
+        viewMode: 'preview',
+        tracks: [makeTrack({ artist: 'Artist A' })],
+      },
+    });
+
+    await wrapper.get('.library_facet_card_open').trigger('click');
+
+    expect(wrapper.emitted('open')).toEqual([
+      [{ field: 'artist', key: 'Artist A', name: 'Artist A' }],
+    ]);
+  });
+
   it('puts missing values at the bottom with a readable label', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {
         field: 'genre',
+        viewMode: 'table',
         tracks: [
           makeTrack({ genre: null }),
           makeTrack({ genre: 'Jazz' }),

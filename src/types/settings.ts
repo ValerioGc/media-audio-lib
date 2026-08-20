@@ -26,7 +26,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   locale: 'it',
   textSize: 'medium',
   theme: 'system',
-  viewMode: 'table',
+  viewMode: 'preview',
   coverGradientEnabled: true,
   playerTransparency: 12,
   playerBlur: 12,

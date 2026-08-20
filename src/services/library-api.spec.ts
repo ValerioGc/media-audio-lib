@@ -33,7 +33,7 @@ import {
 } from './library-api';
 
 const update = { title: 'Title', artist: 'Artist', album: null, year: 1999, genre: 'Rock' };
-const metadata = { artists: [], albums: [], genres: [] };
+const metadata = { artists: [], albums: [], genres: [], artistArtwork: [], genreArtwork: [] };
 
 const scopedWindow = window as unknown as Record<string, unknown>;
 

@@ -15,7 +15,13 @@ import type {
   TrackView,
 } from '@/types/library';
 
-const EMPTY_LIBRARY_METADATA = { artists: [], albums: [], genres: [] };
+const EMPTY_LIBRARY_METADATA = {
+  artists: [],
+  albums: [],
+  genres: [],
+  artistArtwork: [],
+  genreArtwork: [],
+};
 
 /** Raised when a feature needs the desktop shell and the app runs in a plain browser. */
 export class ShellUnavailableError extends Error {

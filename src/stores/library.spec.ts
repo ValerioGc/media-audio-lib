@@ -59,7 +59,7 @@ const writeMetadata = vi.mocked(api.writeMetadata);
 const writeCover = vi.mocked(api.writeCover);
 
 const emptyReport: AddReport = { added: [], duplicates: [], failed: [] };
-const metadata = { artists: [], albums: [], genres: [] };
+const metadata = { artists: [], albums: [], genres: [], artistArtwork: [], genreArtwork: [] };
 
 beforeEach(() => {
   setActivePinia(createTestPinia());

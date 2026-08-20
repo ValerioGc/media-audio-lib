@@ -18,7 +18,7 @@ vi.mock('@/services/library-api', async (importOriginal) => {
 
 const libraryInfo = vi.mocked(api.libraryInfo);
 const renameLibrary = vi.mocked(api.renameLibrary);
-const metadata = { artists: [], albums: [], genres: [] };
+const metadata = { artists: [], albums: [], genres: [], artistArtwork: [], genreArtwork: [] };
 
 beforeEach(() => {
   resetI18n();

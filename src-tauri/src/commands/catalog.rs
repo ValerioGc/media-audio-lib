@@ -142,11 +142,12 @@ pub fn export(
 
     // The active library lives in memory: exporting it from there also covers the case of
     // a library whose file has not been written yet.
-    let library = if active {
+    let mut library = if active {
         state.read(Clone::clone)?
     } else {
         Library::load(&source)?
     };
+    library.fill_missing_artwork();
 
     let destination = PathBuf::from(destination);
     library.save(&destination)?;
@@ -229,7 +230,8 @@ pub fn import_library(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fixtures::TempDir;
+    use crate::fixtures::{wav_with_cover, TempDir};
+    use crate::library::{track_id, Track};
 
     struct Setup {
         _directory: TempDir,
@@ -382,6 +384,48 @@ mod tests {
 
         let exported = Library::load(&destination).expect("readable copy");
         assert_eq!(exported.name, "Main");
+    }
+
+    #[test]
+    fn export_fills_missing_library_artwork() {
+        let setup = setup();
+        let track = wav_with_cover(setup._directory.path(), "track.wav");
+        setup
+            .state
+            .update(|library| {
+                library.add(Track {
+                    id: track_id(&track),
+                    path: track.display().to_string(),
+                    title: "Track".to_owned(),
+                    artist: Some("Artist A".to_owned()),
+                    album: None,
+                    year: None,
+                    genre: Some("Jazz".to_owned()),
+                    duration_ms: 1,
+                    format: "wav".to_owned(),
+                    has_cover: true,
+                    added_at: 1,
+                })
+            })
+            .expect("state updated");
+        let active = summaries(&setup.catalog, &setup.state).expect("list")[0]
+            .id
+            .clone();
+        let destination = setup._directory.path().join("copy-with-artwork.json");
+
+        export(
+            &setup.catalog,
+            &setup.state,
+            &active,
+            &destination.to_string_lossy(),
+        )
+        .expect("library exported");
+
+        let exported = Library::load(&destination).expect("readable copy");
+        assert_eq!(exported.metadata.artist_artwork.len(), 1);
+        assert_eq!(exported.metadata.artist_artwork[0].name, "Artist A");
+        assert_eq!(exported.metadata.genre_artwork.len(), 1);
+        assert_eq!(exported.metadata.genre_artwork[0].name, "Jazz");
     }
 
     #[test]

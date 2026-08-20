@@ -10,10 +10,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
-use crate::metadata::{self, TrackMetadata};
+use crate::metadata::{self, Cover, TrackMetadata};
 
-/// v4 added library-level metadata indexes for artist, album and genre suggestions.
-pub const SCHEMA_VERSION: u32 = 4;
+/// v5 added library-level artwork for artists and genres, filled on export when absent.
+pub const SCHEMA_VERSION: u32 = 5;
 pub const DEFAULT_LIBRARY_NAME: &str = "Media Audio Lib";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -102,12 +102,23 @@ pub struct LibraryMaintenanceReport {
     pub ids_updated: usize,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryArtwork {
+    pub name: String,
+    pub cover: Cover,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LibraryMetadata {
     pub artists: Vec<String>,
     pub albums: Vec<String>,
     pub genres: Vec<String>,
+    #[serde(default)]
+    pub artist_artwork: Vec<LibraryArtwork>,
+    #[serde(default)]
+    pub genre_artwork: Vec<LibraryArtwork>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -226,7 +237,34 @@ impl Library {
     }
 
     pub fn sync_metadata(&mut self) {
+        let existing_artist_artwork = self.metadata.artist_artwork.clone();
+        let existing_genre_artwork = self.metadata.genre_artwork.clone();
         self.metadata = metadata_of(&self.tracks);
+        self.metadata.artist_artwork =
+            keep_artwork_for(existing_artist_artwork, &self.metadata.artists);
+        self.metadata.genre_artwork =
+            keep_artwork_for(existing_genre_artwork, &self.metadata.genres);
+    }
+
+    pub fn fill_missing_artwork(&mut self) -> usize {
+        self.sync_metadata();
+
+        fill_missing_artwork(
+            &mut self.metadata.artist_artwork,
+            &self.metadata.artists,
+            &self.tracks,
+            |track| track.artist.as_ref(),
+        ) + fill_missing_artwork(
+            &mut self.metadata.genre_artwork,
+            &self.metadata.genres,
+            &self.tracks,
+            |track| track.genre.as_ref(),
+        )
+    }
+
+    fn merge_artwork_from(&mut self, metadata: &LibraryMetadata) {
+        merge_artwork(&mut self.metadata.artist_artwork, &metadata.artist_artwork);
+        merge_artwork(&mut self.metadata.genre_artwork, &metadata.genre_artwork);
     }
 
     /// Adds a track unless the same file is already tracked. Returns false on duplicates.
@@ -259,6 +297,7 @@ impl Library {
     ) -> LibraryImportReport {
         let mut imported = imported;
         update_track_ids(&mut imported);
+        let imported_metadata = imported.metadata.clone();
         let total = imported.tracks.len();
         let (imported_tracks, duplicate_imports) = unique_tracks(imported.tracks);
         let mut report = LibraryImportReport {
@@ -275,6 +314,7 @@ impl Library {
         if strategy == LibraryImportStrategy::Replace {
             report.added = imported_tracks.len();
             self.name = imported.name;
+            self.metadata = imported_metadata;
             self.tracks = imported_tracks;
             self.sync_metadata();
             return report;
@@ -298,6 +338,7 @@ impl Library {
             }
         }
 
+        self.merge_artwork_from(&imported_metadata);
         self.sync_metadata();
 
         report
@@ -321,7 +362,90 @@ fn metadata_of(tracks: &[Track]) -> LibraryMetadata {
         artists: collect(tracks, |track| track.artist.as_ref()),
         albums: collect(tracks, |track| track.album.as_ref()),
         genres: collect(tracks, |track| track.genre.as_ref()),
+        artist_artwork: Vec::new(),
+        genre_artwork: Vec::new(),
     }
+}
+
+fn keep_artwork_for(artwork: Vec<LibraryArtwork>, names: &[String]) -> Vec<LibraryArtwork> {
+    let known = names.iter().map(String::as_str).collect::<HashSet<_>>();
+    let mut seen = HashSet::new();
+
+    artwork
+        .into_iter()
+        .filter_map(|artwork| {
+            let name = artwork.name.trim();
+
+            if name.is_empty() || !known.contains(name) || !seen.insert(name.to_owned()) {
+                return None;
+            }
+
+            Some(LibraryArtwork {
+                name: name.to_owned(),
+                cover: artwork.cover,
+            })
+        })
+        .collect()
+}
+
+fn merge_artwork(target: &mut Vec<LibraryArtwork>, source: &[LibraryArtwork]) {
+    let mut existing = target
+        .iter()
+        .map(|artwork| artwork.name.clone())
+        .collect::<HashSet<_>>();
+
+    target.extend(source.iter().filter_map(|artwork| {
+        let name = artwork.name.trim();
+
+        if name.is_empty() || !existing.insert(name.to_owned()) {
+            return None;
+        }
+
+        Some(LibraryArtwork {
+            name: name.to_owned(),
+            cover: artwork.cover.clone(),
+        })
+    }));
+}
+
+fn fill_missing_artwork(
+    artwork: &mut Vec<LibraryArtwork>,
+    names: &[String],
+    tracks: &[Track],
+    value: impl Fn(&Track) -> Option<&String>,
+) -> usize {
+    let mut existing = artwork
+        .iter()
+        .map(|artwork| artwork.name.clone())
+        .collect::<HashSet<_>>();
+    let mut added = 0;
+
+    for name in names {
+        if existing.contains(name) {
+            continue;
+        }
+
+        let Some(cover) = tracks
+            .iter()
+            .filter(|track| {
+                track.has_cover
+                    && Path::new(&track.path).is_file()
+                    && value(track).is_some_and(|value| value.trim() == name)
+            })
+            .find_map(|track| metadata::read_cover(Path::new(&track.path)).ok().flatten())
+        else {
+            continue;
+        };
+
+        artwork.push(LibraryArtwork {
+            name: name.clone(),
+            cover,
+        });
+        existing.insert(name.clone());
+        added += 1;
+    }
+
+    added
 }
 
 fn default_library_name() -> String {
@@ -611,7 +735,9 @@ fn view_of_track(track: &Track) -> TrackView {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::fixtures::{corrupted_file, wav_with_tags, wav_without_tags, TempDir};
+    use crate::fixtures::{
+        corrupted_file, wav_with_cover, wav_with_tags, wav_without_tags, TempDir,
+    };
 
     fn sample_track(id: &str) -> Track {
         Track {
@@ -626,6 +752,13 @@ mod tests {
             format: "mp3".to_owned(),
             has_cover: false,
             added_at: 42,
+        }
+    }
+
+    fn sample_cover() -> Cover {
+        Cover {
+            mime_type: "image/png".to_owned(),
+            data: "AAA".to_owned(),
         }
     }
 
@@ -807,6 +940,81 @@ mod tests {
     }
 
     #[test]
+    fn removes_artwork_when_its_metadata_value_disappears() {
+        let mut library = Library::new();
+        library.add(Track {
+            artist: Some("Artist A".to_owned()),
+            genre: Some("Jazz".to_owned()),
+            ..sample_track("aaa")
+        });
+        library.metadata.artist_artwork.push(LibraryArtwork {
+            name: "Artist A".to_owned(),
+            cover: sample_cover(),
+        });
+        library.metadata.genre_artwork.push(LibraryArtwork {
+            name: "Jazz".to_owned(),
+            cover: sample_cover(),
+        });
+
+        assert!(library.remove("aaa"));
+
+        assert!(library.metadata.artist_artwork.is_empty());
+        assert!(library.metadata.genre_artwork.is_empty());
+    }
+
+    #[test]
+    fn fills_missing_artist_and_genre_artwork_from_track_covers() {
+        let dir = TempDir::new("library-artwork-fill");
+        let path = wav_with_cover(dir.path(), "track.wav");
+        let mut library = Library::new();
+        library.add(Track {
+            id: track_id(&path),
+            path: path.display().to_string(),
+            artist: Some("Artist A".to_owned()),
+            genre: Some("Jazz".to_owned()),
+            has_cover: true,
+            ..sample_track("aaa")
+        });
+
+        let filled = library.fill_missing_artwork();
+
+        assert_eq!(filled, 2);
+        assert_eq!(library.metadata.artist_artwork.len(), 1);
+        assert_eq!(library.metadata.genre_artwork.len(), 1);
+        assert_eq!(library.metadata.artist_artwork[0].name, "Artist A");
+        assert_eq!(library.metadata.genre_artwork[0].name, "Jazz");
+        assert_eq!(
+            library.metadata.artist_artwork[0].cover.mime_type,
+            "image/png"
+        );
+        assert!(!library.metadata.artist_artwork[0].cover.data.is_empty());
+    }
+
+    #[test]
+    fn does_not_replace_existing_artwork_when_filling_missing_artwork() {
+        let dir = TempDir::new("library-artwork-existing");
+        let path = wav_with_cover(dir.path(), "track.wav");
+        let mut library = Library::new();
+        library.add(Track {
+            id: track_id(&path),
+            path: path.display().to_string(),
+            artist: Some("Artist A".to_owned()),
+            has_cover: true,
+            ..sample_track("aaa")
+        });
+        library.metadata.artist_artwork.push(LibraryArtwork {
+            name: "Artist A".to_owned(),
+            cover: sample_cover(),
+        });
+
+        let filled = library.fill_missing_artwork();
+
+        assert_eq!(filled, 0);
+        assert_eq!(library.metadata.artist_artwork.len(), 1);
+        assert_eq!(library.metadata.artist_artwork[0].cover.data, "AAA");
+    }
+
+    #[test]
     fn renames_the_library_validating_the_name() {
         let mut library = Library::new();
 
@@ -838,13 +1046,22 @@ mod tests {
         library.add(sample_track("aaa"));
         let mut imported = Library::new();
         imported.rename("Nuova").expect("valid name");
-        imported.add(sample_track("bbb"));
+        imported.add(Track {
+            artist: Some("Artist B".to_owned()),
+            ..sample_track("bbb")
+        });
+        imported.metadata.artist_artwork.push(LibraryArtwork {
+            name: "Artist B".to_owned(),
+            cover: sample_cover(),
+        });
 
         let report = library.import(imported, LibraryImportStrategy::Replace);
 
         assert_eq!(library.name, "Nuova");
         assert_eq!(library.len(), 1);
         assert_eq!(library.tracks()[0].path, "C:/music/bbb.mp3");
+        assert_eq!(library.metadata.artist_artwork.len(), 1);
+        assert_eq!(library.metadata.artist_artwork[0].name, "Artist B");
         assert_eq!(report.added, 1);
         assert_eq!(report.total, 1);
     }
@@ -869,6 +1086,33 @@ mod tests {
             .any(|track| track.path == "C:/music/aaa.mp3" && track.title == "Aggiornato"));
         assert_eq!(report.updated, 1);
         assert_eq!(report.added, 1);
+    }
+
+    #[test]
+    fn imports_missing_artwork_when_merging() {
+        let mut library = Library::new();
+        library.add(sample_track("aaa"));
+        let mut imported = Library::new();
+        imported.add(Track {
+            artist: Some("Artist B".to_owned()),
+            genre: Some("Jazz".to_owned()),
+            ..sample_track("bbb")
+        });
+        imported.metadata.artist_artwork.push(LibraryArtwork {
+            name: "Artist B".to_owned(),
+            cover: sample_cover(),
+        });
+        imported.metadata.genre_artwork.push(LibraryArtwork {
+            name: "Jazz".to_owned(),
+            cover: sample_cover(),
+        });
+
+        library.import(imported, LibraryImportStrategy::Merge);
+
+        assert_eq!(library.metadata.artist_artwork.len(), 1);
+        assert_eq!(library.metadata.artist_artwork[0].name, "Artist B");
+        assert_eq!(library.metadata.genre_artwork.len(), 1);
+        assert_eq!(library.metadata.genre_artwork[0].name, "Jazz");
     }
 
     #[test]

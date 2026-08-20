@@ -36,10 +36,22 @@ export interface AddReport {
   failed: FailedImport[];
 }
 
+export interface Cover {
+  mimeType: string;
+  data: string;
+}
+
+export interface LibraryArtwork {
+  name: string;
+  cover: Cover;
+}
+
 export interface LibraryMetadata {
   artists: string[];
   albums: string[];
   genres: string[];
+  artistArtwork: LibraryArtwork[];
+  genreArtwork: LibraryArtwork[];
 }
 
 export interface LibraryInfo {
@@ -63,11 +75,6 @@ export interface LibraryImportReport {
   skipped: number;
   missing: string[];
   total: number;
-}
-
-export interface Cover {
-  mimeType: string;
-  data: string;
 }
 
 /** Payload of the `write_metadata` command: `null` clears the corresponding tag. */

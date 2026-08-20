@@ -209,7 +209,9 @@ describe('LibraryView', () => {
     expect(playingAlbums).toHaveLength(1);
     expect(playingAlbums[0]?.attributes('aria-current')).toBe('true');
     expect(playingAlbums[0]?.text()).toContain('Barabba Mixtape');
-    expect(playingAlbums[0]?.text()).toContain('In riproduzione');
+    expect(playingAlbums[0]?.get('[data-testid="playing-bubble"]').attributes('title')).toBe(
+      'In riproduzione',
+    );
   });
 
   it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {

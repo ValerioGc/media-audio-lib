@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
+import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
 const props = defineProps<{
@@ -46,6 +47,8 @@ function select(event: MouseEvent | KeyboardEvent) {
     @dblclick="emit('play', track)"
     @keydown.enter="select($event)"
   >
+    <PlayingBubble v-if="playing" />
+
     <CoverImage :track="track" size="card" />
 
     <div class="preview_card_body">
@@ -54,10 +57,6 @@ function select(event: MouseEvent | KeyboardEvent) {
         {{ track.artist ?? t('library.row.unknown') }}
       </p>
       <p class="preview_card_meta">{{ track.album ?? t('library.row.unknown') }}</p>
-      <p v-if="playing" class="preview_card_badge preview_card_badge_playing">
-        <AppIcon name="play" />
-        {{ t('library.row.playing') }}
-      </p>
       <p v-if="track.missing" class="preview_card_badge">
         <AppIcon name="warning" />
         {{ t('library.row.missing') }}
@@ -138,11 +137,13 @@ function select(event: MouseEvent | KeyboardEvent) {
     gap: $space_xs;
     align-items: center;
     font-size: 0.75em;
+  }
 
-    &_playing {
-      color: var(--color_accent);
-      font-weight: 600;
-    }
+  // The menu takes the same corner: reading the state matters while the card is at rest,
+  // acting on it matters while the pointer is on the card.
+  &:hover :deep(.playing_bubble),
+  &:focus-within :deep(.playing_bubble) {
+    opacity: 0;
   }
 
   &_actions {

@@ -50,7 +50,13 @@ describe('PreviewCard', () => {
 
     expect(wrapper.classes()).toContain('preview_card_playing');
     expect(wrapper.attributes('aria-current')).toBe('true');
-    expect(wrapper.get('.preview_card_badge_playing').text()).toContain('In riproduzione');
+    const bubble = wrapper.get('[data-testid="playing-bubble"]');
+
+    // The state reads as a notification on the cover, not as a line of the body.
+    expect(bubble.attributes('title')).toBe('In riproduzione');
+    expect(bubble.get('.app_icon').classes()).toContain('app_icon_play');
+    expect(bubble.get('.app_icon').attributes('aria-label')).toBe('In riproduzione');
+    expect(wrapper.get('.preview_card_body').text()).not.toContain('In riproduzione');
   });
 
   it('reports files missing from disk', () => {

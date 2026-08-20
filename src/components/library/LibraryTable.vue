@@ -6,7 +6,7 @@ import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
-import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
+import { libraryRowHeight } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
 import {
   fittedTableColumnWidths,
@@ -22,7 +22,7 @@ import {
   type TrackSelectionIntent,
   type TrackView,
 } from '@/types/library';
-import { TABLE_COLUMN_KEYS, type TableColumnKey } from '@/types/settings';
+import { TABLE_COLUMN_KEYS, TABLE_COLUMN_WIDTHS, type TableColumnKey } from '@/types/settings';
 
 const props = withDefaults(
   defineProps<{
@@ -51,7 +51,7 @@ const settings = useSettingsStore();
 
 const viewport = ref<HTMLElement | null>(null);
 const trackCount = computed(() => props.tracks.length);
-const rowHeight = ref(remToPixels(LIBRARY_ROW_HEIGHT_REM));
+const rowHeight = ref(0);
 const isColumnSettingsOpen = ref(false);
 const resizing = ref<{
   key: TableColumnKey;
@@ -63,13 +63,21 @@ const { range, onScroll, measure } = useVirtualList({
   itemHeight: rowHeight,
 });
 
-// Rows grow with the text size: the windowing maths needs the new height in pixels.
+const coverColumnWidth = computed(
+  () =>
+    settings.tableColumns.find((column) => column.key === 'cover')?.width ??
+    TABLE_COLUMN_WIDTHS.cover.default,
+);
+
+// Rows grow with the text size and with the cover column: the windowing maths needs the
+// new height in pixels, and the rows read it back from the same value.
 watch(
-  () => settings.textSize,
+  [() => settings.textSize, coverColumnWidth],
   () => {
-    rowHeight.value = remToPixels(LIBRARY_ROW_HEIGHT_REM);
+    rowHeight.value = libraryRowHeight(coverColumnWidth.value);
     measure(viewport.value);
   },
+  { immediate: true },
 );
 
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
@@ -89,6 +97,7 @@ const columns = computed(() =>
 const gridStyle = computed(() => ({
   '--library_grid_columns_fit': tableGridTemplate(columns.value, 'fit'),
   '--library_grid_columns_scroll': tableGridTemplate(columns.value, 'scroll'),
+  '--library_row_height': `${rowHeight.value}px`,
 }));
 
 const columnLabels = computed<Record<TableColumnKey, string>>(
@@ -260,7 +269,6 @@ onUnmounted(stopResize);
 
 <style scoped lang="scss">
 .library_table {
-  --library_row_height: #{$library_row_height};
   --library_grid_columns: var(--library_grid_columns_fit);
 
   display: flex;

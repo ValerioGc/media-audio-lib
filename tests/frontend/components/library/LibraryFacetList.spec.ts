@@ -136,7 +136,7 @@ describe('LibraryFacetList', () => {
     expect(card.text()).toContain('2 brani');
   });
 
-  it('reserves the playing badge slot on genre preview cards', () => {
+  it('marks only the playing genre card, with a bubble on its corner', () => {
     const playingTrack = makeTrack({ genre: 'Jazz', album: 'Album A', hasCover: true });
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
@@ -151,8 +151,12 @@ describe('LibraryFacetList', () => {
     const cards = wrapper.findAll('.library_facet_card_genre');
 
     expect(cards).toHaveLength(2);
-    expect(cards[0]?.find('.library_facet_card_badge_hidden').exists()).toBe(false);
-    expect(cards[1]?.find('.library_facet_card_badge_hidden').exists()).toBe(true);
+    expect(cards[0]?.get('[data-testid="playing-bubble"]').attributes('title')).toBe(
+      'In riproduzione',
+    );
+    // The state no longer costs the body a line, so nothing has to be reserved for it.
+    expect(cards[0]?.text()).not.toContain('In riproduzione');
+    expect(cards[1]?.find('[data-testid="playing-bubble"]').exists()).toBe(false);
   });
 
   it('shows a cover mosaic for artist previews without repeating the field label', () => {
@@ -216,7 +220,47 @@ describe('LibraryFacetList', () => {
     expect(playingCards).toHaveLength(1);
     expect(playingCards[0]?.attributes('aria-current')).toBe('true');
     expect(playingCards[0]?.text()).toContain('Kind of Blue');
-    expect(playingCards[0]?.text()).toContain('In riproduzione');
+    expect(playingCards[0]?.get('[data-testid="playing-bubble"]').attributes('title')).toBe(
+      'In riproduzione',
+    );
+  });
+
+  it('shows the playing badge inside the name cell of a list row', () => {
+    const playingTrack = makeTrack({ title: 'Blue', artist: 'Miles Davis' });
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'artist',
+        viewMode: 'table',
+        playingTrack,
+        tracks: [playingTrack, makeTrack({ title: 'Other', artist: 'Other Artist' })],
+      },
+    });
+
+    const rows = wrapper.findAll('.library_facet_list_row');
+    const badge = rows[0]?.get('.library_facet_list_name .library_facet_list_badge');
+
+    expect(badge?.text()).toContain('In riproduzione');
+    expect(badge?.attributes('title')).toBe('In riproduzione');
+    expect(badge?.get('.app_icon').classes()).toContain('app_icon_play');
+    expect(rows[1]?.find('.library_facet_list_badge').exists()).toBe(false);
+  });
+
+  it('keeps the row on the columns the header declares, badge included', () => {
+    const playingTrack = makeTrack({ title: 'Blue', artist: 'Miles Davis' });
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'artist',
+        viewMode: 'table',
+        playingTrack,
+        tracks: [playingTrack],
+      },
+    });
+
+    // The badge lives in the name cell: as a cell of its own it would add a column.
+    expect(wrapper.findAll('.library_facet_list_head [role="columnheader"]')).toHaveLength(4);
+    expect(wrapper.findAll('.library_facet_list_row [role="cell"]')).toHaveLength(4);
   });
 
   it('marks the album row that contains the playing track', () => {

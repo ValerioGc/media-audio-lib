@@ -57,7 +57,11 @@ describe('LibraryGroupCarousel', () => {
 
     expect(cards[1]?.classes()).toContain('library_group_carousel_card_playing');
     expect(cards[1]?.attributes('aria-current')).toBe('true');
-    expect(cards[1]?.text()).toContain('In riproduzione');
+    expect(cards[1]?.get('[data-testid="playing-bubble"]').attributes('title')).toBe(
+      'In riproduzione',
+    );
+    expect(cards[1]?.text()).not.toContain('In riproduzione');
+    expect(cards[0]?.find('[data-testid="playing-bubble"]').exists()).toBe(false);
     expect(cards[0]?.attributes('aria-current')).toBeUndefined();
   });
 

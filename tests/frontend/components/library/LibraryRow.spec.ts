@@ -112,6 +112,42 @@ describe('LibraryRow', () => {
     expect(wrapper.get('.library_row_badge_playing').text()).toContain('In riproduzione');
   });
 
+  it('spells the playing badge out while the title column has room', () => {
+    const wrapper = mountRow(makeTrack(), false, true);
+    const badge = wrapper.get('.library_row_badge_playing');
+
+    expect(badge.text()).toContain('In riproduzione');
+    expect(badge.classes()).not.toContain('library_row_badge_compact');
+  });
+
+  it('keeps only the symbol once the title column is narrow', () => {
+    const wrapper = mount(LibraryRow, {
+      ...withPinia(),
+      props: {
+        track: makeTrack(),
+        selected: false,
+        playing: true,
+        columns: [
+          { key: 'cover', visible: true, width: 48 },
+          { key: 'title', visible: true, width: 180 },
+        ],
+      },
+    });
+    const badge = wrapper.get('.library_row_badge_playing');
+
+    // The meaning has to survive: the label moves to the tooltip and to the icon.
+    expect(badge.text()).not.toContain('In riproduzione');
+    expect(badge.classes()).toContain('library_row_badge_compact');
+    expect(badge.attributes('title')).toBe('In riproduzione');
+    expect(badge.get('.app_icon').attributes('aria-label')).toBe('In riproduzione');
+  });
+
+  it('fills the cover column with the cover', () => {
+    const wrapper = mountRow();
+
+    expect(wrapper.get('.library_row_cover .cover_image').classes()).toContain('cover_image_fill');
+  });
+
   it('uses the cover gradient on the playing row', () => {
     const options = withPinia();
     const player = usePlayerStore();

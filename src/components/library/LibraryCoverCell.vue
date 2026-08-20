@@ -8,5 +8,5 @@ defineProps<{ track: TrackView }>();
 <template>
   <!-- The table is virtualised, so a row only exists while it is on screen: no need to
        defer the cover a second time. -->
-  <CoverImage :track="track" size="thumb" eager />
+  <CoverImage :track="track" size="fill" eager />
 </template>

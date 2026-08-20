@@ -256,4 +256,34 @@ describe('LibraryTable', () => {
 
     document.documentElement.style.removeProperty('font-size');
   });
+
+  it('raises row height when the cover column is widened', async () => {
+    document.documentElement.style.fontSize = '16px';
+    const wrapper = mountTable(makeTracks(100));
+    const settings = useSettingsStore();
+
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
+
+    await settings.setTableColumnWidth('cover', 72);
+    await wrapper.vm.$nextTick();
+
+    // The rows and the windowing maths read the same value, so they cannot drift apart.
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 80px');
+    expect(wrapper.get('.library_table_spacer').attributes('style')).toContain('height: 8000px');
+
+    document.documentElement.style.removeProperty('font-size');
+  });
+
+  it('leaves the row height alone while the cover still fits', async () => {
+    document.documentElement.style.fontSize = '16px';
+    const wrapper = mountTable(makeTracks(10));
+    const settings = useSettingsStore();
+
+    await settings.setTableColumnWidth('cover', 44);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
+
+    document.documentElement.style.removeProperty('font-size');
+  });
 });

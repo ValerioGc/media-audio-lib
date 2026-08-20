@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
+import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import { formatDuration } from '@/services/track-sorting';
 import type { TrackView } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
@@ -180,6 +181,8 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       @keydown.enter="openGroupFromKeyboard($event, group)"
       @keydown.space="openGroupFromKeyboard($event, group)"
     >
+      <PlayingBubble v-if="group.playing" />
+
       <CoverImage
         v-if="field === 'album' && group.coverTrack !== null"
         class="library_facet_card_cover"
@@ -216,17 +219,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
           {{ t('library.groups.trackCount', { count: group.trackCount }, group.trackCount) }}
           <span aria-hidden="true"> · </span>
           {{ formatDuration(group.durationMs) }}
-        </p>
-        <p
-          v-if="field === 'genre' || group.playing"
-          class="library_facet_card_badge"
-          :class="{ library_facet_card_badge_hidden: !group.playing }"
-          :aria-hidden="group.playing ? undefined : 'true'"
-        >
-          <template v-if="group.playing">
-            <AppIcon name="play" />
-            {{ t('library.row.playing') }}
-          </template>
         </p>
       </div>
     </article>
@@ -283,7 +275,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         @keydown.space="openGroupFromKeyboard($event, group)"
       >
         <span class="library_facet_list_cell library_facet_list_name" role="cell">
-          {{ group.name }}
+          <span class="library_facet_list_name_text" :title="group.name">{{ group.name }}</span>
+          <span
+            v-if="group.playing"
+            class="library_facet_list_badge"
+            :title="t('library.row.playing')"
+          >
+            <AppIcon name="play" :label="t('library.row.playing')" />
+            <span class="library_facet_list_badge_label">{{ t('library.row.playing') }}</span>
+          </span>
         </span>
         <span v-if="field === 'album'" class="library_facet_list_cell" role="cell">
           {{ group.artists.join(', ') }}
@@ -303,10 +303,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         </span>
         <span class="library_facet_list_cell library_facet_list_duration" role="cell">
           {{ formatDuration(group.durationMs) }}
-        </span>
-        <span v-if="group.playing" class="library_facet_list_badge" role="cell">
-          <AppIcon name="play" />
-          {{ t('library.row.playing') }}
         </span>
       </div>
     </div>
@@ -334,6 +330,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
 .library_facet_card {
   display: flex;
+  position: relative;
   align-self: stretch;
   flex-direction: column;
   gap: $space_md;
@@ -427,6 +424,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       height: 100%;
       padding-inline: 0;
     }
+
+    // Room kept whether or not the group is playing, so the title never shifts.
+    .library_facet_card_title {
+      padding-right: 2rem;
+    }
   }
 
   &_body {
@@ -459,22 +461,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     font-size: 0.875em;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  &_badge {
-    display: flex;
-    gap: $space_xs;
-    align-items: center;
-    flex-shrink: 0;
-    min-height: 1.5rem;
-    color: var(--color_accent);
-    font-size: 0.8em;
-    font-weight: 700;
-    line-height: 1.2;
-
-    &_hidden {
-      visibility: hidden;
-    }
   }
 }
 
@@ -577,23 +563,49 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_name {
+    display: flex;
+    gap: $space_sm;
+    align-items: center;
     font-weight: 600;
+  }
+
+  &_name_text {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &_duration {
     font-variant-numeric: tabular-nums;
   }
 
+  // Sits next to the name, in its cell: as a grid item of its own it would have added a
+  // column the header does not have.
   &_badge {
-    display: none;
-    gap: $space_xs;
+    display: inline-flex;
+    gap: $space_2xs;
     align-items: center;
+    flex-shrink: 0;
+    padding: 0 $space_sm;
+    border: 1px solid var(--color_accent);
+    border-radius: $radius_sm;
     color: var(--color_accent);
     font-size: 0.75em;
     font-weight: 700;
   }
 
   @media (max-width: 760px) {
+    // The columns tighten here, so the badge keeps its symbol and drops its label.
+    &_badge {
+      justify-content: center;
+      width: 1.5rem;
+      padding: 0;
+      border-radius: 999px;
+    }
+
+    &_badge_label {
+      display: none;
+    }
+
     &_head,
     &_row {
       grid-template-columns: minmax(8rem, 1fr) minmax(5rem, auto) minmax(5rem, auto);

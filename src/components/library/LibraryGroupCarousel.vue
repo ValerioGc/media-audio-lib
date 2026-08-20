@@ -5,6 +5,7 @@ import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
+import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import type { IconName } from '@/config/icons';
 import type { TrackView } from '@/types/library';
 
@@ -70,6 +71,8 @@ const { t } = useI18n();
         :aria-current="group.playing ? 'true' : undefined"
         @click="emit('open', group.key)"
       >
+        <PlayingBubble v-if="group.playing" />
+
         <CoverImage
           v-if="group.coverTrack !== null"
           class="library_group_carousel_cover"
@@ -80,10 +83,6 @@ const { t } = useI18n();
         <span class="library_group_carousel_name" :title="group.name">{{ group.name }}</span>
         <span v-if="group.meta !== null" class="library_group_carousel_meta">
           {{ group.meta }}
-        </span>
-        <span v-if="group.playing" class="library_group_carousel_badge">
-          <AppIcon name="play" />
-          {{ t('library.row.playing') }}
         </span>
       </button>
     </div>
@@ -128,6 +127,7 @@ const { t } = useI18n();
 
   &_card {
     display: flex;
+    position: relative;
     flex: 0 0 8.5rem;
     flex-direction: column;
     gap: $space_xs;
@@ -181,17 +181,6 @@ const { t } = useI18n();
     color: var(--color_text_muted);
     font-size: 0.8em;
     font-variant-numeric: tabular-nums;
-  }
-
-  &_badge {
-    display: inline-flex;
-    gap: $space_2xs;
-    align-items: center;
-    min-width: 0;
-    color: var(--color_accent);
-    font-size: 0.75em;
-    font-weight: 700;
-    line-height: 1.2;
   }
 }
 

@@ -5,11 +5,12 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import LibraryCoverCell from '@/components/library/LibraryCoverCell.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
+import { PLAYING_LABEL_MIN_TITLE_WIDTH_PX } from '@/config/layout';
 import { tableColumnValue } from '@/services/table-columns';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
-import type { TableColumnSetting } from '@/types/settings';
+import { TABLE_COLUMN_WIDTHS, type TableColumnSetting } from '@/types/settings';
 
 const props = defineProps<{
   track: TrackView;
@@ -40,6 +41,12 @@ const accentStyle = computed(() =>
 const columns = computed(
   () => props.columns ?? settings.tableColumns.filter((column) => column.visible),
 );
+
+const showsPlayingLabel = computed(() => {
+  const title = columns.value.find((column) => column.key === 'title');
+
+  return (title?.width ?? TABLE_COLUMN_WIDTHS.title.default) >= PLAYING_LABEL_MIN_TITLE_WIDTH_PX;
+});
 
 function valueFor(column: TableColumnSetting): string {
   return tableColumnValue(
@@ -84,15 +91,26 @@ function openActionsMenu(event: MouseEvent) {
     @dblclick="emit('play', track)"
     @keydown.enter="select($event)"
   >
-    <span v-for="column in columns" :key="column.key" class="library_row_cell" role="cell">
+    <span
+      v-for="column in columns"
+      :key="column.key"
+      class="library_row_cell"
+      :class="{ library_row_cover: column.key === 'cover' }"
+      role="cell"
+    >
       <LibraryCoverCell v-if="column.key === 'cover'" :track="track" />
       <template v-else-if="column.key === 'title'">
         <span class="library_row_title">
           <!-- Columns are narrow and resizable: the full value is one hover away. -->
           <span class="library_row_text" :title="track.title">{{ track.title }}</span>
-          <span v-if="playing" class="library_row_badge library_row_badge_playing">
-            <AppIcon name="play" />
-            {{ t('library.row.playing') }}
+          <span
+            v-if="playing"
+            class="library_row_badge library_row_badge_playing"
+            :class="{ library_row_badge_compact: !showsPlayingLabel }"
+            :title="t('library.row.playing')"
+          >
+            <AppIcon name="play" :label="showsPlayingLabel ? '' : t('library.row.playing')" />
+            <template v-if="showsPlayingLabel">{{ t('library.row.playing') }}</template>
           </span>
           <span v-if="track.missing" class="library_row_badge">
             <AppIcon name="warning" />
@@ -160,6 +178,14 @@ function openActionsMenu(event: MouseEvent) {
     white-space: nowrap;
   }
 
+  // The cover is the one cell measured in both directions: it fills its column and the
+  // row was made tall enough to hold it.
+  &_cover {
+    display: flex;
+    align-items: center;
+    height: calc(var(--library_row_height) - #{$space_sm});
+  }
+
   &_title {
     display: flex;
     gap: $space_sm;
@@ -185,6 +211,14 @@ function openActionsMenu(event: MouseEvent) {
     &_playing {
       border-color: var(--color_accent);
       color: var(--color_accent);
+    }
+
+    // Only the symbol is left: a round chip rather than a squashed label.
+    &_compact {
+      justify-content: center;
+      width: 1.5rem;
+      padding: 0;
+      border-radius: 999px;
     }
   }
 

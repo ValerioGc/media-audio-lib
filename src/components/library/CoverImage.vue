@@ -9,7 +9,7 @@ import type { TrackView } from '@/types/library';
 const props = withDefaults(
   defineProps<{
     track: TrackView;
-    size?: 'thumb' | 'card';
+    size?: 'thumb' | 'card' | 'fill';
     /** Skips the visibility check, for lists that already render only what is on screen. */
     eager?: boolean;
   }>(),
@@ -101,6 +101,14 @@ watch(
     aspect-ratio: 1;
     border-radius: $radius_md;
     font-size: 2rem;
+  }
+
+  // Follows the column it sits in, without ever growing past the height of its row.
+  &_fill {
+    width: 100%;
+    max-height: 100%;
+    aspect-ratio: 1;
+    border-radius: $radius_sm;
   }
 
   &_picture {

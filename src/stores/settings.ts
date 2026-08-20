@@ -11,6 +11,7 @@ import {
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   DEFAULT_SETTINGS,
+  LOCKED_LEADING_TABLE_COLUMN_KEYS,
   MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
@@ -184,6 +185,21 @@ export const useSettingsStore = defineStore('settings', () => {
     );
   }
 
+  function isLockedLeadingTableColumn(key: TableColumnKey): boolean {
+    return LOCKED_LEADING_TABLE_COLUMN_KEYS.includes(
+      key as (typeof LOCKED_LEADING_TABLE_COLUMN_KEYS)[number],
+    );
+  }
+
+  function normalizeTableColumnOrder(columns: readonly TableColumnSetting[]): TableColumnSetting[] {
+    const locked = LOCKED_LEADING_TABLE_COLUMN_KEYS.map((key) =>
+      columns.find((column) => column.key === key),
+    ).filter((column): column is TableColumnSetting => column !== undefined);
+    const lockedKeys = new Set<TableColumnKey>(LOCKED_LEADING_TABLE_COLUMN_KEYS);
+
+    return [...locked, ...columns.filter((column) => !lockedKeys.has(column.key))];
+  }
+
   async function setTableColumnVisible(key: TableColumnKey, visible: boolean) {
     tableColumns.value = tableColumns.value.map((column) =>
       column.key === key
@@ -204,35 +220,42 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   async function moveTableColumn(key: TableColumnKey, targetKey: TableColumnKey) {
-    if (key === targetKey) {
+    if (key === targetKey || isLockedLeadingTableColumn(key)) {
       return;
     }
 
     const columns = tableColumns.value.filter((column) => column.key !== key);
     const moved = tableColumns.value.find((column) => column.key === key);
-    const targetIndex = columns.findIndex((column) => column.key === targetKey);
+    const rawTargetIndex = columns.findIndex((column) => column.key === targetKey);
 
-    if (moved === undefined || targetIndex < 0) {
+    if (moved === undefined || rawTargetIndex < 0) {
       return;
     }
 
+    const lockedCount = LOCKED_LEADING_TABLE_COLUMN_KEYS.length;
+    const targetIndex = Math.max(rawTargetIndex, lockedCount);
+
     columns.splice(targetIndex, 0, moved);
-    tableColumns.value = columns;
+    tableColumns.value = normalizeTableColumnOrder(columns);
     await persist();
   }
 
   async function nudgeTableColumn(key: TableColumnKey, direction: -1 | 1) {
+    if (isLockedLeadingTableColumn(key)) {
+      return;
+    }
+
     const index = tableColumns.value.findIndex((column) => column.key === key);
     const target = tableColumns.value[index + direction];
 
-    if (index < 0 || target === undefined) {
+    if (index < 0 || target === undefined || isLockedLeadingTableColumn(target.key)) {
       return;
     }
 
     const columns = [...tableColumns.value];
     columns.splice(index, 1);
     columns.splice(index + direction, 0, tableColumns.value[index]!);
-    tableColumns.value = columns;
+    tableColumns.value = normalizeTableColumnOrder(columns);
     await persist();
   }
 

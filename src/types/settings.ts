@@ -27,6 +27,7 @@ export const TABLE_COLUMN_KEYS = [
 export type TableColumnKey = (typeof TABLE_COLUMN_KEYS)[number];
 
 export const MANDATORY_TABLE_COLUMN_KEYS = ['cover', 'title', 'duration'] as const;
+export const LOCKED_LEADING_TABLE_COLUMN_KEYS = ['cover', 'title'] as const;
 
 export interface TableColumnSetting {
   key: TableColumnKey;

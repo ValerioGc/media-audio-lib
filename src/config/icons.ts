@@ -30,6 +30,7 @@ export const ICON_GLYPHS = {
   more: '⋮',
   verify: '✓',
   check: '✔',
+  drag: '⋮⋮',
   export: '⤓',
   import: '⤒',
 } as const;

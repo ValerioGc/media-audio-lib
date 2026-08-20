@@ -196,7 +196,8 @@
     },
     "columnSettings": {
       "title": "List columns",
-      "description": "Choose visible columns, drag them to reorder them and adjust their width. Cover, Name and Duration are required.",
+      "description": "Choose visible columns and drag them to reorder them. Cover and Name always stay first; Duration stays required.",
+      "open": "Column settings",
       "width": "Width",
       "moveUp": "Move {column} up",
       "moveDown": "Move {column} down",

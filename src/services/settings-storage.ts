@@ -2,6 +2,7 @@ import { isTauriRuntime } from '@/config/app-config';
 import {
   DEFAULT_SETTINGS,
   DEFAULT_TABLE_COLUMNS,
+  LOCKED_LEADING_TABLE_COLUMN_KEYS,
   LOCALES,
   MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
@@ -41,6 +42,15 @@ function isTableColumnKey(value: unknown): value is TableColumnKey {
 
 function isMandatoryTableColumn(key: TableColumnKey): boolean {
   return MANDATORY_TABLE_COLUMN_KEYS.includes(key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number]);
+}
+
+function normalizeTableColumnOrder(columns: readonly TableColumnSetting[]): TableColumnSetting[] {
+  const locked = LOCKED_LEADING_TABLE_COLUMN_KEYS.map((key) =>
+    columns.find((column) => column.key === key),
+  ).filter((column): column is TableColumnSetting => column !== undefined);
+  const lockedKeys = new Set<TableColumnKey>(LOCKED_LEADING_TABLE_COLUMN_KEYS);
+
+  return [...locked, ...columns.filter((column) => !lockedKeys.has(column.key))];
 }
 
 function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
@@ -85,7 +95,7 @@ function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
     }
   }
 
-  return columns;
+  return normalizeTableColumnOrder(columns);
 }
 
 /** Turns untrusted persisted data into a complete, valid settings object. */

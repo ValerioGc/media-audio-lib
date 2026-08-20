@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
 import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
@@ -42,6 +43,7 @@ const settings = useSettingsStore();
 const viewport = ref<HTMLElement | null>(null);
 const trackCount = computed(() => props.tracks.length);
 const rowHeight = ref(remToPixels(LIBRARY_ROW_HEIGHT_REM));
+const isColumnSettingsOpen = ref(false);
 const resizing = ref<{
   key: TableColumnKey;
   startX: number;
@@ -132,6 +134,7 @@ onUnmounted(stopResize);
         v-for="column in columns"
         :key="column.key"
         class="library_table_heading"
+        :class="{ library_table_heading_resizing: resizing?.key === column.key }"
         role="columnheader"
         :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
       >
@@ -151,12 +154,26 @@ onUnmounted(stopResize);
           class="library_table_resize"
           role="separator"
           :aria-label="t('library.columns.resize', { column: column.label })"
+          :title="t('library.columns.resize', { column: column.label })"
           aria-orientation="vertical"
           @pointerdown="startResize($event, column.key, column.width)"
         />
       </span>
-      <span class="library_table_heading library_table_heading_hidden" role="columnheader">
-        {{ t('library.columns.actions') }}
+      <span
+        class="library_table_heading library_table_heading_actions"
+        role="columnheader"
+        :aria-label="t('library.columns.actions')"
+      >
+        <button
+          class="library_table_settings"
+          type="button"
+          :aria-label="t('library.columnSettings.open')"
+          :title="t('library.columnSettings.open')"
+          data-testid="table-column-settings"
+          @click="isColumnSettingsOpen = true"
+        >
+          <AppIcon name="settings" />
+        </button>
       </span>
     </div>
 
@@ -182,6 +199,11 @@ onUnmounted(stopResize);
         </div>
       </div>
     </div>
+
+    <LibraryColumnSettingsDialog
+      :open="isColumnSettingsOpen"
+      @close="isColumnSettingsOpen = false"
+    />
   </div>
 </template>
 
@@ -218,8 +240,16 @@ onUnmounted(stopResize);
     text-overflow: ellipsis;
     white-space: nowrap;
 
-    &_hidden {
-      @include visually_hidden;
+    &_actions {
+      display: flex;
+      justify-content: flex-end;
+      overflow: visible;
+    }
+
+    &_resizing .library_table_resize::before,
+    &_resizing .library_table_resize::after {
+      opacity: 1;
+      background-color: var(--color_accent);
     }
   }
 
@@ -249,28 +279,63 @@ onUnmounted(stopResize);
 
   &_resize {
     position: absolute;
-    top: $space_xs;
-    right: -0.5rem;
-    bottom: $space_xs;
-    width: 0.75rem;
+    top: 0;
+    right: calc(#{$space_md} / -2);
+    bottom: 0;
+    width: $space_md;
     cursor: col-resize;
 
+    &::before,
     &::after {
       position: absolute;
-      top: 0;
-      right: 0.35rem;
-      bottom: 0;
-      width: 1px;
+      top: $space_xs;
+      bottom: $space_xs;
       background-color: var(--color_border_strong);
       content: '';
-      opacity: 0;
+      opacity: 0.55;
       transition: opacity $duration_fast ease;
     }
 
+    &::before {
+      left: 50%;
+      width: 2px;
+      border-radius: 999px;
+      transform: translateX(-50%);
+    }
+
+    &::after {
+      right: 0.18rem;
+      width: 1px;
+      opacity: 0.25;
+    }
+
+    &:hover::before,
     &:hover::after,
+    &:focus-visible::before,
     &:focus-visible::after {
       opacity: 1;
+      background-color: var(--color_accent);
     }
+  }
+
+  &_settings {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_sm;
+    background-color: var(--color_surface);
+    color: var(--color_text_muted);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color_surface_hover);
+      color: var(--color_text);
+    }
+
+    @include focus_ring;
   }
 
   &_viewport {

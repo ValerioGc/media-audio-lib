@@ -308,6 +308,7 @@
       "albumGenres": "Genre: {genres}",
       "modalTitle": "Tracks linked to {name}",
       "detailTabs": "Linked detail",
+      "back": "Back to the previous detail",
       "expandAlbums": "Expand albums",
       "collapseAlbums": "Collapse albums",
       "close": "Close",

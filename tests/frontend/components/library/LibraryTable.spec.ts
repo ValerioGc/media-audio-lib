@@ -122,7 +122,8 @@ describe('LibraryTable', () => {
     expect(wrapper.find('.library_table_heading_actions .library_table_resize').exists()).toBe(
       false,
     );
-    expect(wrapper.attributes('style')).toContain('2.5rem');
+    expect(wrapper.attributes('style')).toContain('90px 2rem');
+    expect(wrapper.attributes('style')).not.toContain('minmax(0, 1fr) 2rem');
   });
 
   it('enables horizontal scrolling only when requested', () => {

@@ -8,6 +8,7 @@ import LibraryRow from '@/components/library/LibraryRow.vue';
 import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
 import {
+  isResizableTableColumn,
   isSortableTableColumn,
   tableGridTemplate,
   visibleTableColumns,
@@ -78,6 +79,7 @@ const columns = computed(() =>
       ...column,
       label: t(`library.columns.${column.key}`),
       sortable: isSortableTableColumn(column.key),
+      resizable: isResizableTableColumn(column.key),
       active: props.sort.column === column.key,
     })),
 );
@@ -170,6 +172,7 @@ onUnmounted(stopResize);
           </button>
           <span v-else>{{ column.label }}</span>
           <span
+            v-if="column.resizable"
             class="library_table_resize"
             role="separator"
             :aria-label="t('library.columns.resize', { column: column.label })"
@@ -260,7 +263,7 @@ onUnmounted(stopResize);
   &_head {
     display: grid;
     grid-template-columns: var(--library_grid_columns);
-    gap: $space_md;
+    gap: $space_sm;
     align-items: center;
     padding: $space_sm $space_md;
 
@@ -282,7 +285,13 @@ onUnmounted(stopResize);
     &_actions {
       display: flex;
       grid-column: -1;
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      width: 2rem;
+      justify-self: end;
       justify-content: center;
+      background-color: var(--color_surface_alt);
       overflow: visible;
     }
 

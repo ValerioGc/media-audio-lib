@@ -2,13 +2,18 @@ import { formatDuration } from '@/services/track-sorting';
 import { SORTABLE_COLUMNS, type SortableColumn, type TrackView } from '@/types/library';
 import type { TableColumnKey, TableColumnSetting } from '@/types/settings';
 
-const TABLE_ACTIONS_COLUMN_WIDTH = '2.5rem';
+const TABLE_ACTIONS_COLUMN_WIDTH = '2rem';
+const FIXED_TABLE_COLUMN_WIDTHS: Partial<Record<TableColumnKey, string>> = {
+  year: '4.5rem',
+  duration: '5.25rem',
+};
 
 export type TableGridMode = 'fit' | 'scroll';
 
 export interface TableColumnView extends TableColumnSetting {
   label: string;
   sortable: boolean;
+  resizable: boolean;
 }
 
 export function isSortableTableColumn(key: TableColumnKey): key is SortableColumn {
@@ -19,19 +24,31 @@ export function visibleTableColumns(columns: readonly TableColumnSetting[]): Tab
   return columns.filter((column) => column.visible);
 }
 
+export function isResizableTableColumn(key: TableColumnKey): boolean {
+  return FIXED_TABLE_COLUMN_WIDTHS[key] === undefined;
+}
+
+function tableColumnTrack(column: TableColumnSetting, mode: TableGridMode): string {
+  const fixedWidth = FIXED_TABLE_COLUMN_WIDTHS[column.key];
+
+  if (fixedWidth !== undefined) {
+    return fixedWidth;
+  }
+
+  if (mode === 'fit') {
+    return `minmax(0, ${column.width}fr)`;
+  }
+
+  return `minmax(${column.width}px, ${column.width}fr)`;
+}
+
 export function tableGridTemplate(
   columns: readonly TableColumnSetting[],
   mode: TableGridMode = 'scroll',
 ): string {
-  const dataColumns = visibleTableColumns(columns).map((column) =>
-    mode === 'fit' ? `minmax(0, ${column.width}fr)` : `${column.width}px`,
-  );
+  const dataColumns = visibleTableColumns(columns).map((column) => tableColumnTrack(column, mode));
 
-  if (mode === 'fit') {
-    return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
-  }
-
-  return [...dataColumns, 'minmax(0, 1fr)', TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
+  return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
 }
 
 export function tableColumnValue(

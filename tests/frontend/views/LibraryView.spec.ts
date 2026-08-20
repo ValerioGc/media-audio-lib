@@ -276,6 +276,14 @@ describe('LibraryView', () => {
     await flushPromises();
 
     expect(wrapper.get('[role="dialog"]').text()).toContain('Brani collegati a Artist A');
+
+    await wrapper.get('[title="Torna al dettaglio precedente"]').trigger('click');
+    await flushPromises();
+
+    const restoredDialog = wrapper.get('[role="dialog"]');
+    expect(restoredDialog.text()).toContain('Brani collegati a Album A');
+    expect(restoredDialog.text()).toContain('Genere: Fusion, Jazz');
+    expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
   });
 
   it('opens genre details with tracks, artists and albums tabs', async () => {

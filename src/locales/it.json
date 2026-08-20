@@ -308,6 +308,7 @@
       "albumGenres": "Genere: {genres}",
       "modalTitle": "Brani collegati a {name}",
       "detailTabs": "Dettaglio collegamenti",
+      "back": "Torna al dettaglio precedente",
       "expandAlbums": "Espandi album",
       "collapseAlbums": "Riduci album",
       "close": "Chiudi",

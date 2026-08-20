@@ -122,7 +122,7 @@ function openActionsMenu(event: MouseEvent) {
 .library_row {
   display: grid;
   grid-template-columns: var(--library_grid_columns);
-  gap: $space_md;
+  gap: $space_sm;
   align-items: center;
   height: var(--library_row_height);
   padding: 0 $space_md;
@@ -195,8 +195,27 @@ function openActionsMenu(event: MouseEvent) {
     display: flex;
     gap: $space_xs;
     grid-column: -1;
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    width: 2rem;
+    justify-self: end;
     justify-content: center;
+    background-color: var(--color_surface);
     overflow: visible;
+  }
+
+  &:hover &_actions {
+    background-color: var(--color_surface_hover);
+  }
+
+  &_selected &_actions,
+  &_playing &_actions {
+    background-color: var(--color_accent_soft);
+  }
+
+  &_playing[style*='--cover_row_gradient'] &_actions {
+    background: var(--cover_row_gradient), var(--color_surface);
   }
 }
 </style>

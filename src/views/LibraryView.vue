@@ -33,6 +33,7 @@ const settings = useSettingsStore();
 const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
+const facetModalHistory = ref<FacetModalState[]>([]);
 const activeTab = ref<LibraryContentTab>('tracks');
 const groupModalViewMode = ref<ViewMode>('preview');
 const facetViewModes = ref<Record<'artist' | 'album' | 'genre', ViewMode>>({
@@ -59,6 +60,13 @@ const albumModalHiddenColumnKeys = [
   'path',
   'missing',
 ] as const satisfies readonly TableColumnKey[];
+
+interface FacetModalState {
+  group: FacetGroupOpenPayload;
+  viewMode: ViewMode;
+  genreTab: 'tracks' | 'artists' | 'albums';
+  artistAlbumsExpanded: boolean;
+}
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   if (activeTab.value === 'artists') {
@@ -208,20 +216,64 @@ function facetNameOf(field: 'artist' | 'album' | 'genre', key: string) {
 }
 
 function askRemoval(track: TrackView) {
-  selectedFacet.value = null;
+  closeFacetModal();
   pendingRemoval.value = track;
 }
 
 function openEditor(track: TrackView) {
-  selectedFacet.value = null;
+  closeFacetModal();
   library.openEditor(track.id);
 }
 
-function openFacet(group: FacetGroupOpenPayload) {
+function currentFacetModalState(): FacetModalState | null {
+  if (selectedFacet.value === null) {
+    return null;
+  }
+
+  return {
+    group: { ...selectedFacet.value },
+    viewMode: groupModalViewMode.value,
+    genreTab: genreModalTab.value,
+    artistAlbumsExpanded: isArtistAlbumsExpanded.value,
+  };
+}
+
+function applyFacetModalDefaults(group: FacetGroupOpenPayload) {
   groupModalViewMode.value = group.field === 'album' ? 'table' : facetViewModes.value[group.field];
   genreModalTab.value = 'tracks';
   isArtistAlbumsExpanded.value = false;
+}
+
+function openFacet(group: FacetGroupOpenPayload) {
+  const currentState = currentFacetModalState();
+
+  if (currentState !== null) {
+    facetModalHistory.value = [...facetModalHistory.value, currentState];
+  } else {
+    facetModalHistory.value = [];
+  }
+
+  applyFacetModalDefaults(group);
   selectedFacet.value = group;
+}
+
+function goBackInFacetModal() {
+  const previous = facetModalHistory.value.at(-1);
+
+  if (previous === undefined) {
+    return;
+  }
+
+  facetModalHistory.value = facetModalHistory.value.slice(0, -1);
+  selectedFacet.value = previous.group;
+  groupModalViewMode.value = previous.viewMode;
+  genreModalTab.value = previous.genreTab;
+  isArtistAlbumsExpanded.value = previous.artistAlbumsExpanded;
+}
+
+function closeFacetModal() {
+  selectedFacet.value = null;
+  facetModalHistory.value = [];
 }
 
 function selectFromTracks(intent: TrackSelectionIntent, tracks: readonly TrackView[]) {
@@ -386,10 +438,20 @@ async function confirmRemoval() {
       :open="selectedFacet !== null"
       :title="t('library.groups.modalTitle', { name: selectedFacet?.name ?? '' })"
       wide
-      @close="selectedFacet = null"
+      @close="closeFacetModal"
     >
       <div class="library_view_group_modal">
         <div class="library_view_group_modal_header">
+          <AppButton
+            v-if="facetModalHistory.length > 0"
+            class="library_view_group_modal_back_button"
+            variant="ghost"
+            :aria-label="t('library.groups.back')"
+            :title="t('library.groups.back')"
+            @click="goBackInFacetModal"
+          >
+            <AppIcon name="back" />
+          </AppButton>
           <div class="library_view_group_modal_summary">
             <p>
               {{
@@ -598,7 +660,7 @@ async function confirmRemoval() {
       </div>
 
       <template #actions>
-        <AppButton @click="selectedFacet = null">{{ t('library.groups.close') }}</AppButton>
+        <AppButton @click="closeFacetModal">{{ t('library.groups.close') }}</AppButton>
       </template>
     </AppModal>
 
@@ -700,8 +762,17 @@ async function confirmRemoval() {
       font-size: 0.875em;
     }
 
+    &_back_button {
+      width: 2rem;
+      height: 2rem;
+      min-height: 2rem;
+      flex: 0 0 auto;
+      padding: 0;
+    }
+
     &_summary {
       display: flex;
+      flex: 1;
       flex-wrap: wrap;
       gap: $space_xs $space_md;
       min-width: 0;

@@ -37,7 +37,7 @@ const activeTab = ref<LibraryContentTab>('tracks');
 const groupModalViewMode = ref<ViewMode>('preview');
 const facetViewModes = ref<Record<'artist' | 'album' | 'genre', ViewMode>>({
   artist: 'preview',
-  album: 'table',
+  album: 'preview',
   genre: 'preview',
 });
 const genreModalTab = ref<'tracks' | 'artists' | 'albums'>('tracks');
@@ -52,6 +52,7 @@ const artistModalHiddenColumnKeys = [
   'missing',
 ] as const satisfies readonly TableColumnKey[];
 const albumModalHiddenColumnKeys = [
+  'artist',
   'album',
   'genre',
   'format',
@@ -99,6 +100,20 @@ const selectedAlbumGenres = computed(() => {
   ].sort((left, right) => left.localeCompare(right));
 
   return genres.length > 0 ? genres : [t('library.groups.unknown.genre')];
+});
+
+const selectedAlbumArtistLinks = computed<FacetGroupOpenPayload[]>(() => {
+  if (selectedFacet.value?.field !== 'album') {
+    return [];
+  }
+
+  return [...new Set(selectedFacetTracks.value.map((track) => facetKeyOf(track, 'artist')))]
+    .sort((left, right) => facetNameOf('artist', left).localeCompare(facetNameOf('artist', right)))
+    .map((key) => ({
+      field: 'artist',
+      key,
+      name: facetNameOf('artist', key),
+    }));
 });
 
 interface ModalAlbumGroup {
@@ -188,6 +203,10 @@ function facetKeyOf(track: TrackView, field: 'artist' | 'album' | 'genre') {
   return value.length > 0 ? value : '__unknown__';
 }
 
+function facetNameOf(field: 'artist' | 'album' | 'genre', key: string) {
+  return key === '__unknown__' ? t(`library.groups.unknown.${field}`) : key;
+}
+
 function askRemoval(track: TrackView) {
   selectedFacet.value = null;
   pendingRemoval.value = track;
@@ -199,7 +218,7 @@ function openEditor(track: TrackView) {
 }
 
 function openFacet(group: FacetGroupOpenPayload) {
-  groupModalViewMode.value = facetViewModes.value[group.field];
+  groupModalViewMode.value = group.field === 'album' ? 'table' : facetViewModes.value[group.field];
   genreModalTab.value = 'tracks';
   isArtistAlbumsExpanded.value = false;
   selectedFacet.value = group;
@@ -384,6 +403,21 @@ async function confirmRemoval() {
             <p v-if="selectedFacet?.field === 'album'">
               {{ t('library.groups.albumGenres', { genres: selectedAlbumGenres.join(', ') }) }}
             </p>
+            <div
+              v-if="selectedFacet?.field === 'album'"
+              class="library_view_group_modal_summary_links"
+            >
+              <span>{{ t('library.groups.columns.artist') }}:</span>
+              <button
+                v-for="artist in selectedAlbumArtistLinks"
+                :key="artist.key"
+                class="library_view_group_modal_summary_link"
+                type="button"
+                @click="openFacet(artist)"
+              >
+                {{ artist.name }}
+              </button>
+            </div>
           </div>
           <LibraryViewToggle v-if="selectedFacet?.field === 'album'" v-model="groupModalViewMode" />
         </div>
@@ -677,6 +711,33 @@ async function confirmRemoval() {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+    }
+
+    &_summary_links {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: $space_2xs $space_xs;
+      align-items: center;
+      min-width: 0;
+    }
+
+    &_summary_link {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--color_accent);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 0.15em;
+
+      &:hover {
+        color: var(--color_accent_hover);
+      }
+
+      @include focus_ring;
     }
 
     &_albums {

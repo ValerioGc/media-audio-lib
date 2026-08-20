@@ -109,7 +109,7 @@ describe('LibraryView', () => {
     expect(wrapper.text()).toContain('Artist A');
   });
 
-  it('opens the albums tab in list view by default', async () => {
+  it('opens the albums tab in preview view by default', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
       makeTrack({ title: 'Blue', album: 'Album A' }),
@@ -119,9 +119,9 @@ describe('LibraryView', () => {
 
     await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
 
-    expect(wrapper.find('.library_facet_list').exists()).toBe(true);
-    expect(wrapper.find('.library_facet_preview').exists()).toBe(false);
-    expect(wrapper.findAll('.library_facet_list_row')).toHaveLength(2);
+    expect(wrapper.find('.library_facet_preview').exists()).toBe(true);
+    expect(wrapper.find('.library_facet_list').exists()).toBe(false);
+    expect(wrapper.findAll('.library_facet_card')).toHaveLength(2);
   });
 
   it('opens linked tracks from a facet group in a modal', async () => {
@@ -222,19 +222,21 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
-    await wrapper.findAll('.library_facet_list_row')[0]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');
+    expect(dialog.find('.library_table').exists()).toBe(true);
+
     await dialog.get('[data-testid="view-preview"]').trigger('click');
     await flushPromises();
 
     expect(wrapper.get('[role="dialog"]').find('.preview_grid').exists()).toBe(true);
-    expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(true);
-    expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(false);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(true);
+    expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
   });
 
-  it('shows album genres once in the album modal and hides redundant table columns', async () => {
+  it('shows album artist links and genres once in the album modal and hides redundant table columns', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
       makeTrack({
@@ -256,17 +258,24 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
-    await wrapper.findAll('.library_facet_list_row')[0]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');
+    const artistLinks = dialog.findAll('.library_view_group_modal_summary_link');
     const headings = dialog
       .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
     expect(dialog.text()).toContain('Genere: Fusion, Jazz');
-    expect(headings).toEqual(['Copertina', 'Nome', 'Autore', 'Anno', 'Durata', '']);
+    expect(artistLinks.map((link) => link.text())).toEqual(['Artist A', 'Artist B']);
+    expect(headings).toEqual(['Copertina', 'Nome', 'Anno', 'Durata', '']);
     expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
+
+    await artistLinks[0]?.trigger('click');
+    await flushPromises();
+
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Brani collegati a Artist A');
   });
 
   it('opens genre details with tracks, artists and albums tabs', async () => {

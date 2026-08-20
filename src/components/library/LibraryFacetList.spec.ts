@@ -34,7 +34,7 @@ describe('LibraryFacetList', () => {
     expect(rows[1]?.text()).toContain('Artist B');
     expect(rows[1]?.text()).toContain('2 brani');
     expect(rows[1]?.text()).toContain('5:00');
-    expect(rows[1]?.text()).toContain('Uno, Tre');
+    expect(rows[1]?.text()).not.toContain('Uno, Tre');
   });
 
   it('shows groups as preview cards', () => {
@@ -53,10 +53,27 @@ describe('LibraryFacetList', () => {
     expect(wrapper.find('.library_facet_list').exists()).toBe(false);
     expect(wrapper.findAll('.library_facet_card')).toHaveLength(1);
     expect(wrapper.get('.library_facet_card_title').text()).toBe('Kind of Blue');
-    expect(wrapper.get('.library_facet_card_meta').text()).toContain('2 brani');
+    expect(wrapper.get('.library_facet_card').text()).toContain('2 brani');
+    expect(wrapper.text()).not.toContain('Blue, Green');
   });
 
-  it('opens the selected group', async () => {
+  it('shows the artist on album groups', () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'album',
+        viewMode: 'preview',
+        tracks: [
+          makeTrack({ artist: 'Miles Davis', album: 'Kind of Blue' }),
+          makeTrack({ artist: 'Miles Davis', album: 'Kind of Blue' }),
+        ],
+      },
+    });
+
+    expect(wrapper.text()).toContain('Autore: Miles Davis');
+  });
+
+  it('opens the selected group from a card', async () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
       props: {
@@ -66,7 +83,24 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    await wrapper.get('.library_facet_card_open').trigger('click');
+    await wrapper.get('.library_facet_card').trigger('click');
+
+    expect(wrapper.emitted('open')).toEqual([
+      [{ field: 'artist', key: 'Artist A', name: 'Artist A' }],
+    ]);
+  });
+
+  it('opens the selected group from a row', async () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'artist',
+        viewMode: 'table',
+        tracks: [makeTrack({ artist: 'Artist A' })],
+      },
+    });
+
+    await wrapper.get('.library_facet_list_row').trigger('keydown.enter');
 
     expect(wrapper.emitted('open')).toEqual([
       [{ field: 'artist', key: 'Artist A', name: 'Artist A' }],

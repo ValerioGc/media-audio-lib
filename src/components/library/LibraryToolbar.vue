@@ -8,7 +8,11 @@ import AppSelect from '@/components/common/AppSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
 import { MISSING_INFO_FILTERS, type MissingInfoFilter } from '@/types/library';
+import type { ViewMode } from '@/types/settings';
 import type { SelectOption } from '@/types/ui';
+
+defineProps<{ viewMode?: ViewMode | undefined }>();
+const emit = defineEmits<{ 'update:viewMode': [mode: ViewMode] }>();
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -67,7 +71,11 @@ const missingInfoFilter = computed({
     </p>
 
     <!-- The view switch sits at the far right of the toolbar. -->
-    <LibraryViewToggle class="library_toolbar_view" />
+    <LibraryViewToggle
+      class="library_toolbar_view"
+      :model-value="viewMode"
+      @update:model-value="emit('update:viewMode', $event)"
+    />
   </div>
 </template>
 

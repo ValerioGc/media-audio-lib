@@ -9,19 +9,32 @@ import type { IconName } from '@/config/icons';
 import { useSettingsStore } from '@/stores/settings';
 import { VIEW_MODES, type ViewMode } from '@/types/settings';
 
+const props = defineProps<{ modelValue?: ViewMode | undefined }>();
+const emit = defineEmits<{ 'update:modelValue': [mode: ViewMode] }>();
+
 const { t } = useI18n();
 const settings = useSettingsStore();
 
 const ICONS: Record<ViewMode, IconName> = { table: 'list', preview: 'grid' };
+const selectedMode = computed(() => props.modelValue ?? settings.viewMode);
 
 const options = computed(() =>
   VIEW_MODES.map((mode) => ({
     mode,
     icon: ICONS[mode],
     label: t(`library.view.${mode}`),
-    active: settings.viewMode === mode,
+    active: selectedMode.value === mode,
   })),
 );
+
+function setMode(mode: ViewMode) {
+  if (props.modelValue === undefined) {
+    settings.setViewMode(mode);
+    return;
+  }
+
+  emit('update:modelValue', mode);
+}
 </script>
 
 <template>
@@ -33,7 +46,7 @@ const options = computed(() =>
         :aria-label="option.label"
         :aria-pressed="option.active"
         :data-testid="`view-${option.mode}`"
-        @click="settings.setViewMode(option.mode)"
+        @click="setMode(option.mode)"
       >
         <AppIcon :name="option.icon" />
       </AppButton>

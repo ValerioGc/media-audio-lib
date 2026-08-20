@@ -265,7 +265,8 @@
     },
     "groups": {
       "trackCount": "no tracks | 1 track | {count} tracks",
-      "open": "View",
+      "openLabel": "Open tracks linked to {name}",
+      "albumArtist": "Artist: {artists}",
       "modalTitle": "Tracks linked to {name}",
       "close": "Close",
       "columns": {
@@ -274,7 +275,6 @@
         "genre": "Genre",
         "tracks": "Tracks",
         "duration": "Duration",
-        "examples": "Examples",
         "actions": "Actions"
       },
       "unknown": {

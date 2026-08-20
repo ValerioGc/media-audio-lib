@@ -265,7 +265,8 @@
     },
     "groups": {
       "trackCount": "nessun brano | 1 brano | {count} brani",
-      "open": "Vedi",
+      "openLabel": "Apri i brani collegati a {name}",
+      "albumArtist": "Autore: {artists}",
       "modalTitle": "Brani collegati a {name}",
       "close": "Chiudi",
       "columns": {
@@ -274,7 +275,6 @@
         "genre": "Genere",
         "tracks": "Brani",
         "duration": "Durata",
-        "examples": "Esempi",
         "actions": "Azioni"
       },
       "unknown": {

@@ -22,6 +22,7 @@ import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackView } from '@/types/library';
+import type { ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -30,6 +31,7 @@ const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const activeTab = ref<LibraryContentTab>('tracks');
+const facetViewMode = ref<ViewMode>('preview');
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   if (activeTab.value === 'artists') {
@@ -56,6 +58,10 @@ const selectedFacetTracks = computed(() => {
 
   return library.visibleTracks.filter((track) => facetKeyOf(track, facet.field) === facet.key);
 });
+
+const displayedViewMode = computed(() =>
+  activeTab.value === 'tracks' ? settings.viewMode : facetViewMode.value,
+);
 
 const { isDraggingOver } = useFileDrop((paths) => {
   void library.addPaths(paths);
@@ -98,6 +104,15 @@ function openEditor(track: TrackView) {
   library.openEditor(track.id);
 }
 
+function setDisplayedViewMode(mode: ViewMode) {
+  if (activeTab.value === 'tracks') {
+    settings.setViewMode(mode);
+    return;
+  }
+
+  facetViewMode.value = mode;
+}
+
 async function confirmRemoval() {
   const track = pendingRemoval.value;
   pendingRemoval.value = null;
@@ -112,7 +127,7 @@ async function confirmRemoval() {
   <div class="library_view" :class="{ library_view_dropping: isDraggingOver }">
     <header class="library_view_header">
       <LibraryTitle />
-      <LibraryToolbar />
+      <LibraryToolbar :view-mode="displayedViewMode" @update:view-mode="setDisplayedViewMode" />
     </header>
 
     <p v-if="library.errorKey !== null" class="library_view_error" role="alert">
@@ -200,7 +215,7 @@ async function confirmRemoval() {
           v-else-if="activeFacet !== null"
           :tracks="library.visibleTracks"
           :field="activeFacet"
-          :view-mode="settings.viewMode"
+          :view-mode="facetViewMode"
           @open="selectedFacet = $event"
         />
       </section>
@@ -223,11 +238,11 @@ async function confirmRemoval() {
               )
             }}
           </p>
-          <LibraryViewToggle />
+          <LibraryViewToggle v-model="facetViewMode" />
         </div>
 
         <PreviewGrid
-          v-if="settings.viewMode === 'preview'"
+          v-if="facetViewMode === 'preview'"
           :tracks="selectedFacetTracks"
           :selected-id="library.selectedId"
           :playing-id="player.currentTrack?.id ?? null"

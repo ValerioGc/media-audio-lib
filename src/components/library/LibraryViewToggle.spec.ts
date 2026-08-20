@@ -56,6 +56,21 @@ describe('LibraryViewToggle', () => {
     expect(settings.viewMode).toBe('table');
   });
 
+  it('emits the selected view when it is controlled by the parent', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const setViewMode = vi.spyOn(settings, 'setViewMode');
+
+    const wrapper = mount(LibraryViewToggle, {
+      ...options,
+      props: { modelValue: 'preview' },
+    });
+    await wrapper.get('[data-testid="view-table"]').trigger('click');
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([['table']]);
+    expect(setViewMode).not.toHaveBeenCalled();
+  });
+
   it('reflects the view already saved in preferences', async () => {
     const options = withPinia();
     await useSettingsStore().setViewMode('preview');

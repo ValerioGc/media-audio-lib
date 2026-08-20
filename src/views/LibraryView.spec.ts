@@ -86,6 +86,7 @@ describe('LibraryView', () => {
 
   it('switches from the tracks tab to the artists tab', async () => {
     const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
     store.tracks = [
       makeTrack({ title: 'Uno', artist: 'Artist A' }),
       makeTrack({ title: 'Due', artist: 'Artist B' }),
@@ -98,11 +99,11 @@ describe('LibraryView', () => {
       'Album',
       'Generi',
     ]);
-    expect(wrapper.find('.preview_grid').exists()).toBe(true);
+    expect(wrapper.find('.library_table').exists()).toBe(true);
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
-    expect(wrapper.find('.preview_grid').exists()).toBe(false);
+    expect(wrapper.find('.library_table').exists()).toBe(false);
     expect(wrapper.find('.library_facet_preview').exists()).toBe(true);
     expect(wrapper.findAll('.library_facet_card')).toHaveLength(2);
     expect(wrapper.text()).toContain('Artist A');
@@ -118,7 +119,7 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
-    await wrapper.findAll('.library_facet_card_open')[0]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');

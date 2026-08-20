@@ -162,10 +162,15 @@ describe('LibraryTitle', () => {
     ).toBeDefined();
 
     await wrapper.get('[data-testid="column-visible-format"]').setValue(true);
-    await wrapper.get('[data-testid="column-down-cover"]').trigger('click');
+    await wrapper.get('[data-testid="column-row-genre"]').trigger('dragstart');
+    await wrapper.get('[data-testid="column-row-cover"]').trigger('drop');
 
     expect(settings.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
-    expect(settings.tableColumns[0]?.key).toBe('title');
+    expect(settings.tableColumns.map((column) => column.key).slice(0, 3)).toEqual([
+      'cover',
+      'title',
+      'genre',
+    ]);
   });
 
   it('opens the missing information filter from the library menu', async () => {

@@ -6,6 +6,7 @@ import { makeTrack, makeTracks } from '../../../tests/support/tracks';
 import { useSettingsStore } from '@/stores/settings';
 import { DEFAULT_SORT, type SortState, type TrackView } from '@/types/library';
 
+import LibraryColumnSettingsDialog from './LibraryColumnSettingsDialog.vue';
 import LibraryTable from './LibraryTable.vue';
 
 beforeEach(() => {
@@ -38,7 +39,7 @@ describe('LibraryTable', () => {
       'Anno',
       'Genere',
       'Durata',
-      'Azioni',
+      '⚙',
     ]);
   });
 
@@ -80,6 +81,47 @@ describe('LibraryTable', () => {
     expect(headings).not.toContain('Autore');
     expect(wrapper.attributes('style')).toContain('320px');
     expect(wrapper.text()).toContain('FLAC');
+  });
+
+  it('can hide columns for contextual tables without changing user settings', () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: {
+        tracks: [makeTrack({ artist: 'Artist A', genre: 'Jazz' })],
+        sort: DEFAULT_SORT,
+        selectedIds: [],
+        playingId: null,
+        hiddenColumnKeys: ['artist', 'genre'],
+        showColumnSettings: false,
+      },
+    });
+    const headings = wrapper
+      .findAll('[role="columnheader"]')
+      .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
+
+    expect(headings).not.toContain('Autore');
+    expect(headings).not.toContain('Genere');
+    expect(wrapper.find('[data-testid="table-column-settings"]').exists()).toBe(false);
+    expect(settings.tableColumns.find((column) => column.key === 'artist')?.visible).toBe(true);
+  });
+
+  it('opens column settings from the fixed actions header', async () => {
+    const wrapper = mountTable([makeTrack()]);
+
+    await wrapper.get('[data-testid="table-column-settings"]').trigger('click');
+
+    expect(wrapper.getComponent(LibraryColumnSettingsDialog).props('open')).toBe(true);
+  });
+
+  it('shows a resize handle on data columns but not on the actions column', () => {
+    const wrapper = mountTable([makeTrack()]);
+
+    expect(wrapper.findAll('.library_table_resize')).toHaveLength(7);
+    expect(wrapper.find('.library_table_heading_actions .library_table_resize').exists()).toBe(
+      false,
+    );
   });
 
   it('uses the saved column order', async () => {

@@ -93,6 +93,24 @@ describe('sanitizeSettings', () => {
       playerBlur: 0,
     });
   });
+
+  it('keeps cover and title first when restoring table columns', () => {
+    const sanitized = sanitizeSettings({
+      tableColumns: [
+        { key: 'genre', visible: true, width: 140 },
+        { key: 'title', visible: true, width: 260 },
+        { key: 'cover', visible: true, width: 48 },
+        { key: 'artist', visible: true, width: 180 },
+      ],
+    });
+
+    expect(sanitized.tableColumns.map((column) => column.key).slice(0, 4)).toEqual([
+      'cover',
+      'title',
+      'genre',
+      'artist',
+    ]);
+  });
 });
 
 describe('createWebStorage', () => {

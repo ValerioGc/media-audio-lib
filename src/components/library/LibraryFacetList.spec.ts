@@ -99,6 +99,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
+    expect(wrapper.get('.library_facet_card').classes()).toContain('library_facet_card_artist');
     expect(wrapper.find('.library_facet_card_label').exists()).toBe(false);
     expect(wrapper.find('.library_facet_card_cover_mosaic').exists()).toBe(true);
     expect(wrapper.get('.library_facet_card').text()).toContain('2 album');

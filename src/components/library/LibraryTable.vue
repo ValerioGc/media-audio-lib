@@ -21,12 +21,17 @@ import {
 } from '@/types/library';
 import type { TableColumnKey } from '@/types/settings';
 
-const props = defineProps<{
-  tracks: readonly TrackView[];
-  sort: SortState;
-  selectedIds: readonly string[];
-  playingId: string | null;
-}>();
+const props = withDefaults(
+  defineProps<{
+    tracks: readonly TrackView[];
+    sort: SortState;
+    selectedIds: readonly string[];
+    playingId: string | null;
+    hiddenColumnKeys?: readonly TableColumnKey[];
+    showColumnSettings?: boolean;
+  }>(),
+  { hiddenColumnKeys: () => [], showColumnSettings: true },
+);
 
 const emit = defineEmits<{
   sort: [column: SortableColumn];
@@ -66,16 +71,18 @@ watch(
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
 
 const columns = computed(() =>
-  visibleTableColumns(settings.tableColumns).map((column) => ({
-    ...column,
-    label: t(`library.columns.${column.key}`),
-    sortable: isSortableTableColumn(column.key),
-    active: props.sort.column === column.key,
-  })),
+  visibleTableColumns(settings.tableColumns)
+    .filter((column) => !props.hiddenColumnKeys.includes(column.key))
+    .map((column) => ({
+      ...column,
+      label: t(`library.columns.${column.key}`),
+      sortable: isSortableTableColumn(column.key),
+      active: props.sort.column === column.key,
+    })),
 );
 
 const gridStyle = computed(() => ({
-  '--library_grid_columns': tableGridTemplate(settings.tableColumns),
+  '--library_grid_columns': tableGridTemplate(columns.value),
 }));
 
 function ariaSort(column: TableColumnKey) {
@@ -165,6 +172,7 @@ onUnmounted(stopResize);
         :aria-label="t('library.columns.actions')"
       >
         <button
+          v-if="showColumnSettings"
           class="library_table_settings"
           type="button"
           :aria-label="t('library.columnSettings.open')"

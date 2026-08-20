@@ -180,6 +180,8 @@ describe('useSettingsStore', () => {
     await store.setTableColumnVisible('title', false);
     await store.setTableColumnWidth('title', 999);
     await store.moveTableColumn('genre', 'artist');
+    await store.moveTableColumn('title', 'genre');
+    await store.moveTableColumn('album', 'cover');
 
     expect(store.tableColumns.find((column) => column.key === 'artist')?.visible).toBe(false);
     expect(store.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
@@ -188,9 +190,9 @@ describe('useSettingsStore', () => {
     expect(store.tableColumns.map((column) => column.key).slice(0, 5)).toEqual([
       'cover',
       'title',
+      'album',
       'genre',
       'artist',
-      'album',
     ]);
     expect(storage.saved.at(-1)?.tableColumns).toEqual(store.tableColumns);
 

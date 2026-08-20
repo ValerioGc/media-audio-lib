@@ -152,6 +152,12 @@ describe('LibraryView', () => {
     expect(albumCards[0]?.text()).toContain('1999');
     expect(albumCards[0]?.text()).not.toContain('Artist A');
     expect(dialog.find('.library_table').exists()).toBe(true);
+    expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
+    expect(
+      dialog
+        .findAll('.library_table_heading')
+        .map((heading) => heading.text().replace(/[▲▼]/u, '').trim()),
+    ).toEqual(['Copertina', 'Nome', 'Album', 'Anno', 'Durata', '']);
   });
 
   it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {

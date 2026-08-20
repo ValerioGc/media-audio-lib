@@ -25,7 +25,7 @@ import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackSelectionIntent, TrackView } from '@/types/library';
-import type { ViewMode } from '@/types/settings';
+import type { TableColumnKey, ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -40,6 +40,13 @@ const genreModalTab = ref<'tracks' | 'artists' | 'albums'>('tracks');
 const isArtistAlbumsExpanded = ref(false);
 const selectionAnchorId = ref<string | null>(null);
 const isBulkEditorOpen = ref(false);
+const artistModalHiddenColumnKeys = [
+  'artist',
+  'genre',
+  'format',
+  'path',
+  'missing',
+] as const satisfies readonly TableColumnKey[];
 
 const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
   if (activeTab.value === 'artists') {
@@ -396,6 +403,8 @@ async function confirmRemoval() {
             :sort="library.sort"
             :selected-ids="library.selectedIds"
             :playing-id="player.currentTrack?.id ?? null"
+            :hidden-column-keys="artistModalHiddenColumnKeys"
+            :show-column-settings="false"
             @sort="library.toggleSort($event)"
             @select="selectFromTracks($event, selectedFacetTracks)"
             @play="startFacetPlayback($event)"

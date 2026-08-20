@@ -154,6 +154,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       :key="group.key"
       class="library_facet_card"
       :class="{
+        library_facet_card_artist: field === 'artist',
         library_facet_card_album: field === 'album',
         library_facet_card_genre: field === 'genre',
       }"
@@ -304,6 +305,21 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   &_album {
     min-height: 18rem;
     padding: $space_sm;
+  }
+
+  &_artist {
+    min-height: 16.5rem;
+    overflow: hidden;
+
+    .library_facet_card_cover_mosaic {
+      height: clamp(8.5rem, 16vw, 12rem);
+      aspect-ratio: auto;
+    }
+
+    .library_facet_card_body {
+      flex: 0 0 auto;
+      min-height: 4.25rem;
+    }
   }
 
   &_cover {

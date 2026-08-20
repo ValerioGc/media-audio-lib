@@ -1,12 +1,19 @@
 import { formatDuration } from '@/services/track-sorting';
 import { SORTABLE_COLUMNS, type SortableColumn, type TrackView } from '@/types/library';
-import type { TableColumnKey, TableColumnSetting } from '@/types/settings';
+import {
+  TABLE_COLUMN_WIDTHS,
+  type TableColumnKey,
+  type TableColumnSetting,
+} from '@/types/settings';
 
-const TABLE_ACTIONS_COLUMN_WIDTH = '2rem';
+const TABLE_ACTIONS_COLUMN_WIDTH = '4.25rem';
 const FIXED_TABLE_COLUMN_WIDTHS: Partial<Record<TableColumnKey, string>> = {
   year: '4.5rem',
   duration: '5.25rem',
 };
+const CONTENT_CELL_PADDING_PX = 32;
+const AVERAGE_CHARACTER_WIDTH_PX = 8;
+const SAMPLE_LIMIT = 500;
 
 export type TableGridMode = 'fit' | 'scroll';
 
@@ -26,6 +33,44 @@ export function visibleTableColumns(columns: readonly TableColumnSetting[]): Tab
 
 export function isResizableTableColumn(key: TableColumnKey): boolean {
   return FIXED_TABLE_COLUMN_WIDTHS[key] === undefined;
+}
+
+function clampColumnWidth(key: TableColumnKey, width: number): number {
+  const limits = TABLE_COLUMN_WIDTHS[key];
+  return Math.min(limits.max, Math.max(limits.min, width));
+}
+
+function estimateTextWidth(value: string): number {
+  return Math.ceil(Array.from(value).length * AVERAGE_CHARACTER_WIDTH_PX + CONTENT_CELL_PADDING_PX);
+}
+
+function tableColumnContentValue(track: TrackView, key: TableColumnKey): string {
+  return tableColumnValue(track, key, '', 'Missing', 'Present');
+}
+
+export function fittedTableColumnWidths(
+  columns: readonly TableColumnSetting[],
+  tracks: readonly TrackView[],
+  labels: Record<TableColumnKey, string>,
+): Partial<Record<TableColumnKey, number>> {
+  const sampledTracks = tracks.slice(0, SAMPLE_LIMIT);
+
+  return Object.fromEntries(
+    columns
+      .filter((column) => isResizableTableColumn(column.key))
+      .map((column) => {
+        const contentWidths = sampledTracks.map((track) =>
+          estimateTextWidth(tableColumnContentValue(track, column.key)),
+        );
+        const width = Math.max(
+          TABLE_COLUMN_WIDTHS[column.key].default,
+          estimateTextWidth(labels[column.key]),
+          ...contentWidths,
+        );
+
+        return [column.key, clampColumnWidth(column.key, width)];
+      }),
+  );
 }
 
 function tableColumnTrack(column: TableColumnSetting, mode: TableGridMode): string {

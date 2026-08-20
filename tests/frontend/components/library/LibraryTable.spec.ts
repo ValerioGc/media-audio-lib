@@ -39,7 +39,7 @@ describe('LibraryTable', () => {
       'Anno',
       'Genere',
       'Durata',
-      '⚙',
+      '▢⚙',
     ]);
   });
 
@@ -115,6 +115,31 @@ describe('LibraryTable', () => {
     expect(wrapper.getComponent(LibraryColumnSettingsDialog).props('open')).toBe(true);
   });
 
+  it('fits table columns from the fixed actions header', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: {
+        tracks: [
+          makeTrack({
+            title:
+              'A very long track title that should make the title column wider than the default',
+          }),
+        ],
+        sort: DEFAULT_SORT,
+        selectedIds: [],
+        playingId: null,
+      },
+    });
+
+    await wrapper.get('[data-testid="table-fit-columns"]').trigger('click');
+
+    expect(settings.tableColumns.find((column) => column.key === 'title')?.width).toBeGreaterThan(
+      260,
+    );
+  });
+
   it('shows resize handles only on resizable data columns', () => {
     const wrapper = mountTable([makeTrack()]);
     const headings = wrapper.findAll('.library_table_heading');
@@ -128,7 +153,7 @@ describe('LibraryTable', () => {
       false,
     );
     expect(wrapper.attributes('style')).toContain('4.5rem');
-    expect(wrapper.attributes('style')).toContain('5.25rem 2rem');
+    expect(wrapper.attributes('style')).toContain('5.25rem 4.25rem');
     expect(wrapper.attributes('style')).not.toContain('minmax(0, 1fr) 2rem');
   });
 

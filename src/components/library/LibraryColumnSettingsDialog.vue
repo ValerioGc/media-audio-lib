@@ -5,6 +5,8 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppModal from '@/components/common/AppModal.vue';
+import { fittedTableColumnWidths } from '@/services/table-columns';
+import { useLibraryStore } from '@/stores/library';
 import { useSettingsStore } from '@/stores/settings';
 import {
   LOCKED_LEADING_TABLE_COLUMN_KEYS,
@@ -23,10 +25,17 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const library = useLibraryStore();
 const settings = useSettingsStore();
 const draggedKey = ref<TableColumnKey | null>(null);
 
 const columns = computed(() => settings.tableColumns);
+const columnLabels = computed<Record<TableColumnKey, string>>(
+  () =>
+    Object.fromEntries(
+      TABLE_COLUMN_KEYS.map((key) => [key, t(`library.columns.${key}`)]),
+    ) as Record<TableColumnKey, string>,
+);
 
 function isMandatory(key: TableColumnKey): boolean {
   return MANDATORY_TABLE_COLUMN_KEYS.includes(key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number]);
@@ -63,6 +72,12 @@ function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
   }
 }
 
+function fitColumnsToContent() {
+  void settings.setTableColumnWidths(
+    fittedTableColumnWidths(settings.tableColumns, library.visibleTracks, columnLabels.value),
+  );
+}
+
 function onDragStart(event: DragEvent, column: TableColumnSetting) {
   if (isLocked(column)) {
     return;
@@ -94,6 +109,16 @@ function onDrop(event: DragEvent, target: TableColumnSetting) {
       <p class="library_column_settings_description">
         {{ t('library.columnSettings.description') }}
       </p>
+
+      <button
+        class="library_column_settings_fit"
+        type="button"
+        data-testid="column-fit"
+        @click="fitColumnsToContent"
+      >
+        <AppIcon name="maximize" />
+        <span>{{ t('library.columnSettings.fit') }}</span>
+      </button>
 
       <div class="library_column_settings_list" role="list">
         <div
@@ -188,10 +213,35 @@ function onDrop(event: DragEvent, target: TableColumnSetting) {
     color: var(--color_text_muted);
   }
 
+  &_fit {
+    display: inline-flex;
+    gap: $space_sm;
+    align-self: flex-start;
+    align-items: center;
+    min-height: 2rem;
+    padding: $space_xs $space_md;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_sm;
+    background-color: var(--color_surface);
+    color: var(--color_text);
+    font: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--color_surface_hover);
+    }
+
+    @include focus_ring;
+  }
+
   &_list {
     display: flex;
     flex-direction: column;
     gap: $space_sm;
+    max-height: min(22rem, 46vh);
+    padding-right: $space_xs;
+
+    @include scroll_area;
   }
 
   &_row {

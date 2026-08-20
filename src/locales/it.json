@@ -203,6 +203,7 @@
       "title": "Colonne elenco",
       "description": "Scegli le colonne visibili e trascinale per riordinarle. Copertina e Nome restano sempre in testa; Durata resta obbligatoria.",
       "open": "Impostazioni colonne",
+      "fit": "Adatta colonne",
       "width": "Larghezza",
       "moveUp": "Sposta {column} su",
       "moveDown": "Sposta {column} giù",

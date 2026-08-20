@@ -219,6 +219,20 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setTableColumnWidths(widths: Partial<Record<TableColumnKey, number>>) {
+    tableColumns.value = tableColumns.value.map((column) => {
+      const width = widths[column.key];
+
+      if (width === undefined) {
+        return column;
+      }
+
+      const limits = TABLE_COLUMN_WIDTHS[column.key];
+      return { ...column, width: Math.min(limits.max, Math.max(limits.min, width)) };
+    });
+    await persist();
+  }
+
   async function moveTableColumn(key: TableColumnKey, targetKey: TableColumnKey) {
     if (key === targetKey || isLockedLeadingTableColumn(key)) {
       return;
@@ -298,6 +312,7 @@ export const useSettingsStore = defineStore('settings', () => {
     dismissDefaultPlayerBanner,
     setTableColumnVisible,
     setTableColumnWidth,
+    setTableColumnWidths,
     moveTableColumn,
     nudgeTableColumn,
     resetTableColumns,

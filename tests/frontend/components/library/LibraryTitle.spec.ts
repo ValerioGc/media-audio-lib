@@ -150,8 +150,13 @@ describe('LibraryTitle', () => {
   });
 
   it('opens the column settings from the library menu', async () => {
-    const { wrapper } = mountTitle();
+    const { wrapper, library } = mountTitle();
     const settings = useSettingsStore();
+    library.tracks = [
+      makeTrack({
+        title: 'A very long title used to fit the column width from the settings dialog',
+      }),
+    ];
 
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
@@ -160,8 +165,17 @@ describe('LibraryTitle', () => {
     expect(
       wrapper.get('[data-testid="column-visible-title"]').attributes('disabled'),
     ).toBeDefined();
+    expect(wrapper.get('[data-testid="column-fit"]').text()).toContain('Adatta colonne');
+    expect(wrapper.get('.library_column_settings_list').classes()).toContain(
+      'library_column_settings_list',
+    );
     expect(wrapper.find('[data-testid="column-move-up-genre"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="column-move-down-genre"]').exists()).toBe(true);
+
+    await wrapper.get('[data-testid="column-fit"]').trigger('click');
+    expect(settings.tableColumns.find((column) => column.key === 'title')?.width).toBeGreaterThan(
+      260,
+    );
 
     await wrapper.get('[data-testid="column-visible-format"]').setValue(true);
     await wrapper.get('[data-testid="column-move-up-genre"]').trigger('click');

@@ -8,6 +8,7 @@ import LibraryRow from '@/components/library/LibraryRow.vue';
 import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
 import {
+  fittedTableColumnWidths,
   isResizableTableColumn,
   isSortableTableColumn,
   tableGridTemplate,
@@ -20,7 +21,7 @@ import {
   type TrackSelectionIntent,
   type TrackView,
 } from '@/types/library';
-import type { TableColumnKey } from '@/types/settings';
+import { TABLE_COLUMN_KEYS, type TableColumnKey } from '@/types/settings';
 
 const props = withDefaults(
   defineProps<{
@@ -89,6 +90,13 @@ const gridStyle = computed(() => ({
   '--library_grid_columns_scroll': tableGridTemplate(columns.value, 'scroll'),
 }));
 
+const columnLabels = computed<Record<TableColumnKey, string>>(
+  () =>
+    Object.fromEntries(
+      TABLE_COLUMN_KEYS.map((key) => [key, t(`library.columns.${key}`)]),
+    ) as Record<TableColumnKey, string>,
+);
+
 function ariaSort(column: TableColumnKey) {
   if (!isSortableTableColumn(column) || props.sort.column !== column) {
     return 'none';
@@ -132,6 +140,12 @@ function startResize(event: PointerEvent, key: TableColumnKey, width: number) {
   resizing.value = { key, startX: event.clientX, startWidth: width };
   document.addEventListener('pointermove', resizeColumn);
   document.addEventListener('pointerup', stopResize);
+}
+
+function fitColumnsToContent() {
+  void settings.setTableColumnWidths(
+    fittedTableColumnWidths(settings.tableColumns, props.tracks, columnLabels.value),
+  );
 }
 
 onMounted(() => measure(viewport.value));
@@ -188,7 +202,18 @@ onUnmounted(stopResize);
         >
           <button
             v-if="showColumnSettings"
-            class="library_table_settings"
+            class="library_table_tool"
+            type="button"
+            :aria-label="t('library.columnSettings.fit')"
+            :title="t('library.columnSettings.fit')"
+            data-testid="table-fit-columns"
+            @click="fitColumnsToContent"
+          >
+            <AppIcon name="maximize" />
+          </button>
+          <button
+            v-if="showColumnSettings"
+            class="library_table_tool"
             type="button"
             :aria-label="t('library.columnSettings.open')"
             :title="t('library.columnSettings.open')"
@@ -288,9 +313,10 @@ onUnmounted(stopResize);
       position: sticky;
       right: 0;
       z-index: 2;
-      width: 2rem;
+      width: 4.25rem;
+      gap: $space_2xs;
       justify-self: end;
-      justify-content: center;
+      justify-content: flex-end;
       background-color: var(--color_surface_alt);
       overflow: visible;
     }
@@ -367,7 +393,7 @@ onUnmounted(stopResize);
     }
   }
 
-  &_settings {
+  &_tool {
     display: inline-flex;
     align-items: center;
     justify-content: center;

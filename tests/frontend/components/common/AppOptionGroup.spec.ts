@@ -48,4 +48,25 @@ describe('AppOptionGroup', () => {
 
     expect(wrapper.emitted('update:modelValue')).toEqual([['dark']]);
   });
+
+  it('draws the icon of an option before its label, as decoration', () => {
+    const wrapper = mount(AppOptionGroup, {
+      props: {
+        modelValue: 'it',
+        legend: 'Lingua',
+        options: [
+          { value: 'it', label: 'Italiano', icon: '/flag-it.svg' },
+          { value: 'en', label: 'Inglese' },
+        ],
+      },
+    });
+
+    const items = wrapper.findAll('.app_option_group_item');
+    const icon = items[0]?.get('.app_option_group_icon');
+
+    expect(icon?.attributes('src')).toBe('/flag-it.svg');
+    expect(icon?.attributes('alt')).toBe('');
+    // An option without one renders nothing extra.
+    expect(items[1]?.find('.app_option_group_icon').exists()).toBe(false);
+  });
 });

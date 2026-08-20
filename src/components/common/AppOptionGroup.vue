@@ -32,6 +32,14 @@ const groupName = useId();
           :checked="option.value === modelValue"
           @change="emit('update:modelValue', option.value)"
         />
+        <img
+          v-if="option.icon !== undefined"
+          class="app_option_group_icon"
+          :src="option.icon"
+          alt=""
+          width="20"
+          height="15"
+        />
         <span class="app_option_group_text">{{ option.label }}</span>
       </label>
     </div>
@@ -62,6 +70,9 @@ const groupName = useId();
   }
 
   &_item {
+    display: inline-flex;
+    gap: $space_sm;
+    align-items: center;
     padding: $space_sm $space_md;
     border-radius: $radius_md;
     cursor: pointer;
@@ -86,6 +97,16 @@ const groupName = useId();
       outline: 2px solid var(--color_accent);
       outline-offset: 1px;
     }
+  }
+
+  // The label already says which option this is: the image is decoration beside it.
+  &_icon {
+    display: block;
+    width: 1.25rem;
+    height: auto;
+    flex-shrink: 0;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 12%);
   }
 
   &_input {

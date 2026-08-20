@@ -138,7 +138,7 @@ function resizeColumn(event: PointerEvent) {
     return;
   }
 
-  void settings.setTableColumnWidth(
+  settings.setTableColumnWidth(
     resize.key,
     resize.startWidth + Math.round(event.clientX - resize.startX),
   );
@@ -152,8 +152,8 @@ function startResize(event: PointerEvent, key: TableColumnKey, width: number) {
   document.addEventListener('pointerup', stopResize);
 }
 
-function fitColumnsToContent() {
-  void settings.setTableColumnWidths(
+async function fitColumnsToContent() {
+  await settings.setTableColumnWidths(
     fittedTableColumnWidths(settings.tableColumns, props.tracks, columnLabels.value),
   );
 }

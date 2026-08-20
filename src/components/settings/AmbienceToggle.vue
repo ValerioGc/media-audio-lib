@@ -40,20 +40,20 @@ const directionOptions = computed(() =>
   })),
 );
 
-function onBackgroundChange(event: Event) {
-  void settings.setAmbientBackgroundEnabled((event.target as HTMLInputElement).checked);
+async function onBackgroundChange(event: Event) {
+  await settings.setAmbientBackgroundEnabled((event.target as HTMLInputElement).checked);
 }
 
-function onGlassChange(event: Event) {
-  void settings.setGlassSurfacesEnabled((event.target as HTMLInputElement).checked);
+async function onGlassChange(event: Event) {
+  await settings.setGlassSurfacesEnabled((event.target as HTMLInputElement).checked);
 }
 
-function onStyleChange(value: string) {
-  void settings.setAmbientStyle(value as AmbientStyle);
+async function onStyleChange(value: string) {
+  await settings.setAmbientStyle(value as AmbientStyle);
 }
 
-function onDirectionChange(value: string) {
-  void settings.setAmbientDirection(value as AmbientDirection);
+async function onDirectionChange(value: string) {
+  await settings.setAmbientDirection(value as AmbientDirection);
 }
 </script>
 

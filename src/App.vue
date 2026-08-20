@@ -23,13 +23,11 @@ async function initializeApp() {
   if (startupTrack !== null) {
     navigation.go('player');
     player.expand();
-    void player.play(startupTrack);
+    await player.play(startupTrack);
   }
 }
 
-onMounted(() => {
-  void initializeApp();
-});
+onMounted(initializeApp);
 
 onBeforeUnmount(() => {
   settings.dispose();

@@ -12,21 +12,21 @@ const blurPercent = computed(() => Math.round((settings.playerBlur / MAX_PLAYER_
 /** The sliders tune the background taken from the cover: without it they have no subject. */
 const isDisabled = computed(() => !settings.coverGradientEnabled);
 
-function onChange(event: Event) {
-  void settings.setCoverGradientEnabled((event.target as HTMLInputElement).checked);
+async function onChange(event: Event) {
+  await settings.setCoverGradientEnabled((event.target as HTMLInputElement).checked);
 }
 
-function onTransparencyChange(event: Event) {
-  void settings.setPlayerTransparency(Number((event.target as HTMLInputElement).value));
+async function onTransparencyChange(event: Event) {
+  await settings.setPlayerTransparency(Number((event.target as HTMLInputElement).value));
 }
 
-function onBlurChange(event: Event) {
+async function onBlurChange(event: Event) {
   const percentage = Number((event.target as HTMLInputElement).value);
-  void settings.setPlayerBlur((percentage / 100) * MAX_PLAYER_BLUR);
+  await settings.setPlayerBlur((percentage / 100) * MAX_PLAYER_BLUR);
 }
 
-function onIntensityChange(event: Event) {
-  void settings.setCoverGradientIntensity(Number((event.target as HTMLInputElement).value));
+async function onIntensityChange(event: Event) {
+  await settings.setCoverGradientIntensity(Number((event.target as HTMLInputElement).value));
 }
 </script>
 

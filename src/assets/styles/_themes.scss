@@ -19,11 +19,9 @@
   --color_scrollbar_thumb_hover: #9a9a9a;
   --shadow_card: 0 1px 3px rgb(0 0 0 / 8%);
   --shadow_raised: 0 4px 12px rgb(0 0 0 / 12%);
-}
 
-// Content surfaces. Off by default: they are plain panels until the glass option asks
-// otherwise, so a component that uses the mixin looks the same as one that does not.
-:root {
+  // Content surfaces. Off by default: they are plain panels until the glass option asks
+  // otherwise, so a component that uses the mixin looks the same as one that does not.
   --surface_glass_background: var(--color_surface);
   --surface_glass_border: var(--color_border);
   --surface_glass_filter: none;

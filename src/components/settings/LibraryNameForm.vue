@@ -31,9 +31,9 @@ watch(
   },
 );
 
-onMounted(() => {
+onMounted(async () => {
   if (library.libraryName === '') {
-    void library.loadInfo();
+    await library.loadInfo();
   }
 });
 

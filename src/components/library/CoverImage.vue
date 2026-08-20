@@ -36,7 +36,9 @@ async function loadCover() {
 function reveal() {
   isVisible.value = true;
   stopObserving();
-  void loadCover();
+  // Reached from an observer callback too: `loadCover` reports a failure as a null cover
+  // instead of rejecting, so there is no result left to hand back.
+  loadCover();
 }
 
 onMounted(() => {
@@ -62,7 +64,7 @@ watch(
     source.value = null;
 
     if (isVisible.value) {
-      void loadCover();
+      loadCover();
     }
   },
 );

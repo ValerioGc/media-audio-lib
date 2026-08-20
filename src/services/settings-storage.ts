@@ -1,11 +1,10 @@
 import { isTauriRuntime } from '@/config/app-config';
 import { normalizeAccentColor } from '@/services/accent';
+import { isMandatoryTableColumn, normalizeTableColumnOrder } from '@/services/table-columns';
 import {
   DEFAULT_SETTINGS,
   DEFAULT_TABLE_COLUMNS,
-  LOCKED_LEADING_TABLE_COLUMN_KEYS,
   LOCALES,
-  MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
@@ -43,19 +42,6 @@ function isTableColumnKey(value: unknown): value is TableColumnKey {
   return TABLE_COLUMN_KEYS.includes(value as TableColumnKey);
 }
 
-function isMandatoryTableColumn(key: TableColumnKey): boolean {
-  return MANDATORY_TABLE_COLUMN_KEYS.includes(key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number]);
-}
-
-function normalizeTableColumnOrder(columns: readonly TableColumnSetting[]): TableColumnSetting[] {
-  const locked = LOCKED_LEADING_TABLE_COLUMN_KEYS.map((key) =>
-    columns.find((column) => column.key === key),
-  ).filter((column): column is TableColumnSetting => column !== undefined);
-  const lockedKeys = new Set<TableColumnKey>(LOCKED_LEADING_TABLE_COLUMN_KEYS);
-
-  return [...locked, ...columns.filter((column) => !lockedKeys.has(column.key))];
-}
-
 function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
   const stored = Array.isArray(value) ? value : [];
   const byDefault = new Map(DEFAULT_TABLE_COLUMNS.map((column) => [column.key, column]));
@@ -80,13 +66,12 @@ function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
       width: limits.default,
     };
 
+    const storedVisible = typeof source.visible === 'boolean' ? source.visible : fallback.visible;
+
     columns.push({
       key: source.key,
-      visible: isMandatoryTableColumn(source.key)
-        ? true
-        : typeof source.visible === 'boolean'
-          ? source.visible
-          : fallback.visible,
+      // A mandatory column is always shown, whatever the stored value says.
+      visible: isMandatoryTableColumn(source.key) ? true : storedVisible,
       width: pickNumber(source.width, fallback.width, limits.min, limits.max),
     });
     seen.add(source.key);

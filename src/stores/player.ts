@@ -18,11 +18,34 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+const UINT32_RANGE = 2 ** 32;
+
+/**
+ * A random index in `[0, bound)`, drawn from the platform generator.
+ *
+ * The draw is repeated when the value falls in the incomplete last block of the 32-bit
+ * range: taking the remainder of the whole range would leave the first few indexes
+ * slightly more likely than the others.
+ */
+function randomIndex(bound: number): number {
+  const limit = Math.floor(UINT32_RANGE / bound) * bound;
+  const buffer = new Uint32Array(1);
+
+  let value: number;
+
+  do {
+    crypto.getRandomValues(buffer);
+    value = buffer[0] as number;
+  } while (value >= limit);
+
+  return value % bound;
+}
+
 function shuffled<T>(items: readonly T[]): T[] {
   const result = [...items];
 
   for (let index_ = result.length - 1; index_ > 0; index_ -= 1) {
-    const nextIndex = Math.floor(Math.random() * (index_ + 1));
+    const nextIndex = randomIndex(index_ + 1);
     const current = result[index_];
     result[index_] = result[nextIndex] as T;
     result[nextIndex] = current as T;
@@ -93,7 +116,8 @@ export const usePlayerStore = defineStore('player', () => {
           isPlaying.value = value;
         },
         onEnded: () => {
-          void next();
+          // The engine has no use for the result: moving on reports its own failures.
+          next();
         },
         onError: (kind) => {
           fail(kind);

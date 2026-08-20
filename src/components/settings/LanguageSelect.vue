@@ -22,8 +22,8 @@ const options = computed(() =>
   })),
 );
 
-function onSelect(value: string) {
-  void settings.setLocale(value as Locale);
+async function onSelect(value: string) {
+  await settings.setLocale(value as Locale);
 }
 </script>
 

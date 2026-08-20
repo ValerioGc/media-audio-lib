@@ -25,12 +25,12 @@ const isDefault = computed(
   () => settings.accentColor.toLowerCase() === DEFAULT_ACCENT_COLOR.toLowerCase(),
 );
 
-function select(color: string) {
-  void settings.setAccentColor(color);
+async function select(color: string) {
+  await settings.setAccentColor(color);
 }
 
-function onCustomInput(event: Event) {
-  void settings.setAccentColor((event.target as HTMLInputElement).value);
+async function onCustomInput(event: Event) {
+  await settings.setAccentColor((event.target as HTMLInputElement).value);
 }
 </script>
 

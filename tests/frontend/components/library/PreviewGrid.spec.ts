@@ -24,7 +24,14 @@ describe('PreviewGrid', () => {
     const wrapper = mountGrid(makeTracks(5));
 
     expect(wrapper.findAll('.preview_card')).toHaveLength(5);
-    expect(wrapper.attributes('aria-rowcount')).toBe('5');
+  });
+
+  it('is a listbox of selectable options, several at a time', () => {
+    const wrapper = mountGrid(makeTracks(2));
+
+    expect(wrapper.attributes('role')).toBe('listbox');
+    expect(wrapper.attributes('aria-multiselectable')).toBe('true');
+    expect(wrapper.findAll('[role="option"]')).toHaveLength(2);
   });
 
   it('renders nothing for an empty list', () => {

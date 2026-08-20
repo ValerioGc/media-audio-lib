@@ -10,6 +10,9 @@ export const SUPPORTED_EXTENSIONS = ['mp3', 'flac', 'm4a', 'ogg', 'wav'] as cons
 
 export type SupportedExtension = (typeof SUPPORTED_EXTENSIONS)[number];
 
+/** The same list widened: `includes` on a literal tuple rejects any other string. */
+const SUPPORTED_EXTENSION_LIST: readonly string[] = SUPPORTED_EXTENSIONS;
+
 /** True when the frontend runs inside the Tauri shell instead of a plain browser. */
 export function isTauriRuntime(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
@@ -17,7 +20,7 @@ export function isTauriRuntime(): boolean {
 
 /** Lowercase extension of a path, without the dot. Empty string when there is none. */
 export function fileExtension(path: string): string {
-  const normalized = path.replace(/\\/g, '/');
+  const normalized = path.replaceAll('\\', '/');
   const fileName = normalized.slice(normalized.lastIndexOf('/') + 1);
   const dotIndex = fileName.lastIndexOf('.');
 
@@ -29,6 +32,5 @@ export function fileExtension(path: string): string {
 }
 
 export function isSupportedAudioFile(path: string): boolean {
-  const extension = fileExtension(path);
-  return SUPPORTED_EXTENSIONS.some((supported) => supported === extension);
+  return SUPPORTED_EXTENSION_LIST.includes(fileExtension(path));
 }

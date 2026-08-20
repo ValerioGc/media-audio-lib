@@ -30,13 +30,13 @@ async function openMenu() {
   root.value?.querySelector<HTMLButtonElement>('.app_menu_item:not(:disabled)')?.focus();
 }
 
-function toggleMenu() {
+async function toggleMenu() {
   if (isOpen.value) {
     closeMenu();
     return;
   }
 
-  void openMenu();
+  await openMenu();
 }
 
 function run(item: MenuItem) {
@@ -48,10 +48,10 @@ function run(item: MenuItem) {
   closeMenu();
 }
 
-function onTriggerKeydown(event: KeyboardEvent) {
+async function onTriggerKeydown(event: KeyboardEvent) {
   if (event.key === 'ArrowDown') {
     event.preventDefault();
-    void openMenu();
+    await openMenu();
   }
 }
 

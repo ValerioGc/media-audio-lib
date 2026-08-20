@@ -7,8 +7,8 @@ import { openExternal } from '@/services/external-link';
 
 const { t } = useI18n();
 
-function openRepository() {
-  void openExternal(GITHUB_URL);
+async function openRepository() {
+  await openExternal(GITHUB_URL);
 }
 </script>
 

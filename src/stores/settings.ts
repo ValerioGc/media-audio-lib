@@ -18,9 +18,13 @@ import {
 } from '@/services/settings-storage';
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
+  isLockedLeadingTableColumn,
+  isMandatoryTableColumn,
+  normalizeTableColumnOrder,
+} from '@/services/table-columns';
+import {
   DEFAULT_SETTINGS,
   LOCKED_LEADING_TABLE_COLUMN_KEYS,
-  MANDATORY_TABLE_COLUMN_KEYS,
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
@@ -254,32 +258,12 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
-  function isMandatoryTableColumn(key: TableColumnKey): boolean {
-    return MANDATORY_TABLE_COLUMN_KEYS.includes(
-      key as (typeof MANDATORY_TABLE_COLUMN_KEYS)[number],
-    );
-  }
-
-  function isLockedLeadingTableColumn(key: TableColumnKey): boolean {
-    return LOCKED_LEADING_TABLE_COLUMN_KEYS.includes(
-      key as (typeof LOCKED_LEADING_TABLE_COLUMN_KEYS)[number],
-    );
-  }
-
-  function normalizeTableColumnOrder(columns: readonly TableColumnSetting[]): TableColumnSetting[] {
-    const locked = LOCKED_LEADING_TABLE_COLUMN_KEYS.map((key) =>
-      columns.find((column) => column.key === key),
-    ).filter((column): column is TableColumnSetting => column !== undefined);
-    const lockedKeys = new Set<TableColumnKey>(LOCKED_LEADING_TABLE_COLUMN_KEYS);
-
-    return [...locked, ...columns.filter((column) => !lockedKeys.has(column.key))];
-  }
-
   async function setTableColumnVisible(key: TableColumnKey, visible: boolean) {
+    // A mandatory column stays on screen whatever was asked of it.
+    const nextVisible = isMandatoryTableColumn(key) ? true : visible;
+
     tableColumns.value = tableColumns.value.map((column) =>
-      column.key === key
-        ? { ...column, visible: isMandatoryTableColumn(key) ? true : visible }
-        : column,
+      column.key === key ? { ...column, visible: nextVisible } : column,
     );
     await persist();
   }

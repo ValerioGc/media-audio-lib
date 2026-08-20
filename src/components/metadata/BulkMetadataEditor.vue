@@ -65,12 +65,13 @@ function clean(value: string): string | null {
 
 function updateFor(track: TrackView): MetadataUpdate {
   const year = clean(draft.value.year);
+  const editedYear = year === null ? null : Number(year);
 
   return {
     title: track.title,
     artist: enabled.value.artist ? clean(draft.value.artist) : track.artist,
     album: enabled.value.album ? clean(draft.value.album) : track.album,
-    year: enabled.value.year ? (year === null ? null : Number(year)) : track.year,
+    year: enabled.value.year ? editedYear : track.year,
     genre: enabled.value.genre ? clean(draft.value.genre) : track.genre,
   };
 }

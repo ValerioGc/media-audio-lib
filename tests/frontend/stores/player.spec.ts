@@ -55,6 +55,17 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+/**
+ * Makes the shuffle deterministic: every draw comes back as the lowest possible index,
+ * which is what the expected orders below are written against.
+ */
+function stubLowestDraw() {
+  vi.spyOn(globalThis.crypto, 'getRandomValues').mockImplementation((buffer) => {
+    (buffer as Uint32Array).fill(0);
+    return buffer;
+  });
+}
+
 describe('usePlayerStore', () => {
   it('starts with nothing playing', () => {
     const player = usePlayerStore();
@@ -106,7 +117,7 @@ describe('usePlayerStore', () => {
   it('prepares a shuffled queue while keeping the selected track first', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(4);
-    vi.spyOn(Math, 'random').mockReturnValue(0);
+    stubLowestDraw();
 
     player.toggleShuffle();
     await player.playFrom(tracks, tracks[1]?.id ?? '');
@@ -121,10 +132,40 @@ describe('usePlayerStore', () => {
     ]);
   });
 
+  it('draws the shuffle from the platform generator, without repeating a track', async () => {
+    const player = usePlayerStore();
+    const tracks = makeTracks(20);
+    const draw = vi.spyOn(globalThis.crypto, 'getRandomValues');
+
+    player.toggleShuffle();
+    await player.playFrom(tracks, tracks[0]?.id ?? '');
+
+    expect(draw).toHaveBeenCalled();
+    // Every track is still there, exactly once: the swap cannot lose or duplicate one.
+    expect(new Set(player.queue.map((track) => track.id)).size).toBe(tracks.length);
+    expect(player.queue).toHaveLength(tracks.length);
+  });
+
+  it('spreads the shuffle over every position it can reach', async () => {
+    const player = usePlayerStore();
+    const tracks = makeTracks(6);
+    const seen = new Set<string>();
+
+    for (let attempt = 0; attempt < 40; attempt += 1) {
+      player.toggleShuffle();
+      await player.playFrom(tracks, tracks[0]?.id ?? '');
+      seen.add(player.queue.map((track) => track.id).join(','));
+      player.toggleShuffle();
+    }
+
+    // A generator stuck on one value would produce the same order every time.
+    expect(seen.size).toBeGreaterThan(1);
+  });
+
   it('restores library order when shuffled queue is disabled', async () => {
     const player = usePlayerStore();
     const tracks = makeTracks(3);
-    vi.spyOn(Math, 'random').mockReturnValue(0);
+    stubLowestDraw();
 
     await player.playFrom(tracks, tracks[0]?.id ?? '');
     player.toggleShuffle();

@@ -16,7 +16,7 @@ interface WindowControl {
   id: string;
   icon: IconName;
   label: string;
-  action: () => void;
+  action: () => Promise<boolean>;
 }
 
 const controls = computed<WindowControl[]>(() => [
@@ -24,19 +24,19 @@ const controls = computed<WindowControl[]>(() => [
     id: 'minimize',
     icon: 'minimize',
     label: t('titlebar.minimize'),
-    action: () => void minimizeWindow(),
+    action: () => minimizeWindow(),
   },
   {
     id: 'maximize',
     icon: 'maximize',
     label: t('titlebar.maximize'),
-    action: () => void toggleMaximizeWindow(),
+    action: () => toggleMaximizeWindow(),
   },
   {
     id: 'close',
     icon: 'close',
     label: t('titlebar.close'),
-    action: () => void closeWindow(),
+    action: () => closeWindow(),
   },
 ]);
 </script>

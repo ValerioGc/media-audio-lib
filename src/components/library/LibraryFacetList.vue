@@ -149,6 +149,7 @@ function openGroup(group: FacetGroup) {
   emit('open', { field: group.field, key: group.key, name: group.name });
 }
 
+/** The rows of the list view are not buttons: they need the keys wired by hand. */
 function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   event.preventDefault();
   openGroup(group);
@@ -160,10 +161,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
     :class="{ library_facet_preview_genre: field === 'genre' }"
-    role="list"
+    role="group"
     :aria-label="t(`library.groups.columns.${field}`)"
   >
-    <article
+    <!-- A real button rather than a card pretending to be one: Enter, Space and focus
+         come with the element instead of being wired by hand. -->
+    <button
       v-for="group in groups"
       :key="group.key"
       class="library_facet_card"
@@ -173,13 +176,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         library_facet_card_genre: field === 'genre',
         library_facet_card_playing: group.playing,
       }"
-      role="button"
-      tabindex="0"
+      type="button"
       :aria-label="t('library.groups.openLabel', { name: group.name })"
       :aria-current="group.playing ? 'true' : undefined"
       @click="openGroup(group)"
-      @keydown.enter="openGroupFromKeyboard($event, group)"
-      @keydown.space="openGroupFromKeyboard($event, group)"
     >
       <PlayingBubble v-if="group.playing" />
 
@@ -221,7 +221,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
           {{ formatDuration(group.durationMs) }}
         </p>
       </div>
-    </article>
+    </button>
   </div>
 
   <div
@@ -337,6 +337,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   min-height: 10rem;
   padding: $space_md;
   @include glass_surface($radius_md);
+  color: var(--color_text);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
   transition:
     background-color $duration_fast ease,

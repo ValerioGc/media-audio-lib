@@ -22,8 +22,8 @@ async function openSettings() {
   isOpening.value = false;
 }
 
-function dismiss() {
-  void settings.dismissDefaultPlayerBanner();
+async function dismiss() {
+  await settings.dismissDefaultPlayerBanner();
 }
 </script>
 

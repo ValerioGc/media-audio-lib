@@ -13,8 +13,8 @@ const options = computed(() =>
   TEXT_SIZES.map((size) => ({ value: size, label: t(`settings.textSize.options.${size}`) })),
 );
 
-function onSelect(value: string) {
-  void settings.setTextSize(value as TextSize);
+async function onSelect(value: string) {
+  await settings.setTextSize(value as TextSize);
 }
 </script>
 

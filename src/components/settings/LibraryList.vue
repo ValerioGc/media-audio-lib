@@ -17,8 +17,8 @@ const settings = useSettingsStore();
 const newName = ref('');
 const pendingDeletion = ref<LibrarySummary | null>(null);
 
-onMounted(() => {
-  void library.loadLibraries();
+onMounted(async () => {
+  await library.loadLibraries();
 });
 
 async function create() {

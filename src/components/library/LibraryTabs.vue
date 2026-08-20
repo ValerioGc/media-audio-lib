@@ -49,7 +49,7 @@ function select(id: string) {
 }
 
 /** Arrow keys move between the tabs, as expected from a tablist. */
-function onKeydown(event: KeyboardEvent, index: number) {
+async function onKeydown(event: KeyboardEvent, index: number) {
   const offsets: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
   const offset = offsets[event.key];
 
@@ -65,16 +65,20 @@ function onKeydown(event: KeyboardEvent, index: number) {
 
   const next = target === null ? undefined : props.tabs[target];
 
-  if (next === undefined) {
+  if (target === null || next === undefined) {
     return;
   }
 
   event.preventDefault();
   select(next.id);
-  void nextTick(() => buttons.value[target as number]?.focus());
+  await nextTick();
+  buttons.value[target]?.focus();
 }
 
-watch([() => props.modelValue, () => props.tabs], () => void nextTick(measureIndicator));
+watch([() => props.modelValue, () => props.tabs], async () => {
+  await nextTick();
+  measureIndicator();
+});
 
 onMounted(() => {
   measureIndicator();

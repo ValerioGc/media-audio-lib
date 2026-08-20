@@ -22,8 +22,8 @@ const systemHint = computed(() =>
   }),
 );
 
-function onSelect(value: string) {
-  void settings.setTheme(value as ThemeChoice);
+async function onSelect(value: string) {
+  await settings.setTheme(value as ThemeChoice);
 }
 </script>
 

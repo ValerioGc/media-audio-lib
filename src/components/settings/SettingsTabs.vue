@@ -25,11 +25,13 @@ function select(id: string) {
   activeId.value = id;
 }
 
+const ARROW_STEPS: Record<string, number> = { ArrowRight: 1, ArrowLeft: -1 };
+
 /** Left/right arrows move between tabs, as expected from a tablist. */
 function onKeydown(event: KeyboardEvent, index: number) {
-  const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+  const step = ARROW_STEPS[event.key];
 
-  if (step === 0) {
+  if (step === undefined) {
     return;
   }
 

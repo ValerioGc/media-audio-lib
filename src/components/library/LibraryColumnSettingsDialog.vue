@@ -51,8 +51,8 @@ function isTableColumnKey(value: string): value is TableColumnKey {
   return TABLE_COLUMN_KEYS.includes(value as TableColumnKey);
 }
 
-function setVisible(column: TableColumnSetting, event: Event) {
-  void settings.setTableColumnVisible(column.key, (event.target as HTMLInputElement).checked);
+async function setVisible(column: TableColumnSetting, event: Event) {
+  await settings.setTableColumnVisible(column.key, (event.target as HTMLInputElement).checked);
 }
 
 function canMove(column: TableColumnSetting, direction: -1 | 1): boolean {
@@ -66,14 +66,14 @@ function canMove(column: TableColumnSetting, direction: -1 | 1): boolean {
   return target !== undefined && !isLocked(target);
 }
 
-function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
+async function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
   if (canMove(column, direction)) {
-    void settings.nudgeTableColumn(column.key, direction);
+    await settings.nudgeTableColumn(column.key, direction);
   }
 }
 
-function fitColumnsToContent() {
-  void settings.setTableColumnWidths(
+async function fitColumnsToContent() {
+  await settings.setTableColumnWidths(
     fittedTableColumnWidths(settings.tableColumns, library.visibleTracks, columnLabels.value),
   );
 }
@@ -92,13 +92,13 @@ function onDragStart(event: DragEvent, column: TableColumnSetting) {
   draggedKey.value = column.key;
 }
 
-function onDrop(event: DragEvent, target: TableColumnSetting) {
+async function onDrop(event: DragEvent, target: TableColumnSetting) {
   event.preventDefault();
   const source = draggedKey.value ?? event.dataTransfer?.getData('text/plain') ?? '';
   draggedKey.value = null;
 
   if (isTableColumnKey(source) && source !== target.key) {
-    void settings.moveTableColumn(source, target.key);
+    await settings.moveTableColumn(source, target.key);
   }
 }
 </script>
@@ -278,9 +278,6 @@ function onDrop(event: DragEvent, target: TableColumnSetting) {
     gap: $space_sm;
     align-items: center;
     min-width: 0;
-  }
-
-  &_check {
     color: var(--color_text);
 
     input {

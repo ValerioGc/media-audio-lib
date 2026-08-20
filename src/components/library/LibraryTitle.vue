@@ -67,18 +67,18 @@ const menuItems = computed<MenuItem[]>(() => [
   },
 ]);
 
-onMounted(() => {
-  void library.loadLibraries();
+onMounted(async () => {
+  await library.loadLibraries();
 });
 
-function run(id: string) {
+async function run(id: string) {
   if (id === 'rename') {
-    void startEditing();
+    await startEditing();
     return;
   }
 
   if (id === 'export' && library.activeLibraryId !== null) {
-    void library.exportLibrary(library.activeLibraryId);
+    await library.exportLibrary(library.activeLibraryId);
     return;
   }
 
@@ -98,7 +98,7 @@ function run(id: string) {
   }
 
   if (id === 'verifyAll') {
-    void library.verifyAllTracks();
+    await library.verifyAllTracks();
     return;
   }
 
@@ -108,9 +108,9 @@ function run(id: string) {
   }
 }
 
-function openSwitcher() {
+async function openSwitcher() {
   isSwitcherOpen.value = true;
-  void library.loadLibraries();
+  await library.loadLibraries();
 }
 
 async function confirmDeletion(id: string) {

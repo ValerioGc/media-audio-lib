@@ -23,6 +23,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
+/**
+ * The card is a `div` rather than an `article`, and carries `role="option"`: an element
+ * that already has a document role must not be handed an interactive one on top.
+ */
+
 function select(event: MouseEvent | KeyboardEvent) {
   emit('select', {
     id: props.track.id,
@@ -33,13 +38,14 @@ function select(event: MouseEvent | KeyboardEvent) {
 </script>
 
 <template>
-  <article
+  <div
     class="preview_card"
     :class="{
       preview_card_selected: selected,
       preview_card_missing: track.missing,
       preview_card_playing: playing,
     }"
+    role="option"
     tabindex="0"
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
@@ -72,7 +78,7 @@ function select(event: MouseEvent | KeyboardEvent) {
         @verify="emit('verify', $event)"
       />
     </div>
-  </article>
+  </div>
 </template>
 
 <style scoped lang="scss">

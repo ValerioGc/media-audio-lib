@@ -53,8 +53,8 @@ function run(id: string) {
   }
 }
 
-function openMenu() {
-  void menu.value?.open();
+async function openMenu() {
+  await menu.value?.open();
 }
 
 defineExpose({ open: openMenu });

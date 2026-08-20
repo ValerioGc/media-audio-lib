@@ -31,6 +31,9 @@ import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackSelectionIntent, TrackView } from '@/types/library';
 import type { TableColumnKey, ViewMode } from '@/types/settings';
 
+/** The three ways the library groups the same tracks. */
+type FacetField = 'artist' | 'album' | 'genre';
+
 const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
@@ -40,7 +43,7 @@ const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const facetModalHistory = ref<FacetModalState[]>([]);
 const activeTab = ref<LibraryContentTab>('tracks');
 const groupModalViewMode = ref<ViewMode>('preview');
-const facetViewModes = ref<Record<'artist' | 'album' | 'genre', ViewMode>>({
+const facetViewModes = ref<Record<FacetField, ViewMode>>({
   artist: 'preview',
   album: 'preview',
   genre: 'preview',
@@ -75,7 +78,7 @@ interface FacetModalState {
   artistAlbumsExpanded: boolean;
 }
 
-const activeFacet = computed<'artist' | 'album' | 'genre' | null>(() => {
+const activeFacet = computed<FacetField | null>(() => {
   if (activeTab.value === 'artists') {
     return 'artist';
   }
@@ -225,37 +228,37 @@ const displayedViewMode = computed(() =>
 );
 
 const { isDraggingOver } = useFileDrop((paths) => {
-  void library.addPaths(paths);
+  library.addPaths(paths);
 });
 
-onMounted(() => {
-  void library.loadHomeLibrary(settings.mainLibraryId);
+onMounted(async () => {
+  await library.loadHomeLibrary(settings.mainLibraryId);
 });
 
 watch(
   () => settings.mainLibraryId,
-  (mainLibraryId) => {
+  async (mainLibraryId) => {
     if (settings.isReady && mainLibraryId !== null) {
-      void library.loadHomeLibrary(mainLibraryId);
+      await library.loadHomeLibrary(mainLibraryId);
     }
   },
 );
 
 /** The visible list becomes the queue, so previous and next follow what is on screen. */
-function startPlayback(track: TrackView) {
-  void player.playFrom(library.visibleTracks, track.id);
+async function startPlayback(track: TrackView) {
+  await player.playFrom(library.visibleTracks, track.id);
 }
 
-function startFacetPlayback(track: TrackView) {
-  void player.playFrom(selectedFacetTracks.value, track.id);
+async function startFacetPlayback(track: TrackView) {
+  await player.playFrom(selectedFacetTracks.value, track.id);
 }
 
-function facetKeyOf(track: TrackView, field: 'artist' | 'album' | 'genre') {
+function facetKeyOf(track: TrackView, field: FacetField) {
   const value = track[field]?.trim() ?? '';
   return value.length > 0 ? value : '__unknown__';
 }
 
-function facetNameOf(field: 'artist' | 'album' | 'genre', key: string) {
+function facetNameOf(field: FacetField, key: string) {
   return key === '__unknown__' ? t(`library.groups.unknown.${field}`) : key;
 }
 
@@ -291,10 +294,10 @@ function applyFacetModalDefaults(group: FacetGroupOpenPayload) {
 function openFacet(group: FacetGroupOpenPayload) {
   const currentState = currentFacetModalState();
 
-  if (currentState !== null) {
-    facetModalHistory.value = [...facetModalHistory.value, currentState];
-  } else {
+  if (currentState === null) {
     facetModalHistory.value = [];
+  } else {
+    facetModalHistory.value = [...facetModalHistory.value, currentState];
   }
 
   applyFacetModalDefaults(group);

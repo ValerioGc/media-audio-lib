@@ -21,14 +21,14 @@ function toggle() {
   }
 }
 
-function pickFiles() {
+async function pickFiles() {
   close();
-  void library.pickAndAdd();
+  await library.pickAndAdd();
 }
 
-function pickFolder() {
+async function pickFolder() {
   close();
-  void library.pickFoldersAndAdd();
+  await library.pickFoldersAndAdd();
 }
 
 function onDocumentPointerdown(event: PointerEvent) {

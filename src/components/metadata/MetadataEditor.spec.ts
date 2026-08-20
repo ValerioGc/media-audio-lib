@@ -4,8 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '../../../tests/support/mount';
 import { makeTrack } from '../../../tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
-import type { TrackView } from '@/types/library';
+import type { Cover, TrackView } from '@/types/library';
 
+import CoverPicker from './CoverPicker.vue';
 import MetadataEditor from './MetadataEditor.vue';
 
 beforeEach(() => {
@@ -158,6 +159,50 @@ describe('MetadataEditor', () => {
     await flushPromises();
 
     expect(saveCover).toHaveBeenCalledWith(track.id, null);
+  });
+
+  it('asks before applying a selected cover to the whole album', async () => {
+    const track = makeTrack({ id: 'track-1', album: 'Album', artist: 'Artist' });
+    const sibling = makeTrack({ id: 'track-2', album: ' album ', artist: 'Artist' });
+    const other = makeTrack({ id: 'track-3', album: 'Other', artist: 'Artist' });
+    const { wrapper, store, saveCover } = await mountEditor(track);
+    const cover: Cover = { mimeType: 'image/png', data: 'AAA' };
+    store.tracks = [track, sibling, other];
+
+    wrapper.findComponent(CoverPicker).vm.$emit('select', cover);
+    await wrapper.get('[data-testid="metadata-save"]').trigger('click');
+    await flushPromises();
+
+    expect(saveCover).not.toHaveBeenCalled();
+    expect(wrapper.get('[data-testid="cover-batch-confirm"]').text()).toContain("Tutto l'album");
+
+    await wrapper.get('[data-testid="cover-batch-confirm"]').trigger('click');
+    await flushPromises();
+
+    expect(saveCover).toHaveBeenCalledTimes(2);
+    expect(saveCover).toHaveBeenNthCalledWith(1, track.id, cover);
+    expect(saveCover).toHaveBeenNthCalledWith(2, sibling.id, cover);
+    expect(saveCover).not.toHaveBeenCalledWith(other.id, cover);
+    expect(wrapper.emitted('close')).toHaveLength(1);
+  });
+
+  it('can keep a selected album cover change on the current track only', async () => {
+    const track = makeTrack({ id: 'track-1', album: 'Album' });
+    const sibling = makeTrack({ id: 'track-2', album: 'Album' });
+    const { wrapper, store, saveCover } = await mountEditor(track);
+    const cover: Cover = { mimeType: 'image/jpeg', data: 'BBB' };
+    store.tracks = [track, sibling];
+
+    wrapper.findComponent(CoverPicker).vm.$emit('select', cover);
+    await wrapper.get('[data-testid="metadata-save"]').trigger('click');
+    await flushPromises();
+    await wrapper.get('[data-testid="cover-batch-current"]').trigger('click');
+    await flushPromises();
+
+    expect(saveCover).toHaveBeenCalledOnce();
+    expect(saveCover).toHaveBeenCalledWith(track.id, cover);
+    expect(saveCover).not.toHaveBeenCalledWith(sibling.id, cover);
+    expect(wrapper.emitted('close')).toHaveLength(1);
   });
 
   it('does not close if saving fails', async () => {

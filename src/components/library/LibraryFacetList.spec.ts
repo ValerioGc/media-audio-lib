@@ -18,9 +18,9 @@ describe('LibraryFacetList', () => {
         field: 'artist',
         viewMode: 'table',
         tracks: [
-          makeTrack({ title: 'Uno', artist: 'Artist B', durationMs: 120_000 }),
-          makeTrack({ title: 'Due', artist: 'Artist A', durationMs: 60_000 }),
-          makeTrack({ title: 'Tre', artist: 'Artist B', durationMs: 180_000 }),
+          makeTrack({ title: 'Uno', artist: 'Artist B', album: 'Album B', durationMs: 120_000 }),
+          makeTrack({ title: 'Due', artist: 'Artist A', album: 'Album A', durationMs: 60_000 }),
+          makeTrack({ title: 'Tre', artist: 'Artist B', album: 'Album C', durationMs: 180_000 }),
         ],
       },
     });
@@ -28,10 +28,15 @@ describe('LibraryFacetList', () => {
     const rows = wrapper.findAll('.library_facet_list_row');
 
     expect(rows).toHaveLength(2);
+    expect(wrapper.findAll('.library_facet_list_heading').map((heading) => heading.text())).toEqual(
+      ['Autore', 'Album', 'Brani', 'Durata'],
+    );
     expect(rows[0]?.text()).toContain('Artist A');
+    expect(rows[0]?.text()).toContain('1 album');
     expect(rows[0]?.text()).toContain('1 brano');
     expect(rows[0]?.text()).toContain('1:00');
     expect(rows[1]?.text()).toContain('Artist B');
+    expect(rows[1]?.text()).toContain('2 album');
     expect(rows[1]?.text()).toContain('2 brani');
     expect(rows[1]?.text()).toContain('5:00');
     expect(rows[1]?.text()).not.toContain('Uno, Tre');
@@ -55,6 +60,21 @@ describe('LibraryFacetList', () => {
     expect(wrapper.get('.library_facet_card_title').text()).toBe('Kind of Blue');
     expect(wrapper.get('.library_facet_card').text()).toContain('2 brani');
     expect(wrapper.text()).not.toContain('Blue, Green');
+  });
+
+  it('uses wider preview cards for genres', () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'genre',
+        viewMode: 'preview',
+        tracks: [makeTrack({ genre: 'Jazz' })],
+      },
+    });
+
+    expect(wrapper.get('.library_facet_preview').classes()).toContain(
+      'library_facet_preview_genre',
+    );
   });
 
   it('shows the artist on album groups', () => {

@@ -265,6 +265,7 @@
     },
     "groups": {
       "trackCount": "nessun brano | 1 brano | {count} brani",
+      "albumCount": "nessun album | 1 album | {count} album",
       "openLabel": "Apri i brani collegati a {name}",
       "albumArtist": "Autore: {artists}",
       "modalTitle": "Brani collegati a {name}",
@@ -272,6 +273,7 @@
       "columns": {
         "artist": "Autore",
         "album": "Album",
+        "albums": "Album",
         "genre": "Genere",
         "tracks": "Brani",
         "duration": "Durata",
@@ -300,7 +302,13 @@
     "cover": {
       "label": "Copertina",
       "choose": "Scegli immagine…",
-      "remove": "Rimuovi copertina"
+      "remove": "Rimuovi copertina",
+      "batch": {
+        "title": "Aggiornare la copertina dell'album?",
+        "message": "L'album \"{album}\" ha altri {count} brani. Vuoi usare questa copertina anche per loro?",
+        "onlyCurrent": "Solo questo brano",
+        "allAlbum": "Tutto l'album"
+      }
     },
     "errors": {
       "titleRequired": "Il nome non può essere vuoto.",

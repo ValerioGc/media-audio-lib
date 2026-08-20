@@ -265,6 +265,7 @@
     },
     "groups": {
       "trackCount": "no tracks | 1 track | {count} tracks",
+      "albumCount": "no albums | 1 album | {count} albums",
       "openLabel": "Open tracks linked to {name}",
       "albumArtist": "Artist: {artists}",
       "modalTitle": "Tracks linked to {name}",
@@ -272,6 +273,7 @@
       "columns": {
         "artist": "Artist",
         "album": "Album",
+        "albums": "Albums",
         "genre": "Genre",
         "tracks": "Tracks",
         "duration": "Duration",
@@ -300,7 +302,13 @@
     "cover": {
       "label": "Cover",
       "choose": "Choose image…",
-      "remove": "Remove cover"
+      "remove": "Remove cover",
+      "batch": {
+        "title": "Update the album cover?",
+        "message": "The album \"{album}\" has {count} other tracks. Use this cover for them too?",
+        "onlyCurrent": "Only this track",
+        "allAlbum": "Whole album"
+      }
     },
     "errors": {
       "titleRequired": "The name cannot be empty.",

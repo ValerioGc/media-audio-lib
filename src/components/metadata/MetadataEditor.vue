@@ -26,6 +26,13 @@ const library = useLibraryStore();
 const draft = ref<DraftMetadata>(fromTrack(props.track));
 const coverPreview = ref<string | null>(null);
 const pendingCover = ref<Cover | null | undefined>(undefined);
+const pendingAlbumCover = ref<{
+  album: string;
+  cover: Cover;
+  currentId: string;
+  targets: TrackView[];
+} | null>(null);
+const isBatchSaving = ref(false);
 
 function fromTrack(track: TrackView): DraftMetadata {
   return {
@@ -48,7 +55,9 @@ watch(
 );
 
 const errors = computed(() => draftErrors(draft.value));
-const canSave = computed(() => isDraftValid(draft.value) && !library.isSaving);
+const canSave = computed(
+  () => isDraftValid(draft.value) && !library.isSaving && !isBatchSaving.value,
+);
 
 function messageFor(key: string | null) {
   return key === null ? null : t(`metadata.errors.${key}`);
@@ -63,6 +72,58 @@ function onCoverRemoved() {
   coverPreview.value = null;
 }
 
+function sameAlbum(left: string | null, right: string): boolean {
+  return (left?.trim().toLocaleLowerCase() ?? '') === right.trim().toLocaleLowerCase();
+}
+
+function albumCoverTargets(album: string, currentId: string): TrackView[] {
+  const cleanedAlbum = album.trim();
+
+  if (cleanedAlbum.length === 0) {
+    return [];
+  }
+
+  return library.tracks.filter(
+    (track) => track.id !== currentId && sameAlbum(track.album, cleanedAlbum),
+  );
+}
+
+async function saveCoverForTracks(ids: readonly string[], cover: Cover | null): Promise<boolean> {
+  for (const id of ids) {
+    const saved = await library.saveCover(id, cover);
+
+    if (saved === null) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+async function applyAlbumCover(includeAlbumTracks: boolean) {
+  const batch = pendingAlbumCover.value;
+
+  if (batch === null) {
+    return;
+  }
+
+  isBatchSaving.value = true;
+
+  const ids = includeAlbumTracks
+    ? [batch.currentId, ...batch.targets.map((track) => track.id)]
+    : [batch.currentId];
+  const saved = await saveCoverForTracks(ids, batch.cover);
+
+  isBatchSaving.value = false;
+
+  if (!saved) {
+    return;
+  }
+
+  pendingAlbumCover.value = null;
+  emit('close');
+}
+
 async function save() {
   if (!canSave.value) {
     return;
@@ -74,7 +135,23 @@ async function save() {
   }
 
   if (pendingCover.value !== undefined) {
-    const withCover = await library.saveCover(props.track.id, pendingCover.value);
+    if (pendingCover.value !== null) {
+      const album = saved.album?.trim() ?? '';
+      const targets = albumCoverTargets(album, saved.id);
+
+      if (targets.length > 0) {
+        pendingAlbumCover.value = {
+          album,
+          cover: pendingCover.value,
+          currentId: saved.id,
+          targets,
+        };
+        return;
+      }
+    }
+
+    const withCover = await library.saveCover(saved.id, pendingCover.value);
+
     if (withCover === null) {
       return;
     }
@@ -85,7 +162,7 @@ async function save() {
 </script>
 
 <template>
-  <AppModal :open="true" :title="t('metadata.title')" @close="emit('close')">
+  <AppModal :open="pendingAlbumCover === null" :title="t('metadata.title')" @close="emit('close')">
     <form class="metadata_editor" data-testid="metadata-editor" @submit.prevent="save">
       <MetadataField
         v-model="draft.title"
@@ -126,6 +203,43 @@ async function save() {
       </AppButton>
     </template>
   </AppModal>
+
+  <AppModal
+    :open="pendingAlbumCover !== null"
+    :title="t('metadata.cover.batch.title')"
+    @close="applyAlbumCover(false)"
+  >
+    <p v-if="pendingAlbumCover !== null" class="metadata_editor_batch_message">
+      {{
+        t(
+          'metadata.cover.batch.message',
+          {
+            album: pendingAlbumCover.album,
+            count: pendingAlbumCover.targets.length,
+          },
+          pendingAlbumCover.targets.length,
+        )
+      }}
+    </p>
+
+    <template #actions>
+      <AppButton
+        :disabled="isBatchSaving"
+        data-testid="cover-batch-current"
+        @click="applyAlbumCover(false)"
+      >
+        {{ t('metadata.cover.batch.onlyCurrent') }}
+      </AppButton>
+      <AppButton
+        variant="primary"
+        :disabled="isBatchSaving"
+        data-testid="cover-batch-confirm"
+        @click="applyAlbumCover(true)"
+      >
+        {{ isBatchSaving ? t('metadata.saving') : t('metadata.cover.batch.allAlbum') }}
+      </AppButton>
+    </template>
+  </AppModal>
 </template>
 
 <style scoped lang="scss">
@@ -134,5 +248,9 @@ async function save() {
   flex-direction: column;
   gap: $space_md;
   text-align: left;
+
+  &_batch_message {
+    color: var(--color_text);
+  }
 }
 </style>

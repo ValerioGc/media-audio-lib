@@ -16,6 +16,7 @@ export interface FacetGroupOpenPayload {
 
 interface FacetGroup extends FacetGroupOpenPayload {
   trackCount: number;
+  albumCount: number;
   durationMs: number;
   artists: string[];
   isUnknown: boolean;
@@ -49,6 +50,14 @@ function uniqueValues(tracks: readonly TrackView[], field: FacetField): string[]
   ].sort((left, right) => left.localeCompare(right));
 }
 
+function uniquePresentValues(tracks: readonly TrackView[], field: FacetField): string[] {
+  return [
+    ...new Set(
+      tracks.map((track) => facetValueOf(track, field)).filter((value) => value.length > 0),
+    ),
+  ].sort((left, right) => left.localeCompare(right));
+}
+
 const groups = computed<FacetGroup[]>(() => {
   const grouped = new Map<string, TrackView[]>();
 
@@ -67,6 +76,7 @@ const groups = computed<FacetGroup[]>(() => {
         key,
         name: isUnknown ? t(`library.groups.unknown.${props.field}`) : key,
         trackCount: tracks.length,
+        albumCount: props.field === 'artist' ? uniquePresentValues(tracks, 'album').length : 0,
         durationMs: tracks.reduce((total, track) => total + track.durationMs, 0),
         artists: props.field === 'album' ? uniqueValues(tracks, 'artist') : [],
         isUnknown,
@@ -95,6 +105,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   <div
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
+    :class="{ library_facet_preview_genre: field === 'genre' }"
     role="list"
     :aria-label="t(`library.groups.columns.${field}`)"
   >
@@ -115,6 +126,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         <p v-if="field === 'album'" class="library_facet_card_meta">
           {{ t('library.groups.albumArtist', { artists: group.artists.join(', ') }) }}
         </p>
+        <p v-if="field === 'artist'" class="library_facet_card_meta">
+          {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
+        </p>
         <p class="library_facet_card_meta">
           {{ t('library.groups.trackCount', { count: group.trackCount }, group.trackCount) }}
           <span aria-hidden="true"> · </span>
@@ -127,7 +141,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   <div
     v-else
     class="library_facet_list"
-    :class="{ library_facet_list_album: field === 'album' }"
+    :class="{
+      library_facet_list_album: field === 'album',
+      library_facet_list_artist: field === 'artist',
+    }"
     role="table"
     :aria-rowcount="groups.length"
   >
@@ -137,6 +154,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       </span>
       <span v-if="field === 'album'" class="library_facet_list_heading" role="columnheader">
         {{ t('library.groups.columns.artist') }}
+      </span>
+      <span v-if="field === 'artist'" class="library_facet_list_heading" role="columnheader">
+        {{ t('library.groups.columns.albums') }}
       </span>
       <span class="library_facet_list_heading" role="columnheader">
         {{ t('library.groups.columns.tracks') }}
@@ -164,6 +184,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         <span v-if="field === 'album'" class="library_facet_list_cell" role="cell">
           {{ group.artists.join(', ') }}
         </span>
+        <span v-if="field === 'artist'" class="library_facet_list_cell" role="cell">
+          {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
+        </span>
         <span class="library_facet_list_cell" role="cell">
           {{ t('library.groups.trackCount', { count: group.trackCount }, group.trackCount) }}
         </span>
@@ -185,6 +208,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   padding-bottom: $space_md;
 
   @include scroll_area;
+
+  &_genre {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+  }
 }
 
 .library_facet_card {
@@ -257,7 +284,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_album &_head,
-  &_album &_row {
+  &_album &_row,
+  &_artist &_head,
+  &_artist &_row {
     grid-template-columns:
       minmax(10rem, 1.2fr) minmax(10rem, 1fr) minmax(7rem, 0.45fr)
       minmax(6rem, 0.35fr);
@@ -319,12 +348,16 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     }
 
     &_album &_head,
-    &_album &_row {
+    &_album &_row,
+    &_artist &_head,
+    &_artist &_row {
       grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(5rem, auto);
     }
 
     &_album &_duration,
-    &_album &_heading:last-child {
+    &_album &_heading:last-child,
+    &_artist &_duration,
+    &_artist &_heading:last-child {
       display: none;
     }
   }

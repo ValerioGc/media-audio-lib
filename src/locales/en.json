@@ -56,7 +56,12 @@
     },
     "tabs": {
       "general": "General",
+      "appearance": "Appearance",
       "library": "Library"
+    },
+    "appearance": {
+      "application": "Application",
+      "player": "Audio player"
     },
     "libraryTab": {
       "title": "Library settings",
@@ -459,7 +464,8 @@
         "title": "Personalising the app",
         "where": "gear icon in the top right corner.",
         "steps": [
-          "Under the \"General\" tab choose language, text size and light or dark theme.",
+          "Under the \"General\" tab choose the interface language.",
+          "Under the \"Appearance\" tab choose text size, light or dark theme and player rendering.",
           "The \"System\" theme follows the Windows setting.",
           "Every choice applies straight away and is remembered."
         ]

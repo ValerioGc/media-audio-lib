@@ -18,6 +18,7 @@ const { t } = useI18n();
 
 const tabs = computed(() => [
   { id: 'general', label: t('settings.tabs.general') },
+  { id: 'appearance', label: t('settings.tabs.appearance') },
   { id: 'library', label: t('settings.tabs.library') },
 ]);
 </script>
@@ -42,6 +43,21 @@ const tabs = computed(() => [
           </SettingsSection>
 
           <SettingsSection
+            :title="t('settings.defaultPlayer.title')"
+            :description="t('settings.defaultPlayer.description')"
+          >
+            <DefaultPlayerPanel />
+          </SettingsSection>
+        </div>
+      </template>
+
+      <template #appearance>
+        <div class="settings_view_group">
+          <div class="settings_view_divider" role="presentation">
+            <span>{{ t('settings.appearance.application') }}</span>
+          </div>
+
+          <SettingsSection
             :title="t('settings.textSize.title')"
             :description="t('settings.textSize.description')"
           >
@@ -55,18 +71,15 @@ const tabs = computed(() => [
             <ThemeSwitch />
           </SettingsSection>
 
+          <div class="settings_view_divider" role="presentation">
+            <span>{{ t('settings.appearance.player') }}</span>
+          </div>
+
           <SettingsSection
             :title="t('settings.coverGradient.title')"
             :description="t('settings.coverGradient.description')"
           >
             <CoverGradientToggle />
-          </SettingsSection>
-
-          <SettingsSection
-            :title="t('settings.defaultPlayer.title')"
-            :description="t('settings.defaultPlayer.description')"
-          >
-            <DefaultPlayerPanel />
           </SettingsSection>
         </div>
       </template>
@@ -122,6 +135,23 @@ const tabs = computed(() => [
     display: flex;
     flex-direction: column;
     gap: $space_lg;
+  }
+
+  &_divider {
+    display: flex;
+    gap: $space_md;
+    align-items: center;
+    color: var(--color_text_muted);
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+
+    &::after {
+      flex: 1;
+      height: 1px;
+      background-color: var(--color_border);
+      content: '';
+    }
   }
 }
 </style>

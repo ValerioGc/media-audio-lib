@@ -56,7 +56,12 @@
     },
     "tabs": {
       "general": "Generale",
+      "appearance": "Aspetto",
       "library": "Libreria"
+    },
+    "appearance": {
+      "application": "Applicazione",
+      "player": "Player audio"
     },
     "libraryTab": {
       "title": "Impostazioni della libreria",
@@ -459,7 +464,8 @@
         "title": "Personalizzare l’app",
         "where": "icona dell’ingranaggio in alto a destra.",
         "steps": [
-          "Nella scheda «Generale» scegli lingua, dimensione del testo e tema chiaro o scuro.",
+          "Nella scheda «Generale» scegli la lingua dell'interfaccia.",
+          "Nella scheda «Aspetto» scegli dimensione del testo, tema chiaro o scuro e resa del player.",
           "Il tema «Sistema» segue l’impostazione di Windows.",
           "Ogni scelta viene applicata subito e ricordata."
         ]

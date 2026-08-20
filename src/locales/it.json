@@ -50,6 +50,23 @@
       "title": "Sfondo ed effetto vetro",
       "description": "Sfondo sfumato costruito sul colore accent e superfici traslucide per dare profondità.",
       "background": "Sfondo sfumato con il colore accent",
+      "style": "Tipo di sfumatura",
+      "styles": {
+        "orbs": "Bolle sfocate",
+        "linear": "Sfumatura lineare",
+        "spotlight": "Alone singolo"
+      },
+      "direction": "Direzione",
+      "directions": {
+        "topLeft": "Da in alto a sinistra",
+        "top": "Dall'alto",
+        "topRight": "Da in alto a destra",
+        "left": "Da sinistra",
+        "right": "Da destra",
+        "bottomLeft": "Da in basso a sinistra",
+        "bottom": "Dal basso",
+        "bottomRight": "Da in basso a destra"
+      },
       "glass": "Superfici in vetro (tabella, card e pannelli)",
       "preview": "Anteprima",
       "hint": "Il secondo colore dello sfondo deriva dall'accent, quindi cambia insieme a quello. Le due opzioni sono indipendenti."

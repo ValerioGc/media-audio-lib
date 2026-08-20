@@ -34,6 +34,41 @@ describe('CoverGradientToggle', () => {
     expect(setCoverGradientEnabled).toHaveBeenCalledWith(false);
   });
 
+  it('leaves the sliders alive while the gradient is on', () => {
+    const wrapper = mount(CoverGradientToggle, withPinia());
+
+    for (const testid of ['player-transparency', 'cover-gradient-intensity', 'player-blur']) {
+      expect(wrapper.get(`[data-testid="${testid}"]`).attributes('disabled')).toBeUndefined();
+    }
+    expect(wrapper.find('.cover_gradient_toggle_slider_disabled').exists()).toBe(false);
+  });
+
+  it('disables the sliders, and says so, once the gradient is off', () => {
+    const options = withPinia();
+    useSettingsStore().coverGradientEnabled = false;
+
+    const wrapper = mount(CoverGradientToggle, options);
+
+    for (const testid of ['player-transparency', 'cover-gradient-intensity', 'player-blur']) {
+      expect(wrapper.get(`[data-testid="${testid}"]`).attributes('disabled')).toBeDefined();
+    }
+    expect(wrapper.findAll('.cover_gradient_toggle_slider_disabled')).toHaveLength(3);
+  });
+
+  it('follows the checkbox without being remounted', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    vi.spyOn(settings, 'setCoverGradientEnabled').mockImplementation(async (next: boolean) => {
+      settings.coverGradientEnabled = next;
+    });
+
+    const wrapper = mount(CoverGradientToggle, options);
+    await wrapper.get('[data-testid="cover-gradient-toggle"]').setValue(false);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('[data-testid="player-blur"]').attributes('disabled')).toBeDefined();
+  });
+
   it('updates player transparency, gradient intensity and blur percentage', async () => {
     const options = withPinia();
     const settings = useSettingsStore();

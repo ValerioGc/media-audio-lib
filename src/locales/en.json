@@ -50,6 +50,23 @@
       "title": "Background and glass",
       "description": "Soft background built on the accent colour, and translucent surfaces for depth.",
       "background": "Soft background from the accent colour",
+      "style": "Gradient type",
+      "styles": {
+        "orbs": "Blurred blobs",
+        "linear": "Linear gradient",
+        "spotlight": "Single glow"
+      },
+      "direction": "Direction",
+      "directions": {
+        "topLeft": "From the top left",
+        "top": "From the top",
+        "topRight": "From the top right",
+        "left": "From the left",
+        "right": "From the right",
+        "bottomLeft": "From the bottom left",
+        "bottom": "From the bottom",
+        "bottomRight": "From the bottom right"
+      },
       "glass": "Glass surfaces (table, cards and panels)",
       "preview": "Preview",
       "hint": "The second colour of the background comes from the accent, so it changes with it. The two options are independent."

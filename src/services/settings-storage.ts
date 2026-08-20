@@ -9,6 +9,8 @@ import {
   MAX_COVER_GRADIENT_INTENSITY,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
+  AMBIENT_DIRECTIONS,
+  AMBIENT_STYLES,
   TABLE_COLUMN_KEYS,
   TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
@@ -112,6 +114,12 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.ambientBackgroundEnabled === 'boolean'
         ? source.ambientBackgroundEnabled
         : DEFAULT_SETTINGS.ambientBackgroundEnabled,
+    ambientStyle: pickKnown(AMBIENT_STYLES, source.ambientStyle, DEFAULT_SETTINGS.ambientStyle),
+    ambientDirection: pickKnown(
+      AMBIENT_DIRECTIONS,
+      source.ambientDirection,
+      DEFAULT_SETTINGS.ambientDirection,
+    ),
     glassSurfacesEnabled:
       typeof source.glassSurfacesEnabled === 'boolean'
         ? source.glassSurfacesEnabled

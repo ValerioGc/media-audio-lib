@@ -62,6 +62,8 @@ describe('sanitizeSettings', () => {
       theme: 'dark',
       accentColor: '#107c10',
       ambientBackgroundEnabled: false,
+      ambientStyle: 'linear',
+      ambientDirection: 'bottomRight',
       glassSurfacesEnabled: false,
       viewMode: 'preview',
       mainLibraryId: 'lib-2',
@@ -93,6 +95,16 @@ describe('sanitizeSettings', () => {
     expect(sanitizeSettings({ ambientBackgroundEnabled: false }).ambientBackgroundEnabled).toBe(
       false,
     );
+  });
+
+  it('falls back to the default shape and origin of the background', () => {
+    expect(sanitizeSettings({ ambientStyle: 'bolle' }).ambientStyle).toBe(
+      DEFAULT_SETTINGS.ambientStyle,
+    );
+    expect(sanitizeSettings({ ambientDirection: 'diagonale' }).ambientDirection).toBe(
+      DEFAULT_SETTINGS.ambientDirection,
+    );
+    expect(sanitizeSettings({ ambientStyle: 'spotlight' }).ambientStyle).toBe('spotlight');
   });
 
   it('normalizes the accent colour and refuses what is not one', () => {
@@ -174,6 +186,8 @@ describe('createTauriStorage', () => {
       theme: 'dark',
       accentColor: '#107c10',
       ambientBackgroundEnabled: false,
+      ambientStyle: 'linear',
+      ambientDirection: 'bottomRight',
       glassSurfacesEnabled: false,
       viewMode: 'preview',
       mainLibraryId: 'lib-2',

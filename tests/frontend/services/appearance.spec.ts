@@ -79,7 +79,10 @@ describe('appearance', () => {
   });
 
   it('writes the ambient layers and says the background is in use', () => {
-    applyAmbientBackground('#0067c0', 'light', true, root);
+    applyAmbientBackground(
+      { color: '#0067c0', theme: 'light', enabled: true, style: 'orbs', direction: 'topLeft' },
+      root,
+    );
 
     expect(root.dataset.ambient).toBe('on');
     expect(root.style.getPropertyValue('--app_ambient_layers')).toBe(
@@ -88,7 +91,10 @@ describe('appearance', () => {
   });
 
   it('keeps the layers ready when the background is off', () => {
-    applyAmbientBackground('#0067c0', 'light', false, root);
+    applyAmbientBackground(
+      { color: '#0067c0', theme: 'light', enabled: false, style: 'orbs', direction: 'topLeft' },
+      root,
+    );
 
     expect(root.dataset.ambient).toBe('off');
     expect(root.style.getPropertyValue('--app_ambient_layers')).not.toBe('');
@@ -107,7 +113,13 @@ describe('appearance', () => {
     applyTextSize('small');
     applyDocumentLocale('it');
     applyAccent('#e3008c', 'dark');
-    applyAmbientBackground('#e3008c', 'dark', true);
+    applyAmbientBackground({
+      color: '#e3008c',
+      theme: 'dark',
+      enabled: true,
+      style: 'orbs',
+      direction: 'topLeft',
+    });
     applyGlassSurfaces(true);
 
     expect(document.documentElement.dataset.theme).toBe('dark');

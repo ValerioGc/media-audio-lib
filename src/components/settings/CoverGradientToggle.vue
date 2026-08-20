@@ -9,6 +9,9 @@ const { t } = useI18n();
 const settings = useSettingsStore();
 const blurPercent = computed(() => Math.round((settings.playerBlur / MAX_PLAYER_BLUR) * 100));
 
+/** The sliders tune the background taken from the cover: without it they have no subject. */
+const isDisabled = computed(() => !settings.coverGradientEnabled);
+
 function onChange(event: Event) {
   void settings.setCoverGradientEnabled((event.target as HTMLInputElement).checked);
 }
@@ -39,7 +42,10 @@ function onIntensityChange(event: Event) {
       <span>{{ t('settings.coverGradient.toggle') }}</span>
     </label>
 
-    <label class="cover_gradient_toggle_slider">
+    <label
+      class="cover_gradient_toggle_slider"
+      :class="{ cover_gradient_toggle_slider_disabled: isDisabled }"
+    >
       <span>{{ t('settings.coverGradient.transparency') }}</span>
       <input
         type="range"
@@ -47,13 +53,17 @@ function onIntensityChange(event: Event) {
         max="45"
         step="1"
         :value="settings.playerTransparency"
+        :disabled="isDisabled"
         data-testid="player-transparency"
         @input="onTransparencyChange"
       />
       <strong>{{ settings.playerTransparency }}%</strong>
     </label>
 
-    <label class="cover_gradient_toggle_slider">
+    <label
+      class="cover_gradient_toggle_slider"
+      :class="{ cover_gradient_toggle_slider_disabled: isDisabled }"
+    >
       <span>{{ t('settings.coverGradient.intensity') }}</span>
       <input
         type="range"
@@ -61,13 +71,17 @@ function onIntensityChange(event: Event) {
         max="200"
         step="1"
         :value="settings.coverGradientIntensity"
+        :disabled="isDisabled"
         data-testid="cover-gradient-intensity"
         @input="onIntensityChange"
       />
       <strong>{{ settings.coverGradientIntensity }}%</strong>
     </label>
 
-    <label class="cover_gradient_toggle_slider">
+    <label
+      class="cover_gradient_toggle_slider"
+      :class="{ cover_gradient_toggle_slider_disabled: isDisabled }"
+    >
       <span>{{ t('settings.coverGradient.blur') }}</span>
       <input
         type="range"
@@ -75,6 +89,7 @@ function onIntensityChange(event: Event) {
         max="100"
         step="1"
         :value="blurPercent"
+        :disabled="isDisabled"
         data-testid="player-blur"
         @input="onBlurChange"
       />
@@ -104,6 +119,12 @@ function onIntensityChange(event: Event) {
 
   &_slider {
     width: min(28rem, 100%);
+    transition: opacity $duration_fast ease;
+
+    &_disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     span {
       min-width: 8rem;
@@ -131,6 +152,10 @@ function onIntensityChange(event: Event) {
 
   input[type='range'] {
     accent-color: var(--color_accent);
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 }
 </style>

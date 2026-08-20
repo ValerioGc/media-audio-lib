@@ -192,6 +192,9 @@ function openActionsMenu(event: MouseEvent) {
     font-variant-numeric: tabular-nums;
   }
 
+  // The cell paints nothing: the menu sits straight on the row. A background of its own
+  // could never match, because the gradient of a playing row is spread over the whole
+  // width and would restart inside these few rem as a brighter patch.
   &_actions {
     display: flex;
     gap: $space_xs;
@@ -202,21 +205,8 @@ function openActionsMenu(event: MouseEvent) {
     width: 2.5rem;
     justify-self: end;
     justify-content: center;
-    background-color: var(--surface_glass_background);
+    background: none;
     overflow: visible;
-  }
-
-  &:hover &_actions {
-    background-color: var(--row_hover_background);
-  }
-
-  &_selected &_actions,
-  &_playing &_actions {
-    background-color: var(--row_selected_background);
-  }
-
-  &_playing[style*='--cover_row_gradient'] &_actions {
-    background: var(--cover_row_gradient), var(--color_surface);
   }
 }
 </style>

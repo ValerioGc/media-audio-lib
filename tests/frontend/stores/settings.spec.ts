@@ -201,6 +201,26 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
+  it('applies and persists the shape and the origin of the background', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+    const before = document.documentElement.style.getPropertyValue('--app_ambient_layers');
+
+    await store.setAmbientStyle('linear');
+    await store.setAmbientDirection('bottomRight');
+
+    expect(store.ambientStyle).toBe('linear');
+    expect(store.ambientDirection).toBe('bottomRight');
+    expect(storage.saved.at(-1)?.ambientStyle).toBe('linear');
+    expect(storage.saved.at(-1)?.ambientDirection).toBe('bottomRight');
+    expect(document.documentElement.style.getPropertyValue('--app_ambient_layers')).not.toBe(
+      before,
+    );
+
+    store.dispose();
+  });
+
   it('rebuilds the background when the accent changes', async () => {
     const store = useSettingsStore();
     await store.initialize(createFakeStorage());

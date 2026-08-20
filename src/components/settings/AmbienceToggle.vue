@@ -2,16 +2,43 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import AppOptionGroup from '@/components/common/AppOptionGroup.vue';
+import AppSelect from '@/components/common/AppSelect.vue';
 import { ambience } from '@/services/ambience';
 import { useSettingsStore } from '@/stores/settings';
+import {
+  AMBIENT_DIRECTIONS,
+  AMBIENT_STYLES,
+  type AmbientDirection,
+  type AmbientStyle,
+} from '@/types/settings';
 
 const { t } = useI18n();
 const settings = useSettingsStore();
 
-/** The preview shows the two colours the background is built from, accent first. */
+/** The preview shows exactly what the window will get, options included. */
 const previewStyle = computed(() => ({
-  backgroundImage: ambience(settings.accentColor, settings.resolvedTheme).layers,
+  backgroundImage: ambience(
+    settings.accentColor,
+    settings.resolvedTheme,
+    settings.ambientStyle,
+    settings.ambientDirection,
+  ).layers,
 }));
+
+const styleOptions = computed(() =>
+  AMBIENT_STYLES.map((style) => ({
+    value: style,
+    label: t(`settings.ambience.styles.${style}`),
+  })),
+);
+
+const directionOptions = computed(() =>
+  AMBIENT_DIRECTIONS.map((direction) => ({
+    value: direction,
+    label: t(`settings.ambience.directions.${direction}`),
+  })),
+);
 
 function onBackgroundChange(event: Event) {
   void settings.setAmbientBackgroundEnabled((event.target as HTMLInputElement).checked);
@@ -19,6 +46,14 @@ function onBackgroundChange(event: Event) {
 
 function onGlassChange(event: Event) {
   void settings.setGlassSurfacesEnabled((event.target as HTMLInputElement).checked);
+}
+
+function onStyleChange(value: string) {
+  void settings.setAmbientStyle(value as AmbientStyle);
+}
+
+function onDirectionChange(value: string) {
+  void settings.setAmbientDirection(value as AmbientDirection);
 }
 </script>
 
@@ -34,6 +69,30 @@ function onGlassChange(event: Event) {
       <span>{{ t('settings.ambience.background') }}</span>
     </label>
 
+    <!-- The shape and the origin only mean something while the background is drawn. -->
+    <template v-if="settings.ambientBackgroundEnabled">
+      <AppOptionGroup
+        :model-value="settings.ambientStyle"
+        :options="styleOptions"
+        :legend="t('settings.ambience.style')"
+        data-testid="ambient-style"
+        @update:model-value="onStyleChange"
+      />
+
+      <AppSelect
+        class="ambience_toggle_direction"
+        :model-value="settings.ambientDirection"
+        :options="directionOptions"
+        :label="t('settings.ambience.direction')"
+        data-testid="ambient-direction"
+        @update:model-value="onDirectionChange"
+      />
+
+      <div class="ambience_toggle_preview" :style="previewStyle" data-testid="ambience-preview">
+        <span class="ambience_toggle_preview_card">{{ t('settings.ambience.preview') }}</span>
+      </div>
+    </template>
+
     <label class="ambience_toggle_check">
       <input
         type="checkbox"
@@ -43,15 +102,6 @@ function onGlassChange(event: Event) {
       />
       <span>{{ t('settings.ambience.glass') }}</span>
     </label>
-
-    <div
-      v-if="settings.ambientBackgroundEnabled"
-      class="ambience_toggle_preview"
-      :style="previewStyle"
-      data-testid="ambience-preview"
-    >
-      <span class="ambience_toggle_preview_card">{{ t('settings.ambience.preview') }}</span>
-    </div>
 
     <p class="ambience_toggle_hint">{{ t('settings.ambience.hint') }}</p>
   </div>
@@ -74,11 +124,15 @@ function onGlassChange(event: Event) {
     }
   }
 
+  &_direction {
+    max-width: 16rem;
+  }
+
   &_preview {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 5.5rem;
+    height: 7rem;
     margin-top: $space_xs;
     border: 1px solid var(--color_border);
     border-radius: $radius_md;

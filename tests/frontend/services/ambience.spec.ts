@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
-import { rotateHue } from '@/services/accent';
+import { accentPalette, colorChannels, contrastRatio, rotateHue } from '@/services/accent';
 import { AMBIENT_HUE_SHIFT, ambience } from '@/services/ambience';
+import { AMBIENT_DIRECTIONS } from '@/types/settings';
+
+/** Reads a `#rrggbb` string back as the channels the contrast maths works on. */
+function channels(hex: string) {
+  return {
+    r: Number.parseInt(hex.slice(1, 3), 16),
+    g: Number.parseInt(hex.slice(3, 5), 16),
+    b: Number.parseInt(hex.slice(5, 7), 16),
+  };
+}
 
 /** Every `nn%` alpha the layers are built from, in the order they appear. */
 function alphas(layers: string): number[] {
@@ -16,11 +26,30 @@ describe('ambience', () => {
     expect([...layers.matchAll(/linear-gradient/g)]).toHaveLength(1);
   });
 
-  it('derives the companion colour from the accent', () => {
+  it('derives the companion colour from the accent, fit for the theme', () => {
     const { secondary } = ambience('#0067c0', 'light');
 
-    expect(secondary).toBe(rotateHue('#0067c0', AMBIENT_HUE_SHIFT));
+    expect(secondary).toBe(accentPalette(rotateHue('#0067c0', AMBIENT_HUE_SHIFT), 'light').accent);
     expect(secondary).not.toBe('#0067c0');
+  });
+
+  // A dark green stays invisible over a dark window, and the colour rotated away from it
+  // is darker still: both have to be lifted the way the interface accent is.
+  it('paints the colours the theme made readable, not the raw ones', () => {
+    const { layers, secondary } = ambience('#107c10', 'dark');
+
+    expect(layers).not.toContain(colorChannels('#107c10'));
+    expect(layers).toContain(colorChannels(accentPalette('#107c10', 'dark').accent));
+    expect(layers).toContain(colorChannels(secondary));
+  });
+
+  it('lifts both colours clear of the dark window', () => {
+    const { secondary } = ambience('#107c10', 'dark');
+    const accent = accentPalette('#107c10', 'dark').accent;
+
+    for (const color of [accent, secondary]) {
+      expect(contrastRatio(channels(color), { r: 31, g: 31, b: 31 })).toBeGreaterThanOrEqual(4.4);
+    }
   });
 
   it('follows the accent: a different colour gives a different background', () => {
@@ -53,6 +82,43 @@ describe('ambience', () => {
     const dark = Math.max(...alphas(ambience('#0067c0', 'dark').layers));
 
     expect(dark).toBeLessThan(light);
+  });
+
+  it('draws a different background for each type', () => {
+    const orbs = ambience('#0067c0', 'light', 'orbs').layers;
+    const linear = ambience('#0067c0', 'light', 'linear').layers;
+    const spotlight = ambience('#0067c0', 'light', 'spotlight').layers;
+
+    expect(new Set([orbs, linear, spotlight]).size).toBe(3);
+    expect([...orbs.matchAll(/radial-gradient/g)]).toHaveLength(3);
+    expect([...spotlight.matchAll(/radial-gradient/g)]).toHaveLength(1);
+    expect(linear).not.toContain('radial-gradient');
+  });
+
+  it('starts the background from the chosen side', () => {
+    const fromTopLeft = ambience('#0067c0', 'light', 'orbs', 'topLeft').layers;
+    const fromBottomRight = ambience('#0067c0', 'light', 'orbs', 'bottomRight').layers;
+
+    expect(fromTopLeft).toContain('at 6% -12%');
+    expect(fromBottomRight).toContain('at 94% 112%');
+    expect(fromTopLeft).not.toBe(fromBottomRight);
+  });
+
+  it('turns the linear gradient to follow the direction', () => {
+    expect(ambience('#0067c0', 'light', 'linear', 'topLeft').layers).toContain('135deg');
+    expect(ambience('#0067c0', 'light', 'linear', 'bottom').layers).toContain('0deg');
+  });
+
+  it('spreads the three orbs apart whichever side they start from', () => {
+    for (const direction of AMBIENT_DIRECTIONS) {
+      const positions = [
+        ...ambience('#0067c0', 'light', 'orbs', direction).layers.matchAll(
+          /at (-?[\d.]+)% (-?[\d.]+)%/g,
+        ),
+      ].map(([, x, y]) => `${x},${y}`);
+
+      expect(new Set(positions).size).toBe(3);
+    }
   });
 
   it('falls back to the built-in blue on a colour it cannot read', () => {

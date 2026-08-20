@@ -27,6 +27,23 @@ export const ACCENT_PRESETS = [
 
 export const DEFAULT_ACCENT_COLOR = ACCENT_PRESETS[0];
 
+/** How the ambient background is drawn. */
+export const AMBIENT_STYLES = ['orbs', 'linear', 'spotlight'] as const;
+export type AmbientStyle = (typeof AMBIENT_STYLES)[number];
+
+/** Where the background starts from: the corner or the side the accent comes in on. */
+export const AMBIENT_DIRECTIONS = [
+  'topLeft',
+  'top',
+  'topRight',
+  'left',
+  'right',
+  'bottomLeft',
+  'bottom',
+  'bottomRight',
+] as const;
+export type AmbientDirection = (typeof AMBIENT_DIRECTIONS)[number];
+
 export const VIEW_MODES = ['table', 'preview'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
@@ -85,6 +102,8 @@ export interface AppSettings {
   theme: ThemeChoice;
   accentColor: string;
   ambientBackgroundEnabled: boolean;
+  ambientStyle: AmbientStyle;
+  ambientDirection: AmbientDirection;
   glassSurfacesEnabled: boolean;
   viewMode: ViewMode;
   mainLibraryId: string | null;
@@ -102,6 +121,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'system',
   accentColor: DEFAULT_ACCENT_COLOR,
   ambientBackgroundEnabled: true,
+  ambientStyle: 'orbs',
+  ambientDirection: 'topLeft',
   glassSurfacesEnabled: true,
   viewMode: 'preview',
   mainLibraryId: null,

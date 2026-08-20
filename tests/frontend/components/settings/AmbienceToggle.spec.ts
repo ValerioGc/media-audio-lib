@@ -62,6 +62,47 @@ describe('AmbienceToggle', () => {
     expect(style).toContain('radial-gradient');
   });
 
+  it('changes the shape of the background', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(AmbienceToggle, options);
+
+    await wrapper.get('[data-testid="ambient-style"]').findAll('input')[1]?.setValue(true);
+
+    expect(settings.ambientStyle).toBe('linear');
+  });
+
+  it('changes where the background starts from', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(AmbienceToggle, options);
+
+    await wrapper.get('[data-testid="ambient-direction"] select').setValue('bottomRight');
+
+    expect(settings.ambientDirection).toBe('bottomRight');
+  });
+
+  it('offers every shape and every origin', () => {
+    const wrapper = mount(AmbienceToggle, withPinia());
+
+    expect(
+      wrapper
+        .get('[data-testid="ambient-style"]')
+        .findAll('.app_option_group_text')
+        .map((o) => o.text()),
+    ).toEqual(['Bolle sfocate', 'Sfumatura lineare', 'Alone singolo']);
+    expect(wrapper.get('[data-testid="ambient-direction"]').findAll('option')).toHaveLength(8);
+  });
+
+  it('hides the shape and the origin while the background is off', async () => {
+    const options = withPinia();
+    await useSettingsStore().setAmbientBackgroundEnabled(false);
+    const wrapper = mount(AmbienceToggle, options);
+
+    expect(wrapper.find('[data-testid="ambient-style"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="ambient-direction"]').exists()).toBe(false);
+  });
+
   it('drops the preview when there is no background to show', async () => {
     const options = withPinia();
     const settings = useSettingsStore();

@@ -25,6 +25,8 @@ import {
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
   TABLE_COLUMN_WIDTHS,
+  type AmbientDirection,
+  type AmbientStyle,
   type AppSettings,
   type Locale,
   type ResolvedTheme,
@@ -41,6 +43,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
   const accentColor = ref(DEFAULT_SETTINGS.accentColor);
   const ambientBackgroundEnabled = ref(DEFAULT_SETTINGS.ambientBackgroundEnabled);
+  const ambientStyle = ref<AmbientStyle>(DEFAULT_SETTINGS.ambientStyle);
+  const ambientDirection = ref<AmbientDirection>(DEFAULT_SETTINGS.ambientDirection);
   const glassSurfacesEnabled = ref(DEFAULT_SETTINGS.glassSurfacesEnabled);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
@@ -68,6 +72,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme: theme.value,
     accentColor: accentColor.value,
     ambientBackgroundEnabled: ambientBackgroundEnabled.value,
+    ambientStyle: ambientStyle.value,
+    ambientDirection: ambientDirection.value,
     glassSurfacesEnabled: glassSurfacesEnabled.value,
     viewMode: viewMode.value,
     mainLibraryId: mainLibraryId.value,
@@ -82,7 +88,13 @@ export const useSettingsStore = defineStore('settings', () => {
   function apply() {
     applyTheme(resolvedTheme.value);
     applyAccent(accentColor.value, resolvedTheme.value);
-    applyAmbientBackground(accentColor.value, resolvedTheme.value, ambientBackgroundEnabled.value);
+    applyAmbientBackground({
+      color: accentColor.value,
+      theme: resolvedTheme.value,
+      enabled: ambientBackgroundEnabled.value,
+      style: ambientStyle.value,
+      direction: ambientDirection.value,
+    });
     applyGlassSurfaces(glassSurfacesEnabled.value);
     applyTextSize(textSize.value);
     applyDocumentLocale(locale.value);
@@ -128,6 +140,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme.value = restored.theme;
     accentColor.value = restored.accentColor;
     ambientBackgroundEnabled.value = restored.ambientBackgroundEnabled;
+    ambientStyle.value = restored.ambientStyle;
+    ambientDirection.value = restored.ambientDirection;
     glassSurfacesEnabled.value = restored.glassSurfacesEnabled;
     viewMode.value = restored.viewMode;
     mainLibraryId.value = restored.mainLibraryId;
@@ -184,6 +198,18 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setAmbientBackgroundEnabled(next: boolean) {
     ambientBackgroundEnabled.value = next;
+    apply();
+    await persist();
+  }
+
+  async function setAmbientStyle(next: AmbientStyle) {
+    ambientStyle.value = next;
+    apply();
+    await persist();
+  }
+
+  async function setAmbientDirection(next: AmbientDirection) {
+    ambientDirection.value = next;
     apply();
     await persist();
   }
@@ -338,6 +364,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme,
     accentColor,
     ambientBackgroundEnabled,
+    ambientStyle,
+    ambientDirection,
     glassSurfacesEnabled,
     viewMode,
     mainLibraryId,
@@ -358,6 +386,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setAccentColor,
     resetAccentColor,
     setAmbientBackgroundEnabled,
+    setAmbientStyle,
+    setAmbientDirection,
     setGlassSurfacesEnabled,
     setViewMode,
     setMainLibraryId,

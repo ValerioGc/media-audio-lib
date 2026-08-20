@@ -2,6 +2,8 @@ import { accentPalette } from '@/services/accent';
 import { ambience } from '@/services/ambience';
 import {
   DEFAULT_ACCENT_COLOR,
+  type AmbientDirection,
+  type AmbientStyle,
   type Locale,
   type ResolvedTheme,
   type TextSize,
@@ -47,14 +49,20 @@ export function applyAccent(
  * Writes the ambient background on the root element and says whether it is in use. The
  * layers are computed even when the option is off, so turning it back on costs nothing.
  */
+export interface AmbientOptions {
+  color: string;
+  theme: ResolvedTheme;
+  enabled: boolean;
+  style: AmbientStyle;
+  direction: AmbientDirection;
+}
+
 export function applyAmbientBackground(
-  color: string,
-  theme: ResolvedTheme,
-  enabled: boolean,
+  { color, theme, enabled, style, direction }: AmbientOptions,
   root: HTMLElement = document.documentElement,
 ) {
   root.dataset.ambient = enabled ? 'on' : 'off';
-  root.style.setProperty('--app_ambient_layers', ambience(color, theme).layers);
+  root.style.setProperty('--app_ambient_layers', ambience(color, theme, style, direction).layers);
 }
 
 /** Turns the content surfaces to glass. The tokens themselves live in the stylesheet. */

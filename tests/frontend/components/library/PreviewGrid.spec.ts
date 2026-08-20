@@ -1,0 +1,72 @@
+import { mount } from '@vue/test-utils';
+import { beforeEach, describe, expect, it } from 'vitest';
+
+import { resetI18n, withPinia } from '@tests/support/mount';
+import { makeTrack, makeTracks } from '@tests/support/tracks';
+import type { TrackView } from '@/types/library';
+
+import PreviewGrid from '@/components/library/PreviewGrid.vue';
+
+beforeEach(() => {
+  resetI18n();
+});
+
+function mountGrid(
+  tracks: TrackView[],
+  selectedIds: string[] = [],
+  playingId: string | null = null,
+) {
+  return mount(PreviewGrid, { ...withPinia(), props: { tracks, selectedIds, playingId } });
+}
+
+describe('PreviewGrid', () => {
+  it('renders one card per track', () => {
+    const wrapper = mountGrid(makeTracks(5));
+
+    expect(wrapper.findAll('.preview_card')).toHaveLength(5);
+    expect(wrapper.attributes('aria-rowcount')).toBe('5');
+  });
+
+  it('renders nothing for an empty list', () => {
+    const wrapper = mountGrid([]);
+
+    expect(wrapper.findAll('.preview_card')).toHaveLength(0);
+  });
+
+  it('marks only the current card as selected', () => {
+    const tracks = makeTracks(3);
+    const selectedTrack = tracks[1];
+    const wrapper = mountGrid(tracks, selectedTrack === undefined ? [] : [selectedTrack.id]);
+
+    const selected = wrapper.findAll('.preview_card_selected');
+
+    expect(selected).toHaveLength(1);
+    expect(selected[0]?.get('.preview_card_title').text()).toBe(selectedTrack?.title);
+  });
+
+  it('marks only the current card as playing', () => {
+    const tracks = makeTracks(3);
+    const playingTrack = tracks[2];
+    const wrapper = mountGrid(tracks, [], playingTrack?.id ?? null);
+
+    const playing = wrapper.findAll('.preview_card_playing');
+
+    expect(playing).toHaveLength(1);
+    expect(playing[0]?.get('.preview_card_title').text()).toBe(playingTrack?.title);
+  });
+
+  it('forwards selection and menu actions', async () => {
+    const track = makeTrack();
+    const wrapper = mountGrid([track]);
+
+    await wrapper.get('.preview_card').trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
+
+    expect(wrapper.emitted('select')).toEqual([[{ id: track.id, additive: false, range: false }]]);
+    expect(wrapper.emitted('edit')).toEqual([[track]]);
+    expect(wrapper.emitted('remove')).toEqual([[track]]);
+  });
+});

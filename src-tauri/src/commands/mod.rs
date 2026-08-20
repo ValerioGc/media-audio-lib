@@ -46,28 +46,5 @@ pub fn app_info() -> AppInfo {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    #[test]
-    fn app_info_exposes_package_name_and_version() {
-        let info = app_info();
-
-        assert_eq!(info.name, "media-audio-lib");
-        assert_eq!(info.version, "0.1.0");
-    }
-
-    #[test]
-    fn app_info_lists_supported_formats() {
-        let info = build_app_info();
-
-        assert_eq!(info.supported_extensions.len(), SUPPORTED_EXTENSIONS.len());
-        assert!(info.supported_extensions.contains(&"mp3".to_owned()));
-    }
-
-    #[test]
-    fn app_info_is_serializable_for_the_frontend() {
-        let json = serde_json::to_string(&build_app_info()).expect("serializzazione riuscita");
-
-        assert!(json.contains("\"supportedExtensions\""));
-    }
+    include!("../../../tests/backend/commands/mod.rs");
 }

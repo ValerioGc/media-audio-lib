@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@tests': fileURLToPath(new URL('./tests/frontend', import.meta.url)),
     },
   },
 
@@ -46,12 +47,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    include: ['src/**/*.spec.ts'],
+    include: ['tests/frontend/**/*.spec.ts'],
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,vue}'],
-      exclude: ['src/main.ts', 'src/**/*.spec.ts', 'src/**/*.d.ts', 'src/types/**'],
+      exclude: ['src/main.ts', 'tests/**', 'src/**/*.d.ts', 'src/types/**'],
       reporter: ['text', 'lcov', 'html'],
       reportsDirectory: './coverage',
       thresholds: {

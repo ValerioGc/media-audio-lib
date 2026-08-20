@@ -26,13 +26,15 @@
     "allowImportingTsExtensions": true,
 
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/frontend/*"]
     }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",
+    "tests/frontend/**/*.ts",
     "vite.config.ts",
     "vitest.setup.ts",
     "eslint.config.js"

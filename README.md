@@ -36,6 +36,8 @@ Download the package for your platform from the [Releases](https://github.com/Va
 
 > **Windows SmartScreen notice:** the installer is not yet signed with a paid certificate, so SmartScreen may show a warning on first launch. Choose "More info" → "Run anyway" to proceed.
 
+The distribution using Microsoft Store and Winget is not available yet, but is planned and it will be supported in the future.
+
 ### Linux - AppImage
 
 A self-contained portable binary that runs on any distribution without installation:
@@ -59,8 +61,6 @@ Reading and writing tags goes through the same library for every format.
 ## Contributing or building from source
 
 All technical information (stack, project structure, development commands, testing and the release process) is in [DEVELOPMENT.md](DEVELOPMENT.md).
-
-The work still to be done is tracked in [TODO.md](TODO.md), with the technical detail of each item in [ROADMAP.md](ROADMAP.md).
 
 ## Licence
 

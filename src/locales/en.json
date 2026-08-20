@@ -300,6 +300,9 @@
       "openLabel": "Open tracks linked to {name}",
       "albumArtist": "Artist: {artists}",
       "modalTitle": "Tracks linked to {name}",
+      "detailTabs": "Linked detail",
+      "expandAlbums": "Expand albums",
+      "collapseAlbums": "Collapse albums",
       "close": "Close",
       "columns": {
         "artist": "Artist",

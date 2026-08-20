@@ -300,6 +300,9 @@
       "openLabel": "Apri i brani collegati a {name}",
       "albumArtist": "Autore: {artists}",
       "modalTitle": "Brani collegati a {name}",
+      "detailTabs": "Dettaglio collegamenti",
+      "expandAlbums": "Espandi album",
+      "collapseAlbums": "Riduci album",
       "close": "Chiudi",
       "columns": {
         "artist": "Autore",

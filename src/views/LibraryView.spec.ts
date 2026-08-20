@@ -130,16 +130,40 @@ describe('LibraryView', () => {
     expect(dialog.text()).not.toContain('Red');
   });
 
-  it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {
+  it('shows artist albums as a horizontal preview strip above the linked track list', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
-      makeTrack({ title: 'Blue', artist: 'Artist A' }),
-      makeTrack({ title: 'Green', artist: 'Artist A' }),
-      makeTrack({ title: 'Red', artist: 'Artist B' }),
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'First Album', year: 1999 }),
+      makeTrack({ title: 'Green', artist: 'Artist A', album: 'Second Album', year: 2001 }),
+      makeTrack({ title: 'Red', artist: 'Artist B', album: 'Other Album', year: 2005 }),
     ];
     await flushPromises();
 
     await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    const dialog = wrapper.get('[role="dialog"]');
+    const albumCards = dialog.findAll('.library_view_group_modal_album_card');
+
+    expect(dialog.find('.library_view_group_modal_album_carousel').exists()).toBe(true);
+    expect(albumCards).toHaveLength(2);
+    expect(albumCards[0]?.text()).toContain('First Album');
+    expect(albumCards[0]?.text()).toContain('1999');
+    expect(albumCards[0]?.text()).not.toContain('Artist A');
+    expect(dialog.find('.library_table').exists()).toBe(true);
+  });
+
+  it('keeps the facet view unchanged when the linked-tracks modal changes view', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', album: 'Album A' }),
+      makeTrack({ title: 'Green', album: 'Album A' }),
+      makeTrack({ title: 'Red', album: 'Album B' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
@@ -150,6 +174,39 @@ describe('LibraryView', () => {
     expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(true);
     expect(wrapper.get('.library_view_panel').find('.library_facet_preview').exists()).toBe(true);
     expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
+  });
+
+  it('opens genre details with tracks, artists and albums tabs', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Green', artist: 'Artist B', album: 'Album B', genre: 'Jazz' }),
+      makeTrack({ title: 'Red', artist: 'Artist C', album: 'Album C', genre: 'Rock' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[3]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    let dialog = wrapper.get('[role="dialog"]');
+
+    expect(dialog.find('.library_table').exists()).toBe(true);
+    expect(dialog.text()).toContain('Blue');
+    expect(dialog.text()).toContain('Green');
+    expect(dialog.text()).not.toContain('Red');
+
+    await dialog.findAll('[role="tab"]')[1]?.trigger('click');
+    await flushPromises();
+    dialog = wrapper.get('[role="dialog"]');
+    expect(dialog.find('.library_facet_preview').exists()).toBe(true);
+    expect(dialog.text()).toContain('Artist A');
+
+    await dialog.findAll('[role="tab"]')[2]?.trigger('click');
+    await flushPromises();
+    dialog = wrapper.get('[role="dialog"]');
+    expect(dialog.find('.library_facet_preview').exists()).toBe(true);
+    expect(dialog.text()).toContain('Album A');
   });
 
   it('marks the playing track in the library', async () => {

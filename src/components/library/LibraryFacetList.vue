@@ -21,6 +21,7 @@ interface FacetGroup extends FacetGroupOpenPayload {
   durationMs: number;
   artists: string[];
   coverTrack: TrackView | null;
+  coverTracks: TrackView[];
   isUnknown: boolean;
 }
 
@@ -60,6 +61,35 @@ function uniquePresentValues(tracks: readonly TrackView[], field: FacetField): s
   ].sort((left, right) => left.localeCompare(right));
 }
 
+function representativeCoverTracks(tracks: readonly TrackView[]): TrackView[] {
+  const byAlbum = new Map<string, TrackView>();
+
+  for (const track of tracks) {
+    const albumKey = track.album?.trim() || track.id;
+    const current = byAlbum.get(albumKey);
+
+    if (
+      current === undefined ||
+      (track.hasCover && !track.missing && (!current.hasCover || current.missing))
+    ) {
+      byAlbum.set(albumKey, track);
+    }
+  }
+
+  return [...byAlbum.values()]
+    .sort((left, right) => {
+      const rightHasCover = right.hasCover && !right.missing;
+      const leftHasCover = left.hasCover && !left.missing;
+
+      if (leftHasCover !== rightHasCover) {
+        return rightHasCover ? 1 : -1;
+      }
+
+      return left.title.localeCompare(right.title);
+    })
+    .slice(0, 4);
+}
+
 const groups = computed<FacetGroup[]>(() => {
   const grouped = new Map<string, TrackView[]>();
 
@@ -78,13 +108,17 @@ const groups = computed<FacetGroup[]>(() => {
         key,
         name: isUnknown ? t(`library.groups.unknown.${props.field}`) : key,
         trackCount: tracks.length,
-        albumCount: props.field === 'artist' ? uniquePresentValues(tracks, 'album').length : 0,
+        albumCount:
+          props.field === 'artist' || props.field === 'genre'
+            ? uniquePresentValues(tracks, 'album').length
+            : 0,
         durationMs: tracks.reduce((total, track) => total + track.durationMs, 0),
         artists: props.field === 'album' ? uniqueValues(tracks, 'artist') : [],
         coverTrack:
           props.field === 'album'
             ? (tracks.find((track) => track.hasCover && !track.missing) ?? tracks[0] ?? null)
             : null,
+        coverTracks: props.field === 'album' ? [] : representativeCoverTracks(tracks),
         isUnknown,
       };
     })
@@ -136,15 +170,27 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         :track="group.coverTrack"
         size="card"
       />
+      <div
+        v-else-if="group.coverTracks.length > 0"
+        class="library_facet_card_cover library_facet_card_cover_mosaic"
+        :class="{ library_facet_card_cover_mosaic_single: group.coverTracks.length === 1 }"
+        aria-hidden="true"
+      >
+        <CoverImage
+          v-for="track in group.coverTracks"
+          :key="track.id"
+          class="library_facet_card_cover_tile"
+          :track="track"
+          size="card"
+          eager
+        />
+      </div>
       <div class="library_facet_card_body">
-        <p v-if="field !== 'album'" class="library_facet_card_label">
-          {{ t(`library.groups.columns.${field}`) }}
-        </p>
         <h3 class="library_facet_card_title">{{ group.name }}</h3>
         <p v-if="field === 'album'" class="library_facet_card_meta">
           {{ t('library.groups.albumArtist', { artists: group.artists.join(', ') }) }}
         </p>
-        <p v-if="field === 'artist'" class="library_facet_card_meta">
+        <p v-if="field === 'artist' || field === 'genre'" class="library_facet_card_meta">
           {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
         </p>
         <p class="library_facet_card_meta">
@@ -162,6 +208,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     :class="{
       library_facet_list_album: field === 'album',
       library_facet_list_artist: field === 'artist',
+      library_facet_list_genre: field === 'genre',
     }"
     role="table"
     :aria-rowcount="groups.length"
@@ -173,7 +220,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       <span v-if="field === 'album'" class="library_facet_list_heading" role="columnheader">
         {{ t('library.groups.columns.artist') }}
       </span>
-      <span v-if="field === 'artist'" class="library_facet_list_heading" role="columnheader">
+      <span
+        v-if="field === 'artist' || field === 'genre'"
+        class="library_facet_list_heading"
+        role="columnheader"
+      >
         {{ t('library.groups.columns.albums') }}
       </span>
       <span class="library_facet_list_heading" role="columnheader">
@@ -202,7 +253,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         <span v-if="field === 'album'" class="library_facet_list_cell" role="cell">
           {{ group.artists.join(', ') }}
         </span>
-        <span v-if="field === 'artist'" class="library_facet_list_cell" role="cell">
+        <span
+          v-if="field === 'artist' || field === 'genre'"
+          class="library_facet_list_cell"
+          role="cell"
+        >
           {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
         </span>
         <span class="library_facet_list_cell" role="cell">
@@ -232,7 +287,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   display: flex;
   flex-direction: column;
   gap: $space_md;
-  justify-content: space-between;
   min-height: 10rem;
   padding: $space_md;
   @include surface_panel($radius_md);
@@ -254,16 +308,47 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_cover {
     flex-shrink: 0;
+
+    &_mosaic {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      border: 1px solid var(--color_border);
+      border-radius: $radius_md;
+      background-color: var(--color_surface_alt);
+
+      :deep(.cover_image) {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        border-radius: 0;
+      }
+
+      &_single {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 
   &_genre {
     grid-column: span 2;
-    min-height: 6.25rem;
-    padding-block: $space_sm;
+    flex-direction: row;
+    align-items: center;
+    min-height: 5rem;
+    padding: $space_sm;
+
+    .library_facet_card_cover {
+      width: 4.5rem;
+      height: 4.5rem;
+      aspect-ratio: 1;
+    }
   }
 
   &_body {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: $space_xs;
     min-width: 0;
@@ -321,7 +406,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   &_album &_head,
   &_album &_row,
   &_artist &_head,
-  &_artist &_row {
+  &_artist &_row,
+  &_genre &_head,
+  &_genre &_row {
     grid-template-columns:
       minmax(10rem, 1.2fr) minmax(10rem, 1fr) minmax(7rem, 0.45fr)
       minmax(6rem, 0.35fr);
@@ -385,14 +472,18 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     &_album &_head,
     &_album &_row,
     &_artist &_head,
-    &_artist &_row {
+    &_artist &_row,
+    &_genre &_head,
+    &_genre &_row {
       grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 1fr) minmax(5rem, auto);
     }
 
     &_album &_duration,
     &_album &_heading:last-child,
     &_artist &_duration,
-    &_artist &_heading:last-child {
+    &_artist &_heading:last-child,
+    &_genre &_duration,
+    &_genre &_heading:last-child {
       display: none;
     }
   }

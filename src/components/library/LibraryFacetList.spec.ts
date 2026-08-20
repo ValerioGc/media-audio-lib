@@ -70,11 +70,38 @@ describe('LibraryFacetList', () => {
       props: {
         field: 'genre',
         viewMode: 'preview',
-        tracks: [makeTrack({ genre: 'Jazz' })],
+        tracks: [
+          makeTrack({ genre: 'Jazz', album: 'Album A', hasCover: true }),
+          makeTrack({ genre: 'Jazz', album: 'Album B' }),
+        ],
       },
     });
 
-    expect(wrapper.get('.library_facet_card').classes()).toContain('library_facet_card_genre');
+    const card = wrapper.get('.library_facet_card');
+
+    expect(card.classes()).toContain('library_facet_card_genre');
+    expect(wrapper.find('.library_facet_card_label').exists()).toBe(false);
+    expect(wrapper.find('.library_facet_card_cover_mosaic').exists()).toBe(true);
+    expect(card.text()).toContain('2 album');
+    expect(card.text()).toContain('2 brani');
+  });
+
+  it('shows a cover mosaic for artist previews without repeating the field label', () => {
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'artist',
+        viewMode: 'preview',
+        tracks: [
+          makeTrack({ artist: 'Artist A', album: 'Album A', hasCover: true }),
+          makeTrack({ artist: 'Artist A', album: 'Album B' }),
+        ],
+      },
+    });
+
+    expect(wrapper.find('.library_facet_card_label').exists()).toBe(false);
+    expect(wrapper.find('.library_facet_card_cover_mosaic').exists()).toBe(true);
+    expect(wrapper.get('.library_facet_card').text()).toContain('2 album');
   });
 
   it('shows the artist on album groups', () => {

@@ -211,9 +211,16 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
           <span aria-hidden="true"> · </span>
           {{ formatDuration(group.durationMs) }}
         </p>
-        <p v-if="group.playing" class="library_facet_card_badge">
-          <AppIcon name="play" />
-          {{ t('library.row.playing') }}
+        <p
+          v-if="field === 'genre' || group.playing"
+          class="library_facet_card_badge"
+          :class="{ library_facet_card_badge_hidden: !group.playing }"
+          :aria-hidden="group.playing ? undefined : 'true'"
+        >
+          <template v-if="group.playing">
+            <AppIcon name="play" />
+            {{ t('library.row.playing') }}
+          </template>
         </p>
       </div>
     </article>
@@ -298,17 +305,24 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 .library_facet_preview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  align-content: start;
+  align-items: stretch;
   gap: $space_md;
   flex: 1;
   min-height: 0;
   padding-bottom: $space_md;
 
   @include scroll_area;
+
+  &_genre {
+    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+    grid-auto-rows: 8.5rem;
+  }
 }
 
 .library_facet_card {
   display: flex;
-  align-self: start;
+  align-self: stretch;
   flex-direction: column;
   gap: $space_md;
   min-height: 10rem;
@@ -380,16 +394,25 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_genre {
-    grid-column: span 2;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    grid-column: auto;
+    flex-direction: initial;
+    gap: $space_md;
     align-items: center;
-    min-height: 5rem;
-    padding: $space_sm;
+    min-height: 0;
+    padding: $space_sm $space_md;
 
     .library_facet_card_cover {
-      width: 4.5rem;
-      height: 4.5rem;
+      width: 6rem;
+      height: 6rem;
       aspect-ratio: 1;
+    }
+
+    .library_facet_card_body {
+      justify-content: center;
+      height: 100%;
+      padding-inline: 0;
     }
   }
 
@@ -435,12 +458,26 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     font-size: 0.8em;
     font-weight: 700;
     line-height: 1.2;
+
+    &_hidden {
+      visibility: hidden;
+    }
   }
 }
 
 @media (max-width: 560px) {
+  .library_facet_preview_genre {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 8.25rem;
+  }
+
   .library_facet_card_genre {
-    grid-column: span 1;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+
+    .library_facet_card_cover {
+      width: 5.5rem;
+      height: 5.5rem;
+    }
   }
 }
 

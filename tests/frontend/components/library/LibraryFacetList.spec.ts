@@ -86,6 +86,25 @@ describe('LibraryFacetList', () => {
     expect(card.text()).toContain('2 brani');
   });
 
+  it('reserves the playing badge slot on genre preview cards', () => {
+    const playingTrack = makeTrack({ genre: 'Jazz', album: 'Album A', hasCover: true });
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: {
+        field: 'genre',
+        viewMode: 'preview',
+        playingTrack,
+        tracks: [playingTrack, makeTrack({ genre: 'Rock', album: 'Album B', hasCover: true })],
+      },
+    });
+
+    const cards = wrapper.findAll('.library_facet_card_genre');
+
+    expect(cards).toHaveLength(2);
+    expect(cards[0]?.find('.library_facet_card_badge_hidden').exists()).toBe(false);
+    expect(cards[1]?.find('.library_facet_card_badge_hidden').exists()).toBe(true);
+  });
+
   it('shows a cover mosaic for artist previews without repeating the field label', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),

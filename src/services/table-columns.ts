@@ -2,7 +2,9 @@ import { formatDuration } from '@/services/track-sorting';
 import { SORTABLE_COLUMNS, type SortableColumn, type TrackView } from '@/types/library';
 import type { TableColumnKey, TableColumnSetting } from '@/types/settings';
 
-const TABLE_ACTIONS_COLUMN_WIDTH = '5.5rem';
+const TABLE_ACTIONS_COLUMN_WIDTH = '2.5rem';
+
+export type TableGridMode = 'fit' | 'scroll';
 
 export interface TableColumnView extends TableColumnSetting {
   label: string;
@@ -17,11 +19,19 @@ export function visibleTableColumns(columns: readonly TableColumnSetting[]): Tab
   return columns.filter((column) => column.visible);
 }
 
-export function tableGridTemplate(columns: readonly TableColumnSetting[]): string {
-  return [
-    ...visibleTableColumns(columns).map((column) => `${column.width}px`),
-    TABLE_ACTIONS_COLUMN_WIDTH,
-  ].join(' ');
+export function tableGridTemplate(
+  columns: readonly TableColumnSetting[],
+  mode: TableGridMode = 'scroll',
+): string {
+  const dataColumns = visibleTableColumns(columns).map((column) =>
+    mode === 'fit' ? `minmax(0, ${column.width}fr)` : `${column.width}px`,
+  );
+
+  if (mode === 'fit') {
+    return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
+  }
+
+  return [...dataColumns, 'minmax(0, 1fr)', TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
 }
 
 export function tableColumnValue(

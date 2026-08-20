@@ -194,7 +194,8 @@ function openActionsMenu(event: MouseEvent) {
   &_actions {
     display: flex;
     gap: $space_xs;
-    justify-content: flex-end;
+    grid-column: -1;
+    justify-content: center;
     overflow: visible;
   }
 }

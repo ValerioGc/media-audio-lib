@@ -308,6 +308,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
 .library_facet_card {
   display: flex;
+  align-self: start;
   flex-direction: column;
   gap: $space_md;
   min-height: 10rem;
@@ -327,6 +328,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   &_album {
     min-height: 19rem;
     padding: $space_md;
+
+    &.library_facet_card_playing {
+      min-height: 20.5rem;
+    }
   }
 
   &_playing {
@@ -390,7 +395,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_body {
     display: flex;
-    flex: 1;
+    flex: 0 0 auto;
     flex-direction: column;
     gap: $space_xs;
     min-width: 0;
@@ -424,9 +429,12 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     display: flex;
     gap: $space_xs;
     align-items: center;
+    flex-shrink: 0;
+    min-height: 1.5rem;
     color: var(--color_accent);
     font-size: 0.8em;
     font-weight: 700;
+    line-height: 1.2;
   }
 }
 

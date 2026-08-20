@@ -122,6 +122,24 @@ describe('LibraryTable', () => {
     expect(wrapper.find('.library_table_heading_actions .library_table_resize').exists()).toBe(
       false,
     );
+    expect(wrapper.attributes('style')).toContain('2.5rem');
+  });
+
+  it('enables horizontal scrolling only when requested', () => {
+    const defaultTable = mountTable([makeTrack()]);
+    const homepageTable = mount(LibraryTable, {
+      ...withPinia(),
+      props: {
+        tracks: [makeTrack()],
+        sort: DEFAULT_SORT,
+        selectedIds: [],
+        playingId: null,
+        allowHorizontalScroll: true,
+      },
+    });
+
+    expect(defaultTable.classes()).not.toContain('library_table_horizontal');
+    expect(homepageTable.classes()).toContain('library_table_horizontal');
   });
 
   it('uses the saved column order', async () => {

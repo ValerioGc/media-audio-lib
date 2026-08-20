@@ -1,0 +1,520 @@
+{
+  "app": {
+    "name": "Media Audio Lib"
+  },
+  "nav": {
+    "settings": "Ajustes",
+    "help": "Guía",
+    "backToLibrary": "Volver a la biblioteca"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Ajusta el idioma, la legibilidad y el aspecto de la aplicación.",
+    "language": {
+      "title": "Idioma",
+      "description": "Idioma de la interfaz. El cambio se aplica de inmediato.",
+      "options": {
+        "it": "Italiano",
+        "en": "Inglés",
+        "fr": "Francés",
+        "es": "Español",
+        "de": "Alemán"
+      }
+    },
+    "textSize": {
+      "title": "Tamaño del texto",
+      "description": "Escala la tipografía de toda la interfaz.",
+      "preview": "Vista previa del texto en el tamaño elegido.",
+      "options": {
+        "small": "Pequeño",
+        "medium": "Mediano",
+        "large": "Grande"
+      }
+    },
+    "theme": {
+      "title": "Tema",
+      "description": "Aspecto claro u oscuro, o seguir al sistema.",
+      "systemHint": "El sistema está usando el tema {theme}.",
+      "options": {
+        "light": "Claro",
+        "dark": "Oscuro",
+        "system": "Sistema"
+      }
+    },
+    "accent": {
+      "title": "Color de acento",
+      "description": "Color de los controles, los botones y los elementos activos de la interfaz.",
+      "swatch": "Color {color}",
+      "custom": "Personalizado",
+      "reset": "Volver al azul",
+      "hint": "El color se aclara u oscurece automáticamente para seguir siendo legible tanto en el tema claro como en el oscuro."
+    },
+    "ambience": {
+      "title": "Fondo y efecto cristal",
+      "description": "Fondo degradado construido sobre el color de acento, y superficies translúcidas para dar profundidad.",
+      "background": "Fondo degradado a partir del color de acento",
+      "style": "Tipo de degradado",
+      "styles": {
+        "orbs": "Burbujas difuminadas",
+        "linear": "Degradado lineal",
+        "spotlight": "Halo único"
+      },
+      "direction": "Dirección",
+      "directions": {
+        "topLeft": "Desde arriba a la izquierda",
+        "top": "Desde arriba",
+        "topRight": "Desde arriba a la derecha",
+        "left": "Desde la izquierda",
+        "right": "Desde la derecha",
+        "bottomLeft": "Desde abajo a la izquierda",
+        "bottom": "Desde abajo",
+        "bottomRight": "Desde abajo a la derecha"
+      },
+      "glass": "Superficies de cristal (tabla, tarjetas y paneles)",
+      "preview": "Vista previa",
+      "hint": "El segundo color del fondo deriva del acento, así que cambia con él. Las dos opciones son independientes."
+    },
+    "coverGradient": {
+      "title": "Fondo desde la carátula",
+      "description": "Usa el color dominante de la carátula para el fondo del reproductor y la fila en reproducción.",
+      "toggle": "Activar el degradado desde la carátula",
+      "intensity": "Intensidad",
+      "transparency": "Transparencia del reproductor",
+      "blur": "Desenfoque del reproductor"
+    },
+    "defaultPlayer": {
+      "title": "Reproductor de audio predeterminado",
+      "description": "Abre los ajustes del sistema para asociar los archivos de audio con Media Audio Lib.",
+      "message": "Windows exige una elección manual: busca Media Audio Lib en las aplicaciones predeterminadas y asígnale los formatos de audio que quieras abrir aquí.",
+      "open": "Abrir los ajustes",
+      "opening": "Abriendo…",
+      "error": "Los ajustes del sistema no pueden abrirse desde esta sesión."
+    },
+    "tabs": {
+      "general": "General",
+      "appearance": "Aspecto",
+      "library": "Biblioteca"
+    },
+    "appearance": {
+      "application": "Aplicación",
+      "player": "Reproductor de audio"
+    },
+    "libraryTab": {
+      "title": "Ajustes de la biblioteca",
+      "empty": "Las opciones de la biblioteca, como importar y exportar, aparecerán aquí."
+    },
+    "libraryName": {
+      "title": "Nombre de la biblioteca",
+      "description": "El nombre identifica la biblioteca activa en la pantalla principal.",
+      "label": "Nombre",
+      "placeholder": "Mi biblioteca",
+      "save": "Guardar el nombre",
+      "saving": "Guardando…"
+    },
+    "importExport": {
+      "title": "Importar / Exportar",
+      "description": "Guarda una copia JSON de la biblioteca o importa un archivo creado por la aplicación.",
+      "import": "Importar",
+      "importing": "Importando…",
+      "export": "Exportar la activa",
+      "strategy": {
+        "label": "Estrategia de importación",
+        "options": {
+          "replace": "Reemplazar la biblioteca activa",
+          "merge": "Combinar y actualizar los duplicados",
+          "mergeSkipDuplicates": "Combinar y omitir los duplicados"
+        }
+      },
+      "report": {
+        "summary": "{total} pistas leídas: {added} añadidas, {updated} actualizadas, {skipped} omitidas, {missing} archivos ausentes."
+      }
+    },
+    "libraries": {
+      "title": "Bibliotecas",
+      "description": "Cada biblioteca tiene su propia lista de pistas. Puedes crear más, abrirlas, elegir la principal, exportarlas o eliminarlas."
+    },
+    "footer": {
+      "version": "versión {version}",
+      "repository": "Proyecto en GitHub"
+    }
+  },
+  "library": {
+    "title": "Biblioteca",
+    "name": {
+      "field": "Nombre de la biblioteca",
+      "placeholder": "Mi biblioteca",
+      "save": "Guardar el nombre",
+      "cancel": "Cancelar el cambio",
+      "actions": "Opciones de la biblioteca",
+      "menu": {
+        "rename": "Renombrar",
+        "columns": "Columnas",
+        "verifyAll": "Verificar los archivos",
+        "missingInfo": "Datos ausentes",
+        "exportList": "Exportar la lista",
+        "export": "Exportar la biblioteca",
+        "delete": "Eliminar la biblioteca"
+      }
+    },
+    "catalog": {
+      "active": "en uso",
+      "trackCount": "ninguna pista | 1 pista | {count} pistas",
+      "open": "Abrir la biblioteca {name}",
+      "openShort": "Abrir",
+      "primary": "principal",
+      "primaryShort": "Principal",
+      "setPrimary": "Definir {name} como biblioteca principal",
+      "export": "Exportar la biblioteca {name}",
+      "remove": "Eliminar la biblioteca {name}",
+      "exported": "Biblioteca exportada a {path}",
+      "switcher": {
+        "open": "Cambiar de biblioteca",
+        "title": "Elegir biblioteca",
+        "close": "Cerrar"
+      },
+      "create": {
+        "label": "Nueva biblioteca",
+        "placeholder": "Nombre de la nueva biblioteca",
+        "submit": "Crear"
+      },
+      "delete": {
+        "title": "¿Eliminar la biblioteca?",
+        "message": "La biblioteca «{name}» y sus {count} pistas se quitan de la lista. Los archivos de audio permanecen en el disco.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar la biblioteca"
+      }
+    },
+    "toolbar": {
+      "add": "Añadir pistas",
+      "addFiles": "Archivos de audio",
+      "adding": "Importando…",
+      "search": "Buscar en la biblioteca",
+      "searchPlaceholder": "Título, álbum o género",
+      "count": "ninguna pista | 1 pista | {count} pistas",
+      "missing": "1 archivo ausente | {count} archivos ausentes",
+      "addFolder": "Añadir carpeta",
+      "editSelected": "Editar {count} seleccionadas",
+      "missingInfo": {
+        "label": "Ausente",
+        "active": "Ausente: {filter}",
+        "options": {
+          "all": "Todo",
+          "file": "Archivo",
+          "cover": "Carátula",
+          "artist": "Artista",
+          "album": "Álbum",
+          "year": "Año",
+          "genre": "Género"
+        }
+      }
+    },
+    "missingInfo": {
+      "title": "Datos ausentes",
+      "description": "Filtra la biblioteca por la información que aún falta por completar. Elige Todo para volver a la vista normal.",
+      "label": "Información",
+      "result": "ninguna pista encontrada | 1 pista encontrada | {count} pistas encontradas",
+      "close": "Cerrar"
+    },
+    "defaultPlayerBanner": {
+      "title": "Puedes usar Media Audio Lib como reproductor predeterminado",
+      "message": "Abre los ajustes del sistema y elige esta aplicación para MP3, FLAC, WAV y los demás formatos de audio.",
+      "action": "Configurar",
+      "dismiss": "Ocultar el aviso"
+    },
+    "columns": {
+      "cover": "Carátula",
+      "title": "Nombre",
+      "artist": "Artista",
+      "album": "Álbum",
+      "year": "Año",
+      "genre": "Género",
+      "format": "Formato",
+      "path": "Ruta",
+      "missing": "Estado del archivo",
+      "duration": "Duración",
+      "actions": "Acciones",
+      "resize": "Redimensionar {column}"
+    },
+    "columnSettings": {
+      "title": "Columnas de la lista",
+      "description": "Elige las columnas visibles y arrástralas para reordenarlas. Carátula y Nombre van siempre delante; Duración es obligatoria.",
+      "open": "Ajustes de columnas",
+      "fit": "Ajustar las columnas",
+      "width": "Ancho",
+      "moveUp": "Subir {column}",
+      "moveDown": "Bajar {column}",
+      "reset": "Restablecer",
+      "close": "Listo"
+    },
+    "sort": {
+      "sortBy": "Ordenar por {column}",
+      "asc": "ascendente",
+      "desc": "descendente"
+    },
+    "row": {
+      "unknown": "—",
+      "noCover": "Sin carátula",
+      "missing": "El archivo ya no está en el disco",
+      "missingShort": "Ausente",
+      "present": "Presente",
+      "playing": "En reproducción",
+      "actions": "Acciones para {title}",
+      "remove": "Quitar {title} de la biblioteca",
+      "edit": "Editar los metadatos de {title}",
+      "verify": "Verificar el enlace de {title}",
+      "menu": {
+        "edit": "Editar",
+        "verify": "Verificar",
+        "remove": "Eliminar"
+      }
+    },
+    "empty": {
+      "title": "La biblioteca está vacía",
+      "message": "Añade tus archivos de audio: se quedan donde están, aquí solo se registra la lista.",
+      "dropHint": "También puedes soltar archivos y carpetas sobre esta ventana."
+    },
+    "noMatches": {
+      "title": "Sin resultados",
+      "message": "Ninguna pista coincide con la búsqueda «{query}»."
+    },
+    "noMissingInfo": {
+      "title": "No falta ningún dato",
+      "message": "Ninguna pista coincide con el filtro de datos ausentes."
+    },
+    "remove": {
+      "title": "¿Quitar esta pista?",
+      "message": "«{title}» sale de la biblioteca. El archivo del disco no se elimina.",
+      "confirm": "Quitar",
+      "cancel": "Cancelar"
+    },
+    "report": {
+      "title": "Resultado de la importación",
+      "added": "1 pista añadida | {count} pistas añadidas",
+      "duplicates": "1 archivo ya estaba en la biblioteca | {count} archivos ya estaban en la biblioteca",
+      "failed": "1 archivo no importado | {count} archivos no importados",
+      "dismiss": "Descartar"
+    },
+    "verification": {
+      "summary": "Verificación terminada: {missing} archivos ausentes de {total} pistas."
+    },
+    "exportList": {
+      "title": "Exportar la lista de pistas",
+      "description": "Elige el formato y la información que se incluirá en el archivo.",
+      "format": "Formato",
+      "formats": {
+        "csv": "CSV",
+        "txt": "TXT"
+      },
+      "fieldsLabel": "Información",
+      "fields": {
+        "title": "Nombre",
+        "artist": "Artista",
+        "album": "Álbum",
+        "year": "Año",
+        "genre": "Género",
+        "duration": "Duración",
+        "format": "Formato",
+        "path": "Ruta",
+        "missing": "Archivo ausente"
+      },
+      "cancel": "Cancelar",
+      "submit": "Exportar"
+    },
+    "errors": {
+      "shellUnavailable": "Esta función solo está disponible en la aplicación de escritorio.",
+      "generic": "La operación ha fallado. Inténtalo de nuevo.",
+      "invalidLibraryName": "El nombre de la biblioteca no puede estar vacío."
+    },
+    "view": {
+      "label": "Vista",
+      "table": "Lista",
+      "preview": "Vistas previas"
+    },
+    "tabs": {
+      "label": "Secciones de la biblioteca",
+      "tracks": "Pistas",
+      "artists": "Artistas",
+      "albums": "Álbumes",
+      "genres": "Géneros"
+    },
+    "groups": {
+      "trackCount": "ninguna pista | 1 pista | {count} pistas",
+      "albumCount": "ningún álbum | 1 álbum | {count} álbumes",
+      "artistCount": "ningún artista | 1 artista | {count} artistas",
+      "openLabel": "Abrir las pistas vinculadas a {name}",
+      "albumArtist": "Artista: {artists}",
+      "albumGenres": "Género: {genres}",
+      "modalTitle": "Pistas vinculadas a {name}",
+      "detailTabs": "Detalle de los vínculos",
+      "back": "Volver al detalle anterior",
+      "expandAlbums": "Ampliar los álbumes",
+      "collapseAlbums": "Reducir los álbumes",
+      "expandArtists": "Mostrar la lista de artistas",
+      "collapseArtists": "Volver a las pistas",
+      "expandAlbumList": "Mostrar la lista de álbumes",
+      "collapseAlbumList": "Volver a las pistas",
+      "close": "Cerrar",
+      "columns": {
+        "artist": "Artista",
+        "album": "Álbum",
+        "albums": "Álbumes",
+        "artists": "Artistas",
+        "genre": "Género",
+        "tracks": "Pistas",
+        "duration": "Duración",
+        "actions": "Acciones"
+      },
+      "unknown": {
+        "artist": "Sin artista",
+        "album": "Sin álbum",
+        "genre": "Sin género"
+      }
+    }
+  },
+  "metadata": {
+    "title": "Editar metadatos",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "cancel": "Cancelar",
+    "bulk": {
+      "title": "Editar {count} pistas",
+      "description": "Activa solo los campos que quieras aplicar a cada pista seleccionada. El nombre de la pista sigue siendo individual."
+    },
+    "fields": {
+      "title": "Nombre",
+      "artist": "Artista",
+      "album": "Álbum",
+      "year": "Año",
+      "genre": "Género",
+      "genreCustom": "Elige o escribe un género"
+    },
+    "cover": {
+      "label": "Carátula",
+      "choose": "Elegir imagen…",
+      "remove": "Quitar la carátula",
+      "batch": {
+        "title": "¿Actualizar la carátula del álbum?",
+        "message": "El álbum «{album}» tiene otras {count} pistas. ¿Usar esta carátula también para ellas?",
+        "onlyCurrent": "Solo esta pista",
+        "allAlbum": "Todo el álbum"
+      }
+    },
+    "errors": {
+      "titleRequired": "El nombre no puede estar vacío.",
+      "titleTooLong": "El nombre es demasiado largo.",
+      "yearOutOfRange": "Introduce un año válido (entre 1000 y el año que viene).",
+      "coverType": "Solo se admiten imágenes PNG o JPEG.",
+      "coverTooLarge": "La imagen supera los 5 MB."
+    }
+  },
+  "player": {
+    "title": "Reproductor",
+    "nowPlaying": "En reproducción",
+    "expand": "Ampliar el reproductor",
+    "collapse": "Reducir el reproductor",
+    "openLibrary": "Abrir la biblioteca",
+    "close": "Cerrar el reproductor",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "stop": "Detener",
+    "previous": "Pista anterior",
+    "next": "Pista siguiente",
+    "shuffle": "Reproducción aleatoria",
+    "repeatOne": "Repetir la pista",
+    "progress": "Progreso de la pista",
+    "volume": "Volumen",
+    "volumeValue": "Volumen {value} %",
+    "errors": {
+      "missing": "El archivo de esta pista ya no está en el disco.",
+      "unsupported": "Este formato de audio no puede reproducirse aquí.",
+      "shellUnavailable": "La reproducción solo está disponible en la aplicación de escritorio.",
+      "generic": "La reproducción ha fallado."
+    }
+  },
+  "titlebar": {
+    "minimize": "Minimizar",
+    "maximize": "Maximizar o restaurar",
+    "close": "Cerrar la aplicación"
+  },
+  "help": {
+    "title": "Guía",
+    "subtitle": "Cómo usar Media Audio Lib: dónde está cada función y cómo utilizarla.",
+    "where": "Dónde:",
+    "topics": {
+      "import": {
+        "title": "Añadir pistas y carpetas",
+        "where": "barra superior de la Biblioteca, o soltando sobre la ventana.",
+        "steps": [
+          "Pulsa «Añadir pistas» para elegir uno o varios archivos de audio.",
+          "Pulsa «Añadir carpeta» para importar toda la música de una carpeta, subcarpetas incluidas.",
+          "También puedes soltar archivos o carpetas directamente sobre la ventana.",
+          "Después, un resumen indica qué se ha añadido, qué ya estaba y qué no se ha podido importar. Una importación sin incidencias se descarta sola.",
+          "Los archivos se quedan donde están: la biblioteca solo guarda la lista."
+        ]
+      },
+      "organize": {
+        "title": "Buscar y ordenar",
+        "where": "barra superior y encabezados de columna, en la vista de lista.",
+        "steps": [
+          "Escribe en el campo de búsqueda para filtrar por título, artista, álbum, género o ruta.",
+          "Haz clic en un encabezado de columna para ordenar las pistas.",
+          "Volver a hacer clic en la misma columna invierte el orden.",
+          "Las pistas sin ese campo caen siempre al final de la lista."
+        ]
+      },
+      "views": {
+        "title": "Cambiar de vista",
+        "where": "los dos iconos a la derecha de la barra de la Biblioteca.",
+        "steps": [
+          "El icono de lista muestra la tabla con todas las columnas.",
+          "El icono de cuadrícula muestra las vistas previas de las carátulas.",
+          "La vista elegida se recuerda la próxima vez que abras la aplicación."
+        ]
+      },
+      "metadata": {
+        "title": "Editar los metadatos",
+        "where": "menú de tres puntos en la fila o la tarjeta de la pista, o clic derecho en la fila.",
+        "steps": [
+          "Abre el menú de tres puntos, o haz clic derecho en la fila, y elige Editar.",
+          "Edita nombre, artista, álbum, año y género; el género se puede elegir o escribir.",
+          "Usa «Elegir imagen…» para reemplazar la carátula (PNG o JPEG, hasta 5 MB).",
+          "Pulsa «Guardar»: los cambios se escriben en las etiquetas del archivo, no solo en la biblioteca.",
+          "Dejar un campo vacío quita ese valor del archivo."
+        ]
+      },
+      "player": {
+        "title": "Escuchar una pista",
+        "where": "doble clic en una fila o una tarjeta; el reproductor aparece abajo.",
+        "steps": [
+          "Haz doble clic en la pista que quieras escuchar: la lista en pantalla se convierte en la cola de reproducción.",
+          "El reproductor aparece en la parte inferior de la ventana con carátula, título y artista.",
+          "Usa los controles para pausar, detener o pasar a la pista anterior y siguiente.",
+          "Arrastra la barra de progreso para moverte dentro de la pista, y la de la derecha para el volumen.",
+          "La flecha lo amplía a pantalla completa; Esc o la flecha hacia abajo devuelve la barra.",
+          "La X cierra el reproductor."
+        ]
+      },
+      "libraries": {
+        "title": "Usar varias bibliotecas",
+        "where": "menú junto al nombre de la biblioteca en la página de inicio, y pestaña Biblioteca en los ajustes.",
+        "steps": [
+          "En los ajustes, pestaña Biblioteca, escribe un nombre y pulsa Crear para añadir una biblioteca.",
+          "Desde el menú junto al nombre en la página de inicio, elige qué biblioteca abrir: la marca señala la que está en uso.",
+          "Exportar guarda una copia de la biblioteca en un archivo JSON que elijas.",
+          "Eliminar la biblioteca la quita de la lista; los archivos de audio permanecen en el disco.",
+          "La última biblioteca no puede eliminarse: siempre hay una abierta."
+        ]
+      },
+      "settings": {
+        "title": "Personalizar la aplicación",
+        "where": "icono de engranaje en la esquina superior derecha.",
+        "steps": [
+          "En la pestaña «General» elige el idioma de la interfaz.",
+          "En la pestaña «Aspecto» elige el tamaño del texto, el tema claro u oscuro y el aspecto del reproductor.",
+          "El tema «Sistema» sigue la configuración de Windows.",
+          "Cada elección se aplica al momento y se recuerda."
+        ]
+      }
+    }
+  }
+}

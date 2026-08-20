@@ -1,0 +1,520 @@
+{
+  "app": {
+    "name": "Media Audio Lib"
+  },
+  "nav": {
+    "settings": "Paramètres",
+    "help": "Guide",
+    "backToLibrary": "Retour à la bibliothèque"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Réglez la langue, la lisibilité et l'apparence de l'application.",
+    "language": {
+      "title": "Langue",
+      "description": "Langue de l'interface. Le changement est immédiat.",
+      "options": {
+        "it": "Italien",
+        "en": "Anglais",
+        "fr": "Français",
+        "es": "Espagnol",
+        "de": "Allemand"
+      }
+    },
+    "textSize": {
+      "title": "Taille du texte",
+      "description": "Met à l'échelle la typographie de toute l'interface.",
+      "preview": "Aperçu du texte à la taille choisie.",
+      "options": {
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande"
+      }
+    },
+    "theme": {
+      "title": "Thème",
+      "description": "Apparence claire ou sombre, ou suivre le système.",
+      "systemHint": "Le système utilise actuellement le thème {theme}.",
+      "options": {
+        "light": "Clair",
+        "dark": "Sombre",
+        "system": "Système"
+      }
+    },
+    "accent": {
+      "title": "Couleur d'accentuation",
+      "description": "Couleur des contrôles, des boutons et des éléments actifs de l'interface.",
+      "swatch": "Couleur {color}",
+      "custom": "Personnalisée",
+      "reset": "Revenir au bleu",
+      "hint": "La couleur est éclaircie ou assombrie automatiquement pour rester lisible sur le thème clair comme sur le sombre."
+    },
+    "ambience": {
+      "title": "Arrière-plan et effet verre",
+      "description": "Arrière-plan dégradé construit sur la couleur d'accentuation, et surfaces translucides pour donner de la profondeur.",
+      "background": "Arrière-plan dégradé à partir de la couleur d'accentuation",
+      "style": "Type de dégradé",
+      "styles": {
+        "orbs": "Bulles floutées",
+        "linear": "Dégradé linéaire",
+        "spotlight": "Halo unique"
+      },
+      "direction": "Direction",
+      "directions": {
+        "topLeft": "Depuis le haut à gauche",
+        "top": "Depuis le haut",
+        "topRight": "Depuis le haut à droite",
+        "left": "Depuis la gauche",
+        "right": "Depuis la droite",
+        "bottomLeft": "Depuis le bas à gauche",
+        "bottom": "Depuis le bas",
+        "bottomRight": "Depuis le bas à droite"
+      },
+      "glass": "Surfaces en verre (tableau, cartes et panneaux)",
+      "preview": "Aperçu",
+      "hint": "La seconde couleur de l'arrière-plan dérive de la couleur d'accentuation et change donc avec elle. Les deux options sont indépendantes."
+    },
+    "coverGradient": {
+      "title": "Arrière-plan depuis la pochette",
+      "description": "Utilise la couleur dominante de la pochette pour l'arrière-plan du lecteur et la ligne en cours de lecture.",
+      "toggle": "Activer le dégradé depuis la pochette",
+      "intensity": "Intensité",
+      "transparency": "Transparence du lecteur",
+      "blur": "Flou du lecteur"
+    },
+    "defaultPlayer": {
+      "title": "Lecteur audio par défaut",
+      "description": "Ouvrez les paramètres système pour associer les fichiers audio à Media Audio Lib.",
+      "message": "Windows demande un choix manuel : trouvez Media Audio Lib dans les applications par défaut et attribuez-lui les formats audio à ouvrir ici.",
+      "open": "Ouvrir les paramètres",
+      "opening": "Ouverture…",
+      "error": "Les paramètres système ne peuvent pas être ouverts depuis cette session."
+    },
+    "tabs": {
+      "general": "Général",
+      "appearance": "Apparence",
+      "library": "Bibliothèque"
+    },
+    "appearance": {
+      "application": "Application",
+      "player": "Lecteur audio"
+    },
+    "libraryTab": {
+      "title": "Paramètres de la bibliothèque",
+      "empty": "Les options de la bibliothèque, comme l'import et l'export, apparaîtront ici."
+    },
+    "libraryName": {
+      "title": "Nom de la bibliothèque",
+      "description": "Le nom identifie la bibliothèque active sur l'écran principal.",
+      "label": "Nom",
+      "placeholder": "Ma bibliothèque",
+      "save": "Enregistrer le nom",
+      "saving": "Enregistrement…"
+    },
+    "importExport": {
+      "title": "Import / Export",
+      "description": "Enregistrez une copie JSON de la bibliothèque ou importez un fichier produit par l'application.",
+      "import": "Importer",
+      "importing": "Import en cours…",
+      "export": "Exporter l'active",
+      "strategy": {
+        "label": "Stratégie d'import",
+        "options": {
+          "replace": "Remplacer la bibliothèque active",
+          "merge": "Fusionner et mettre à jour les doublons",
+          "mergeSkipDuplicates": "Fusionner et ignorer les doublons"
+        }
+      },
+      "report": {
+        "summary": "{total} morceaux lus : {added} ajoutés, {updated} mis à jour, {skipped} ignorés, {missing} fichiers manquants."
+      }
+    },
+    "libraries": {
+      "title": "Bibliothèques",
+      "description": "Chaque bibliothèque a sa propre liste de morceaux. Vous pouvez en créer d'autres, les ouvrir, choisir la principale, les exporter ou les supprimer."
+    },
+    "footer": {
+      "version": "version {version}",
+      "repository": "Projet sur GitHub"
+    }
+  },
+  "library": {
+    "title": "Bibliothèque",
+    "name": {
+      "field": "Nom de la bibliothèque",
+      "placeholder": "Ma bibliothèque",
+      "save": "Enregistrer le nom",
+      "cancel": "Annuler la modification",
+      "actions": "Options de la bibliothèque",
+      "menu": {
+        "rename": "Renommer",
+        "columns": "Colonnes",
+        "verifyAll": "Vérifier les fichiers",
+        "missingInfo": "Données manquantes",
+        "exportList": "Exporter la liste",
+        "export": "Exporter la bibliothèque",
+        "delete": "Supprimer la bibliothèque"
+      }
+    },
+    "catalog": {
+      "active": "en cours d'utilisation",
+      "trackCount": "aucun morceau | 1 morceau | {count} morceaux",
+      "open": "Ouvrir la bibliothèque {name}",
+      "openShort": "Ouvrir",
+      "primary": "principale",
+      "primaryShort": "Principale",
+      "setPrimary": "Définir {name} comme bibliothèque principale",
+      "export": "Exporter la bibliothèque {name}",
+      "remove": "Supprimer la bibliothèque {name}",
+      "exported": "Bibliothèque exportée vers {path}",
+      "switcher": {
+        "open": "Changer de bibliothèque",
+        "title": "Choisir une bibliothèque",
+        "close": "Fermer"
+      },
+      "create": {
+        "label": "Nouvelle bibliothèque",
+        "placeholder": "Nom de la nouvelle bibliothèque",
+        "submit": "Créer"
+      },
+      "delete": {
+        "title": "Supprimer la bibliothèque ?",
+        "message": "La bibliothèque « {name} » et ses {count} morceaux sont retirés de la liste. Les fichiers audio restent sur le disque.",
+        "cancel": "Annuler",
+        "confirm": "Supprimer la bibliothèque"
+      }
+    },
+    "toolbar": {
+      "add": "Ajouter des morceaux",
+      "addFiles": "Fichiers audio",
+      "adding": "Import en cours…",
+      "search": "Rechercher dans la bibliothèque",
+      "searchPlaceholder": "Titre, album ou genre",
+      "count": "aucun morceau | 1 morceau | {count} morceaux",
+      "missing": "1 fichier manquant | {count} fichiers manquants",
+      "addFolder": "Ajouter un dossier",
+      "editSelected": "Modifier {count} sélectionnés",
+      "missingInfo": {
+        "label": "Manquant",
+        "active": "Manquant : {filter}",
+        "options": {
+          "all": "Tout",
+          "file": "Fichier",
+          "cover": "Pochette",
+          "artist": "Artiste",
+          "album": "Album",
+          "year": "Année",
+          "genre": "Genre"
+        }
+      }
+    },
+    "missingInfo": {
+      "title": "Données manquantes",
+      "description": "Filtrez la bibliothèque par les informations qui restent à compléter. Choisissez Tout pour revenir à la vue normale.",
+      "label": "Information",
+      "result": "aucun morceau trouvé | 1 morceau trouvé | {count} morceaux trouvés",
+      "close": "Fermer"
+    },
+    "defaultPlayerBanner": {
+      "title": "Vous pouvez utiliser Media Audio Lib comme lecteur par défaut",
+      "message": "Ouvrez les paramètres système et choisissez cette application pour le MP3, le FLAC, le WAV et les autres formats audio.",
+      "action": "Configurer",
+      "dismiss": "Masquer l'avis"
+    },
+    "columns": {
+      "cover": "Pochette",
+      "title": "Nom",
+      "artist": "Artiste",
+      "album": "Album",
+      "year": "Année",
+      "genre": "Genre",
+      "format": "Format",
+      "path": "Chemin",
+      "missing": "État du fichier",
+      "duration": "Durée",
+      "actions": "Actions",
+      "resize": "Redimensionner {column}"
+    },
+    "columnSettings": {
+      "title": "Colonnes de la liste",
+      "description": "Choisissez les colonnes visibles et faites-les glisser pour les réordonner. Pochette et Nom restent toujours en tête ; Durée reste obligatoire.",
+      "open": "Réglages des colonnes",
+      "fit": "Ajuster les colonnes",
+      "width": "Largeur",
+      "moveUp": "Déplacer {column} vers le haut",
+      "moveDown": "Déplacer {column} vers le bas",
+      "reset": "Réinitialiser",
+      "close": "Terminé"
+    },
+    "sort": {
+      "sortBy": "Trier par {column}",
+      "asc": "croissant",
+      "desc": "décroissant"
+    },
+    "row": {
+      "unknown": "—",
+      "noCover": "Pas de pochette",
+      "missing": "Fichier absent du disque",
+      "missingShort": "Manquant",
+      "present": "Présent",
+      "playing": "En cours de lecture",
+      "actions": "Actions pour {title}",
+      "remove": "Retirer {title} de la bibliothèque",
+      "edit": "Modifier les métadonnées de {title}",
+      "verify": "Vérifier le lien de {title}",
+      "menu": {
+        "edit": "Modifier",
+        "verify": "Vérifier",
+        "remove": "Supprimer"
+      }
+    },
+    "empty": {
+      "title": "La bibliothèque est vide",
+      "message": "Ajoutez vos fichiers audio : ils restent où ils sont, seule la liste est suivie ici.",
+      "dropHint": "Vous pouvez aussi déposer fichiers et dossiers sur cette fenêtre."
+    },
+    "noMatches": {
+      "title": "Aucun résultat",
+      "message": "Aucun morceau ne correspond à la recherche « {query} »."
+    },
+    "noMissingInfo": {
+      "title": "Aucune donnée manquante",
+      "message": "Aucun morceau ne correspond au filtre des données manquantes."
+    },
+    "remove": {
+      "title": "Retirer ce morceau ?",
+      "message": "« {title} » quitte la bibliothèque. Le fichier sur le disque n'est pas supprimé.",
+      "confirm": "Retirer",
+      "cancel": "Annuler"
+    },
+    "report": {
+      "title": "Résultat de l'import",
+      "added": "1 morceau ajouté | {count} morceaux ajoutés",
+      "duplicates": "1 fichier déjà dans la bibliothèque | {count} fichiers déjà dans la bibliothèque",
+      "failed": "1 fichier non importé | {count} fichiers non importés",
+      "dismiss": "Masquer"
+    },
+    "verification": {
+      "summary": "Vérification terminée : {missing} fichiers manquants sur {total} morceaux."
+    },
+    "exportList": {
+      "title": "Exporter la liste des morceaux",
+      "description": "Choisissez le format et les informations à inclure dans le fichier.",
+      "format": "Format",
+      "formats": {
+        "csv": "CSV",
+        "txt": "TXT"
+      },
+      "fieldsLabel": "Informations",
+      "fields": {
+        "title": "Nom",
+        "artist": "Artiste",
+        "album": "Album",
+        "year": "Année",
+        "genre": "Genre",
+        "duration": "Durée",
+        "format": "Format",
+        "path": "Chemin",
+        "missing": "Fichier manquant"
+      },
+      "cancel": "Annuler",
+      "submit": "Exporter"
+    },
+    "errors": {
+      "shellUnavailable": "Cette fonction n'est disponible que dans l'application de bureau.",
+      "generic": "L'opération a échoué. Veuillez réessayer.",
+      "invalidLibraryName": "Le nom de la bibliothèque ne peut pas être vide."
+    },
+    "view": {
+      "label": "Vue",
+      "table": "Liste",
+      "preview": "Aperçus"
+    },
+    "tabs": {
+      "label": "Sections de la bibliothèque",
+      "tracks": "Morceaux",
+      "artists": "Artistes",
+      "albums": "Albums",
+      "genres": "Genres"
+    },
+    "groups": {
+      "trackCount": "aucun morceau | 1 morceau | {count} morceaux",
+      "albumCount": "aucun album | 1 album | {count} albums",
+      "artistCount": "aucun artiste | 1 artiste | {count} artistes",
+      "openLabel": "Ouvrir les morceaux liés à {name}",
+      "albumArtist": "Artiste : {artists}",
+      "albumGenres": "Genre : {genres}",
+      "modalTitle": "Morceaux liés à {name}",
+      "detailTabs": "Détail des liens",
+      "back": "Retour au détail précédent",
+      "expandAlbums": "Agrandir les albums",
+      "collapseAlbums": "Réduire les albums",
+      "expandArtists": "Afficher la liste des artistes",
+      "collapseArtists": "Revenir aux morceaux",
+      "expandAlbumList": "Afficher la liste des albums",
+      "collapseAlbumList": "Revenir aux morceaux",
+      "close": "Fermer",
+      "columns": {
+        "artist": "Artiste",
+        "album": "Album",
+        "albums": "Albums",
+        "artists": "Artistes",
+        "genre": "Genre",
+        "tracks": "Morceaux",
+        "duration": "Durée",
+        "actions": "Actions"
+      },
+      "unknown": {
+        "artist": "Sans artiste",
+        "album": "Sans album",
+        "genre": "Sans genre"
+      }
+    }
+  },
+  "metadata": {
+    "title": "Modifier les métadonnées",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "cancel": "Annuler",
+    "bulk": {
+      "title": "Modifier {count} morceaux",
+      "description": "N'activez que les champs à appliquer à chaque morceau sélectionné. Le nom du morceau reste individuel."
+    },
+    "fields": {
+      "title": "Nom",
+      "artist": "Artiste",
+      "album": "Album",
+      "year": "Année",
+      "genre": "Genre",
+      "genreCustom": "Choisissez ou saisissez un genre"
+    },
+    "cover": {
+      "label": "Pochette",
+      "choose": "Choisir une image…",
+      "remove": "Retirer la pochette",
+      "batch": {
+        "title": "Mettre à jour la pochette de l'album ?",
+        "message": "L'album « {album} » compte {count} autres morceaux. Utiliser cette pochette pour eux aussi ?",
+        "onlyCurrent": "Ce morceau seulement",
+        "allAlbum": "Tout l'album"
+      }
+    },
+    "errors": {
+      "titleRequired": "Le nom ne peut pas être vide.",
+      "titleTooLong": "Le nom est trop long.",
+      "yearOutOfRange": "Saisissez une année valide (entre 1000 et l'année prochaine).",
+      "coverType": "Seules les images PNG ou JPEG sont acceptées.",
+      "coverTooLarge": "L'image dépasse 5 Mo."
+    }
+  },
+  "player": {
+    "title": "Lecteur",
+    "nowPlaying": "En cours de lecture",
+    "expand": "Agrandir le lecteur",
+    "collapse": "Réduire le lecteur",
+    "openLibrary": "Ouvrir la bibliothèque",
+    "close": "Fermer le lecteur",
+    "play": "Lire",
+    "pause": "Mettre en pause",
+    "stop": "Arrêter",
+    "previous": "Morceau précédent",
+    "next": "Morceau suivant",
+    "shuffle": "Lecture aléatoire",
+    "repeatOne": "Répéter le morceau",
+    "progress": "Progression du morceau",
+    "volume": "Volume",
+    "volumeValue": "Volume {value} %",
+    "errors": {
+      "missing": "Le fichier de ce morceau n'est plus sur le disque.",
+      "unsupported": "Ce format audio ne peut pas être lu ici.",
+      "shellUnavailable": "La lecture n'est disponible que dans l'application de bureau.",
+      "generic": "Échec de la lecture."
+    }
+  },
+  "titlebar": {
+    "minimize": "Réduire",
+    "maximize": "Agrandir ou restaurer",
+    "close": "Fermer l'application"
+  },
+  "help": {
+    "title": "Guide",
+    "subtitle": "Comment utiliser Media Audio Lib : où se trouve chaque fonction et comment s'en servir.",
+    "where": "Où :",
+    "topics": {
+      "import": {
+        "title": "Ajouter des morceaux et des dossiers",
+        "where": "barre du haut de la Bibliothèque, ou en déposant sur la fenêtre.",
+        "steps": [
+          "Appuyez sur « Ajouter des morceaux » pour choisir un ou plusieurs fichiers audio.",
+          "Appuyez sur « Ajouter un dossier » pour importer toute la musique d'un dossier, sous-dossiers compris.",
+          "Vous pouvez aussi déposer fichiers ou dossiers directement sur la fenêtre.",
+          "Un résumé indique ensuite ce qui a été ajouté, ce qui était déjà là et ce qui n'a pas pu être importé. Un import sans problème disparaît de lui-même.",
+          "Les fichiers restent où ils sont : la bibliothèque ne garde que la liste."
+        ]
+      },
+      "organize": {
+        "title": "Rechercher et trier",
+        "where": "barre du haut et en-têtes de colonnes, dans la vue liste.",
+        "steps": [
+          "Saisissez du texte dans le champ de recherche pour filtrer par titre, artiste, album, genre ou chemin.",
+          "Cliquez sur un en-tête de colonne pour trier les morceaux.",
+          "Un nouveau clic sur la même colonne inverse l'ordre.",
+          "Les morceaux dépourvus de ce champ tombent toujours en bas de liste."
+        ]
+      },
+      "views": {
+        "title": "Changer de vue",
+        "where": "les deux icônes à droite de la barre Bibliothèque.",
+        "steps": [
+          "L'icône liste affiche le tableau avec toutes les colonnes.",
+          "L'icône grille affiche les aperçus des pochettes.",
+          "La vue choisie est retenue pour la prochaine ouverture de l'application."
+        ]
+      },
+      "metadata": {
+        "title": "Modifier les métadonnées",
+        "where": "menu à trois points sur la ligne ou la carte du morceau, ou clic droit sur la ligne.",
+        "steps": [
+          "Ouvrez le menu à trois points, ou faites un clic droit sur la ligne, et choisissez Modifier.",
+          "Modifiez nom, artiste, album, année et genre ; le genre peut être choisi ou saisi.",
+          "Utilisez « Choisir une image… » pour remplacer la pochette (PNG ou JPEG, jusqu'à 5 Mo).",
+          "Appuyez sur « Enregistrer » : les modifications sont écrites dans les tags du fichier, pas seulement dans la bibliothèque.",
+          "Laisser un champ vide retire cette valeur du fichier."
+        ]
+      },
+      "player": {
+        "title": "Écouter un morceau",
+        "where": "double-cliquez sur une ligne ou une carte ; le lecteur apparaît en bas.",
+        "steps": [
+          "Double-cliquez sur le morceau à écouter : la liste à l'écran devient la file de lecture.",
+          "Le lecteur apparaît en bas de la fenêtre avec pochette, titre et artiste.",
+          "Utilisez les contrôles pour mettre en pause, arrêter ou passer au morceau précédent et suivant.",
+          "Faites glisser la barre de progression pour vous déplacer dans le morceau, et celle de droite pour le volume.",
+          "La flèche l'agrandit en pleine page ; Échap ou la flèche vers le bas ramène la barre.",
+          "La croix ferme le lecteur."
+        ]
+      },
+      "libraries": {
+        "title": "Utiliser plusieurs bibliothèques",
+        "where": "menu à côté du nom de la bibliothèque sur la page d'accueil, et onglet Bibliothèque dans les paramètres.",
+        "steps": [
+          "Dans les paramètres, onglet Bibliothèque, saisissez un nom et appuyez sur Créer pour ajouter une bibliothèque.",
+          "Depuis le menu à côté du nom sur la page d'accueil, choisissez la bibliothèque à ouvrir : la coche indique celle en cours d'utilisation.",
+          "Exporter enregistre une copie de la bibliothèque dans un fichier JSON de votre choix.",
+          "Supprimer la bibliothèque la retire de la liste ; les fichiers audio restent sur le disque.",
+          "La dernière bibliothèque ne peut pas être supprimée : il y en a toujours une d'ouverte."
+        ]
+      },
+      "settings": {
+        "title": "Personnaliser l'application",
+        "where": "icône d'engrenage en haut à droite.",
+        "steps": [
+          "Sous l'onglet « Général », choisissez la langue de l'interface.",
+          "Sous l'onglet « Apparence », choisissez la taille du texte, le thème clair ou sombre et le rendu du lecteur.",
+          "Le thème « Système » suit le réglage de Windows.",
+          "Chaque choix s'applique aussitôt et est mémorisé."
+        ]
+      }
+    }
+  }
+}

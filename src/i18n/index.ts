@@ -1,6 +1,9 @@
 import { createI18n } from 'vue-i18n';
 
+import de from '@/locales/de.json';
 import en from '@/locales/en.json';
+import es from '@/locales/es.json';
+import fr from '@/locales/fr.json';
 import it from '@/locales/it.json';
 import { DEFAULT_SETTINGS, LOCALES, type Locale } from '@/types/settings';
 
@@ -8,7 +11,7 @@ export const i18n = createI18n({
   legacy: false,
   locale: DEFAULT_SETTINGS.locale,
   fallbackLocale: DEFAULT_SETTINGS.locale,
-  messages: { it, en },
+  messages: { it, en, fr, es, de },
 });
 
 export function isSupportedLocale(value: unknown): value is Locale {

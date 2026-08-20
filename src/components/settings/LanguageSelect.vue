@@ -3,13 +3,22 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppOptionGroup from '@/components/common/AppOptionGroup.vue';
+import flagDe from '@/assets/icons/flag-de.svg';
+import flagEs from '@/assets/icons/flag-es.svg';
+import flagFr from '@/assets/icons/flag-fr.svg';
 import flagGb from '@/assets/icons/flag-gb.svg';
 import flagIt from '@/assets/icons/flag-it.svg';
 import { useSettingsStore } from '@/stores/settings';
 import { LOCALES, type Locale } from '@/types/settings';
 
 /** The same flags the GitHub Pages site uses for its language switcher. */
-const FLAGS: Record<Locale, string> = { it: flagIt, en: flagGb };
+const FLAGS: Record<Locale, string> = {
+  it: flagIt,
+  en: flagGb,
+  fr: flagFr,
+  es: flagEs,
+  de: flagDe,
+};
 
 const { t } = useI18n();
 const settings = useSettingsStore();

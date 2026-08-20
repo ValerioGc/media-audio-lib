@@ -15,7 +15,10 @@
       "description": "Interface language. The change applies immediately.",
       "options": {
         "it": "Italian",
-        "en": "English"
+        "en": "English",
+        "fr": "French",
+        "es": "Spanish",
+        "de": "German"
       }
     },
     "textSize": {

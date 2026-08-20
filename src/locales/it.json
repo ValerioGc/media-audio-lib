@@ -15,7 +15,10 @@
       "description": "Lingua dell'interfaccia. Il cambio è immediato.",
       "options": {
         "it": "Italiano",
-        "en": "Inglese"
+        "en": "Inglese",
+        "fr": "Francese",
+        "es": "Spagnolo",
+        "de": "Tedesco"
       }
     },
     "textSize": {

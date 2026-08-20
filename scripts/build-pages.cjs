@@ -12,7 +12,13 @@ const logoPath = join(rootDir, 'src', 'assets', 'logo.svg');
 const iconsDir = join(rootDir, 'src', 'assets', 'icons');
 const checkOnly = process.argv.includes('--check');
 
-const FLAG_FILES = { it: 'flag-it.svg', en: 'flag-gb.svg' };
+const FLAG_FILES = {
+  it: 'flag-it.svg',
+  en: 'flag-gb.svg',
+  fr: 'flag-fr.svg',
+  es: 'flag-es.svg',
+  de: 'flag-de.svg',
+};
 
 const content = JSON.parse(readFileSync(contentPath, 'utf8'));
 const siteLocales = Object.keys(content.locales);

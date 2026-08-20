@@ -1,0 +1,520 @@
+{
+  "app": {
+    "name": "Media Audio Lib"
+  },
+  "nav": {
+    "settings": "Einstellungen",
+    "help": "Anleitung",
+    "backToLibrary": "Zurück zur Bibliothek"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Sprache, Lesbarkeit und Erscheinungsbild der Anwendung anpassen.",
+    "language": {
+      "title": "Sprache",
+      "description": "Sprache der Oberfläche. Die Änderung wirkt sofort.",
+      "options": {
+        "it": "Italienisch",
+        "en": "Englisch",
+        "fr": "Französisch",
+        "es": "Spanisch",
+        "de": "Deutsch"
+      }
+    },
+    "textSize": {
+      "title": "Textgröße",
+      "description": "Skaliert die Typografie der gesamten Oberfläche.",
+      "preview": "Vorschau des Textes in der gewählten Größe.",
+      "options": {
+        "small": "Klein",
+        "medium": "Mittel",
+        "large": "Groß"
+      }
+    },
+    "theme": {
+      "title": "Design",
+      "description": "Helles oder dunkles Erscheinungsbild, oder dem System folgen.",
+      "systemHint": "Das System verwendet derzeit das Design {theme}.",
+      "options": {
+        "light": "Hell",
+        "dark": "Dunkel",
+        "system": "System"
+      }
+    },
+    "accent": {
+      "title": "Akzentfarbe",
+      "description": "Farbe der Bedienelemente, Schaltflächen und aktiven Elemente der Oberfläche.",
+      "swatch": "Farbe {color}",
+      "custom": "Benutzerdefiniert",
+      "reset": "Zurück zu Blau",
+      "hint": "Die Farbe wird automatisch aufgehellt oder abgedunkelt, damit sie im hellen wie im dunklen Design lesbar bleibt."
+    },
+    "ambience": {
+      "title": "Hintergrund und Glaseffekt",
+      "description": "Weicher Hintergrund auf Basis der Akzentfarbe und lichtdurchlässige Flächen für mehr Tiefe.",
+      "background": "Weicher Hintergrund aus der Akzentfarbe",
+      "style": "Art des Verlaufs",
+      "styles": {
+        "orbs": "Weiche Farbkugeln",
+        "linear": "Linearer Verlauf",
+        "spotlight": "Einzelner Lichtschein"
+      },
+      "direction": "Richtung",
+      "directions": {
+        "topLeft": "Von oben links",
+        "top": "Von oben",
+        "topRight": "Von oben rechts",
+        "left": "Von links",
+        "right": "Von rechts",
+        "bottomLeft": "Von unten links",
+        "bottom": "Von unten",
+        "bottomRight": "Von unten rechts"
+      },
+      "glass": "Glasflächen (Tabelle, Karten und Bereiche)",
+      "preview": "Vorschau",
+      "hint": "Die zweite Farbe des Hintergrunds leitet sich aus der Akzentfarbe ab und ändert sich mit ihr. Die beiden Optionen sind voneinander unabhängig."
+    },
+    "coverGradient": {
+      "title": "Hintergrund aus dem Cover",
+      "description": "Verwendet die vorherrschende Farbe des Covers für den Hintergrund des Players und die laufende Zeile.",
+      "toggle": "Verlauf aus dem Cover aktivieren",
+      "intensity": "Intensität",
+      "transparency": "Transparenz des Players",
+      "blur": "Weichzeichnen des Players"
+    },
+    "defaultPlayer": {
+      "title": "Standard-Audioplayer",
+      "description": "Systemeinstellungen öffnen, um Audiodateien mit Media Audio Lib zu verknüpfen.",
+      "message": "Windows verlangt eine manuelle Auswahl: Suchen Sie Media Audio Lib in den Standard-Apps und weisen Sie ihm die Audioformate zu, die hier geöffnet werden sollen.",
+      "open": "Einstellungen öffnen",
+      "opening": "Wird geöffnet…",
+      "error": "Die Systemeinstellungen lassen sich aus dieser Sitzung nicht öffnen."
+    },
+    "tabs": {
+      "general": "Allgemein",
+      "appearance": "Erscheinungsbild",
+      "library": "Bibliothek"
+    },
+    "appearance": {
+      "application": "Anwendung",
+      "player": "Audioplayer"
+    },
+    "libraryTab": {
+      "title": "Bibliothekseinstellungen",
+      "empty": "Optionen der Bibliothek wie Import und Export erscheinen hier."
+    },
+    "libraryName": {
+      "title": "Name der Bibliothek",
+      "description": "Der Name kennzeichnet die aktive Bibliothek auf dem Hauptbildschirm.",
+      "label": "Name",
+      "placeholder": "Meine Bibliothek",
+      "save": "Namen speichern",
+      "saving": "Wird gespeichert…"
+    },
+    "importExport": {
+      "title": "Import / Export",
+      "description": "Eine JSON-Kopie der Bibliothek speichern oder eine von der Anwendung erzeugte Datei importieren.",
+      "import": "Importieren",
+      "importing": "Wird importiert…",
+      "export": "Aktive exportieren",
+      "strategy": {
+        "label": "Import-Strategie",
+        "options": {
+          "replace": "Aktive Bibliothek ersetzen",
+          "merge": "Zusammenführen und Duplikate aktualisieren",
+          "mergeSkipDuplicates": "Zusammenführen und Duplikate überspringen"
+        }
+      },
+      "report": {
+        "summary": "{total} Titel gelesen: {added} hinzugefügt, {updated} aktualisiert, {skipped} übersprungen, {missing} fehlende Dateien."
+      }
+    },
+    "libraries": {
+      "title": "Bibliotheken",
+      "description": "Jede Bibliothek hat ihre eigene Titelliste. Sie können weitere anlegen, sie öffnen, die primäre wählen, exportieren oder löschen."
+    },
+    "footer": {
+      "version": "Version {version}",
+      "repository": "Projekt auf GitHub"
+    }
+  },
+  "library": {
+    "title": "Bibliothek",
+    "name": {
+      "field": "Name der Bibliothek",
+      "placeholder": "Meine Bibliothek",
+      "save": "Namen speichern",
+      "cancel": "Änderung verwerfen",
+      "actions": "Optionen der Bibliothek",
+      "menu": {
+        "rename": "Umbenennen",
+        "columns": "Spalten",
+        "verifyAll": "Dateien prüfen",
+        "missingInfo": "Fehlende Angaben",
+        "exportList": "Liste exportieren",
+        "export": "Bibliothek exportieren",
+        "delete": "Bibliothek löschen"
+      }
+    },
+    "catalog": {
+      "active": "in Verwendung",
+      "trackCount": "keine Titel | 1 Titel | {count} Titel",
+      "open": "Bibliothek {name} öffnen",
+      "openShort": "Öffnen",
+      "primary": "primär",
+      "primaryShort": "Primär",
+      "setPrimary": "{name} als primäre Bibliothek festlegen",
+      "export": "Bibliothek {name} exportieren",
+      "remove": "Bibliothek {name} löschen",
+      "exported": "Bibliothek nach {path} exportiert",
+      "switcher": {
+        "open": "Bibliothek wechseln",
+        "title": "Bibliothek wählen",
+        "close": "Schließen"
+      },
+      "create": {
+        "label": "Neue Bibliothek",
+        "placeholder": "Name der neuen Bibliothek",
+        "submit": "Anlegen"
+      },
+      "delete": {
+        "title": "Bibliothek löschen?",
+        "message": "Die Bibliothek „{name}“ und ihre {count} Titel werden aus der Liste entfernt. Die Audiodateien bleiben auf der Festplatte.",
+        "cancel": "Abbrechen",
+        "confirm": "Bibliothek löschen"
+      }
+    },
+    "toolbar": {
+      "add": "Titel hinzufügen",
+      "addFiles": "Audiodateien",
+      "adding": "Wird importiert…",
+      "search": "Bibliothek durchsuchen",
+      "searchPlaceholder": "Titel, Album oder Genre",
+      "count": "keine Titel | 1 Titel | {count} Titel",
+      "missing": "1 fehlende Datei | {count} fehlende Dateien",
+      "addFolder": "Ordner hinzufügen",
+      "editSelected": "{count} ausgewählte bearbeiten",
+      "missingInfo": {
+        "label": "Fehlend",
+        "active": "Fehlend: {filter}",
+        "options": {
+          "all": "Alle",
+          "file": "Datei",
+          "cover": "Cover",
+          "artist": "Interpret",
+          "album": "Album",
+          "year": "Jahr",
+          "genre": "Genre"
+        }
+      }
+    },
+    "missingInfo": {
+      "title": "Fehlende Angaben",
+      "description": "Filtert die Bibliothek nach den Angaben, die noch zu ergänzen sind. Wählen Sie Alle, um zur normalen Ansicht zurückzukehren.",
+      "label": "Angabe",
+      "result": "keine Titel gefunden | 1 Titel gefunden | {count} Titel gefunden",
+      "close": "Schließen"
+    },
+    "defaultPlayerBanner": {
+      "title": "Sie können Media Audio Lib als Standardplayer verwenden",
+      "message": "Öffnen Sie die Systemeinstellungen und wählen Sie diese Anwendung für MP3, FLAC, WAV und die übrigen Audioformate.",
+      "action": "Einrichten",
+      "dismiss": "Hinweis ausblenden"
+    },
+    "columns": {
+      "cover": "Cover",
+      "title": "Name",
+      "artist": "Interpret",
+      "album": "Album",
+      "year": "Jahr",
+      "genre": "Genre",
+      "format": "Format",
+      "path": "Pfad",
+      "missing": "Dateizustand",
+      "duration": "Dauer",
+      "actions": "Aktionen",
+      "resize": "{column} in der Breite ändern"
+    },
+    "columnSettings": {
+      "title": "Spalten der Liste",
+      "description": "Wählen Sie die sichtbaren Spalten und ziehen Sie sie, um die Reihenfolge zu ändern. Cover und Name bleiben immer vorn; Dauer bleibt verpflichtend.",
+      "open": "Spalteneinstellungen",
+      "fit": "Spalten anpassen",
+      "width": "Breite",
+      "moveUp": "{column} nach oben verschieben",
+      "moveDown": "{column} nach unten verschieben",
+      "reset": "Zurücksetzen",
+      "close": "Fertig"
+    },
+    "sort": {
+      "sortBy": "Nach {column} sortieren",
+      "asc": "aufsteigend",
+      "desc": "absteigend"
+    },
+    "row": {
+      "unknown": "—",
+      "noCover": "Kein Cover",
+      "missing": "Datei nicht mehr auf der Festplatte",
+      "missingShort": "Fehlt",
+      "present": "Vorhanden",
+      "playing": "Wird abgespielt",
+      "actions": "Aktionen für {title}",
+      "remove": "{title} aus der Bibliothek entfernen",
+      "edit": "Metadaten von {title} bearbeiten",
+      "verify": "Verknüpfung von {title} prüfen",
+      "menu": {
+        "edit": "Bearbeiten",
+        "verify": "Prüfen",
+        "remove": "Löschen"
+      }
+    },
+    "empty": {
+      "title": "Die Bibliothek ist leer",
+      "message": "Fügen Sie Ihre Audiodateien hinzu: Sie bleiben, wo sie sind, hier wird nur die Liste geführt.",
+      "dropHint": "Sie können Dateien und Ordner auch auf dieses Fenster ziehen."
+    },
+    "noMatches": {
+      "title": "Keine Treffer",
+      "message": "Kein Titel entspricht der Suche „{query}“."
+    },
+    "noMissingInfo": {
+      "title": "Keine fehlenden Angaben",
+      "message": "Kein Titel entspricht dem Filter für fehlende Angaben."
+    },
+    "remove": {
+      "title": "Diesen Titel entfernen?",
+      "message": "„{title}“ verlässt die Bibliothek. Die Datei auf der Festplatte wird nicht gelöscht.",
+      "confirm": "Entfernen",
+      "cancel": "Abbrechen"
+    },
+    "report": {
+      "title": "Ergebnis des Imports",
+      "added": "1 Titel hinzugefügt | {count} Titel hinzugefügt",
+      "duplicates": "1 Datei bereits in der Bibliothek | {count} Dateien bereits in der Bibliothek",
+      "failed": "1 Datei nicht importiert | {count} Dateien nicht importiert",
+      "dismiss": "Ausblenden"
+    },
+    "verification": {
+      "summary": "Prüfung abgeschlossen: {missing} fehlende Dateien von {total} Titeln."
+    },
+    "exportList": {
+      "title": "Titelliste exportieren",
+      "description": "Wählen Sie das Format und die Angaben, die in die Datei aufgenommen werden.",
+      "format": "Format",
+      "formats": {
+        "csv": "CSV",
+        "txt": "TXT"
+      },
+      "fieldsLabel": "Angaben",
+      "fields": {
+        "title": "Name",
+        "artist": "Interpret",
+        "album": "Album",
+        "year": "Jahr",
+        "genre": "Genre",
+        "duration": "Dauer",
+        "format": "Format",
+        "path": "Pfad",
+        "missing": "Fehlende Datei"
+      },
+      "cancel": "Abbrechen",
+      "submit": "Exportieren"
+    },
+    "errors": {
+      "shellUnavailable": "Diese Funktion steht nur in der Desktop-Anwendung zur Verfügung.",
+      "generic": "Der Vorgang ist fehlgeschlagen. Bitte erneut versuchen.",
+      "invalidLibraryName": "Der Name der Bibliothek darf nicht leer sein."
+    },
+    "view": {
+      "label": "Ansicht",
+      "table": "Liste",
+      "preview": "Vorschauen"
+    },
+    "tabs": {
+      "label": "Bereiche der Bibliothek",
+      "tracks": "Titel",
+      "artists": "Interpreten",
+      "albums": "Alben",
+      "genres": "Genres"
+    },
+    "groups": {
+      "trackCount": "keine Titel | 1 Titel | {count} Titel",
+      "albumCount": "keine Alben | 1 Album | {count} Alben",
+      "artistCount": "keine Interpreten | 1 Interpret | {count} Interpreten",
+      "openLabel": "Titel öffnen, die mit {name} verknüpft sind",
+      "albumArtist": "Interpret: {artists}",
+      "albumGenres": "Genre: {genres}",
+      "modalTitle": "Titel, die mit {name} verknüpft sind",
+      "detailTabs": "Detail der Verknüpfungen",
+      "back": "Zurück zum vorherigen Detail",
+      "expandAlbums": "Alben vergrößern",
+      "collapseAlbums": "Alben verkleinern",
+      "expandArtists": "Liste der Interpreten anzeigen",
+      "collapseArtists": "Zurück zu den Titeln",
+      "expandAlbumList": "Liste der Alben anzeigen",
+      "collapseAlbumList": "Zurück zu den Titeln",
+      "close": "Schließen",
+      "columns": {
+        "artist": "Interpret",
+        "album": "Album",
+        "albums": "Alben",
+        "artists": "Interpreten",
+        "genre": "Genre",
+        "tracks": "Titel",
+        "duration": "Dauer",
+        "actions": "Aktionen"
+      },
+      "unknown": {
+        "artist": "Ohne Interpret",
+        "album": "Ohne Album",
+        "genre": "Ohne Genre"
+      }
+    }
+  },
+  "metadata": {
+    "title": "Metadaten bearbeiten",
+    "save": "Speichern",
+    "saving": "Wird gespeichert…",
+    "cancel": "Abbrechen",
+    "bulk": {
+      "title": "{count} Titel bearbeiten",
+      "description": "Aktivieren Sie nur die Felder, die auf jeden ausgewählten Titel angewendet werden sollen. Der Name des Titels bleibt individuell."
+    },
+    "fields": {
+      "title": "Name",
+      "artist": "Interpret",
+      "album": "Album",
+      "year": "Jahr",
+      "genre": "Genre",
+      "genreCustom": "Genre wählen oder eingeben"
+    },
+    "cover": {
+      "label": "Cover",
+      "choose": "Bild wählen…",
+      "remove": "Cover entfernen",
+      "batch": {
+        "title": "Cover des Albums aktualisieren?",
+        "message": "Das Album „{album}“ hat {count} weitere Titel. Dieses Cover auch für sie verwenden?",
+        "onlyCurrent": "Nur dieser Titel",
+        "allAlbum": "Ganzes Album"
+      }
+    },
+    "errors": {
+      "titleRequired": "Der Name darf nicht leer sein.",
+      "titleTooLong": "Der Name ist zu lang.",
+      "yearOutOfRange": "Geben Sie ein gültiges Jahr an (zwischen 1000 und dem nächsten Jahr).",
+      "coverType": "Nur PNG- oder JPEG-Bilder sind zulässig.",
+      "coverTooLarge": "Das Bild ist größer als 5 MB."
+    }
+  },
+  "player": {
+    "title": "Player",
+    "nowPlaying": "Wird abgespielt",
+    "expand": "Player vergrößern",
+    "collapse": "Player verkleinern",
+    "openLibrary": "Bibliothek öffnen",
+    "close": "Player schließen",
+    "play": "Abspielen",
+    "pause": "Pausieren",
+    "stop": "Stoppen",
+    "previous": "Vorheriger Titel",
+    "next": "Nächster Titel",
+    "shuffle": "Zufallswiedergabe",
+    "repeatOne": "Titel wiederholen",
+    "progress": "Fortschritt des Titels",
+    "volume": "Lautstärke",
+    "volumeValue": "Lautstärke {value} %",
+    "errors": {
+      "missing": "Die Datei dieses Titels ist nicht mehr auf der Festplatte.",
+      "unsupported": "Dieses Audioformat kann hier nicht abgespielt werden.",
+      "shellUnavailable": "Die Wiedergabe steht nur in der Desktop-Anwendung zur Verfügung.",
+      "generic": "Die Wiedergabe ist fehlgeschlagen."
+    }
+  },
+  "titlebar": {
+    "minimize": "Minimieren",
+    "maximize": "Maximieren oder wiederherstellen",
+    "close": "Anwendung schließen"
+  },
+  "help": {
+    "title": "Anleitung",
+    "subtitle": "So verwenden Sie Media Audio Lib: wo jede Funktion zu finden ist und wie sie bedient wird.",
+    "where": "Wo:",
+    "topics": {
+      "import": {
+        "title": "Titel und Ordner hinzufügen",
+        "where": "obere Leiste der Bibliothek, oder durch Ziehen auf das Fenster.",
+        "steps": [
+          "Auf „Titel hinzufügen“ klicken, um eine oder mehrere Audiodateien zu wählen.",
+          "Auf „Ordner hinzufügen“ klicken, um die gesamte Musik eines Ordners samt Unterordnern zu importieren.",
+          "Sie können Dateien oder Ordner auch direkt auf das Fenster ziehen.",
+          "Danach führt eine Zusammenfassung auf, was hinzugefügt wurde, was bereits vorhanden war und was nicht importiert werden konnte. Ein reibungsloser Import blendet sich selbst aus.",
+          "Die Dateien bleiben, wo sie sind: Die Bibliothek führt nur die Liste."
+        ]
+      },
+      "organize": {
+        "title": "Suchen und sortieren",
+        "where": "obere Leiste und Spaltenköpfe in der Listenansicht.",
+        "steps": [
+          "Tippen Sie in das Suchfeld, um nach Titel, Interpret, Album, Genre oder Pfad zu filtern.",
+          "Klicken Sie auf einen Spaltenkopf, um die Titel zu sortieren.",
+          "Ein erneuter Klick auf dieselbe Spalte kehrt die Reihenfolge um.",
+          "Titel ohne dieses Feld rutschen immer ans Ende der Liste."
+        ]
+      },
+      "views": {
+        "title": "Ansicht wechseln",
+        "where": "die beiden Symbole rechts in der Leiste der Bibliothek.",
+        "steps": [
+          "Das Listensymbol zeigt die Tabelle mit allen Spalten.",
+          "Das Rastersymbol zeigt die Vorschauen der Cover.",
+          "Die gewählte Ansicht wird für den nächsten Start der Anwendung gemerkt."
+        ]
+      },
+      "metadata": {
+        "title": "Metadaten bearbeiten",
+        "where": "Drei-Punkte-Menü in der Zeile oder auf der Karte des Titels, oder Rechtsklick auf die Zeile.",
+        "steps": [
+          "Öffnen Sie das Drei-Punkte-Menü oder klicken Sie mit der rechten Maustaste auf die Zeile und wählen Sie Bearbeiten.",
+          "Bearbeiten Sie Name, Interpret, Album, Jahr und Genre; das Genre lässt sich wählen oder eingeben.",
+          "Mit „Bild wählen…“ ersetzen Sie das Cover (PNG oder JPEG, bis 5 MB).",
+          "Auf „Speichern“ klicken: Die Änderungen werden in die Tags der Datei geschrieben, nicht nur in die Bibliothek.",
+          "Ein leer gelassenes Feld entfernt diesen Wert aus der Datei."
+        ]
+      },
+      "player": {
+        "title": "Einen Titel abspielen",
+        "where": "Doppelklick auf eine Zeile oder eine Karte; der Player erscheint unten.",
+        "steps": [
+          "Doppelklicken Sie auf den gewünschten Titel: Die Liste auf dem Bildschirm wird zur Warteschlange.",
+          "Der Player erscheint am unteren Rand des Fensters mit Cover, Titel und Interpret.",
+          "Über die Bedienelemente pausieren, stoppen oder zum vorherigen und nächsten Titel wechseln.",
+          "Ziehen Sie die Fortschrittsleiste, um sich im Titel zu bewegen, und die rechte für die Lautstärke.",
+          "Der Pfeil vergrößert ihn auf ganze Seite; Esc oder der Abwärtspfeil holt die Leiste zurück.",
+          "Das X schließt den Player."
+        ]
+      },
+      "libraries": {
+        "title": "Mehrere Bibliotheken verwenden",
+        "where": "Menü neben dem Namen der Bibliothek auf der Startseite und Registerkarte Bibliothek in den Einstellungen.",
+        "steps": [
+          "In den Einstellungen, Registerkarte Bibliothek, einen Namen eingeben und auf Anlegen klicken, um eine Bibliothek hinzuzufügen.",
+          "Über das Menü neben dem Namen auf der Startseite wählen Sie, welche Bibliothek geöffnet wird: Das Häkchen kennzeichnet die verwendete.",
+          "Exportieren speichert eine Kopie der Bibliothek in einer JSON-Datei Ihrer Wahl.",
+          "Bibliothek löschen entfernt sie aus der Liste; die Audiodateien bleiben auf der Festplatte.",
+          "Die letzte Bibliothek kann nicht gelöscht werden: Es ist immer eine geöffnet."
+        ]
+      },
+      "settings": {
+        "title": "Die Anwendung anpassen",
+        "where": "Zahnradsymbol oben rechts.",
+        "steps": [
+          "Auf der Registerkarte „Allgemein“ wählen Sie die Sprache der Oberfläche.",
+          "Auf der Registerkarte „Erscheinungsbild“ wählen Sie Textgröße, helles oder dunkles Design und die Darstellung des Players.",
+          "Das Design „System“ folgt der Einstellung von Windows.",
+          "Jede Wahl wirkt sofort und wird gemerkt."
+        ]
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-export const LOCALES = ['it', 'en'] as const;
+export const LOCALES = ['it', 'en', 'fr', 'es', 'de'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const TEXT_SIZES = ['small', 'medium', 'large'] as const;

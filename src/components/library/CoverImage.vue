@@ -103,10 +103,13 @@ watch(
     font-size: 2rem;
   }
 
-  // Follows the column it sits in, without ever growing past the height of its row.
+  // Sized by the height of its row, which already follows the width of the cover column.
+  // Driving it from the cell instead would stretch it: in a table laid out to fit, that
+  // column is a fraction of the free space and can be far wider than it is tall.
   &_fill {
-    width: 100%;
-    max-height: 100%;
+    width: auto;
+    height: 100%;
+    max-width: 100%;
     aspect-ratio: 1;
     border-radius: $radius_sm;
   }

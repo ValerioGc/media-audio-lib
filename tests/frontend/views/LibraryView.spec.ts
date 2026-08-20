@@ -238,7 +238,7 @@ describe('LibraryView', () => {
     expect(wrapper.get('.library_view_panel').find('.library_facet_list').exists()).toBe(false);
   });
 
-  it('shows album artist links and genres once in the album modal and hides redundant table columns', async () => {
+  it('heads the album modal with its cover, title, year, artists and genres', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
       makeTrack({
@@ -264,12 +264,19 @@ describe('LibraryView', () => {
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');
-    const artistLinks = dialog.findAll('.library_view_group_modal_summary_link');
+    const summary = dialog.get('.library_album_summary');
+    const artistLinks = summary.findAll('.library_album_summary_artist');
     const headings = dialog
       .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
-    expect(dialog.text()).toContain('Genere: Fusion, Jazz');
+    expect(summary.find('.library_album_summary_cover').exists()).toBe(true);
+    expect(summary.get('.library_album_summary_name').text()).toBe('Album A');
+    expect(summary.get('.library_album_summary_year').text()).toBe('1999');
+    // The fields speak for themselves: no label in front of any of them.
+    expect(summary.get('.library_album_summary_genres').text()).toBe('Fusion, Jazz');
+    expect(summary.text()).not.toContain('Genere:');
+    expect(summary.text()).not.toContain('Autore:');
     expect(artistLinks.map((link) => link.text())).toEqual(['Artist A', 'Artist B']);
     expect(headings).toEqual(['Copertina', 'Nome', 'Anno', 'Durata', '']);
     expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
@@ -284,7 +291,7 @@ describe('LibraryView', () => {
 
     const restoredDialog = wrapper.get('[role="dialog"]');
     expect(restoredDialog.text()).toContain('Brani collegati a Album A');
-    expect(restoredDialog.text()).toContain('Genere: Fusion, Jazz');
+    expect(restoredDialog.get('.library_album_summary_genres').text()).toBe('Fusion, Jazz');
     expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
   });
 

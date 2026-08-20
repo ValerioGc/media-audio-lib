@@ -8,6 +8,7 @@ import AppModal from '@/components/common/AppModal.vue';
 import DefaultPlayerBanner from '@/components/library/DefaultPlayerBanner.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
+import LibraryAlbumSummary from '@/components/library/LibraryAlbumSummary.vue';
 import LibraryFacetList, {
   type FacetGroupOpenPayload,
 } from '@/components/library/LibraryFacetList.vue';
@@ -17,6 +18,7 @@ import LibraryGroupCarousel, {
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
+import LibraryTabs from '@/components/library/LibraryTabs.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
@@ -115,6 +117,26 @@ const selectedAlbumGenres = computed(() => {
   return genres.length > 0 ? genres : [t('library.groups.unknown.genre')];
 });
 
+const selectedAlbumCoverTrack = computed<TrackView | null>(() => {
+  if (selectedFacet.value?.field !== 'album') {
+    return null;
+  }
+
+  return (
+    selectedFacetTracks.value.find((track) => track.hasCover && !track.missing) ??
+    selectedFacetTracks.value[0] ??
+    null
+  );
+});
+
+const selectedAlbumYear = computed<number | null>(() => {
+  if (selectedFacet.value?.field !== 'album') {
+    return null;
+  }
+
+  return selectedFacetTracks.value.find((track) => track.year !== null)?.year ?? null;
+});
+
 const selectedAlbumArtistLinks = computed<FacetGroupOpenPayload[]>(() => {
   if (selectedFacet.value?.field !== 'album') {
     return [];
@@ -177,43 +199,6 @@ const selectedFacetAlbums = computed<ModalAlbumGroup[]>(() => {
     });
 });
 
-interface ModalArtistGroup {
-  key: string;
-  name: string;
-  tracks: TrackView[];
-  coverTrack: TrackView | null;
-  playing: boolean;
-  isUnknown: boolean;
-}
-
-const selectedFacetArtists = computed<ModalArtistGroup[]>(() => {
-  const grouped = new Map<string, TrackView[]>();
-
-  for (const track of selectedFacetTracks.value) {
-    const key = facetKeyOf(track, 'artist');
-    grouped.set(key, [...(grouped.get(key) ?? []), track]);
-  }
-
-  return [...grouped.entries()]
-    .map(([key, tracks]) => ({
-      key,
-      name: facetNameOf('artist', key),
-      tracks,
-      coverTrack: tracks.find((track) => track.hasCover && !track.missing) ?? tracks[0] ?? null,
-      playing:
-        player.currentTrack !== null &&
-        tracks.some((track) => track.id === player.currentTrack?.id),
-      isUnknown: key === '__unknown__',
-    }))
-    .sort((left, right) => {
-      if (left.isUnknown !== right.isUnknown) {
-        return left.isUnknown ? 1 : -1;
-      }
-
-      return left.name.localeCompare(right.name);
-    });
-});
-
 const albumCarouselGroups = computed<CarouselGroup[]>(() =>
   selectedFacetAlbums.value.map((album) => ({
     key: album.key,
@@ -224,13 +209,10 @@ const albumCarouselGroups = computed<CarouselGroup[]>(() =>
   })),
 );
 
-const artistCarouselGroups = computed<CarouselGroup[]>(() =>
-  selectedFacetArtists.value.map((artist) => ({
-    key: artist.key,
-    name: artist.name,
-    meta: t('library.groups.trackCount', { count: artist.tracks.length }, artist.tracks.length),
-    coverTrack: artist.coverTrack,
-    playing: artist.playing,
+const genreModalTabs = computed(() =>
+  (['tracks', 'artists', 'albums'] as const satisfies readonly GenreModalList[]).map((tab) => ({
+    id: tab,
+    label: t(`library.tabs.${tab}`),
   })),
 );
 
@@ -325,11 +307,6 @@ function openAlbumFromCarousel(key: string) {
 
 function openArtistFromCarousel(key: string) {
   openFacet({ field: 'artist', key, name: facetNameOf('artist', key) });
-}
-
-/** The command of a carousel opens its list, and pressing it again returns to the tracks. */
-function toggleGenreList(list: Exclude<GenreModalList, 'tracks'>) {
-  genreModalList.value = genreModalList.value === list ? 'tracks' : list;
 }
 
 function goBackInFacetModal() {
@@ -527,7 +504,17 @@ async function confirmRemoval() {
           >
             <AppIcon name="back" />
           </AppButton>
-          <div class="library_view_group_modal_summary">
+          <LibraryAlbumSummary
+            v-if="selectedFacet?.field === 'album'"
+            :name="selectedFacet.name"
+            :cover-track="selectedAlbumCoverTrack"
+            :year="selectedAlbumYear"
+            :artists="selectedAlbumArtistLinks"
+            :genres="selectedAlbumGenres"
+            :track-count="selectedFacetTracks.length"
+            @open-artist="openArtistFromCarousel"
+          />
+          <div v-else class="library_view_group_modal_summary">
             <p>
               {{
                 t(
@@ -537,24 +524,6 @@ async function confirmRemoval() {
                 )
               }}
             </p>
-            <p v-if="selectedFacet?.field === 'album'">
-              {{ t('library.groups.albumGenres', { genres: selectedAlbumGenres.join(', ') }) }}
-            </p>
-            <div
-              v-if="selectedFacet?.field === 'album'"
-              class="library_view_group_modal_summary_links"
-            >
-              <span>{{ t('library.groups.columns.artist') }}:</span>
-              <button
-                v-for="artist in selectedAlbumArtistLinks"
-                :key="artist.key"
-                class="library_view_group_modal_summary_link"
-                type="button"
-                @click="openFacet(artist)"
-              >
-                {{ artist.name }}
-              </button>
-            </div>
           </div>
           <LibraryViewToggle v-if="selectedFacet?.field === 'album'" v-model="groupModalViewMode" />
         </div>
@@ -594,60 +563,42 @@ async function confirmRemoval() {
         </template>
 
         <template v-else-if="selectedFacet?.field === 'genre'">
-          <LibraryGroupCarousel
-            :title="t('library.groups.columns.artists')"
-            :groups="artistCarouselGroups"
-            :action-label="
-              t(
-                genreModalList === 'artists'
-                  ? 'library.groups.collapseArtists'
-                  : 'library.groups.expandArtists',
-              )
-            "
-            :action-icon="genreModalList === 'artists' ? 'collapse' : 'expand'"
-            data-testid="genre-artists-carousel"
-            @open="openArtistFromCarousel"
-            @action="toggleGenreList('artists')"
+          <LibraryTabs
+            v-model="genreModalList"
+            :tabs="genreModalTabs"
+            :label="t('library.groups.detailTabs')"
+            id-base="genre-detail"
           />
 
-          <LibraryGroupCarousel
-            :title="t('library.groups.columns.albums')"
-            :groups="albumCarouselGroups"
-            :action-label="
-              t(
-                genreModalList === 'albums'
-                  ? 'library.groups.collapseAlbumList'
-                  : 'library.groups.expandAlbumList',
-              )
-            "
-            :action-icon="genreModalList === 'albums' ? 'collapse' : 'expand'"
-            data-testid="genre-albums-carousel"
-            @open="openAlbumFromCarousel"
-            @action="toggleGenreList('albums')"
-          />
-
-          <!-- The two commands above choose what is listed here; tracks until asked. -->
-          <LibraryTable
-            v-if="genreModalList === 'tracks'"
-            :tracks="selectedFacetTracks"
-            :sort="library.sort"
-            :selected-ids="library.selectedIds"
-            :playing-id="player.currentTrack?.id ?? null"
-            @sort="library.toggleSort($event)"
-            @select="selectFromTracks($event, selectedFacetTracks)"
-            @play="startFacetPlayback($event)"
-            @edit="openEditor"
-            @remove="askRemoval"
-            @verify="library.verifyTrack($event)"
-          />
-          <LibraryFacetList
-            v-else
-            :tracks="selectedFacetTracks"
-            :field="genreModalList === 'artists' ? 'artist' : 'album'"
-            view-mode="preview"
-            :playing-track="player.currentTrack"
-            @open="openFacet"
-          />
+          <div
+            :id="`genre-detail-panel-${genreModalList}`"
+            class="library_view_group_modal_panel"
+            role="tabpanel"
+            :aria-labelledby="`genre-detail-tab-${genreModalList}`"
+          >
+            <LibraryTable
+              v-if="genreModalList === 'tracks'"
+              :tracks="selectedFacetTracks"
+              :sort="library.sort"
+              :selected-ids="library.selectedIds"
+              :playing-id="player.currentTrack?.id ?? null"
+              @sort="library.toggleSort($event)"
+              @select="selectFromTracks($event, selectedFacetTracks)"
+              @play="startFacetPlayback($event)"
+              @edit="openEditor"
+              @remove="askRemoval"
+              @verify="library.verifyTrack($event)"
+            />
+            <!-- Artists and albums are browsed by their covers, tracks by their columns. -->
+            <LibraryFacetList
+              v-else
+              :tracks="selectedFacetTracks"
+              :field="genreModalList === 'artists' ? 'artist' : 'album'"
+              view-mode="preview"
+              :playing-track="player.currentTrack"
+              @open="openFacet"
+            />
+          </div>
         </template>
 
         <template v-else>
@@ -774,13 +725,22 @@ async function confirmRemoval() {
     gap: $space_md;
     min-height: min(32rem, 70vh);
 
+    // The album header is a block of its own height: the back button and the view switch
+    // stay on its first line instead of floating in the middle of it.
     &_header {
       display: flex;
       gap: $space_md;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       color: var(--color_text_muted);
       font-size: 0.875em;
+    }
+
+    &_panel {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
     }
 
     &_back_button {
@@ -803,33 +763,6 @@ async function confirmRemoval() {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-    }
-
-    &_summary_links {
-      display: inline-flex;
-      flex-wrap: wrap;
-      gap: $space_2xs $space_xs;
-      align-items: center;
-      min-width: 0;
-    }
-
-    &_summary_link {
-      min-width: 0;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: var(--color_accent);
-      font: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 0.15em;
-
-      &:hover {
-        color: var(--color_accent_hover);
-      }
-
-      @include focus_ring;
     }
   }
 }

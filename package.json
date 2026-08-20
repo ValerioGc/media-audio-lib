@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:rust": "cargo test --manifest-path src-tauri/Cargo.toml",
+    "test:sonar": "npm run test:coverage && npm run coverage:rust && cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --message-format=json > src-tauri/clippy-report.json && docker run --rm -e SONAR_TOKEN -e SONAR_HOST_URL=http://host.docker.internal:9000 -v \"%cd%:/usr/src\" sonarsource/sonar-scanner-cli",
     "coverage:rust": "node -e \"require('fs').mkdirSync('src-tauri/coverage',{recursive:true})\" && cargo llvm-cov --manifest-path src-tauri/Cargo.toml --ignore-filename-regex \"(main|lib)\\.rs$\" --fail-under-functions 80 --lcov --output-path src-tauri/coverage/lcov.info",
     "coverage:rust:summary": "cargo llvm-cov --manifest-path src-tauri/Cargo.toml --ignore-filename-regex \"(main|lib)\\.rs$\" --summary-only",
     "format:rust": "cargo fmt --manifest-path src-tauri/Cargo.toml",
@@ -27,6 +28,9 @@
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage",
     "verify:rust": "npm run format:rust:check && npm run lint:rust && npm run coverage:rust",
     "verify:all": "npm run verify && npm run verify:rust",
+    "docker:sonar:up": "docker compose -f ./docker-compose.sonar.yml up -d",
+    "docker:sonar:down": "docker compose -f ./docker-compose.sonar.yml down",
+    "docker:sonar:logs": "docker compose -f ./docker-compose.sonar.yml logs -f sonarqube",
     "tauri": "tauri"
   },
   "dependencies": {

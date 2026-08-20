@@ -159,9 +159,9 @@ describe('LibraryView', () => {
     await flushPromises();
 
     const dialog = wrapper.get('[role="dialog"]');
-    const albumCards = dialog.findAll('.library_view_group_modal_album_card');
+    const albumCards = dialog.findAll('.library_group_carousel_card');
 
-    expect(dialog.find('.library_view_group_modal_album_carousel').exists()).toBe(true);
+    expect(dialog.find('[data-testid="artist-albums-carousel"]').exists()).toBe(true);
     expect(albumCards).toHaveLength(2);
     expect(albumCards[0]?.text()).toContain('First Album');
     expect(albumCards[0]?.text()).toContain('1999');
@@ -204,7 +204,7 @@ describe('LibraryView', () => {
 
     const playingAlbums = wrapper
       .get('[role="dialog"]')
-      .findAll('.library_view_group_modal_album_card_playing');
+      .findAll('.library_group_carousel_card_playing');
 
     expect(playingAlbums).toHaveLength(1);
     expect(playingAlbums[0]?.attributes('aria-current')).toBe('true');
@@ -286,7 +286,7 @@ describe('LibraryView', () => {
     expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
   });
 
-  it('opens genre details with tracks, artists and albums tabs', async () => {
+  it('opens genre details on the tracks, under the artist and album carousels', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [
       makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
@@ -299,24 +299,97 @@ describe('LibraryView', () => {
     await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    let dialog = wrapper.get('[role="dialog"]');
+    const dialog = wrapper.get('[role="dialog"]');
+    const artistCarousel = dialog.get('[data-testid="genre-artists-carousel"]');
+    const albumCarousel = dialog.get('[data-testid="genre-albums-carousel"]');
 
+    // Both carousels are there, and the tracks are what the modal lists to begin with.
+    expect(
+      artistCarousel.findAll('.library_group_carousel_card').map((card) => card.text()),
+    ).toEqual([expect.stringContaining('Artist A'), expect.stringContaining('Artist B')]);
+    expect(
+      albumCarousel.findAll('.library_group_carousel_card').map((card) => card.text()),
+    ).toEqual([expect.stringContaining('Album A'), expect.stringContaining('Album B')]);
     expect(dialog.find('.library_table').exists()).toBe(true);
-    expect(dialog.text()).toContain('Blue');
-    expect(dialog.text()).toContain('Green');
+    expect(dialog.find('.library_facet_preview').exists()).toBe(false);
     expect(dialog.text()).not.toContain('Red');
+  });
 
-    await dialog.findAll('[role="tab"]')[1]?.trigger('click');
+  it('counts the tracks of each artist on its carousel card', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Green', artist: 'Artist A', album: 'Album B', genre: 'Jazz' }),
+      makeTrack({ title: 'Red', artist: 'Artist B', album: 'Album C', genre: 'Jazz' }),
+    ];
     await flushPromises();
-    dialog = wrapper.get('[role="dialog"]');
-    expect(dialog.find('.library_facet_preview').exists()).toBe(true);
-    expect(dialog.text()).toContain('Artist A');
 
-    await dialog.findAll('[role="tab"]')[2]?.trigger('click');
+    await wrapper.findAll('[role="tab"]')[3]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
-    dialog = wrapper.get('[role="dialog"]');
-    expect(dialog.find('.library_facet_preview').exists()).toBe(true);
-    expect(dialog.text()).toContain('Album A');
+
+    const cards = wrapper
+      .get('[data-testid="genre-artists-carousel"]')
+      .findAll('.library_group_carousel_card');
+
+    expect(cards[0]?.text()).toContain('2 brani');
+    expect(cards[1]?.text()).toContain('1 brano');
+  });
+
+  it('swaps the genre list between tracks, artists and albums from the carousels', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Green', artist: 'Artist B', album: 'Album B', genre: 'Jazz' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[3]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    const artistAction = () =>
+      wrapper.get('[data-testid="genre-artists-carousel"]').get('[data-testid="carousel-action"]');
+    const albumAction = () =>
+      wrapper.get('[data-testid="genre-albums-carousel"]').get('[data-testid="carousel-action"]');
+
+    await artistAction().trigger('click');
+    await flushPromises();
+    expect(wrapper.get('[role="dialog"]').find('.library_facet_preview').exists()).toBe(true);
+    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(false);
+
+    // Asking for the albums moves the list over instead of stacking a second one.
+    await albumAction().trigger('click');
+    await flushPromises();
+    expect(wrapper.get('[role="dialog"]').findAll('.library_facet_preview')).toHaveLength(1);
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Album A');
+
+    // The same command a second time brings the tracks back.
+    await albumAction().trigger('click');
+    await flushPromises();
+    expect(wrapper.get('[role="dialog"]').find('.library_table').exists()).toBe(true);
+    expect(wrapper.get('[role="dialog"]').find('.library_facet_preview').exists()).toBe(false);
+  });
+
+  it('drills from a genre carousel card into that artist', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Green', artist: 'Artist B', album: 'Album B', genre: 'Jazz' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[3]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    await wrapper
+      .get('[data-testid="genre-artists-carousel"]')
+      .findAll('.library_group_carousel_card')[0]
+      ?.trigger('click');
+    await flushPromises();
+
+    expect(wrapper.get('[role="dialog"]').text()).toContain('Brani collegati a Artist A');
   });
 
   it('marks the playing track in the library', async () => {

@@ -19,6 +19,7 @@ export interface FacetGroupOpenPayload {
 interface FacetGroup extends FacetGroupOpenPayload {
   trackCount: number;
   albumCount: number;
+  artistCount: number;
   durationMs: number;
   artists: string[];
   coverTrack: TrackView | null;
@@ -121,6 +122,8 @@ const groups = computed<FacetGroup[]>(() => {
           props.field === 'artist' || props.field === 'genre'
             ? uniquePresentValues(tracks, 'album').length
             : 0,
+        // Only a genre gathers several artists: for the other two the count says nothing.
+        artistCount: props.field === 'genre' ? uniquePresentValues(tracks, 'artist').length : 0,
         durationMs: tracks.reduce((total, track) => total + track.durationMs, 0),
         artists: props.field === 'album' ? uniqueValues(tracks, 'artist') : [],
         coverTrack:
@@ -203,6 +206,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         <p v-if="field === 'album'" class="library_facet_card_meta">
           {{ t('library.groups.albumArtist', { artists: group.artists.join(', ') }) }}
         </p>
+        <p v-if="field === 'genre'" class="library_facet_card_meta">
+          {{ t('library.groups.artistCount', { count: group.artistCount }, group.artistCount) }}
+        </p>
         <p v-if="field === 'artist' || field === 'genre'" class="library_facet_card_meta">
           {{ t('library.groups.albumCount', { count: group.albumCount }, group.albumCount) }}
         </p>
@@ -244,6 +250,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       <span v-if="field === 'album'" class="library_facet_list_heading" role="columnheader">
         {{ t('library.groups.columns.artist') }}
       </span>
+      <span v-if="field === 'genre'" class="library_facet_list_heading" role="columnheader">
+        {{ t('library.groups.columns.artists') }}
+      </span>
       <span
         v-if="field === 'artist' || field === 'genre'"
         class="library_facet_list_heading"
@@ -278,6 +287,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
         </span>
         <span v-if="field === 'album'" class="library_facet_list_cell" role="cell">
           {{ group.artists.join(', ') }}
+        </span>
+        <span v-if="field === 'genre'" class="library_facet_list_cell" role="cell">
+          {{ t('library.groups.artistCount', { count: group.artistCount }, group.artistCount) }}
         </span>
         <span
           v-if="field === 'artist' || field === 'genre'"
@@ -316,7 +328,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_genre {
     grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
-    grid-auto-rows: 8.5rem;
+    grid-auto-rows: 9rem;
   }
 }
 
@@ -401,7 +413,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     gap: $space_md;
     align-items: center;
     min-height: 0;
-    padding: $space_sm $space_md;
+    padding: $space_2xs $space_md;
 
     .library_facet_card_cover {
       width: 6rem;
@@ -410,6 +422,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     }
 
     .library_facet_card_body {
+      gap: $space_2xs;
       justify-content: center;
       height: 100%;
       padding-inline: 0;
@@ -468,7 +481,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 @media (max-width: 560px) {
   .library_facet_preview_genre {
     grid-template-columns: 1fr;
-    grid-auto-rows: 8.25rem;
+    grid-auto-rows: 8.75rem;
   }
 
   .library_facet_card_genre {
@@ -503,12 +516,17 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   &_album &_head,
   &_album &_row,
   &_artist &_head,
-  &_artist &_row,
-  &_genre &_head,
-  &_genre &_row {
+  &_artist &_row {
     grid-template-columns:
       minmax(10rem, 1.2fr) minmax(10rem, 1fr) minmax(7rem, 0.45fr)
       minmax(6rem, 0.35fr);
+  }
+
+  &_genre &_head,
+  &_genre &_row {
+    grid-template-columns:
+      minmax(9rem, 1.1fr) minmax(6rem, 0.5fr) minmax(6rem, 0.5fr) minmax(6rem, 0.45fr)
+      minmax(5rem, 0.35fr);
   }
 
   &_head {

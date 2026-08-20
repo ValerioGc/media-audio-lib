@@ -5,13 +5,15 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppModal from '@/components/common/AppModal.vue';
-import CoverImage from '@/components/library/CoverImage.vue';
 import DefaultPlayerBanner from '@/components/library/DefaultPlayerBanner.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryFacetList, {
   type FacetGroupOpenPayload,
 } from '@/components/library/LibraryFacetList.vue';
+import LibraryGroupCarousel, {
+  type CarouselGroup,
+} from '@/components/library/LibraryGroupCarousel.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
@@ -41,7 +43,8 @@ const facetViewModes = ref<Record<'artist' | 'album' | 'genre', ViewMode>>({
   album: 'preview',
   genre: 'preview',
 });
-const genreModalTab = ref<'tracks' | 'artists' | 'albums'>('tracks');
+/** What the genre modal lists under its carousels. */
+const genreModalList = ref<GenreModalList>('tracks');
 const isArtistAlbumsExpanded = ref(false);
 const selectionAnchorId = ref<string | null>(null);
 const isBulkEditorOpen = ref(false);
@@ -61,10 +64,12 @@ const albumModalHiddenColumnKeys = [
   'missing',
 ] as const satisfies readonly TableColumnKey[];
 
+type GenreModalList = 'tracks' | 'artists' | 'albums';
+
 interface FacetModalState {
   group: FacetGroupOpenPayload;
   viewMode: ViewMode;
-  genreTab: 'tracks' | 'artists' | 'albums';
+  genreList: GenreModalList;
   artistAlbumsExpanded: boolean;
 }
 
@@ -172,6 +177,63 @@ const selectedFacetAlbums = computed<ModalAlbumGroup[]>(() => {
     });
 });
 
+interface ModalArtistGroup {
+  key: string;
+  name: string;
+  tracks: TrackView[];
+  coverTrack: TrackView | null;
+  playing: boolean;
+  isUnknown: boolean;
+}
+
+const selectedFacetArtists = computed<ModalArtistGroup[]>(() => {
+  const grouped = new Map<string, TrackView[]>();
+
+  for (const track of selectedFacetTracks.value) {
+    const key = facetKeyOf(track, 'artist');
+    grouped.set(key, [...(grouped.get(key) ?? []), track]);
+  }
+
+  return [...grouped.entries()]
+    .map(([key, tracks]) => ({
+      key,
+      name: facetNameOf('artist', key),
+      tracks,
+      coverTrack: tracks.find((track) => track.hasCover && !track.missing) ?? tracks[0] ?? null,
+      playing:
+        player.currentTrack !== null &&
+        tracks.some((track) => track.id === player.currentTrack?.id),
+      isUnknown: key === '__unknown__',
+    }))
+    .sort((left, right) => {
+      if (left.isUnknown !== right.isUnknown) {
+        return left.isUnknown ? 1 : -1;
+      }
+
+      return left.name.localeCompare(right.name);
+    });
+});
+
+const albumCarouselGroups = computed<CarouselGroup[]>(() =>
+  selectedFacetAlbums.value.map((album) => ({
+    key: album.key,
+    name: album.name,
+    meta: album.year === null ? null : String(album.year),
+    coverTrack: album.coverTrack,
+    playing: album.playing,
+  })),
+);
+
+const artistCarouselGroups = computed<CarouselGroup[]>(() =>
+  selectedFacetArtists.value.map((artist) => ({
+    key: artist.key,
+    name: artist.name,
+    meta: t('library.groups.trackCount', { count: artist.tracks.length }, artist.tracks.length),
+    coverTrack: artist.coverTrack,
+    playing: artist.playing,
+  })),
+);
+
 const activeFacetViewMode = computed(() =>
   activeFacet.value === null ? 'preview' : facetViewModes.value[activeFacet.value],
 );
@@ -233,14 +295,14 @@ function currentFacetModalState(): FacetModalState | null {
   return {
     group: { ...selectedFacet.value },
     viewMode: groupModalViewMode.value,
-    genreTab: genreModalTab.value,
+    genreList: genreModalList.value,
     artistAlbumsExpanded: isArtistAlbumsExpanded.value,
   };
 }
 
 function applyFacetModalDefaults(group: FacetGroupOpenPayload) {
   groupModalViewMode.value = group.field === 'album' ? 'table' : facetViewModes.value[group.field];
-  genreModalTab.value = 'tracks';
+  genreModalList.value = 'tracks';
   isArtistAlbumsExpanded.value = false;
 }
 
@@ -257,6 +319,19 @@ function openFacet(group: FacetGroupOpenPayload) {
   selectedFacet.value = group;
 }
 
+function openAlbumFromCarousel(key: string) {
+  openFacet({ field: 'album', key, name: facetNameOf('album', key) });
+}
+
+function openArtistFromCarousel(key: string) {
+  openFacet({ field: 'artist', key, name: facetNameOf('artist', key) });
+}
+
+/** The command of a carousel opens its list, and pressing it again returns to the tracks. */
+function toggleGenreList(list: Exclude<GenreModalList, 'tracks'>) {
+  genreModalList.value = genreModalList.value === list ? 'tracks' : list;
+}
+
 function goBackInFacetModal() {
   const previous = facetModalHistory.value.at(-1);
 
@@ -267,7 +342,7 @@ function goBackInFacetModal() {
   facetModalHistory.value = facetModalHistory.value.slice(0, -1);
   selectedFacet.value = previous.group;
   groupModalViewMode.value = previous.viewMode;
-  genreModalTab.value = previous.genreTab;
+  genreModalList.value = previous.genreList;
   isArtistAlbumsExpanded.value = previous.artistAlbumsExpanded;
 }
 
@@ -485,64 +560,22 @@ async function confirmRemoval() {
         </div>
 
         <template v-if="selectedFacet?.field === 'artist'">
-          <section
-            class="library_view_group_modal_albums"
-            :class="{ library_view_group_modal_albums_expanded: isArtistAlbumsExpanded }"
-          >
-            <div class="library_view_group_modal_albums_header">
-              <h3>{{ t('library.groups.columns.albums') }}</h3>
-              <AppButton
-                class="library_view_group_modal_icon_button"
-                variant="ghost"
-                :aria-label="
-                  t(
-                    isArtistAlbumsExpanded
-                      ? 'library.groups.collapseAlbums'
-                      : 'library.groups.expandAlbums',
-                  )
-                "
-                :title="
-                  t(
-                    isArtistAlbumsExpanded
-                      ? 'library.groups.collapseAlbums'
-                      : 'library.groups.expandAlbums',
-                  )
-                "
-                @click="isArtistAlbumsExpanded = !isArtistAlbumsExpanded"
-              >
-                <AppIcon :name="isArtistAlbumsExpanded ? 'collapse' : 'expand'" />
-              </AppButton>
-            </div>
-
-            <div class="library_view_group_modal_album_carousel" role="list">
-              <button
-                v-for="album in selectedFacetAlbums"
-                :key="album.key"
-                class="library_view_group_modal_album_card"
-                :class="{ library_view_group_modal_album_card_playing: album.playing }"
-                type="button"
-                :aria-label="t('library.groups.openLabel', { name: album.name })"
-                :aria-current="album.playing ? 'true' : undefined"
-                @click="openFacet({ field: 'album', key: album.key, name: album.name })"
-              >
-                <CoverImage
-                  v-if="album.coverTrack !== null"
-                  class="library_view_group_modal_album_cover"
-                  :track="album.coverTrack"
-                  size="card"
-                  eager
-                />
-                <span class="library_view_group_modal_album_title">{{ album.name }}</span>
-                <span v-if="album.year !== null" class="library_view_group_modal_album_year">
-                  {{ album.year }}
-                </span>
-                <span v-if="album.playing" class="library_view_group_modal_album_badge">
-                  <AppIcon name="play" />
-                  {{ t('library.row.playing') }}
-                </span>
-              </button>
-            </div>
-          </section>
+          <LibraryGroupCarousel
+            :title="t('library.groups.columns.albums')"
+            :groups="albumCarouselGroups"
+            :action-label="
+              t(
+                isArtistAlbumsExpanded
+                  ? 'library.groups.collapseAlbums'
+                  : 'library.groups.expandAlbums',
+              )
+            "
+            :action-icon="isArtistAlbumsExpanded ? 'collapse' : 'expand'"
+            :large="isArtistAlbumsExpanded"
+            data-testid="artist-albums-carousel"
+            @open="openAlbumFromCarousel"
+            @action="isArtistAlbumsExpanded = !isArtistAlbumsExpanded"
+          />
 
           <LibraryTable
             :tracks="selectedFacetTracks"
@@ -561,45 +594,41 @@ async function confirmRemoval() {
         </template>
 
         <template v-else-if="selectedFacet?.field === 'genre'">
-          <div
-            class="library_view_group_modal_tabs"
-            role="tablist"
-            :aria-label="t('library.groups.detailTabs')"
-          >
-            <button
-              class="library_view_group_modal_tab"
-              :class="{ library_view_group_modal_tab_active: genreModalTab === 'tracks' }"
-              type="button"
-              role="tab"
-              :aria-selected="genreModalTab === 'tracks'"
-              @click="genreModalTab = 'tracks'"
-            >
-              {{ t('library.tabs.tracks') }}
-            </button>
-            <button
-              class="library_view_group_modal_tab"
-              :class="{ library_view_group_modal_tab_active: genreModalTab === 'artists' }"
-              type="button"
-              role="tab"
-              :aria-selected="genreModalTab === 'artists'"
-              @click="genreModalTab = 'artists'"
-            >
-              {{ t('library.tabs.artists') }}
-            </button>
-            <button
-              class="library_view_group_modal_tab"
-              :class="{ library_view_group_modal_tab_active: genreModalTab === 'albums' }"
-              type="button"
-              role="tab"
-              :aria-selected="genreModalTab === 'albums'"
-              @click="genreModalTab = 'albums'"
-            >
-              {{ t('library.tabs.albums') }}
-            </button>
-          </div>
+          <LibraryGroupCarousel
+            :title="t('library.groups.columns.artists')"
+            :groups="artistCarouselGroups"
+            :action-label="
+              t(
+                genreModalList === 'artists'
+                  ? 'library.groups.collapseArtists'
+                  : 'library.groups.expandArtists',
+              )
+            "
+            :action-icon="genreModalList === 'artists' ? 'collapse' : 'expand'"
+            data-testid="genre-artists-carousel"
+            @open="openArtistFromCarousel"
+            @action="toggleGenreList('artists')"
+          />
 
+          <LibraryGroupCarousel
+            :title="t('library.groups.columns.albums')"
+            :groups="albumCarouselGroups"
+            :action-label="
+              t(
+                genreModalList === 'albums'
+                  ? 'library.groups.collapseAlbumList'
+                  : 'library.groups.expandAlbumList',
+              )
+            "
+            :action-icon="genreModalList === 'albums' ? 'collapse' : 'expand'"
+            data-testid="genre-albums-carousel"
+            @open="openAlbumFromCarousel"
+            @action="toggleGenreList('albums')"
+          />
+
+          <!-- The two commands above choose what is listed here; tracks until asked. -->
           <LibraryTable
-            v-if="genreModalTab === 'tracks'"
+            v-if="genreModalList === 'tracks'"
             :tracks="selectedFacetTracks"
             :sort="library.sort"
             :selected-ids="library.selectedIds"
@@ -612,17 +641,9 @@ async function confirmRemoval() {
             @verify="library.verifyTrack($event)"
           />
           <LibraryFacetList
-            v-else-if="genreModalTab === 'artists'"
-            :tracks="selectedFacetTracks"
-            field="artist"
-            view-mode="preview"
-            :playing-track="player.currentTrack"
-            @open="openFacet"
-          />
-          <LibraryFacetList
             v-else
             :tracks="selectedFacetTracks"
-            field="album"
+            :field="genreModalList === 'artists' ? 'artist' : 'album'"
             view-mode="preview"
             :playing-track="player.currentTrack"
             @open="openFacet"
@@ -809,164 +830,6 @@ async function confirmRemoval() {
       }
 
       @include focus_ring;
-    }
-
-    &_albums {
-      display: flex;
-      flex-direction: column;
-      gap: $space_sm;
-      min-width: 0;
-    }
-
-    &_albums_header {
-      display: flex;
-      gap: $space_sm;
-      align-items: center;
-      justify-content: space-between;
-
-      h3 {
-        color: var(--color_text);
-        font-size: 0.95em;
-        font-weight: 700;
-      }
-    }
-
-    &_icon_button {
-      width: 2rem;
-      height: 2rem;
-      min-height: 2rem;
-      padding: 0;
-    }
-
-    &_album_carousel {
-      display: flex;
-      gap: $space_md;
-      min-width: 0;
-      padding-bottom: $space_xs;
-      overflow-x: auto;
-      scroll-snap-type: x proximity;
-    }
-
-    &_album_card {
-      display: flex;
-      flex: 0 0 8.5rem;
-      flex-direction: column;
-      gap: $space_xs;
-      padding: $space_sm;
-      border: 1px solid var(--color_border);
-      border-radius: $radius_md;
-      background-color: var(--color_surface);
-      color: var(--color_text);
-      font: inherit;
-      text-align: left;
-      cursor: pointer;
-      scroll-snap-align: start;
-      transition:
-        background-color $duration_fast ease,
-        border-color $duration_fast ease;
-
-      &:hover {
-        background-color: var(--color_surface_hover);
-      }
-
-      @include focus_ring;
-
-      &_playing {
-        border-color: var(--color_accent);
-        background-color: var(--color_accent_soft);
-        box-shadow: inset 0 0 0 1px var(--color_accent);
-      }
-    }
-
-    &_albums_expanded &_album_card {
-      flex-basis: 12rem;
-    }
-
-    &_album_cover {
-      width: 100%;
-      flex-shrink: 0;
-    }
-
-    &_album_title,
-    &_album_year {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    &_album_title {
-      font-size: 0.875em;
-      font-weight: 700;
-    }
-
-    &_album_year {
-      color: var(--color_text_muted);
-      font-size: 0.8em;
-      font-variant-numeric: tabular-nums;
-    }
-
-    &_album_badge {
-      display: inline-flex;
-      gap: $space_2xs;
-      align-items: center;
-      min-width: 0;
-      color: var(--color_accent);
-      font-size: 0.75em;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    &_tabs {
-      display: inline-flex;
-      align-self: flex-start;
-      padding: $space_xs;
-      border: 1px solid var(--color_border);
-      border-radius: $radius_md;
-      background-color: var(--color_surface_alt);
-    }
-
-    &_tab {
-      min-width: 5.5rem;
-      padding: $space_xs $space_md;
-      border: 0;
-      border-radius: $radius_sm;
-      background: transparent;
-      color: var(--color_text_muted);
-      font: inherit;
-      cursor: pointer;
-
-      &:hover {
-        color: var(--color_text);
-      }
-
-      @include focus_ring;
-
-      &_active {
-        background-color: var(--color_surface);
-        color: var(--color_text);
-        box-shadow: var(--shadow_subtle);
-      }
-    }
-  }
-}
-
-@media (max-width: 640px) {
-  .library_view_group_modal {
-    &_album_card {
-      flex-basis: 7.5rem;
-    }
-
-    &_albums_expanded &_album_card {
-      flex-basis: 10rem;
-    }
-
-    &_tabs {
-      width: 100%;
-    }
-
-    &_tab {
-      min-width: 0;
-      flex: 1;
     }
   }
 }

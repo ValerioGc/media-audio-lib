@@ -42,6 +42,56 @@ describe('LibraryFacetList', () => {
     expect(rows[1]?.text()).not.toContain('Uno, Tre');
   });
 
+  it('counts the artists of a genre, in the list and on the card', () => {
+    const tracks = [
+      makeTrack({ title: 'Uno', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Due', artist: 'Artist B', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Tre', artist: 'Artist B', album: 'Album B', genre: 'Jazz' }),
+      makeTrack({ title: 'Quattro', artist: 'Artist C', album: 'Album C', genre: 'Rock' }),
+    ];
+
+    const list = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'genre', viewMode: 'table', tracks },
+    });
+
+    expect(list.findAll('.library_facet_list_heading').map((heading) => heading.text())).toEqual([
+      'Genere',
+      'Autori',
+      'Album',
+      'Brani',
+      'Durata',
+    ]);
+
+    const rows = list.findAll('.library_facet_list_row');
+    expect(rows[0]?.text()).toContain('2 autori');
+    expect(rows[0]?.text()).toContain('2 album');
+    expect(rows[1]?.text()).toContain('1 autore');
+
+    const cards = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'genre', viewMode: 'preview', tracks },
+    }).findAll('.library_facet_card');
+
+    expect(cards[0]?.text()).toContain('2 autori');
+    expect(cards[0]?.text()).toContain('2 album');
+  });
+
+  it('leaves the artist count out of the artist and album groups', () => {
+    const tracks = [makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' })];
+
+    for (const field of ['artist', 'album'] as const) {
+      const wrapper = mount(LibraryFacetList, {
+        ...withPinia(),
+        props: { field, viewMode: 'table', tracks },
+      });
+
+      expect(
+        wrapper.findAll('.library_facet_list_heading').map((heading) => heading.text()),
+      ).not.toContain('Autori');
+    }
+  });
+
   it('shows groups as preview cards', () => {
     const wrapper = mount(LibraryFacetList, {
       ...withPinia(),

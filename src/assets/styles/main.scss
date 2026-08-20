@@ -34,6 +34,15 @@ body {
     color $duration_base ease;
 }
 
+// The ambient background: blurred blobs of the accent and of its companion colour, laid
+// over the flat page colour. It is painted once behind everything and never scrolls, so
+// it costs nothing while the lists move.
+:root[data-ambient='on'] body {
+  background-image: var(--app_ambient_layers);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 #app {
   display: flex;
   flex-direction: column;

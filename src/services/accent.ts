@@ -115,6 +115,75 @@ function foregroundFor(accent: Rgb): Rgb {
   return contrastRatio(accent, WHITE) >= contrastRatio(accent, shade) ? WHITE : shade;
 }
 
+function toHsl({ r, g, b }: Rgb): { h: number; s: number; l: number } {
+  const red = r / 255;
+  const green = g / 255;
+  const blue = b / 255;
+  const max = Math.max(red, green, blue);
+  const min = Math.min(red, green, blue);
+  const span = max - min;
+  const l = (max + min) / 2;
+
+  if (span === 0) {
+    return { h: 0, s: 0, l };
+  }
+
+  const s = span / (1 - Math.abs(2 * l - 1));
+  let h: number;
+
+  if (max === red) {
+    h = ((green - blue) / span) % 6;
+  } else if (max === green) {
+    h = (blue - red) / span + 2;
+  } else {
+    h = (red - green) / span + 4;
+  }
+
+  return { h: (((h * 60) % 360) + 360) % 360, s, l };
+}
+
+function fromHsl(h: number, s: number, l: number): Rgb {
+  const chroma = (1 - Math.abs(2 * l - 1)) * s;
+  const sector = (((h % 360) + 360) % 360) / 60;
+  const second = chroma * (1 - Math.abs((sector % 2) - 1));
+  const lightest = l - chroma / 2;
+
+  const [red, green, blue] = (
+    [
+      [chroma, second, 0],
+      [second, chroma, 0],
+      [0, chroma, second],
+      [0, second, chroma],
+      [second, 0, chroma],
+      [chroma, 0, second],
+    ] as const
+  )[Math.floor(sector) % 6]!;
+
+  return {
+    r: (red + lightest) * 255,
+    g: (green + lightest) * 255,
+    b: (blue + lightest) * 255,
+  };
+}
+
+/**
+ * The chosen colour turned around the colour wheel. Used to pick a companion colour that
+ * belongs to the accent instead of being a second choice the user has to make.
+ */
+export function rotateHue(color: string, degrees: number, fallback = '#0067c0'): string {
+  const parsed = parseHex(color) ?? parseHex(fallback) ?? { r: 0, g: 103, b: 192 };
+  const { h, s, l } = toHsl(parsed);
+
+  return toHex(fromHsl(h + degrees, s, l));
+}
+
+/** The channels of a colour as `r g b`, ready for the `rgb(… / …%)` CSS notation. */
+export function colorChannels(color: string, fallback = '#0067c0'): string {
+  const { r, g, b } = parseHex(color) ?? parseHex(fallback) ?? { r: 0, g: 103, b: 192 };
+
+  return `${Math.round(r)} ${Math.round(g)} ${Math.round(b)}`;
+}
+
 /**
  * Accepts a colour written by the user or read from disk and returns it as `#rrggbb`,
  * or `null` when it is not a colour at all.

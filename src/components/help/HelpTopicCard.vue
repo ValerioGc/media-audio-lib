@@ -43,7 +43,7 @@ const steps = computed(() =>
   flex-direction: column;
   gap: $space_sm;
   padding: $space_lg;
-  @include surface_panel($radius_lg);
+  @include glass_surface($radius_lg);
   box-shadow: var(--shadow_card);
 
   &_header {

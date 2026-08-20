@@ -1,10 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { accentPalette } from '@/services/accent';
+import { ambience } from '@/services/ambience';
 import {
   TEXT_SIZE_SCALE,
   applyAccent,
+  applyAmbientBackground,
   applyDocumentLocale,
+  applyGlassSurfaces,
   applyTextSize,
   applyTheme,
 } from '@/services/appearance';
@@ -75,13 +78,41 @@ describe('appearance', () => {
     );
   });
 
+  it('writes the ambient layers and says the background is in use', () => {
+    applyAmbientBackground('#0067c0', 'light', true, root);
+
+    expect(root.dataset.ambient).toBe('on');
+    expect(root.style.getPropertyValue('--app_ambient_layers')).toBe(
+      ambience('#0067c0', 'light').layers,
+    );
+  });
+
+  it('keeps the layers ready when the background is off', () => {
+    applyAmbientBackground('#0067c0', 'light', false, root);
+
+    expect(root.dataset.ambient).toBe('off');
+    expect(root.style.getPropertyValue('--app_ambient_layers')).not.toBe('');
+  });
+
+  it('turns the glass surfaces on and off', () => {
+    applyGlassSurfaces(true, root);
+    expect(root.dataset.glass).toBe('on');
+
+    applyGlassSurfaces(false, root);
+    expect(root.dataset.glass).toBe('off');
+  });
+
   it('uses documentElement as the default root', () => {
     applyTheme('dark');
     applyTextSize('small');
     applyDocumentLocale('it');
     applyAccent('#e3008c', 'dark');
+    applyAmbientBackground('#e3008c', 'dark', true);
+    applyGlassSurfaces(true);
 
     expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(document.documentElement.dataset.ambient).toBe('on');
+    expect(document.documentElement.dataset.glass).toBe('on');
     expect(document.documentElement.style.getPropertyValue('--color_accent')).toBe(
       accentPalette('#e3008c', 'dark').accent,
     );

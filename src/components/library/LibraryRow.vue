@@ -132,13 +132,13 @@ function openActionsMenu(event: MouseEvent) {
   transition: background-color $duration_fast ease;
 
   &:hover {
-    background-color: var(--color_surface_hover);
+    background-color: var(--row_hover_background);
   }
 
   @include focus_ring;
 
   &_selected {
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
   }
 
   &_missing {
@@ -147,7 +147,7 @@ function openActionsMenu(event: MouseEvent) {
 
   &_playing {
     box-shadow: inset 3px 0 0 var(--color_accent);
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
   }
 
   &_playing[style*='--cover_row_gradient'] {
@@ -202,17 +202,17 @@ function openActionsMenu(event: MouseEvent) {
     width: 2.5rem;
     justify-self: end;
     justify-content: center;
-    background-color: var(--color_surface);
+    background-color: var(--surface_glass_background);
     overflow: visible;
   }
 
   &:hover &_actions {
-    background-color: var(--color_surface_hover);
+    background-color: var(--row_hover_background);
   }
 
   &_selected &_actions,
   &_playing &_actions {
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
   }
 
   &_playing[style*='--cover_row_gradient'] &_actions {

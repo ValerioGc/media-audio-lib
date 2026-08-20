@@ -3,7 +3,14 @@ import { computed, ref } from 'vue';
 
 import { detectBrowserLocale, setI18nLocale } from '@/i18n';
 import { normalizeAccentColor } from '@/services/accent';
-import { applyAccent, applyDocumentLocale, applyTextSize, applyTheme } from '@/services/appearance';
+import {
+  applyAccent,
+  applyAmbientBackground,
+  applyDocumentLocale,
+  applyGlassSurfaces,
+  applyTextSize,
+  applyTheme,
+} from '@/services/appearance';
 import {
   createSettingsStorage,
   sanitizeSettings,
@@ -33,6 +40,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const textSize = ref<TextSize>(DEFAULT_SETTINGS.textSize);
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
   const accentColor = ref(DEFAULT_SETTINGS.accentColor);
+  const ambientBackgroundEnabled = ref(DEFAULT_SETTINGS.ambientBackgroundEnabled);
+  const glassSurfacesEnabled = ref(DEFAULT_SETTINGS.glassSurfacesEnabled);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
@@ -58,6 +67,8 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize: textSize.value,
     theme: theme.value,
     accentColor: accentColor.value,
+    ambientBackgroundEnabled: ambientBackgroundEnabled.value,
+    glassSurfacesEnabled: glassSurfacesEnabled.value,
     viewMode: viewMode.value,
     mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
@@ -71,6 +82,8 @@ export const useSettingsStore = defineStore('settings', () => {
   function apply() {
     applyTheme(resolvedTheme.value);
     applyAccent(accentColor.value, resolvedTheme.value);
+    applyAmbientBackground(accentColor.value, resolvedTheme.value, ambientBackgroundEnabled.value);
+    applyGlassSurfaces(glassSurfacesEnabled.value);
     applyTextSize(textSize.value);
     applyDocumentLocale(locale.value);
     setI18nLocale(locale.value);
@@ -114,6 +127,8 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize.value = restored.textSize;
     theme.value = restored.theme;
     accentColor.value = restored.accentColor;
+    ambientBackgroundEnabled.value = restored.ambientBackgroundEnabled;
+    glassSurfacesEnabled.value = restored.glassSurfacesEnabled;
     viewMode.value = restored.viewMode;
     mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
@@ -165,6 +180,18 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function resetAccentColor() {
     await setAccentColor(DEFAULT_SETTINGS.accentColor);
+  }
+
+  async function setAmbientBackgroundEnabled(next: boolean) {
+    ambientBackgroundEnabled.value = next;
+    apply();
+    await persist();
+  }
+
+  async function setGlassSurfacesEnabled(next: boolean) {
+    glassSurfacesEnabled.value = next;
+    apply();
+    await persist();
   }
 
   async function setTheme(next: ThemeChoice) {
@@ -310,6 +337,8 @@ export const useSettingsStore = defineStore('settings', () => {
     textSize,
     theme,
     accentColor,
+    ambientBackgroundEnabled,
+    glassSurfacesEnabled,
     viewMode,
     mainLibraryId,
     coverGradientEnabled,
@@ -328,6 +357,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setTheme,
     setAccentColor,
     resetAccentColor,
+    setAmbientBackgroundEnabled,
+    setGlassSurfacesEnabled,
     setViewMode,
     setMainLibraryId,
     setCoverGradientEnabled,

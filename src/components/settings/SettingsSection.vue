@@ -23,7 +23,7 @@ defineProps<{
   flex-direction: column;
   gap: $space_md;
   padding: $space_lg;
-  @include surface_panel($radius_lg);
+  @include glass_surface($radius_lg);
   box-shadow: var(--shadow_card);
 
   &_header {

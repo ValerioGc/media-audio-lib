@@ -21,6 +21,31 @@
   --shadow_raised: 0 4px 12px rgb(0 0 0 / 12%);
 }
 
+// Content surfaces. Off by default: they are plain panels until the glass option asks
+// otherwise, so a component that uses the mixin looks the same as one that does not.
+:root {
+  --surface_glass_background: var(--color_surface);
+  --surface_glass_border: var(--color_border);
+  --surface_glass_filter: none;
+  --surface_glass_shadow: var(--shadow_card);
+  --row_hover_background: var(--color_surface_hover);
+  --row_selected_background: var(--color_accent_soft);
+  --table_head_background: var(--color_surface_alt);
+}
+
+:root[data-glass='on'] {
+  --surface_glass_background: color-mix(in srgb, var(--color_surface) 68%, transparent);
+  --surface_glass_border: color-mix(in srgb, var(--color_border_strong) 55%, transparent);
+  --surface_glass_filter: blur(18px) saturate(150%);
+  --surface_glass_shadow: var(--shadow_raised);
+
+  // The states of a row sit on the glass: keeping them translucent lets the background
+  // through instead of stamping an opaque band across the list.
+  --row_hover_background: color-mix(in srgb, var(--color_surface_hover) 55%, transparent);
+  --row_selected_background: color-mix(in srgb, var(--color_accent_soft) 72%, transparent);
+  --table_head_background: color-mix(in srgb, var(--color_surface_alt) 60%, transparent);
+}
+
 :root[data-theme='dark'] {
   --color_bg: #1f1f1f;
   --color_bg_accent: #191919;

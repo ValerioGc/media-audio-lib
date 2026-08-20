@@ -327,14 +327,14 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   gap: $space_md;
   min-height: 10rem;
   padding: $space_md;
-  @include surface_panel($radius_md);
+  @include glass_surface($radius_md);
   cursor: pointer;
   transition:
     background-color $duration_fast ease,
     border-color $duration_fast ease;
 
   &:hover {
-    background-color: var(--color_surface_hover);
+    background-color: var(--row_hover_background);
   }
 
   @include focus_ring;
@@ -350,7 +350,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_playing {
     border-color: var(--color_accent);
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
     box-shadow: inset 0 0 0 1px var(--color_accent);
   }
 
@@ -513,7 +513,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_head {
     border-bottom: 1px solid var(--color_border);
-    background-color: var(--color_surface_alt);
+    background-color: var(--table_head_background);
   }
 
   &_heading {
@@ -539,14 +539,14 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     }
 
     &:hover {
-      background-color: var(--color_surface_hover);
+      background-color: var(--row_hover_background);
     }
 
     @include focus_ring;
 
     &_playing {
       border-color: var(--color_accent);
-      background-color: var(--color_accent_soft);
+      background-color: var(--row_selected_background);
       box-shadow: inset 2px 0 0 var(--color_accent);
     }
   }

@@ -268,7 +268,7 @@ onUnmounted(stopResize);
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
-  @include surface_panel($radius_lg);
+  @include glass_surface($radius_lg);
 
   &_horizontal {
     --library_grid_columns: var(--library_grid_columns_scroll);
@@ -298,7 +298,7 @@ onUnmounted(stopResize);
     // the header no longer line up with the ones of the rows.
     padding-right: calc(#{$space_md} + #{$scrollbar_size});
     border-bottom: 1px solid var(--color_border_strong);
-    background-color: var(--color_surface_alt);
+    background-color: var(--table_head_background);
     font-size: 0.875em;
     color: var(--color_text_muted);
   }
@@ -319,7 +319,7 @@ onUnmounted(stopResize);
       gap: $space_xs;
       justify-self: end;
       justify-content: flex-end;
-      background-color: var(--color_surface_alt);
+      background-color: var(--table_head_background);
       overflow: visible;
     }
 

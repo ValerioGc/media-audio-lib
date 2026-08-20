@@ -27,6 +27,17 @@
   background-color: $background;
 }
 
+/// A content surface that rests on the app background: the table, the cards and the
+/// panels of the pages. It follows the glass option, and stays a plain panel when that
+/// option is off. Menus, modals and tooltips keep `surface_panel`: they float above the
+/// interface rather than resting on the background, and stacked blur costs legibility.
+@mixin glass_surface($radius: $radius_md) {
+  border: 1px solid var(--surface_glass_border);
+  border-radius: $radius;
+  background-color: var(--surface_glass_background);
+  backdrop-filter: var(--surface_glass_filter);
+}
+
 /// A scrollable region: the gutter is reserved so the content does not shift when the
 /// scrollbar appears, and the scroll chain stops here instead of moving the page.
 /// Centred content passes `stable both-edges`, which keeps it on the middle of the box.

@@ -46,6 +46,14 @@
       "reset": "Reset to blue",
       "hint": "The colour is lightened or darkened automatically so it stays readable on both the light and the dark theme."
     },
+    "ambience": {
+      "title": "Background and glass",
+      "description": "Soft background built on the accent colour, and translucent surfaces for depth.",
+      "background": "Soft background from the accent colour",
+      "glass": "Glass surfaces (table, cards and panels)",
+      "preview": "Preview",
+      "hint": "The second colour of the background comes from the accent, so it changes with it. The two options are independent."
+    },
     "coverGradient": {
       "title": "Cover background",
       "description": "Use the dominant cover color for the player background and the playing row.",

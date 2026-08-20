@@ -46,6 +46,14 @@
       "reset": "Ripristina il blu",
       "hint": "Il colore viene schiarito o scurito automaticamente per restare leggibile sul tema chiaro e su quello scuro."
     },
+    "ambience": {
+      "title": "Sfondo ed effetto vetro",
+      "description": "Sfondo sfumato costruito sul colore accent e superfici traslucide per dare profondità.",
+      "background": "Sfondo sfumato con il colore accent",
+      "glass": "Superfici in vetro (tabella, card e pannelli)",
+      "preview": "Anteprima",
+      "hint": "Il secondo colore dello sfondo deriva dall'accent, quindi cambia insieme a quello. Le due opzioni sono indipendenti."
+    },
     "coverGradient": {
       "title": "Sfondo da copertina",
       "description": "Usa il colore dominante della copertina per lo sfondo del player e della riga in riproduzione.",

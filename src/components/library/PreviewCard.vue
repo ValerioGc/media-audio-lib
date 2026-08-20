@@ -83,21 +83,21 @@ function select(event: MouseEvent | KeyboardEvent) {
   flex-direction: column;
   gap: $space_sm;
   padding: $space_sm;
-  @include surface_panel($radius_lg);
+  @include glass_surface($radius_lg);
   cursor: pointer;
   transition:
     background-color $duration_fast ease,
     border-color $duration_fast ease;
 
   &:hover {
-    background-color: var(--color_surface_hover);
+    background-color: var(--row_hover_background);
   }
 
   @include focus_ring;
 
   &_selected {
     border-color: var(--color_accent);
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
   }
 
   &_missing {
@@ -107,7 +107,7 @@ function select(event: MouseEvent | KeyboardEvent) {
   &_playing {
     border-color: var(--color_accent);
     box-shadow: inset 0 0 0 1px var(--color_accent);
-    background-color: var(--color_accent_soft);
+    background-color: var(--row_selected_background);
   }
 
   &_body {
@@ -150,7 +150,7 @@ function select(event: MouseEvent | KeyboardEvent) {
     top: $space_sm;
     right: $space_sm;
     border-radius: $radius_md;
-    background-color: var(--color_surface);
+    background-color: var(--surface_glass_background);
     opacity: 0;
     transition: opacity $duration_fast ease;
   }

@@ -48,6 +48,7 @@ describe('SettingsView', () => {
       'Dimensione testo',
       'Tema',
       'Colore accent',
+      'Sfondo ed effetto vetro',
       'Sfondo da copertina',
     ]);
   });
@@ -107,6 +108,7 @@ describe('SettingsView', () => {
       'Text size',
       'Theme',
       'Accent colour',
+      'Background and glass',
       'Cover background',
     ]);
   });

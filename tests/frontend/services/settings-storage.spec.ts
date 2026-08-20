@@ -61,6 +61,8 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: 'dark',
       accentColor: '#107c10',
+      ambientBackgroundEnabled: false,
+      glassSurfacesEnabled: false,
       viewMode: 'preview',
       mainLibraryId: 'lib-2',
       coverGradientEnabled: false,
@@ -82,6 +84,15 @@ describe('sanitizeSettings', () => {
       textSize: 'large',
       theme: DEFAULT_SETTINGS.theme,
     });
+  });
+
+  it('keeps the two ambience switches on unless they were turned off', () => {
+    expect(sanitizeSettings({}).ambientBackgroundEnabled).toBe(true);
+    expect(sanitizeSettings({}).glassSurfacesEnabled).toBe(true);
+    expect(sanitizeSettings({ glassSurfacesEnabled: 'si' }).glassSurfacesEnabled).toBe(true);
+    expect(sanitizeSettings({ ambientBackgroundEnabled: false }).ambientBackgroundEnabled).toBe(
+      false,
+    );
   });
 
   it('normalizes the accent colour and refuses what is not one', () => {
@@ -162,6 +173,8 @@ describe('createTauriStorage', () => {
       textSize: 'large',
       theme: 'dark',
       accentColor: '#107c10',
+      ambientBackgroundEnabled: false,
+      glassSurfacesEnabled: false,
       viewMode: 'preview',
       mainLibraryId: 'lib-2',
       coverGradientEnabled: false,

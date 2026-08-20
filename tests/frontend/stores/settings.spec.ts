@@ -181,6 +181,40 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
+  it('applies and persists the two ambience switches on their own', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setAmbientBackgroundEnabled(false);
+
+    expect(document.documentElement.dataset.ambient).toBe('off');
+    expect(document.documentElement.dataset.glass).toBe('on');
+    expect(storage.saved.at(-1)?.ambientBackgroundEnabled).toBe(false);
+
+    await store.setGlassSurfacesEnabled(false);
+
+    expect(document.documentElement.dataset.glass).toBe('off');
+    expect(store.ambientBackgroundEnabled).toBe(false);
+    expect(storage.saved.at(-1)?.glassSurfacesEnabled).toBe(false);
+
+    store.dispose();
+  });
+
+  it('rebuilds the background when the accent changes', async () => {
+    const store = useSettingsStore();
+    await store.initialize(createFakeStorage());
+
+    await store.setAccentColor('#0067c0');
+    const blue = document.documentElement.style.getPropertyValue('--app_ambient_layers');
+
+    await store.setAccentColor('#e3008c');
+
+    expect(document.documentElement.style.getPropertyValue('--app_ambient_layers')).not.toBe(blue);
+
+    store.dispose();
+  });
+
   it('persists every change', async () => {
     const store = useSettingsStore();
     const storage = createFakeStorage();

@@ -84,6 +84,8 @@ export interface AppSettings {
   textSize: TextSize;
   theme: ThemeChoice;
   accentColor: string;
+  ambientBackgroundEnabled: boolean;
+  glassSurfacesEnabled: boolean;
   viewMode: ViewMode;
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
@@ -99,6 +101,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   textSize: 'medium',
   theme: 'system',
   accentColor: DEFAULT_ACCENT_COLOR,
+  ambientBackgroundEnabled: true,
+  glassSurfacesEnabled: true,
   viewMode: 'preview',
   mainLibraryId: null,
   coverGradientEnabled: true,

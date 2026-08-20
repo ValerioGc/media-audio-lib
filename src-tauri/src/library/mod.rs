@@ -3,7 +3,7 @@
 //! Nothing is scanned automatically. The file is versioned so future schema
 //! changes can be migrated instead of discarded.
 
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 use std::path::{Component, Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -12,8 +12,8 @@ use serde::{Deserialize, Serialize};
 use crate::error::{AppError, AppResult};
 use crate::metadata::{self, TrackMetadata};
 
-/// v3 added the library `name`. Older files still load: the name defaults to the app name.
-pub const SCHEMA_VERSION: u32 = 3;
+/// v4 added library-level metadata indexes for artist, album and genre suggestions.
+pub const SCHEMA_VERSION: u32 = 4;
 pub const DEFAULT_LIBRARY_NAME: &str = "Media Audio Lib";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -102,12 +102,22 @@ pub struct LibraryMaintenanceReport {
     pub ids_updated: usize,
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryMetadata {
+    pub artists: Vec<String>,
+    pub albums: Vec<String>,
+    pub genres: Vec<String>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {
     pub version: u32,
     #[serde(default = "default_library_name")]
     pub name: String,
+    #[serde(default)]
+    pub metadata: LibraryMetadata,
     pub tracks: Vec<Track>,
 }
 
@@ -116,6 +126,7 @@ impl Default for Library {
         Self {
             version: SCHEMA_VERSION,
             name: default_library_name(),
+            metadata: LibraryMetadata::default(),
             tracks: Vec::new(),
         }
     }
@@ -150,14 +161,15 @@ impl Library {
 
         let stored_version = library.version;
 
-        Ok((
-            Self {
-                version: SCHEMA_VERSION,
-                name: clean_library_name(&library.name).unwrap_or_else(default_library_name),
-                tracks: library.tracks,
-            },
-            stored_version,
-        ))
+        let mut loaded = Self {
+            version: SCHEMA_VERSION,
+            name: clean_library_name(&library.name).unwrap_or_else(default_library_name),
+            metadata: library.metadata,
+            tracks: library.tracks,
+        };
+        loaded.sync_metadata();
+
+        Ok((loaded, stored_version))
     }
 
     /// Writes through a temporary file so an interrupted save cannot truncate the library.
@@ -175,6 +187,10 @@ impl Library {
 
     pub fn tracks(&self) -> &[Track] {
         &self.tracks
+    }
+
+    pub fn metadata(&self) -> &LibraryMetadata {
+        &self.metadata
     }
 
     pub fn rename(&mut self, name: &str) -> AppResult<String> {
@@ -209,6 +225,10 @@ impl Library {
             .any(|track| canonical_key(Path::new(&track.path)) == key)
     }
 
+    pub fn sync_metadata(&mut self) {
+        self.metadata = metadata_of(&self.tracks);
+    }
+
     /// Adds a track unless the same file is already tracked. Returns false on duplicates.
     pub fn add(&mut self, track: Track) -> bool {
         if self.contains(&track.id) || self.contains_path(Path::new(&track.path)) {
@@ -216,13 +236,20 @@ impl Library {
         }
 
         self.tracks.push(track);
+        self.sync_metadata();
         true
     }
 
     pub fn remove(&mut self, id: &str) -> bool {
         let before = self.tracks.len();
         self.tracks.retain(|track| track.id != id);
-        before != self.tracks.len()
+        let removed = before != self.tracks.len();
+
+        if removed {
+            self.sync_metadata();
+        }
+
+        removed
     }
 
     pub fn import(
@@ -249,6 +276,7 @@ impl Library {
             report.added = imported_tracks.len();
             self.name = imported.name;
             self.tracks = imported_tracks;
+            self.sync_metadata();
             return report;
         }
 
@@ -270,7 +298,29 @@ impl Library {
             }
         }
 
+        self.sync_metadata();
+
         report
+    }
+}
+
+fn metadata_of(tracks: &[Track]) -> LibraryMetadata {
+    fn collect(tracks: &[Track], value: impl Fn(&Track) -> Option<&String>) -> Vec<String> {
+        tracks
+            .iter()
+            .filter_map(value)
+            .map(|value| value.trim())
+            .filter(|value| !value.is_empty())
+            .map(str::to_owned)
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect()
+    }
+
+    LibraryMetadata {
+        artists: collect(tracks, |track| track.artist.as_ref()),
+        albums: collect(tracks, |track| track.album.as_ref()),
+        genres: collect(tracks, |track| track.genre.as_ref()),
     }
 }
 
@@ -471,12 +521,19 @@ pub fn remove_duplicate_paths(library: &mut Library) -> usize {
             && seen_paths.insert(canonical_key(Path::new(&track.path)))
     });
 
-    before.saturating_sub(library.tracks.len())
+    let removed = before.saturating_sub(library.tracks.len());
+
+    if removed > 0 {
+        library.sync_metadata();
+    }
+
+    removed
 }
 
 /// Mirrors freshly written tags onto the tracked entry. `None` when the id is unknown.
 pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) -> Option<Track> {
-    let track = library.tracks.iter_mut().find(|track| track.id == id)?;
+    let position = library.tracks.iter().position(|track| track.id == id)?;
+    let track = &mut library.tracks[position];
 
     track.title = metadata
         .title
@@ -488,7 +545,10 @@ pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) 
     track.duration_ms = metadata.duration_ms;
     track.has_cover = metadata.has_cover;
 
-    Some(track.clone())
+    let updated = track.clone();
+    library.sync_metadata();
+
+    Some(updated)
 }
 
 /// Re-reads the tags of every tracked file still on disk, and reports how many entries
@@ -520,6 +580,7 @@ pub fn maintain_from_disk(library: &mut Library) -> LibraryMaintenanceReport {
     let ids_updated = update_track_ids(library);
     let deduplicated = remove_duplicate_paths(library);
     let refreshed = refresh_metadata(library);
+    library.sync_metadata();
 
     LibraryMaintenanceReport {
         refreshed,
@@ -575,6 +636,7 @@ mod tests {
         assert!(library.is_empty());
         assert_eq!(library.version, SCHEMA_VERSION);
         assert_eq!(library.name, DEFAULT_LIBRARY_NAME);
+        assert_eq!(library.metadata, LibraryMetadata::default());
     }
 
     #[test]
@@ -683,6 +745,30 @@ mod tests {
     }
 
     #[test]
+    fn rebuilds_metadata_indexes_when_loading_an_old_library() {
+        let dir = TempDir::new("library-metadata-load");
+        let file = dir.path().join("library.json");
+        std::fs::write(
+            &file,
+            r#"{"version":3,"name":"Archive","tracks":[
+              {"id":"aaa","path":"C:/music/aaa.mp3","title":"A","artist":"Artist B",
+               "album":"Album B","year":null,"genre":"Rock","durationMs":1000,
+               "format":"mp3","hasCover":false,"addedAt":42},
+              {"id":"bbb","path":"C:/music/bbb.mp3","title":"B","artist":"Artist A",
+               "album":"Album A","year":null,"genre":"Jazz","durationMs":1000,
+               "format":"mp3","hasCover":false,"addedAt":42}
+            ]}"#,
+        )
+        .expect("file written");
+
+        let library = Library::load(&file).expect("loading riuscito");
+
+        assert_eq!(library.metadata.artists, vec!["Artist A", "Artist B"]);
+        assert_eq!(library.metadata.albums, vec!["Album A", "Album B"]);
+        assert_eq!(library.metadata.genres, vec!["Jazz", "Rock"]);
+    }
+
+    #[test]
     fn adds_and_removes_tracks() {
         let mut library = Library::new();
 
@@ -691,6 +777,33 @@ mod tests {
         assert!(library.get("aaa").is_some());
         assert!(library.remove("aaa"));
         assert!(library.is_empty());
+    }
+
+    #[test]
+    fn keeps_library_metadata_in_sync_when_tracks_are_removed() {
+        let mut library = Library::new();
+        library.add(Track {
+            artist: Some("Artist A".to_owned()),
+            album: Some("Album A".to_owned()),
+            genre: Some("Jazz".to_owned()),
+            ..sample_track("aaa")
+        });
+        library.add(Track {
+            artist: Some("Artist B".to_owned()),
+            album: Some("Album B".to_owned()),
+            genre: Some("Rock".to_owned()),
+            ..sample_track("bbb")
+        });
+
+        assert_eq!(library.metadata.artists, vec!["Artist A", "Artist B"]);
+        assert_eq!(library.metadata.albums, vec!["Album A", "Album B"]);
+        assert_eq!(library.metadata.genres, vec!["Jazz", "Rock"]);
+
+        assert!(library.remove("aaa"));
+
+        assert_eq!(library.metadata.artists, vec!["Artist B"]);
+        assert_eq!(library.metadata.albums, vec!["Album B"]);
+        assert_eq!(library.metadata.genres, vec!["Rock"]);
     }
 
     #[test]
@@ -1011,6 +1124,9 @@ mod tests {
         assert_eq!(library.get("aaa").expect("present").year, Some(2011));
         assert!(library.get("aaa").expect("present").has_cover);
         assert_eq!(library.get("aaa").expect("present").duration_ms, 4242);
+        assert_eq!(library.metadata.artists, vec!["New Artist"]);
+        assert_eq!(library.metadata.albums, vec!["Album nuovo"]);
+        assert_eq!(library.metadata.genres, vec!["Blues"]);
     }
 
     #[test]

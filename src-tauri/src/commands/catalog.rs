@@ -100,6 +100,7 @@ pub fn switch(catalog: &CatalogState, state: &LibraryState, id: &str) -> AppResu
 
     state.read(|library| LibraryInfo {
         name: library.name.clone(),
+        metadata: library.metadata().clone(),
     })
 }
 

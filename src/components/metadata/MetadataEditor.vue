@@ -92,8 +92,16 @@ async function save() {
         :label="t('metadata.fields.title')"
         :error="messageFor(errors.title)"
       />
-      <MetadataField v-model="draft.artist" :label="t('metadata.fields.artist')" />
-      <MetadataField v-model="draft.album" :label="t('metadata.fields.album')" />
+      <MetadataField
+        v-model="draft.artist"
+        :label="t('metadata.fields.artist')"
+        :suggestions="library.artistSuggestions"
+      />
+      <MetadataField
+        v-model="draft.album"
+        :label="t('metadata.fields.album')"
+        :suggestions="library.albumSuggestions"
+      />
       <MetadataField
         v-model="draft.year"
         :label="t('metadata.fields.year')"
@@ -104,6 +112,7 @@ async function save() {
         v-model="draft.genre"
         :label="t('metadata.fields.genre')"
         :custom-label="t('metadata.fields.genreCustom')"
+        :genres="library.genreSuggestions"
       />
       <CoverPicker :current="coverPreview" @select="onCoverSelected" @remove="onCoverRemoved" />
     </form>

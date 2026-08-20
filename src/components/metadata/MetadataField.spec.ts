@@ -18,6 +18,18 @@ describe('MetadataField', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([['Track']]);
   });
 
+  it('shows autocomplete suggestions when provided', () => {
+    const wrapper = mount(MetadataField, {
+      props: { modelValue: '', label: 'Artist', suggestions: ['A', 'B'] },
+    });
+
+    expect(wrapper.get('input').attributes('list')).toBe(wrapper.get('datalist').attributes('id'));
+    expect(wrapper.findAll('option').map((option) => option.attributes('value'))).toEqual([
+      'A',
+      'B',
+    ]);
+  });
+
   it('reports no errors when the field is valid', () => {
     const wrapper = mount(MetadataField, { props: { modelValue: 'Track', label: 'Name' } });
 

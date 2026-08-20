@@ -8,14 +8,16 @@ withDefaults(
     error?: string | null;
     type?: 'text' | 'number';
     placeholder?: string;
+    suggestions?: readonly string[];
   }>(),
-  { error: null, type: 'text', placeholder: '' },
+  { error: null, type: 'text', placeholder: '', suggestions: () => [] },
 );
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
 const fieldId = useId();
 const errorId = useId();
+const listId = useId();
 
 function onInput(event: Event) {
   emit('update:modelValue', (event.target as HTMLInputElement).value);
@@ -32,10 +34,14 @@ function onInput(event: Event) {
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      :list="suggestions.length > 0 ? listId : undefined"
       :aria-invalid="error !== null"
       :aria-describedby="error === null ? undefined : errorId"
       @input="onInput"
     />
+    <datalist v-if="suggestions.length > 0" :id="listId">
+      <option v-for="suggestion in suggestions" :key="suggestion" :value="suggestion" />
+    </datalist>
     <p v-if="error !== null" :id="errorId" class="metadata_field_error" role="alert">
       {{ error }}
     </p>

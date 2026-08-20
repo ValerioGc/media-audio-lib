@@ -59,11 +59,12 @@ const writeMetadata = vi.mocked(api.writeMetadata);
 const writeCover = vi.mocked(api.writeCover);
 
 const emptyReport: AddReport = { added: [], duplicates: [], failed: [] };
+const metadata = { artists: [], albums: [], genres: [] };
 
 beforeEach(() => {
   setActivePinia(createTestPinia());
-  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib' });
-  renameLibrary.mockResolvedValue({ name: 'Archive' });
+  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib', metadata });
+  renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
   listTracks.mockResolvedValue([]);
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
@@ -105,7 +106,7 @@ describe('loading', () => {
 
   it('loads the library name from the backend', async () => {
     const store = useLibraryStore();
-    libraryInfo.mockResolvedValue({ name: 'Jazz Archive' });
+    libraryInfo.mockResolvedValue({ name: 'Jazz Archive', metadata });
 
     await store.load();
 
@@ -249,6 +250,24 @@ describe('removal', () => {
     expect(store.tracks.map((track) => track.id)).toEqual([second.id]);
     expect(store.selectedId).toBeNull();
     expect(removeTrack).toHaveBeenCalledWith(first.id);
+  });
+
+  it('updates metadata suggestions when tracks are removed', async () => {
+    const store = useLibraryStore();
+    const first = makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' });
+    const second = makeTrack({ artist: 'Artist B', album: 'Album B', genre: 'Rock' });
+    listTracks.mockResolvedValue([first, second]);
+    await store.load();
+
+    expect(store.artistSuggestions).toEqual(['Artist A', 'Artist B']);
+    expect(store.albumSuggestions).toEqual(['Album A', 'Album B']);
+    expect(store.genreSuggestions).toEqual(['Jazz', 'Rock']);
+
+    await store.remove(first.id);
+
+    expect(store.artistSuggestions).toEqual(['Artist B']);
+    expect(store.albumSuggestions).toEqual(['Album B']);
+    expect(store.genreSuggestions).toEqual(['Rock']);
   });
 
   it('keeps the list if the backend fails', async () => {
@@ -547,8 +566,8 @@ describe('useLibraryStore - multiple libraries', () => {
 
   it('opens the primary library for the home view', async () => {
     listLibraries.mockResolvedValue(catalog);
-    switchLibrary.mockResolvedValue({ name: 'Jazz' });
-    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    switchLibrary.mockResolvedValue({ name: 'Jazz', metadata });
+    libraryInfo.mockResolvedValue({ name: 'Jazz', metadata });
     listTracks.mockResolvedValue([makeTrack()]);
     const store = useLibraryStore();
 
@@ -571,8 +590,8 @@ describe('useLibraryStore - multiple libraries', () => {
 
   it('opening another library reloads tracks and covers', async () => {
     listLibraries.mockResolvedValue(catalog);
-    switchLibrary.mockResolvedValue({ name: 'Jazz' });
-    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    switchLibrary.mockResolvedValue({ name: 'Jazz', metadata });
+    libraryInfo.mockResolvedValue({ name: 'Jazz', metadata });
     listTracks.mockResolvedValue([makeTrack()]);
     const store = useLibraryStore();
     await store.loadLibraries();
@@ -615,7 +634,7 @@ describe('useLibraryStore - multiple libraries', () => {
   it('deleting the open library reloads the remaining one', async () => {
     listLibraries.mockResolvedValue(catalog);
     deleteLibrary.mockResolvedValue([{ ...catalog[1]!, active: true }]);
-    libraryInfo.mockResolvedValue({ name: 'Jazz' });
+    libraryInfo.mockResolvedValue({ name: 'Jazz', metadata });
     const store = useLibraryStore();
     await store.loadLibraries();
     listTracks.mockClear();
@@ -684,7 +703,7 @@ describe('useLibraryStore - multiple libraries', () => {
     const imported = { added: 2, updated: 1, skipped: 0, missing: ['C:/missing.mp3'], total: 3 };
     pickImportFile.mockResolvedValue('C:/backup/jazz.json');
     importLibrary.mockResolvedValue(imported);
-    libraryInfo.mockResolvedValue({ name: 'Imported' });
+    libraryInfo.mockResolvedValue({ name: 'Imported', metadata });
     listTracks.mockResolvedValue([makeTrack()]);
     listLibraries.mockResolvedValue(catalog);
     const store = useLibraryStore();

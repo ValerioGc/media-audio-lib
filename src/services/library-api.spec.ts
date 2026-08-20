@@ -33,6 +33,7 @@ import {
 } from './library-api';
 
 const update = { title: 'Title', artist: 'Artist', album: null, year: 1999, genre: 'Rock' };
+const metadata = { artists: [], albums: [], genres: [] };
 
 const scopedWindow = window as unknown as Record<string, unknown>;
 
@@ -68,15 +69,15 @@ describe('listTracks', () => {
 
 describe('libraryInfo', () => {
   it('uses the app name outside the shell', async () => {
-    await expect(libraryInfo()).resolves.toEqual({ name: 'Media Audio Lib' });
+    await expect(libraryInfo()).resolves.toEqual({ name: 'Media Audio Lib', metadata });
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 
   it('calls the Rust command inside the shell', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ name: 'Archive' });
+    mocks.invoke.mockResolvedValue({ name: 'Archive', metadata });
 
-    await expect(libraryInfo()).resolves.toEqual({ name: 'Archive' });
+    await expect(libraryInfo()).resolves.toEqual({ name: 'Archive', metadata });
     expect(mocks.invoke).toHaveBeenCalledWith('library_info');
   });
 });
@@ -141,9 +142,9 @@ describe('commands requiring the shell', () => {
 
   it('forwards the library name', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ name: 'Archive' });
+    mocks.invoke.mockResolvedValue({ name: 'Archive', metadata });
 
-    await expect(renameLibrary('Archive')).resolves.toEqual({ name: 'Archive' });
+    await expect(renameLibrary('Archive')).resolves.toEqual({ name: 'Archive', metadata });
     expect(mocks.invoke).toHaveBeenCalledWith('rename_library', { name: 'Archive' });
   });
 

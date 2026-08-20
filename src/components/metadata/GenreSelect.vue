@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { useId } from 'vue';
 
-import { GENRES } from '@/config/genres';
-
 defineProps<{
   modelValue: string;
   label: string;
   customLabel: string;
+  genres: readonly string[];
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
@@ -32,7 +31,7 @@ function onInput(event: Event) {
       @input="onInput"
     />
     <datalist :id="listId">
-      <option v-for="genre in GENRES" :key="genre" :value="genre" />
+      <option v-for="genre in genres" :key="genre" :value="genre" />
     </datalist>
   </div>
 </template>

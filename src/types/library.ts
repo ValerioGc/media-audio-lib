@@ -30,8 +30,15 @@ export interface AddReport {
   failed: FailedImport[];
 }
 
+export interface LibraryMetadata {
+  artists: string[];
+  albums: string[];
+  genres: string[];
+}
+
 export interface LibraryInfo {
   name: string;
+  metadata: LibraryMetadata;
 }
 
 /** One library of the catalog, as listed in the settings and in the homepage menu. */

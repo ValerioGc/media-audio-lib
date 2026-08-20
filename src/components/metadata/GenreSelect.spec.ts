@@ -1,17 +1,23 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { GENRES } from '@/config/genres';
-
 import GenreSelect from './GenreSelect.vue';
 
-const props = { modelValue: 'Rock', label: 'Genere', customLabel: 'Scegli o scrivi' };
+const props = {
+  modelValue: 'Rock',
+  label: 'Genere',
+  customLabel: 'Scegli o scrivi',
+  genres: ['Jazz', 'Rock'],
+};
 
 describe('GenreSelect', () => {
-  it('suggests all default genres', () => {
+  it('suggests the library genres', () => {
     const wrapper = mount(GenreSelect, { props });
 
-    expect(wrapper.findAll('datalist option')).toHaveLength(GENRES.length);
+    expect(wrapper.findAll('datalist option').map((option) => option.attributes('value'))).toEqual([
+      'Jazz',
+      'Rock',
+    ]);
   });
 
   it('links the field to the suggestions list', () => {

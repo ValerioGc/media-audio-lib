@@ -47,6 +47,23 @@ describe('MetadataEditor', () => {
     expect((wrapper.get('.genre_select_input').element as HTMLInputElement).value).toBe('Jazz');
   });
 
+  it('offers library metadata suggestions while editing', async () => {
+    const { wrapper, store } = await mountEditor();
+    store.tracks = [
+      makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ artist: 'Artist B', album: 'Album B', genre: 'Rock' }),
+    ];
+    await flushPromises();
+
+    expect(wrapper.findAll('.metadata_field datalist')[0]?.findAll('option')).toHaveLength(2);
+    expect(
+      wrapper.findAll('.metadata_field datalist')[1]?.findAll('option').map((option) => option.attributes('value')),
+    ).toEqual(['Album A', 'Album B']);
+    expect(
+      wrapper.findAll('.genre_select option').map((option) => option.attributes('value')),
+    ).toEqual(['Jazz', 'Rock']);
+  });
+
   it('leaves missing fields empty', async () => {
     const { wrapper } = await mountEditor(
       makeTrack({ artist: null, album: null, year: null, genre: null }),

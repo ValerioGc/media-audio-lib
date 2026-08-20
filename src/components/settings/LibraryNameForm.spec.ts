@@ -18,11 +18,12 @@ vi.mock('@/services/library-api', async (importOriginal) => {
 
 const libraryInfo = vi.mocked(api.libraryInfo);
 const renameLibrary = vi.mocked(api.renameLibrary);
+const metadata = { artists: [], albums: [], genres: [] };
 
 beforeEach(() => {
   resetI18n();
-  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib' });
-  renameLibrary.mockResolvedValue({ name: 'Archive' });
+  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib', metadata });
+  renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
 });
 
 afterEach(() => {

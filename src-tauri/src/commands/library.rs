@@ -7,13 +7,14 @@ use tauri::State;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
-use crate::library::{self, AddReport, TrackView};
+use crate::library::{self, AddReport, LibraryMetadata, TrackView};
 use crate::state::LibraryState;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LibraryInfo {
     pub name: String,
+    pub metadata: LibraryMetadata,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -40,6 +41,7 @@ pub enum TrackListExportField {
 fn info_of(library: &library::Library) -> LibraryInfo {
     LibraryInfo {
         name: library.name.clone(),
+        metadata: library.metadata().clone(),
     }
 }
 

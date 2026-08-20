@@ -15,6 +15,8 @@ import type {
   TrackView,
 } from '@/types/library';
 
+const EMPTY_LIBRARY_METADATA = { artists: [], albums: [], genres: [] };
+
 /** Raised when a feature needs the desktop shell and the app runs in a plain browser. */
 export class ShellUnavailableError extends Error {
   constructor() {
@@ -39,7 +41,7 @@ export async function listTracks(): Promise<TrackView[]> {
 
 export async function libraryInfo(): Promise<LibraryInfo> {
   if (!isTauriRuntime()) {
-    return { name: APP_NAME };
+    return { name: APP_NAME, metadata: EMPTY_LIBRARY_METADATA };
   }
 
   return invoke<LibraryInfo>('library_info');

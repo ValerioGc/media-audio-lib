@@ -52,6 +52,19 @@ function hasMissingInfo(track: TrackView, filter: MissingInfoFilter): boolean {
   return value === null;
 }
 
+function uniqueTrackValues(
+  tracks: readonly TrackView[],
+  field: 'artist' | 'album' | 'genre',
+): string[] {
+  return [
+    ...new Set(
+      tracks
+        .map((track) => track[field]?.trim() ?? '')
+        .filter((value) => value.length > 0),
+    ),
+  ].sort((left, right) => left.localeCompare(right));
+}
+
 export const useLibraryStore = defineStore('library', () => {
   const verification = useTrackFileVerification();
   const libraryName = ref('');
@@ -92,6 +105,9 @@ export const useLibraryStore = defineStore('library', () => {
   const canDeleteLibrary = computed(() => libraries.value.length > 1);
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
+  const artistSuggestions = computed(() => uniqueTrackValues(tracks.value, 'artist'));
+  const albumSuggestions = computed(() => uniqueTrackValues(tracks.value, 'album'));
+  const genreSuggestions = computed(() => uniqueTrackValues(tracks.value, 'genre'));
 
   function fail(error: unknown) {
     errorKey.value = errorKeyOf(error);
@@ -567,6 +583,9 @@ export const useLibraryStore = defineStore('library', () => {
     canDeleteLibrary,
     hasNoMatches,
     missingCount,
+    artistSuggestions,
+    albumSuggestions,
+    genreSuggestions,
     loadInfo,
     load,
     renameLibrary,

@@ -41,7 +41,9 @@
     "coverGradient": {
       "title": "Cover background",
       "description": "Use the dominant cover color for the player background and the playing row.",
-      "toggle": "Enable cover gradient"
+      "toggle": "Enable cover gradient",
+      "transparency": "Player transparency",
+      "blur": "Player blur"
     },
     "tabs": {
       "general": "General",

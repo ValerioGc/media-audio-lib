@@ -25,6 +25,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<ThemeChoice>(DEFAULT_SETTINGS.theme);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
+  const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
+  const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -41,6 +43,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme: theme.value,
     viewMode: viewMode.value,
     coverGradientEnabled: coverGradientEnabled.value,
+    playerTransparency: playerTransparency.value,
+    playerBlur: playerBlur.value,
   }));
 
   function apply() {
@@ -89,6 +93,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme.value = restored.theme;
     viewMode.value = restored.viewMode;
     coverGradientEnabled.value = restored.coverGradientEnabled;
+    playerTransparency.value = restored.playerTransparency;
+    playerBlur.value = restored.playerBlur;
 
     apply();
     isReady.value = true;
@@ -123,6 +129,16 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setPlayerTransparency(next: number) {
+    playerTransparency.value = Math.min(45, Math.max(0, next));
+    await persist();
+  }
+
+  async function setPlayerBlur(next: number) {
+    playerBlur.value = Math.min(28, Math.max(0, next));
+    await persist();
+  }
+
   function dispose() {
     stopSystemWatch?.();
     stopSystemWatch = null;
@@ -134,6 +150,8 @@ export const useSettingsStore = defineStore('settings', () => {
     theme,
     viewMode,
     coverGradientEnabled,
+    playerTransparency,
+    playerBlur,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -144,6 +162,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setTheme,
     setViewMode,
     setCoverGradientEnabled,
+    setPlayerTransparency,
+    setPlayerBlur,
     dispose,
   };
 });

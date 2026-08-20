@@ -61,6 +61,8 @@ describe('sanitizeSettings', () => {
       theme: 'dark',
       viewMode: 'preview',
       coverGradientEnabled: false,
+      playerTransparency: 30,
+      playerBlur: 18,
     };
 
     expect(sanitizeSettings(settings)).toEqual(settings);
@@ -75,6 +77,16 @@ describe('sanitizeSettings', () => {
       theme: DEFAULT_SETTINGS.theme,
       viewMode: DEFAULT_SETTINGS.viewMode,
       coverGradientEnabled: DEFAULT_SETTINGS.coverGradientEnabled,
+      playerTransparency: DEFAULT_SETTINGS.playerTransparency,
+      playerBlur: DEFAULT_SETTINGS.playerBlur,
+    });
+  });
+
+  it('limita trasparenza e blur salvati a valori validi', () => {
+    expect(sanitizeSettings({ playerTransparency: 80, playerBlur: -4 })).toEqual({
+      ...DEFAULT_SETTINGS,
+      playerTransparency: 45,
+      playerBlur: 0,
     });
   });
 });
@@ -94,6 +106,8 @@ describe('createWebStorage', () => {
       theme: 'light',
       viewMode: 'table',
       coverGradientEnabled: true,
+      playerTransparency: 12,
+      playerBlur: 12,
     };
 
     await storage.save(settings);
@@ -116,6 +130,8 @@ describe('createTauriStorage', () => {
       theme: 'dark',
       viewMode: 'preview',
       coverGradientEnabled: false,
+      playerTransparency: 30,
+      playerBlur: 18,
     };
     mocks.store.get.mockResolvedValue(settings);
 
@@ -153,6 +169,8 @@ describe('createSettingsStorage', () => {
       theme: 'light',
       viewMode: 'table',
       coverGradientEnabled: false,
+      playerTransparency: 20,
+      playerBlur: 10,
     });
 
     await expect(storage.load()).resolves.toEqual({
@@ -161,6 +179,8 @@ describe('createSettingsStorage', () => {
       theme: 'light',
       viewMode: 'table',
       coverGradientEnabled: false,
+      playerTransparency: 20,
+      playerBlur: 10,
     });
     expect(mocks.load).not.toHaveBeenCalled();
 

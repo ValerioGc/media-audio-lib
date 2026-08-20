@@ -20,6 +20,12 @@ function pickKnown<T extends string>(allowed: readonly T[], value: unknown, fall
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
+function pickNumber(value: unknown, fallback: number, min: number, max: number): number {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.min(max, Math.max(min, value))
+    : fallback;
+}
+
 /** Turns untrusted persisted data into a complete, valid settings object. */
 export function sanitizeSettings(raw: unknown): AppSettings {
   const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
@@ -33,6 +39,13 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.coverGradientEnabled === 'boolean'
         ? source.coverGradientEnabled
         : DEFAULT_SETTINGS.coverGradientEnabled,
+    playerTransparency: pickNumber(
+      source.playerTransparency,
+      DEFAULT_SETTINGS.playerTransparency,
+      0,
+      45,
+    ),
+    playerBlur: pickNumber(source.playerBlur, DEFAULT_SETTINGS.playerBlur, 0, 28),
   };
 }
 

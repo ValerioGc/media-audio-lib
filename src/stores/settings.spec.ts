@@ -138,6 +138,8 @@ describe('useSettingsStore', () => {
       theme: 'light',
       viewMode: 'table',
       coverGradientEnabled: true,
+      playerTransparency: 12,
+      playerBlur: 12,
     });
     expect(document.documentElement.dataset.theme).toBe('light');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.875');
@@ -189,6 +191,22 @@ describe('useSettingsStore', () => {
 
     expect(store.coverGradientEnabled).toBe(false);
     expect(storage.saved.at(-1)?.coverGradientEnabled).toBe(false);
+
+    store.dispose();
+  });
+
+  it('ricorda trasparenza e blur del player', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    await store.setPlayerTransparency(30);
+    await store.setPlayerBlur(18);
+
+    expect(store.playerTransparency).toBe(30);
+    expect(store.playerBlur).toBe(18);
+    expect(storage.saved.at(-1)?.playerTransparency).toBe(30);
+    expect(storage.saved.at(-1)?.playerBlur).toBe(18);
 
     store.dispose();
   });

@@ -31,9 +31,13 @@ const details = computed(() => [
 ]);
 
 const accentStyle = computed(() =>
-  settings.coverGradientEnabled && player.coverAccent !== null
-    ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
-    : {},
+  ({
+    '--player_surface_strength': `${100 - settings.playerTransparency}%`,
+    '--player_blur': `${settings.playerBlur}px`,
+    ...(settings.coverGradientEnabled && player.coverAccent !== null
+      ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
+      : {}),
+  }),
 );
 
 function onKeydown(event: KeyboardEvent) {
@@ -49,7 +53,10 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 <template>
   <section
     class="player_full"
-    :class="{ player_full_accented: settings.coverGradientEnabled && player.coverAccent !== null }"
+    :class="{
+      player_full_glass: settings.playerTransparency > 0 || settings.playerBlur > 0,
+      player_full_accented: settings.coverGradientEnabled && player.coverAccent !== null,
+    }"
     :style="accentStyle"
     :aria-label="t('player.nowPlaying')"
   >
@@ -133,10 +140,19 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   flex-direction: column;
   background-color: var(--color_bg);
 
+  &_glass {
+    background-color: color-mix(
+      in srgb,
+      var(--color_bg) var(--player_surface_strength),
+      transparent
+    );
+    backdrop-filter: blur(var(--player_blur));
+  }
+
   &_accented {
     background:
       var(--cover_accent_gradient),
-      var(--color_bg);
+      color-mix(in srgb, var(--color_bg) var(--player_surface_strength), transparent);
   }
 
   &_header {

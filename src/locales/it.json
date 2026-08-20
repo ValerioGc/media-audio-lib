@@ -41,7 +41,9 @@
     "coverGradient": {
       "title": "Sfondo da copertina",
       "description": "Usa il colore dominante della copertina per lo sfondo del player e della riga in riproduzione.",
-      "toggle": "Abilita gradiente dalla copertina"
+      "toggle": "Abilita gradiente dalla copertina",
+      "transparency": "Trasparenza player",
+      "blur": "Blur player"
     },
     "tabs": {
       "general": "Generale",

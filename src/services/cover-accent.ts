@@ -11,13 +11,30 @@ function clampChannel(value: number): number {
   return Math.min(255, Math.max(0, Math.round(value)));
 }
 
+function liftDarkColor(red: number, green: number, blue: number): [number, number, number] {
+  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+
+  if (luminance >= 104) {
+    return [red, green, blue];
+  }
+
+  const lift = 104 - luminance;
+
+  return [
+    red + lift * 0.7,
+    green + lift * 0.7,
+    blue + lift * 0.9,
+  ];
+}
+
 export function coverAccentFromRgb(red: number, green: number, blue: number): CoverAccent {
-  const rgb = `${clampChannel(red)} ${clampChannel(green)} ${clampChannel(blue)}`;
+  const [visibleRed, visibleGreen, visibleBlue] = liftDarkColor(red, green, blue);
+  const rgb = `${clampChannel(visibleRed)} ${clampChannel(visibleGreen)} ${clampChannel(visibleBlue)}`;
 
   return {
     rgb,
-    surfaceGradient: `linear-gradient(135deg, rgb(${rgb} / 28%), rgb(${rgb} / 10%) 42%, transparent 72%)`,
-    rowGradient: `linear-gradient(90deg, rgb(${rgb} / 26%), rgb(${rgb} / 10%) 46%, transparent 100%)`,
+    surfaceGradient: `radial-gradient(circle at 12% 18%, rgb(${rgb} / 58%), rgb(${rgb} / 32%) 34%, transparent 68%), linear-gradient(135deg, rgb(${rgb} / 42%), rgb(${rgb} / 18%) 54%, transparent 88%)`,
+    rowGradient: `linear-gradient(90deg, rgb(${rgb} / 44%), rgb(${rgb} / 24%) 48%, transparent 100%)`,
   };
 }
 

@@ -18,6 +18,8 @@ export interface AppSettings {
   theme: ThemeChoice;
   viewMode: ViewMode;
   coverGradientEnabled: boolean;
+  playerTransparency: number;
+  playerBlur: number;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -26,4 +28,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'system',
   viewMode: 'table',
   coverGradientEnabled: true,
+  playerTransparency: 12,
+  playerBlur: 12,
 };

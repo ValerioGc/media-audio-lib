@@ -9,32 +9,105 @@ const settings = useSettingsStore();
 function onChange(event: Event) {
   void settings.setCoverGradientEnabled((event.target as HTMLInputElement).checked);
 }
+
+function onTransparencyChange(event: Event) {
+  void settings.setPlayerTransparency(Number((event.target as HTMLInputElement).value));
+}
+
+function onBlurChange(event: Event) {
+  void settings.setPlayerBlur(Number((event.target as HTMLInputElement).value));
+}
 </script>
 
 <template>
-  <label class="cover_gradient_toggle">
-    <input
-      type="checkbox"
-      :checked="settings.coverGradientEnabled"
-      data-testid="cover-gradient-toggle"
-      @change="onChange"
-    />
-    <span>{{ t('settings.coverGradient.toggle') }}</span>
-  </label>
+  <div class="cover_gradient_toggle">
+    <label class="cover_gradient_toggle_check">
+      <input
+        type="checkbox"
+        :checked="settings.coverGradientEnabled"
+        data-testid="cover-gradient-toggle"
+        @change="onChange"
+      />
+      <span>{{ t('settings.coverGradient.toggle') }}</span>
+    </label>
+
+    <label class="cover_gradient_toggle_slider">
+      <span>{{ t('settings.coverGradient.transparency') }}</span>
+      <input
+        type="range"
+        min="0"
+        max="45"
+        step="1"
+        :value="settings.playerTransparency"
+        data-testid="player-transparency"
+        @input="onTransparencyChange"
+      />
+      <strong>{{ settings.playerTransparency }}%</strong>
+    </label>
+
+    <label class="cover_gradient_toggle_slider">
+      <span>{{ t('settings.coverGradient.blur') }}</span>
+      <input
+        type="range"
+        min="0"
+        max="28"
+        step="1"
+        :value="settings.playerBlur"
+        data-testid="player-blur"
+        @input="onBlurChange"
+      />
+      <strong>{{ settings.playerBlur }}px</strong>
+    </label>
+  </div>
 </template>
 
 <style scoped lang="scss">
 .cover_gradient_toggle {
   display: flex;
+  flex-direction: column;
   gap: $space_sm;
-  align-items: center;
-  width: fit-content;
+  align-items: flex-start;
   color: var(--color_text);
-  cursor: pointer;
 
-  input {
+  &_check,
+  &_slider {
+    display: flex;
+    gap: $space_sm;
+    align-items: center;
+  }
+
+  &_check {
+    cursor: pointer;
+  }
+
+  &_slider {
+    width: min(28rem, 100%);
+
+    span {
+      min-width: 8rem;
+      color: var(--color_text_muted);
+      font-size: 0.875em;
+    }
+
+    input {
+      flex: 1;
+    }
+
+    strong {
+      min-width: 3rem;
+      font-size: 0.875em;
+      font-weight: 600;
+      text-align: right;
+    }
+  }
+
+  input[type='checkbox'] {
     width: 1rem;
     height: 1rem;
+    accent-color: var(--color_accent);
+  }
+
+  input[type='range'] {
     accent-color: var(--color_accent);
   }
 }

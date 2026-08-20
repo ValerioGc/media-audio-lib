@@ -25,16 +25,23 @@ const player = usePlayerStore();
 const settings = useSettingsStore();
 
 const accentStyle = computed(() =>
-  settings.coverGradientEnabled && player.coverAccent !== null
-    ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
-    : {},
+  ({
+    '--player_surface_strength': `${100 - settings.playerTransparency}%`,
+    '--player_blur': `${settings.playerBlur}px`,
+    ...(settings.coverGradientEnabled && player.coverAccent !== null
+      ? { '--cover_accent_gradient': player.coverAccent.surfaceGradient }
+      : {}),
+  }),
 );
 </script>
 
 <template>
   <section
     class="player_bar"
-    :class="{ player_bar_accented: settings.coverGradientEnabled && player.coverAccent !== null }"
+    :class="{
+      player_bar_glass: settings.playerTransparency > 0 || settings.playerBlur > 0,
+      player_bar_accented: settings.coverGradientEnabled && player.coverAccent !== null,
+    }"
     :style="accentStyle"
     :aria-label="t('player.nowPlaying')"
   >
@@ -109,10 +116,19 @@ const accentStyle = computed(() =>
   background-color: var(--color_surface);
   box-shadow: var(--shadow_raised);
 
+  &_glass {
+    background-color: color-mix(
+      in srgb,
+      var(--color_surface) var(--player_surface_strength),
+      transparent
+    );
+    backdrop-filter: blur(var(--player_blur));
+  }
+
   &_accented {
     background:
       var(--cover_accent_gradient),
-      var(--color_surface);
+      color-mix(in srgb, var(--color_surface) var(--player_surface_strength), transparent);
   }
 
   &_error {

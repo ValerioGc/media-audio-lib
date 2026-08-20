@@ -1,5 +1,11 @@
 import { computed, ref, type Ref } from 'vue';
 
+/**
+ * Rows kept mounted above and below the viewport. Enough of them that a fast wheel or a
+ * dragged scrollbar finds the next rows already in the DOM instead of drawing a gap.
+ */
+export const OVERSCAN_ROWS = 8;
+
 export interface VirtualRange {
   start: number;
   end: number;
@@ -16,7 +22,7 @@ export function computeVirtualRange(
   itemHeight: number,
   viewportHeight: number,
   scrollTop: number,
-  overscan = 4,
+  overscan = OVERSCAN_ROWS,
 ): VirtualRange {
   const totalHeight = itemCount * itemHeight;
 
@@ -41,19 +47,40 @@ export interface VirtualListOptions {
   overscan?: number;
 }
 
+function sameRange(left: VirtualRange, right: VirtualRange): boolean {
+  return (
+    left.start === right.start &&
+    left.end === right.end &&
+    left.offsetTop === right.offsetTop &&
+    left.totalHeight === right.totalHeight
+  );
+}
+
 export function useVirtualList({ itemCount, itemHeight, overscan }: VirtualListOptions) {
   const scrollTop = ref(0);
   const viewportHeight = ref(0);
 
-  const range = computed(() =>
-    computeVirtualRange(
+  // Scrolling reports every pixel, but the window only moves one row at a time. Holding on
+  // to the previous object keeps the identity stable in between, so the rows are rendered
+  // again when they actually change instead of on every scroll event.
+  let previous: VirtualRange | null = null;
+
+  const range = computed(() => {
+    const next = computeVirtualRange(
       itemCount.value,
       itemHeight.value,
       viewportHeight.value,
       scrollTop.value,
       overscan,
-    ),
-  );
+    );
+
+    if (previous !== null && sameRange(previous, next)) {
+      return previous;
+    }
+
+    previous = next;
+    return next;
+  });
 
   function onScroll(event: Event) {
     const target = event.target as HTMLElement;

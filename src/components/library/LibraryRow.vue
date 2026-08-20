@@ -88,7 +88,8 @@ function openActionsMenu(event: MouseEvent) {
       <LibraryCoverCell v-if="column.key === 'cover'" :track="track" />
       <template v-else-if="column.key === 'title'">
         <span class="library_row_title">
-          <span class="library_row_text">{{ track.title }}</span>
+          <!-- Columns are narrow and resizable: the full value is one hover away. -->
+          <span class="library_row_text" :title="track.title">{{ track.title }}</span>
           <span v-if="playing" class="library_row_badge library_row_badge_playing">
             <AppIcon name="play" />
             {{ t('library.row.playing') }}
@@ -102,7 +103,7 @@ function openActionsMenu(event: MouseEvent) {
       <span v-else-if="column.key === 'duration'" class="library_row_duration">
         {{ valueFor(column) }}
       </span>
-      <span v-else class="library_row_text">
+      <span v-else class="library_row_text" :title="valueFor(column)">
         {{ valueFor(column) }}
       </span>
     </span>

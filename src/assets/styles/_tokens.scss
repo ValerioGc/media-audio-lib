@@ -9,7 +9,8 @@ $space_lg: 1.5rem;
 $space_xl: 2rem;
 
 // Layout
-$titlebar_height: 2rem;
+/// Tall enough to hold the app commands, which are larger targets than the window ones.
+$titlebar_height: 2.75rem;
 /// Horizontal margin shared by the page content and by the bars above and below it.
 $page_gutter: $space_lg;
 /// Height of a row of the list view. Keep in sync with LIBRARY_ROW_HEIGHT_REM.

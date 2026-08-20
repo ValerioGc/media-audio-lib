@@ -3,6 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import AppTooltip from '@/components/common/AppTooltip.vue';
 import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
 import { LIBRARY_ROW_HEIGHT_REM, remToPixels } from '@/config/layout';
@@ -176,15 +177,16 @@ onUnmounted(stopResize);
             :class="{ library_table_sort_active: column.active }"
             type="button"
             :aria-label="t('library.sort.sortBy', { column: column.label })"
+            :title="t('library.sort.sortBy', { column: column.label })"
             @click="sortColumn(column.key)"
           >
-            {{ column.label }}
+            <span class="library_table_sort_label">{{ column.label }}</span>
             <AppIcon
               v-if="column.active"
               :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'"
             />
           </button>
-          <span v-else>{{ column.label }}</span>
+          <span v-else :title="column.label">{{ column.label }}</span>
           <span
             v-if="column.resizable"
             class="library_table_resize"
@@ -200,28 +202,28 @@ onUnmounted(stopResize);
           role="columnheader"
           :aria-label="t('library.columns.actions')"
         >
-          <button
-            v-if="showColumnSettings"
-            class="library_table_tool"
-            type="button"
-            :aria-label="t('library.columnSettings.fit')"
-            :title="t('library.columnSettings.fit')"
-            data-testid="table-fit-columns"
-            @click="fitColumnsToContent"
-          >
-            <AppIcon name="maximize" />
-          </button>
-          <button
-            v-if="showColumnSettings"
-            class="library_table_tool"
-            type="button"
-            :aria-label="t('library.columnSettings.open')"
-            :title="t('library.columnSettings.open')"
-            data-testid="table-column-settings"
-            @click="isColumnSettingsOpen = true"
-          >
-            <AppIcon name="settings" />
-          </button>
+          <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.fit')">
+            <button
+              class="library_table_tool"
+              type="button"
+              :aria-label="t('library.columnSettings.fit')"
+              data-testid="table-fit-columns"
+              @click="fitColumnsToContent"
+            >
+              <AppIcon name="maximize" />
+            </button>
+          </AppTooltip>
+          <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.open')">
+            <button
+              class="library_table_tool"
+              type="button"
+              :aria-label="t('library.columnSettings.open')"
+              data-testid="table-column-settings"
+              @click="isColumnSettingsOpen = true"
+            >
+              <AppIcon name="settings" />
+            </button>
+          </AppTooltip>
         </span>
       </div>
 
@@ -332,6 +334,8 @@ onUnmounted(stopResize);
     display: inline-flex;
     gap: $space_xs;
     align-items: center;
+    max-width: 100%;
+    min-width: 0;
     padding: $space_xs $space_sm;
     border: 0;
     border-radius: $radius_sm;
@@ -347,6 +351,12 @@ onUnmounted(stopResize);
     &_active {
       color: var(--color_accent);
       font-weight: 600;
+    }
+
+    &_label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     @include focus_ring;
@@ -430,6 +440,11 @@ onUnmounted(stopResize);
     top: 0;
     right: 0;
     left: 0;
+
+    // The window is moved on every step of the scroll: promoting it keeps the rows on
+    // whole pixels and takes their painting off the main scrolling work.
+    will-change: transform;
+    contain: layout style;
   }
 }
 

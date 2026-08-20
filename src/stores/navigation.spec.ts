@@ -16,6 +16,7 @@ describe('useNavigationStore', () => {
     expect(navigation.view).toBe('library');
     expect(navigation.isLibrary).toBe(true);
     expect(navigation.isSettings).toBe(false);
+    expect(navigation.isPlayer).toBe(false);
   });
 
   it('opens the requested view', () => {
@@ -24,6 +25,15 @@ describe('useNavigationStore', () => {
     navigation.go('settings');
 
     expect(navigation.isSettings).toBe(true);
+    expect(navigation.isLibrary).toBe(false);
+  });
+
+  it('opens the player-only view', () => {
+    const navigation = useNavigationStore();
+
+    navigation.go('player');
+
+    expect(navigation.isPlayer).toBe(true);
     expect(navigation.isLibrary).toBe(false);
   });
 

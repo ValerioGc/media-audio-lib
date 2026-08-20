@@ -62,6 +62,8 @@ pub fn run() {
             commands::metadata::write_metadata,
             commands::metadata::write_cover,
             commands::playback::prepare_playback,
+            commands::playback::prepare_external_playback,
+            commands::playback::startup_audio_file,
             commands::catalog::list_libraries,
             commands::catalog::create_library,
             commands::catalog::switch_library,

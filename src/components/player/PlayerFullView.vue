@@ -12,11 +12,18 @@ import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
-const props = defineProps<{ track: TrackView }>();
+const props = withDefaults(
+  defineProps<{
+    track: TrackView;
+    showLibraryLink?: boolean;
+  }>(),
+  { showLibraryLink: false },
+);
 
 const emit = defineEmits<{
   collapse: [];
   close: [];
+  openLibrary: [];
 }>();
 
 const { t } = useI18n();
@@ -40,7 +47,11 @@ const accentStyle = computed(() => ({
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    emit('collapse');
+    if (props.showLibraryLink) {
+      emit('openLibrary');
+    } else {
+      emit('collapse');
+    }
   }
 }
 
@@ -60,6 +71,16 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   >
     <header class="player_full_header">
       <AppButton
+        v-if="showLibraryLink"
+        variant="ghost"
+        data-testid="open-library-from-player"
+        @click="emit('openLibrary')"
+      >
+        <AppIcon name="back" />
+        {{ t('player.openLibrary') }}
+      </AppButton>
+      <AppButton
+        v-else
         variant="ghost"
         :aria-label="t('player.collapse')"
         data-testid="player-collapse"

@@ -71,7 +71,7 @@ describe('usePlayerStore', () => {
 
     await player.play(track);
 
-    expect(mocks.playbackUrl).toHaveBeenCalledWith(track.id);
+    expect(mocks.playbackUrl).toHaveBeenCalledWith(track);
     expect(engine.load).toHaveBeenCalledWith('asset://track.mp3');
     expect(engine.play).toHaveBeenCalledTimes(1);
     expect(player.currentTrack?.title).toBe('Track');

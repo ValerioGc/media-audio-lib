@@ -8,10 +8,36 @@ import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 
+const mocks = vi.hoisted(() => ({
+  startupAudioFile: vi.fn(),
+  playbackUrl: vi.fn(),
+  createAudioEngine: vi.fn(),
+}));
+
+vi.mock('@/services/playback-api', () => ({
+  startupAudioFile: mocks.startupAudioFile,
+  playbackUrl: mocks.playbackUrl,
+}));
+
+vi.mock('@/services/audio-engine', () => ({
+  createAudioEngine: mocks.createAudioEngine,
+}));
+
 import App from './App.vue';
 
 beforeEach(() => {
   resetI18n();
+  vi.clearAllMocks();
+  mocks.startupAudioFile.mockResolvedValue(null);
+  mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
+  mocks.createAudioEngine.mockReturnValue({
+    load: vi.fn(),
+    play: vi.fn().mockResolvedValue(undefined),
+    pause: vi.fn(),
+    seek: vi.fn(),
+    setVolume: vi.fn(),
+    release: vi.fn(),
+  });
   localStorage.setItem(
     'app-settings',
     JSON.stringify({ locale: 'it', textSize: 'medium', theme: 'light' }),
@@ -75,6 +101,25 @@ describe('App', () => {
     await flushPromises();
 
     expect(wrapper.get('.player_bar_title').text()).toBe('Track');
+  });
+
+  it('opens a startup audio file in player-only mode', async () => {
+    mocks.startupAudioFile.mockResolvedValue(makeTrack({ title: 'Direct file', standalone: true }));
+
+    const wrapper = await mountApp();
+    await flushPromises();
+
+    expect(useNavigationStore().view).toBe('player');
+    expect(wrapper.get('.player_full_title').text()).toBe('Direct file');
+    expect(wrapper.get('[data-testid="open-library-from-player"]').text()).toContain(
+      'Apri libreria',
+    );
+
+    await wrapper.get('[data-testid="open-library-from-player"]').trigger('click');
+    await flushPromises();
+
+    expect(useNavigationStore().view).toBe('library');
+    expect(wrapper.find('.library_view').exists()).toBe(true);
   });
 
   it('releases the system theme listener on unmount', async () => {

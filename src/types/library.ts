@@ -16,6 +16,7 @@ export interface Track {
 
 export interface TrackView extends Track {
   missing: boolean;
+  standalone?: boolean;
 }
 
 export interface FailedImport {

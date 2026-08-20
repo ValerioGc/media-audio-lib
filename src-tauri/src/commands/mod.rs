@@ -15,7 +15,7 @@ pub use library::{
     verify_track_file,
 };
 pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
-pub use playback::prepare_playback;
+pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};
 
 use crate::metadata::SUPPORTED_EXTENSIONS;
 

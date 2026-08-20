@@ -125,7 +125,7 @@ export const usePlayerStore = defineStore('player', () => {
     isLoading.value = true;
 
     try {
-      const url = await playbackUrl(track.id);
+      const url = await playbackUrl(track);
       const audio = ensureEngine();
       audio.load(url);
       await audio.play();

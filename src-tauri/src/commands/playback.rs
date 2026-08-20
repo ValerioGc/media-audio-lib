@@ -3,12 +3,13 @@
 //! The asset protocol starts with an empty scope; every playable file is granted one at a
 //! time, so the webview never gets blanket access to the disk.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use tauri::{AppHandle, Manager as _, Runtime, State};
 
 use crate::error::{AppError, AppResult};
-use crate::library::{self, Library};
+use crate::library::{self, Library, Track, TrackView};
+use crate::metadata;
 use crate::state::LibraryState;
 
 /// Path of a track that can actually be played, refusing entries whose file is gone.
@@ -22,6 +23,31 @@ pub fn playable_path(library: &Library, id: &str) -> AppResult<PathBuf> {
     Ok(path)
 }
 
+fn playable_file_path(path: &Path) -> AppResult<PathBuf> {
+    metadata::ensure_importable(path)?;
+
+    Ok(path.to_path_buf())
+}
+
+fn standalone_track(path: &Path) -> AppResult<TrackView> {
+    let metadata = metadata::read_metadata(path)?;
+    let track = Track::new(path, metadata, library::now_seconds());
+
+    Ok(TrackView {
+        track,
+        missing: false,
+    })
+}
+
+fn first_supported_audio_path<I>(paths: I) -> Option<PathBuf>
+where
+    I: IntoIterator<Item = PathBuf>,
+{
+    paths
+        .into_iter()
+        .find(|path| path.is_file() && metadata::is_supported(path))
+}
+
 /// Grants the webview access to one track and returns its path.
 #[tauri::command]
 pub fn prepare_playback<R: Runtime>(
@@ -30,6 +56,30 @@ pub fn prepare_playback<R: Runtime>(
     id: String,
 ) -> AppResult<String> {
     let path = state.read(|library| playable_path(library, &id))??;
+
+    app.asset_protocol_scope()
+        .allow_file(&path)
+        .map_err(|error| AppError::State(error.to_string()))?;
+
+    Ok(path.to_string_lossy().into_owned())
+}
+
+/// Reads the audio file passed by the operating system when this app is opened as
+/// the default player.
+#[tauri::command]
+pub fn startup_audio_file() -> AppResult<Option<TrackView>> {
+    let Some(path) = first_supported_audio_path(std::env::args_os().skip(1).map(PathBuf::from))
+    else {
+        return Ok(None);
+    };
+
+    standalone_track(&path).map(Some)
+}
+
+/// Grants the webview access to an audio file that is not part of the library.
+#[tauri::command]
+pub fn prepare_external_playback<R: Runtime>(app: AppHandle<R>, path: String) -> AppResult<String> {
+    let path = playable_file_path(Path::new(&path))?;
 
     app.asset_protocol_scope()
         .allow_file(&path)
@@ -93,5 +143,46 @@ mod tests {
         let error = playable_path(&library, "id-1").expect_err("missing file");
 
         assert!(matches!(error, AppError::NotFound(_)));
+    }
+
+    #[test]
+    fn creates_a_standalone_track_from_an_audio_file() {
+        let directory = TempDir::new("playback-standalone");
+        let file = mp3_with_tags(directory.path(), "track.mp3");
+
+        let track = standalone_track(&file).expect("standalone track");
+
+        assert_eq!(track.track.path, file.display().to_string());
+        assert_eq!(track.track.title, "Test Title");
+        assert!(!track.missing);
+    }
+
+    #[test]
+    fn rejects_an_external_file_that_is_not_audio() {
+        let directory = TempDir::new("playback-external-unsupported");
+        let file = directory.path().join("note.txt");
+        std::fs::write(&file, b"text").expect("test file written");
+
+        let error = playable_file_path(&file).expect_err("unsupported file");
+
+        assert!(matches!(error, AppError::UnsupportedFormat(extension) if extension == "txt"));
+    }
+
+    #[test]
+    fn finds_the_first_supported_startup_argument() {
+        let directory = TempDir::new("playback-startup-args");
+        let text = directory.path().join("note.txt");
+        std::fs::write(&text, b"text").expect("test file written");
+        let audio = mp3_with_tags(directory.path(), "track.mp3");
+
+        let found = first_supported_audio_path([
+            PathBuf::from("--flag"),
+            text,
+            audio.clone(),
+            directory.path().join("missing.mp3"),
+        ])
+        .expect("audio path");
+
+        assert_eq!(found, audio);
     }
 }

@@ -17,7 +17,7 @@ pub use library::{
 };
 pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
 pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};
-pub use window::{set_close_to_tray, set_tray_labels};
+pub use window::{set_close_to_tray, set_tray_menu};
 
 use crate::metadata::SUPPORTED_EXTENSIONS;
 

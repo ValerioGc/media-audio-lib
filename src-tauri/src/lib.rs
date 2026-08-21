@@ -69,18 +69,21 @@ fn hide_main_window<R: Runtime>(app: &AppHandle<R>) {
     }
 }
 
-/// The tray menu, rebuilt whenever the interface changes language.
+/// The tray menu, rebuilt whenever the interface changes language or the player its state.
+///
+/// `can_stop` greys out the command while the player holds nothing to stop.
 pub fn tray_menu<R: Runtime>(
     app: &AppHandle<R>,
     show: &str,
     stop: &str,
     quit: &str,
+    can_stop: bool,
 ) -> tauri::Result<Menu<R>> {
     Menu::with_items(
         app,
         &[
             &MenuItem::with_id(app, "show", show, true, None::<&str>)?,
-            &MenuItem::with_id(app, "stop", stop, true, None::<&str>)?,
+            &MenuItem::with_id(app, "stop", stop, can_stop, None::<&str>)?,
             &MenuItem::with_id(app, "quit", quit, true, None::<&str>)?,
         ],
     )
@@ -92,7 +95,8 @@ fn build_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
             tauri::Error::AssetNotFound("the window icon is needed for the tray".to_owned())
         })?)
         .tooltip("Media Audio Lib")
-        .menu(&tray_menu(app, "Show", "Stop playback", "Quit")?)
+        // Nothing plays at startup, so the command starts out of reach.
+        .menu(&tray_menu(app, "Show", "Stop playback", "Quit", false)?)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
             "show" => show_main_window(app),
@@ -166,7 +170,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::app_info,
             commands::window::set_close_to_tray,
-            commands::window::set_tray_labels,
+            commands::window::set_tray_menu,
             commands::library::library_info,
             commands::library::rename_library,
             commands::library::add_tracks,

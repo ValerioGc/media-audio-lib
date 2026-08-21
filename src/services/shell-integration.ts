@@ -27,9 +27,19 @@ export async function applyCloseToTray(enabled: boolean): Promise<boolean> {
   return invokeCommand('set_close_to_tray', { enabled });
 }
 
-/** Writes the tray menu in the language of the interface. */
-export async function applyTrayLabels(show: string, stop: string, quit: string): Promise<boolean> {
-  return invokeCommand('set_tray_labels', { show, stop, quit });
+/**
+ * Writes the tray menu: its words, and whether the player has anything to stop.
+ *
+ * The menu is built by the shell, so it learns both from here, and is written again on a
+ * change of language or of what the player holds.
+ */
+export async function applyTrayMenu(
+  show: string,
+  stop: string,
+  quit: string,
+  canStop: boolean,
+): Promise<boolean> {
+  return invokeCommand('set_tray_menu', { show, stop, quit, canStop });
 }
 
 /**

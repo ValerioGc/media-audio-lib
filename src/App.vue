@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import TitleBar from '@/components/layout/TitleBar.vue';
 import PlayerDock from '@/components/player/PlayerDock.vue';
 import { startupAudioFile } from '@/services/playback-api';
-import { applyTrayLabels, onTrayStopPlayback } from '@/services/shell-integration';
+import { applyTrayMenu, onTrayStopPlayback } from '@/services/shell-integration';
 import { showWindow } from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
@@ -19,9 +19,12 @@ const settings = useSettingsStore();
 const navigation = useNavigationStore();
 const player = usePlayerStore();
 
-/** The tray menu is written by the shell, so it is handed the words of the interface. */
+/**
+ * The tray menu is written by the shell, so it is handed the words of the interface and
+ * the state of the player: with nothing loaded there is nothing to stop.
+ */
 async function writeTrayMenu() {
-  await applyTrayLabels(t('tray.show'), t('tray.stop'), t('tray.quit'));
+  await applyTrayMenu(t('tray.show'), t('tray.stop'), t('tray.quit'), player.isActive);
 }
 
 let stopTrayListener: (() => void) | null = null;
@@ -48,7 +51,7 @@ async function initializeApp() {
 
 onMounted(initializeApp);
 
-watch(() => settings.locale, writeTrayMenu);
+watch([() => settings.locale, () => player.isActive], writeTrayMenu);
 
 onBeforeUnmount(() => {
   stopTrayListener?.();

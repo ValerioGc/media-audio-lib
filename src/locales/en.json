@@ -345,8 +345,6 @@
       "modalTitle": "Tracks linked to {name}",
       "detailTabs": "Linked detail",
       "back": "Back to the previous detail",
-      "expandAlbums": "Expand albums",
-      "collapseAlbums": "Collapse albums",
       "expandArtists": "Expand the list of artists",
       "collapseArtists": "Back to the tracks",
       "expandAlbumList": "Expand the list of albums",

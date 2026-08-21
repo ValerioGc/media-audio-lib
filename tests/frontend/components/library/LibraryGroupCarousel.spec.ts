@@ -28,8 +28,6 @@ function mountCarousel(props: Partial<InstanceType<typeof LibraryGroupCarousel>[
     props: {
       title: 'Album',
       groups,
-      actionLabel: 'Espandi album',
-      actionIcon: 'expand' as const,
       ...props,
     },
   });
@@ -73,30 +71,21 @@ describe('LibraryGroupCarousel', () => {
     expect(wrapper.emitted('open')).toEqual([['Second Album']]);
   });
 
-  it('names the command and reports it when pressed', async () => {
+  it('is a strip of cards and nothing else: no command in its header', () => {
     const wrapper = mountCarousel();
-    const action = wrapper.get('[data-testid="carousel-action"]');
 
-    expect(action.attributes('aria-label')).toBe('Espandi album');
-
-    await action.trigger('click');
-
-    expect(wrapper.emitted('action')).toHaveLength(1);
+    expect(wrapper.get('.library_group_carousel_title').text()).toBe('Album');
+    expect(wrapper.find('[data-testid="carousel-action"]').exists()).toBe(false);
+    expect(wrapper.find('button.library_group_carousel_action').exists()).toBe(false);
   });
 
-  it('shows the cover only when the group has one', () => {
+  it('keeps the square of a group without a cover, so the cards line up', () => {
     const cards = mountCarousel().findAll('.library_group_carousel_card');
 
-    expect(cards[0]?.find('.library_group_carousel_cover').exists()).toBe(true);
-    expect(cards[1]?.find('.library_group_carousel_cover').exists()).toBe(false);
-  });
-
-  it('takes roomier cards when asked', () => {
-    expect(mountCarousel().get('.library_group_carousel').classes()).not.toContain(
-      'library_group_carousel_large',
-    );
-    expect(mountCarousel({ large: true }).get('.library_group_carousel').classes()).toContain(
-      'library_group_carousel_large',
+    expect(cards[0]?.find('.cover_image_card').exists()).toBe(true);
+    expect(cards[1]?.find('.cover_image_card').exists()).toBe(false);
+    expect(cards[1]?.get('.library_group_carousel_empty').classes()).toContain(
+      'library_group_carousel_cover',
     );
   });
 });

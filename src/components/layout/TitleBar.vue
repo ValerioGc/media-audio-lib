@@ -88,7 +88,11 @@ const controls = computed<WindowControl[]>(() => [
       >
         <button
           class="titlebar_button"
-          :class="`titlebar_button_${control.id}`"
+          :class="{
+            titlebar_button_minimize: control.id === 'minimize',
+            titlebar_button_maximize: control.id === 'maximize',
+            titlebar_button_close: control.id === 'close',
+          }"
           type="button"
           :aria-label="control.label"
           :data-testid="`window-${control.id}`"

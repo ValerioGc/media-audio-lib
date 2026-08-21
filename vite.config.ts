@@ -32,6 +32,8 @@ export default defineConfig({
     postcss: {
       plugins: [
         combineSelectors({ removeDuplicatedProperties: true }),
+        // Only the class names the sources spell out survive: one built from a prop, as in
+        // `class-${variant}`, is dropped from the stylesheet without a word.
         purgecss({
           content: ['./public/**/*.html', './src/**/*.vue', './src/**/*.ts', './src/**/*.scss'],
           safelist: {

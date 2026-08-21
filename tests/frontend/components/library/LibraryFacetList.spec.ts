@@ -28,9 +28,12 @@ describe('LibraryFacetList', () => {
     const rows = wrapper.findAll('.library_facet_list_body .library_facet_list_row');
 
     expect(rows).toHaveLength(2);
-    expect(wrapper.findAll('.library_facet_list_heading').map((heading) => heading.text())).toEqual(
-      ['Autore', 'Album', 'Brani', 'Durata'],
-    );
+    // The column in use also renders its sort arrow.
+    expect(
+      wrapper
+        .findAll('.library_facet_list_heading')
+        .map((heading) => heading.text().replace(/[▲▼]/u, '')),
+    ).toEqual(['Autore', 'Album', 'Brani', 'Durata']);
     expect(rows[0]?.text()).toContain('Artist A');
     expect(rows[0]?.text()).toContain('1 album');
     expect(rows[0]?.text()).toContain('1 brano');
@@ -40,6 +43,38 @@ describe('LibraryFacetList', () => {
     expect(rows[1]?.text()).toContain('2 brani');
     expect(rows[1]?.text()).toContain('5:00');
     expect(rows[1]?.text()).not.toContain('Uno, Tre');
+  });
+
+  it('sorts the list from any of its columns, duration included', async () => {
+    const tracks = [
+      makeTrack({ title: 'Uno', artist: 'Artist A', album: 'Album A', durationMs: 60_000 }),
+      makeTrack({ title: 'Due', artist: 'Artist B', album: 'Album B', durationMs: 200_000 }),
+      makeTrack({ title: 'Tre', artist: 'Artist B', album: 'Album C', durationMs: 100_000 }),
+    ];
+
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'artist', viewMode: 'table', tracks },
+    });
+    const names = () =>
+      wrapper
+        .findAll('.library_facet_list_body .library_facet_list_name_text')
+        .map((name) => name.text());
+
+    expect(names()).toEqual(['Artist A', 'Artist B']);
+
+    await wrapper.get('[data-testid="facet-sort-duration"]').trigger('click');
+    expect(names()).toEqual(['Artist A', 'Artist B']);
+
+    // A second click on the same column turns the order around.
+    await wrapper.get('[data-testid="facet-sort-duration"]').trigger('click');
+    expect(names()).toEqual(['Artist B', 'Artist A']);
+    expect(wrapper.findAll('.library_facet_list_heading').at(-1)?.attributes('aria-sort')).toBe(
+      'descending',
+    );
+
+    await wrapper.get('[data-testid="facet-sort-albums"]').trigger('click');
+    expect(names()).toEqual(['Artist A', 'Artist B']);
   });
 
   it('counts the artists of a genre, in the list and on the card', () => {
@@ -55,13 +90,11 @@ describe('LibraryFacetList', () => {
       props: { field: 'genre', viewMode: 'table', tracks },
     });
 
-    expect(list.findAll('.library_facet_list_heading').map((heading) => heading.text())).toEqual([
-      'Genere',
-      'Autori',
-      'Album',
-      'Brani',
-      'Durata',
-    ]);
+    expect(
+      list
+        .findAll('.library_facet_list_heading')
+        .map((heading) => heading.text().replace(/[▲▼]/u, '')),
+    ).toEqual(['Genere', 'Autori', 'Album', 'Brani', 'Durata']);
 
     const rows = list.findAll('.library_facet_list_body .library_facet_list_row');
     expect(rows[0]?.text()).toContain('2 autori');

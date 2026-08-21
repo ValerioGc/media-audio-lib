@@ -9,6 +9,10 @@ import type { TrackView } from '@/types/library';
 const props = withDefaults(
   defineProps<{
     track: TrackView;
+    /**
+     * Each size has a class of its own, spelled out in the template: a name built from this
+     * prop would never reach the stylesheet, which is purged against what the sources say.
+     */
     size?: 'thumb' | 'card' | 'fill';
     /** Skips the visibility check, for lists that already render only what is on screen. */
     eager?: boolean;
@@ -71,7 +75,15 @@ watch(
 </script>
 
 <template>
-  <div ref="root" class="cover_image" :class="`cover_image_${size}`">
+  <div
+    ref="root"
+    class="cover_image"
+    :class="{
+      cover_image_thumb: size === 'thumb',
+      cover_image_card: size === 'card',
+      cover_image_fill: size === 'fill',
+    }"
+  >
     <img
       v-if="source !== null"
       class="cover_image_picture"
@@ -98,16 +110,21 @@ watch(
     border-radius: $radius_sm;
   }
 
-  // The square is reserved by the padding, not by the picture: a card keeps the same height
-  // while its cover loads, and `aspect-ratio` alone would not, since a column flex item is
-  // measured before its width is stretched.
+  // The square is held by a spacer of its own, so the box keeps its height whether the cover
+  // has loaded, is missing, or the parent is a flex column: those are the cases where
+  // `aspect-ratio` and a padding on the box itself both give way.
   &_card {
     position: relative;
     width: 100%;
-    height: 0;
-    padding-bottom: 100%;
     border-radius: $radius_md;
     font-size: 2rem;
+
+    &::before {
+      flex: 0 0 auto;
+      width: 0;
+      padding-bottom: 100%;
+      content: '';
+    }
 
     > * {
       position: absolute;

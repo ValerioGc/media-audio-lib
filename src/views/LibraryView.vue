@@ -50,7 +50,6 @@ const facetViewModes = ref<Record<FacetField, ViewMode>>({
 });
 /** What the genre modal lists under its carousels. */
 const genreModalList = ref<GenreModalList>('tracks');
-const isArtistAlbumsExpanded = ref(false);
 const selectionAnchorId = ref<string | null>(null);
 const isBulkEditorOpen = ref(false);
 // The modal tables are read, not configured: each lists a fixed set of columns, without the
@@ -83,7 +82,6 @@ interface FacetModalState {
   group: FacetGroupOpenPayload;
   viewMode: ViewMode;
   genreList: GenreModalList;
-  artistAlbumsExpanded: boolean;
 }
 
 const activeFacet = computed<FacetField | null>(() => {
@@ -289,14 +287,12 @@ function currentFacetModalState(): FacetModalState | null {
     group: { ...selectedFacet.value },
     viewMode: groupModalViewMode.value,
     genreList: genreModalList.value,
-    artistAlbumsExpanded: isArtistAlbumsExpanded.value,
   };
 }
 
 function applyFacetModalDefaults(group: FacetGroupOpenPayload) {
   groupModalViewMode.value = group.field === 'album' ? 'table' : facetViewModes.value[group.field];
   genreModalList.value = 'tracks';
-  isArtistAlbumsExpanded.value = false;
 }
 
 function openFacet(group: FacetGroupOpenPayload) {
@@ -331,7 +327,6 @@ function goBackInFacetModal() {
   selectedFacet.value = previous.group;
   groupModalViewMode.value = previous.viewMode;
   genreModalList.value = previous.genreList;
-  isArtistAlbumsExpanded.value = previous.artistAlbumsExpanded;
 }
 
 function closeFacetModal() {
@@ -543,18 +538,8 @@ async function confirmRemoval() {
           <LibraryGroupCarousel
             :title="t('library.groups.columns.albums')"
             :groups="albumCarouselGroups"
-            :action-label="
-              t(
-                isArtistAlbumsExpanded
-                  ? 'library.groups.collapseAlbums'
-                  : 'library.groups.expandAlbums',
-              )
-            "
-            :action-icon="isArtistAlbumsExpanded ? 'collapse' : 'expand'"
-            :large="isArtistAlbumsExpanded"
             data-testid="artist-albums-carousel"
             @open="openAlbumFromCarousel"
-            @action="isArtistAlbumsExpanded = !isArtistAlbumsExpanded"
           />
 
           <LibraryTable

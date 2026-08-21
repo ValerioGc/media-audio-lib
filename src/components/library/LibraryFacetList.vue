@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
@@ -145,6 +145,101 @@ const groups = computed<FacetGroup[]>(() => {
     });
 });
 
+/** The columns of the list view, in the order the rows lay them out. */
+type FacetSortColumn = 'name' | 'artist' | 'artists' | 'albums' | 'tracks' | 'duration';
+
+const sort = ref<{ column: FacetSortColumn; direction: 'asc' | 'desc' }>({
+  column: 'name',
+  direction: 'asc',
+});
+
+const listColumns = computed<{ key: FacetSortColumn; label: string }[]>(() => [
+  { key: 'name', label: t(`library.groups.columns.${props.field}`) },
+  ...(props.field === 'album'
+    ? [{ key: 'artist' as const, label: t('library.groups.columns.artist') }]
+    : []),
+  ...(props.field === 'genre'
+    ? [{ key: 'artists' as const, label: t('library.groups.columns.artists') }]
+    : []),
+  ...(props.field === 'artist' || props.field === 'genre'
+    ? [{ key: 'albums' as const, label: t('library.groups.columns.albums') }]
+    : []),
+  { key: 'tracks', label: t('library.groups.columns.tracks') },
+  { key: 'duration', label: t('library.groups.columns.duration') },
+]);
+
+// Each field has columns of its own: a sort left over from the previous one would have
+// nothing to read.
+watch(
+  () => props.field,
+  () => {
+    sort.value = { column: 'name', direction: 'asc' };
+  },
+);
+
+function sortValueOf(group: FacetGroup, column: FacetSortColumn): string | number {
+  if (column === 'name') {
+    return group.name;
+  }
+
+  if (column === 'artist') {
+    return group.artists.join(', ');
+  }
+
+  if (column === 'artists') {
+    return group.artistCount;
+  }
+
+  if (column === 'albums') {
+    return group.albumCount;
+  }
+
+  if (column === 'tracks') {
+    return group.trackCount;
+  }
+
+  return group.durationMs;
+}
+
+const sortedGroups = computed(() => {
+  const { column, direction } = sort.value;
+  const sign = direction === 'asc' ? 1 : -1;
+
+  return [...groups.value].sort((left, right) => {
+    // The group without a value for the field stays at the bottom in both directions.
+    if (left.isUnknown !== right.isUnknown) {
+      return left.isUnknown ? 1 : -1;
+    }
+
+    const leftValue = sortValueOf(left, column);
+    const rightValue = sortValueOf(right, column);
+    const outcome =
+      typeof leftValue === 'number' && typeof rightValue === 'number'
+        ? leftValue - rightValue
+        : String(leftValue).localeCompare(String(rightValue), undefined, {
+            sensitivity: 'base',
+            numeric: true,
+          });
+
+    return outcome === 0 ? left.name.localeCompare(right.name) : outcome * sign;
+  });
+});
+
+function ariaSort(column: FacetSortColumn) {
+  if (sort.value.column !== column) {
+    return 'none';
+  }
+
+  return sort.value.direction === 'asc' ? 'ascending' : 'descending';
+}
+
+function toggleSort(column: FacetSortColumn) {
+  sort.value =
+    sort.value.column === column
+      ? { column, direction: sort.value.direction === 'asc' ? 'desc' : 'asc' }
+      : { column, direction: 'asc' };
+}
+
 function openGroup(group: FacetGroup) {
   emit('open', { field: group.field, key: group.key, name: group.name });
 }
@@ -234,35 +329,36 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     :aria-rowcount="groups.length"
   >
     <thead class="library_facet_list_head">
-      <tr class="library_facet_list_row">
-        <th class="library_facet_list_heading" scope="col">
-          {{ t(`library.groups.columns.${field}`) }}
-        </th>
-        <th v-if="field === 'album'" class="library_facet_list_heading" scope="col">
-          {{ t('library.groups.columns.artist') }}
-        </th>
-        <th v-if="field === 'genre'" class="library_facet_list_heading" scope="col">
-          {{ t('library.groups.columns.artists') }}
-        </th>
+      <tr class="library_facet_list_row library_facet_list_head_row">
         <th
-          v-if="field === 'artist' || field === 'genre'"
+          v-for="column in listColumns"
+          :key="column.key"
           class="library_facet_list_heading"
           scope="col"
+          :aria-sort="ariaSort(column.key)"
         >
-          {{ t('library.groups.columns.albums') }}
-        </th>
-        <th class="library_facet_list_heading" scope="col">
-          {{ t('library.groups.columns.tracks') }}
-        </th>
-        <th class="library_facet_list_heading" scope="col">
-          {{ t('library.groups.columns.duration') }}
+          <button
+            class="library_facet_list_sort"
+            :class="{ library_facet_list_sort_active: sort.column === column.key }"
+            type="button"
+            :aria-label="t('library.sort.sortBy', { column: column.label })"
+            :title="t('library.sort.sortBy', { column: column.label })"
+            :data-testid="`facet-sort-${column.key}`"
+            @click="toggleSort(column.key)"
+          >
+            <span class="library_facet_list_sort_label">{{ column.label }}</span>
+            <AppIcon
+              v-if="sort.column === column.key"
+              :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'"
+            />
+          </button>
         </th>
       </tr>
     </thead>
 
     <tbody class="library_facet_list_body">
       <tr
-        v-for="group in groups"
+        v-for="group in sortedGroups"
         :key="group.key"
         class="library_facet_list_row"
         :class="{ library_facet_list_row_playing: group.playing }"
@@ -390,9 +486,13 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       :deep(.cover_image) {
         width: 100%;
         height: 100%;
-        padding-bottom: 0;
         border: 0;
         border-radius: 0;
+      }
+
+      // The mosaic sizes its own tiles: a square each would fight the grid.
+      :deep(.cover_image_card::before) {
+        display: none;
       }
 
       &_single {
@@ -536,12 +636,53 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_heading {
+    min-width: 0;
     padding: 0;
     color: var(--color_text_muted);
     font-size: 0.75em;
     font-weight: 600;
     text-align: left;
     text-transform: uppercase;
+  }
+
+  // The head row is read, not opened: it keeps the grid of the rows without their hover.
+  &_head_row {
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &_sort {
+    display: inline-flex;
+    gap: $space_xs;
+    align-items: center;
+    min-width: 0;
+    max-width: 100%;
+    padding: $space_xs 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--color_text);
+    }
+
+    &_active {
+      color: var(--color_accent);
+    }
+
+    &_label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @include focus_ring;
   }
 
   &_body {

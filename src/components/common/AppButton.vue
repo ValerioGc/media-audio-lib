@@ -12,7 +12,12 @@ withDefaults(
 <template>
   <button
     class="app_button"
-    :class="`app_button_${variant}`"
+    :class="{
+      app_button_primary: variant === 'primary',
+      app_button_neutral: variant === 'neutral',
+      app_button_ghost: variant === 'ghost',
+      app_button_danger: variant === 'danger',
+    }"
     :type="type"
     :disabled="disabled"
     v-bind="$attrs"

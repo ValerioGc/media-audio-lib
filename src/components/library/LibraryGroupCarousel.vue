@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
-import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
-import type { IconName } from '@/config/icons';
 import type { TrackView } from '@/types/library';
 
 /** One entry of the carousel: an album or an artist gathered from the open group. */
@@ -19,45 +16,20 @@ export interface CarouselGroup {
   playing: boolean;
 }
 
-const props = withDefaults(
-  defineProps<{
-    title: string;
-    groups: readonly CarouselGroup[];
-    actionLabel: string;
-    actionIcon: IconName;
-    /** Roomier cards, for when the carousel is the subject rather than a summary. */
-    large?: boolean;
-  }>(),
-  { large: false },
-);
-
-const emit = defineEmits<{
-  open: [key: string];
-  action: [];
+const props = defineProps<{
+  title: string;
+  groups: readonly CarouselGroup[];
 }>();
+
+const emit = defineEmits<{ open: [key: string] }>();
 
 const { t } = useI18n();
 </script>
 
 <template>
-  <section
-    class="library_group_carousel"
-    :class="{ library_group_carousel_large: props.large }"
-    :aria-label="props.title"
-  >
+  <section class="library_group_carousel" :aria-label="props.title">
     <header class="library_group_carousel_header">
       <h3 class="library_group_carousel_title">{{ props.title }}</h3>
-      <AppTooltip :text="props.actionLabel">
-        <AppButton
-          class="library_group_carousel_action"
-          variant="ghost"
-          :aria-label="props.actionLabel"
-          data-testid="carousel-action"
-          @click="emit('action')"
-        >
-          <AppIcon :name="props.actionIcon" />
-        </AppButton>
-      </AppTooltip>
     </header>
 
     <ul class="library_group_carousel_track">
@@ -79,6 +51,10 @@ const { t } = useI18n();
             size="card"
             eager
           />
+          <!-- A group with nothing to show still holds its square, so the cards line up. -->
+          <span v-else class="library_group_carousel_cover library_group_carousel_empty">
+            <AppIcon name="note" :label="t('library.row.noCover')" />
+          </span>
           <span class="library_group_carousel_name" :title="group.name">{{ group.name }}</span>
           <span v-if="group.meta !== null" class="library_group_carousel_meta">
             {{ group.meta }}
@@ -107,13 +83,6 @@ const { t } = useI18n();
     color: var(--color_text);
     font-size: 0.95em;
     font-weight: 700;
-  }
-
-  &_action {
-    width: 2rem;
-    height: 2rem;
-    min-height: 2rem;
-    padding: 0;
   }
 
   &_track {
@@ -164,13 +133,34 @@ const { t } = useI18n();
     }
   }
 
-  &_large &_card {
-    flex-basis: 12rem;
-  }
-
   &_cover {
     width: 100%;
     flex-shrink: 0;
+  }
+
+  &_empty {
+    display: flex;
+    position: relative;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_md;
+    background-color: var(--color_surface_alt);
+    color: var(--color_text_muted);
+    font-size: 2rem;
+
+    &::before {
+      flex: 0 0 auto;
+      width: 0;
+      padding-bottom: 100%;
+      content: '';
+    }
+
+    > * {
+      position: absolute;
+      display: flex;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   &_name,
@@ -193,14 +183,8 @@ const { t } = useI18n();
 }
 
 @media (max-width: 640px) {
-  .library_group_carousel {
-    &_card {
-      flex-basis: 7.5rem;
-    }
-
-    &_large &_card {
-      flex-basis: 10rem;
-    }
+  .library_group_carousel_card {
+    flex-basis: 7.5rem;
   }
 }
 </style>

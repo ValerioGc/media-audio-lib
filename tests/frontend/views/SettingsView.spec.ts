@@ -77,11 +77,11 @@ describe('SettingsView', () => {
     expect(wrapper.find('.library_list').exists()).toBe(true);
   });
 
-  it('shows name, version, and project link at the bottom', () => {
+  it('leaves name, version and links to the about window', () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    expect(wrapper.get('.settings_app_info_name').text()).toBe(APP_NAME);
-    expect(wrapper.find('[data-testid="github-link"]').exists()).toBe(true);
+    expect(wrapper.text()).not.toContain(APP_NAME);
+    expect(wrapper.find('[data-testid="github-link"]').exists()).toBe(false);
   });
 
   it('translates tabs and sections when the language changes', async () => {

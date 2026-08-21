@@ -5,7 +5,17 @@
   "nav": {
     "settings": "Settings",
     "help": "Guide",
-    "backToLibrary": "Back to the library"
+    "backToLibrary": "Back to the library",
+    "about": "About"
+  },
+  "about": {
+    "title": "About Media Audio Lib",
+    "description": "Audio library manager that works on the files where they are, without copying them and without a connection.",
+    "website": "Project website",
+    "repository": "Project on GitHub",
+    "changelog": "Release notes",
+    "releases": "Published releases",
+    "close": "Close"
   },
   "settings": {
     "title": "Settings",
@@ -142,10 +152,6 @@
     "libraries": {
       "title": "Libraries",
       "description": "Each library has its own track list. You can create more, open them, choose the primary one, export or delete them."
-    },
-    "about": {
-      "website": "Project website",
-      "repository": "Project on GitHub"
     }
   },
   "library": {

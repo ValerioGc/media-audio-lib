@@ -24,6 +24,9 @@
           "url": "https://github.com/*"
         },
         {
+          "url": "https://valeriogc.github.io/*"
+        },
+        {
           "url": "ms-settings:defaultapps"
         }
       ]

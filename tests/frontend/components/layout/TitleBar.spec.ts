@@ -129,4 +129,14 @@ describe('TitleBar', () => {
     expect(icona.attributes('aria-current')).toBe('page');
     expect(icona.classes()).toContain('titlebar_action_active');
   });
+
+  it('opens the about window from the bar, beside help and settings', async () => {
+    const wrapper = mount(TitleBar, withPinia());
+
+    expect(wrapper.find('.app_about').exists()).toBe(false);
+
+    await wrapper.get('[data-testid="open-about"]').trigger('click');
+
+    expect(wrapper.get('.app_about_name').text()).toContain('Media Audio Lib');
+  });
 });

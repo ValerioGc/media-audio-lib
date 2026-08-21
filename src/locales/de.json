@@ -5,7 +5,17 @@
   "nav": {
     "settings": "Einstellungen",
     "help": "Anleitung",
-    "backToLibrary": "Zurück zur Bibliothek"
+    "backToLibrary": "Zurück zur Bibliothek",
+    "about": "Info"
+  },
+  "about": {
+    "title": "Über Media Audio Lib",
+    "description": "Audiobibliotheksverwaltung, die mit den Dateien dort arbeitet, wo sie liegen, ohne sie zu kopieren und ohne Verbindung.",
+    "website": "Projektwebseite",
+    "repository": "Projekt auf GitHub",
+    "changelog": "Versionshinweise",
+    "releases": "Veröffentlichte Versionen",
+    "close": "Schließen"
   },
   "settings": {
     "title": "Einstellungen",
@@ -142,10 +152,6 @@
     "libraries": {
       "title": "Bibliotheken",
       "description": "Jede Bibliothek hat ihre eigene Titelliste. Sie können weitere anlegen, sie öffnen, die primäre wählen, exportieren oder löschen."
-    },
-    "about": {
-      "website": "Projektwebseite",
-      "repository": "Projekt auf GitHub"
     }
   },
   "library": {

@@ -5,7 +5,17 @@
   "nav": {
     "settings": "Ajustes",
     "help": "Guía",
-    "backToLibrary": "Volver a la biblioteca"
+    "backToLibrary": "Volver a la biblioteca",
+    "about": "Información"
+  },
+  "about": {
+    "title": "Acerca de Media Audio Lib",
+    "description": "Gestor de biblioteca de audio que trabaja sobre los archivos donde están, sin copiarlos y sin conexión.",
+    "website": "Sitio del proyecto",
+    "repository": "Proyecto en GitHub",
+    "changelog": "Notas de versión",
+    "releases": "Versiones publicadas",
+    "close": "Cerrar"
   },
   "settings": {
     "title": "Ajustes",
@@ -142,10 +152,6 @@
     "libraries": {
       "title": "Bibliotecas",
       "description": "Cada biblioteca tiene su propia lista de pistas. Puedes crear más, abrirlas, elegir la principal, exportarlas o eliminarlas."
-    },
-    "about": {
-      "website": "Sitio del proyecto",
-      "repository": "Proyecto en GitHub"
     }
   },
   "library": {

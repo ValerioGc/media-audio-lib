@@ -2,9 +2,11 @@ export const APP_NAME = 'Media Audio Lib';
 
 export const APP_VERSION: string = import.meta.env.VITE_APP_VERSION ?? '0.1.0';
 
-/** Project site and repository shown in the settings header. Update here if they move. */
+/** Where the project lives, as read from the about window. Update here if it moves. */
 export const WEBSITE_URL = 'https://valeriogc.github.io/media-audio-lib/';
 export const GITHUB_URL = 'https://github.com/ValerioGc/media-audio-lib';
+export const CHANGELOG_URL = `${GITHUB_URL}/blob/main/CHANGELOG.txt`;
+export const RELEASES_URL = `${GITHUB_URL}/releases`;
 
 /**
  * How many artists a group names before it gives up and says they are various.

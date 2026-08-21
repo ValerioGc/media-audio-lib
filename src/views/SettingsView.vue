@@ -12,7 +12,6 @@ import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryCreateForm from '@/components/settings/LibraryCreateForm.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
 import PlayerBehaviourPanel from '@/components/settings/PlayerBehaviourPanel.vue';
-import SettingsAppInfo from '@/components/settings/SettingsAppInfo.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import SettingsTabs from '@/components/settings/SettingsTabs.vue';
 import StartupPanel from '@/components/settings/StartupPanel.vue';
@@ -30,10 +29,7 @@ const tabs = computed(() => [
 
 <template>
   <div class="settings_view">
-    <div class="settings_view_bar">
-      <BackToLibrary />
-      <SettingsAppInfo />
-    </div>
+    <BackToLibrary />
 
     <header class="settings_view_header">
       <h1 class="settings_view_title">{{ t('settings.title') }}</h1>
@@ -148,15 +144,6 @@ const tabs = computed(() => [
   gap: $space_lg;
 
   @include page_column;
-
-  // The way back and the app info share the first line of the page.
-  &_bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space_sm;
-    align-items: center;
-    justify-content: space-between;
-  }
 
   &_header {
     display: flex;

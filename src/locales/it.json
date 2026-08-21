@@ -5,7 +5,17 @@
   "nav": {
     "settings": "Impostazioni",
     "help": "Guida",
-    "backToLibrary": "Torna alla libreria"
+    "backToLibrary": "Torna alla libreria",
+    "about": "Informazioni"
+  },
+  "about": {
+    "title": "Informazioni su Media Audio Lib",
+    "description": "Gestore di libreria audio che lavora sui file dove sono, senza copiarli e senza connessione.",
+    "website": "Sito del progetto",
+    "repository": "Progetto su GitHub",
+    "changelog": "Note di versione",
+    "releases": "Versioni pubblicate",
+    "close": "Chiudi"
   },
   "settings": {
     "title": "Impostazioni",
@@ -142,10 +152,6 @@
     "libraries": {
       "title": "Librerie",
       "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, scegliere quella principale, esportarle o eliminarle."
-    },
-    "about": {
-      "website": "Sito del progetto",
-      "repository": "Progetto su GitHub"
     }
   },
   "library": {

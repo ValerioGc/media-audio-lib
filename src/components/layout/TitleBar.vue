@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import AppAboutDialog from '@/components/layout/AppAboutDialog.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import { APP_NAME } from '@/config/app-config';
 import type { IconName } from '@/config/icons';
@@ -18,6 +19,8 @@ import { useSettingsStore } from '@/stores/settings';
 const { t } = useI18n();
 const navigation = useNavigationStore();
 const settings = useSettingsStore();
+
+const isAboutOpen = ref(false);
 
 interface WindowControl {
   id: string;
@@ -78,6 +81,19 @@ const controls = computed<WindowControl[]>(() => [
         </button>
       </AppTooltip>
 
+      <AppTooltip :text="t('nav.about')" placement="bottom" align="center">
+        <button
+          class="titlebar_action"
+          :class="{ titlebar_action_active: isAboutOpen }"
+          type="button"
+          :aria-label="t('nav.about')"
+          data-testid="open-about"
+          @click="isAboutOpen = true"
+        >
+          <AppIcon name="info" />
+        </button>
+      </AppTooltip>
+
       <AppTooltip :text="t('nav.settings')" placement="bottom" align="center">
         <button
           class="titlebar_action"
@@ -92,6 +108,8 @@ const controls = computed<WindowControl[]>(() => [
         </button>
       </AppTooltip>
     </div>
+
+    <AppAboutDialog :open="isAboutOpen" @close="isAboutOpen = false" />
 
     <div class="titlebar_controls">
       <AppTooltip

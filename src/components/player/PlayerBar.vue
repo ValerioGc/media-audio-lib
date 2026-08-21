@@ -165,14 +165,14 @@ const accentStyle = computed(() => ({
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 1.75rem;
-      height: 1.5rem;
+      width: 2.25rem;
+      height: 1.9rem;
       border: 0;
       border-radius: $radius_sm;
       background: none;
       color: var(--color_text_muted);
       font: inherit;
-      font-size: 0.8em;
+      font-size: 0.95em;
       cursor: pointer;
       transition:
         background-color $duration_fast ease,

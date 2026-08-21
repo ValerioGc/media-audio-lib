@@ -302,6 +302,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       type="button"
       :aria-label="t('library.groups.openLabel', { name: group.name })"
       :aria-current="group.playing ? 'true' : undefined"
+      :title="group.name"
       @click="openGroup(group)"
     >
       <PlayingBubble v-if="group.playing" />

@@ -145,9 +145,8 @@ describe('LibraryTitle', () => {
 
     await menu.get('.app_tooltip').trigger('mouseenter');
 
-    expect(wrapper.get('.app_tooltip_bubble').text()).toBe(
-      'Opzioni della libreria: rinomina, colonne, verifica file, dati mancanti ed esportazione',
-    );
+    // The tooltip names the button and stops there: the menu itself lists what it holds.
+    expect(wrapper.get('.app_tooltip_bubble').text()).toBe('Opzioni della libreria');
 
     await menu.get('.app_tooltip').trigger('mouseleave');
   });

@@ -194,7 +194,7 @@ describe('PlayerDock', () => {
     await wrapper.get('[data-testid="player-open-album"]').trigger('click');
 
     // The list arrives without leaving the player: from here the playback carries on.
-    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Album');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a «Album»');
     expect(wrapper.findAll('.player_related_title').map((title) => title.text())).toEqual([
       'Track',
       'Other',

@@ -43,11 +43,12 @@ describe('LibraryGroupCarousel', () => {
     expect(cards[1]?.text()).toContain('Second Album');
   });
 
-  it('drops the meta line when the group has none', () => {
+  it('keeps the meta line even when empty, so the cards stand level', () => {
     const cards = mountCarousel().findAll('.library_group_carousel_card');
 
-    expect(cards[0]?.find('.library_group_carousel_meta').exists()).toBe(true);
-    expect(cards[1]?.find('.library_group_carousel_meta').exists()).toBe(false);
+    expect(cards[0]?.get('.library_group_carousel_meta').text()).toBe('1999');
+    // A group without a year keeps the line: without it the card would be shorter.
+    expect(cards[1]?.get('.library_group_carousel_meta').text()).toBe('');
   });
 
   it('marks the group that holds the playing track', () => {

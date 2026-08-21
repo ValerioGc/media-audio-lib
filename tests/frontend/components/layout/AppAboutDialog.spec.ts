@@ -2,14 +2,7 @@ import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
-import {
-  APP_NAME,
-  APP_VERSION,
-  CHANGELOG_URL,
-  GITHUB_URL,
-  RELEASES_URL,
-  WEBSITE_URL,
-} from '@/config/app-config';
+import { APP_NAME, APP_VERSION, CHANGELOG_URL, GITHUB_URL, WEBSITE_URL } from '@/config/app-config';
 import * as externalLink from '@/services/external-link';
 
 import AppAboutDialog from '@/components/layout/AppAboutDialog.vue';
@@ -31,21 +24,27 @@ describe('AppAboutDialog', () => {
     expect(wrapper.get('.app_about_version').text()).toBe(APP_VERSION);
   });
 
-  it('opens site, repository, changelog and releases in the system browser', async () => {
+  it('opens site, repository and changelog in the system browser', async () => {
     const openExternal = vi.spyOn(externalLink, 'openExternal').mockResolvedValue(true);
     const wrapper = mountDialog();
 
     await wrapper.get('[data-testid="about-website"]').trigger('click');
     await wrapper.get('[data-testid="about-repository"]').trigger('click');
     await wrapper.get('[data-testid="about-changelog"]').trigger('click');
-    await wrapper.get('[data-testid="about-releases"]').trigger('click');
 
     expect(openExternal.mock.calls.map(([url]) => url)).toEqual([
       WEBSITE_URL,
       GITHUB_URL,
       CHANGELOG_URL,
-      RELEASES_URL,
     ]);
+    // The releases page is one click away from the repository: it had a link of its own.
+    expect(wrapper.find('[data-testid="about-releases"]').exists()).toBe(false);
+  });
+
+  it('carries the mark of the app', () => {
+    const wrapper = mountDialog();
+
+    expect(wrapper.get('.app_about_logo').attributes('src')).toBeDefined();
   });
 
   it('closes on request', async () => {

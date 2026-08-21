@@ -208,7 +208,6 @@ async function submit() {
       class="library_title_menu"
       :items="menuItems"
       :label="t('library.name.actions')"
-      :hint="t('library.name.actionsHint')"
       @select="run"
     />
 

@@ -10,11 +10,10 @@
   },
   "about": {
     "title": "Informazioni su Media Audio Lib",
-    "description": "Gestore di libreria audio che lavora sui file dove sono, senza copiarli e senza connessione.",
-    "website": "Sito del progetto",
-    "repository": "Progetto su GitHub",
-    "changelog": "Note di versione",
-    "releases": "Versioni pubblicate",
+    "description": "Player audio e gestore di libreria: modifica tag e copertine direttamente nei file, li tiene dove sono e li riproduce senza uscire dalla finestra.",
+    "website": "Sito web",
+    "repository": "Progetto GitHub",
+    "changelog": "Changelog",
     "close": "Chiudi"
   },
   "settings": {
@@ -203,13 +202,13 @@
     "catalog": {
       "active": "in uso",
       "trackCount": "nessun brano | 1 brano | {count} brani",
-      "open": "Apri la libreria {name}",
+      "open": "Apri la libreria «{name}»",
       "openShort": "Apri",
       "primary": "principale",
       "primaryShort": "Principale",
-      "setPrimary": "Imposta {name} come libreria principale",
-      "export": "Esporta la libreria {name}",
-      "remove": "Elimina la libreria {name}",
+      "setPrimary": "Imposta «{name}» come libreria principale",
+      "export": "Esporta la libreria «{name}»",
+      "remove": "Elimina la libreria «{name}»",
       "exported": "Libreria esportata in {path}",
       "switcher": {
         "open": "Cambia libreria",
@@ -302,9 +301,9 @@
       "noCover": "Nessuna copertina",
       "missing": "File non più presente su disco",
       "playing": "In riproduzione",
-      "actions": "Azioni per {title}",
-      "remove": "Rimuovi {title} dalla libreria",
-      "edit": "Modifica i metadati di {title}",
+      "actions": "Azioni per «{title}»",
+      "remove": "Rimuovi «{title}» dalla libreria",
+      "edit": "Modifica i metadati di «{title}»",
       "menu": {
         "edit": "Modifica",
         "remove": "Elimina"
@@ -341,7 +340,7 @@
       "description": "Brani presenti in più file, riconosciuti dal titolo con il suo autore o dal nome del file. Rimuovere una copia la toglie dalla libreria: il file resta sul disco.",
       "empty": "Nessun brano duplicato: ogni titolo è presente una volta sola.",
       "copies": "{count} copie",
-      "remove": "Rimuovi questa copia di {title} dalla libreria",
+      "remove": "Rimuovi questa copia di «{title}» dalla libreria",
       "close": "Chiudi"
     },
     "verification": {
@@ -396,14 +395,14 @@
       "albumCount": "nessun album | 1 album | {count} album",
       "artistCount": "nessun autore | 1 autore | {count} autori",
       "genreCount": "nessun genere | 1 genere | {count} generi",
-      "openLabel": "Apri i brani collegati a {name}",
-      "albumArtist": "Autore: {artists}",
+      "openLabel": "Apri i brani collegati a «{name}»",
+      "albumArtist": "Autore: «{artists}»",
       "variousArtists": "Artisti vari",
       "albumGenres": "Genere: {genres}",
-      "modalTitle": "Brani collegati a {name}",
+      "modalTitle": "Brani collegati a «{name}»",
       "detailTabs": "Dettaglio collegamenti",
       "back": "Torna al dettaglio precedente",
-      "backTo": "Torna a {name}",
+      "backTo": "Torna a «{name}»",
       "expandArtists": "Espandi la lista degli autori",
       "collapseArtists": "Torna ai brani",
       "expandAlbumList": "Espandi la lista degli album",
@@ -489,7 +488,7 @@
     },
     "related": {
       "empty": "Nessun altro brano collegato in questa libreria.",
-      "play": "Riproduci {title}"
+      "play": "Riproduci «{title}»"
     }
   },
   "mini": {

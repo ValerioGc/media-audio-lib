@@ -222,7 +222,7 @@ describe('LibraryRow', () => {
     const wrapper = mountRow(makeTrack({ title: 'Track' }));
 
     expect(wrapper.get('.library_row .app_menu_trigger').attributes('aria-label')).toBe(
-      'Azioni per Track',
+      'Azioni per «Track»',
     );
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
@@ -234,6 +234,6 @@ describe('LibraryRow', () => {
     ).toEqual(['Modifica', 'Elimina']);
     expect(
       wrapper.findAll('.library_row .app_menu_item').map((item) => item.attributes('aria-label')),
-    ).toEqual(['Modifica i metadati di Track', 'Rimuovi Track dalla libreria']);
+    ).toEqual(['Modifica i metadati di «Track»', 'Rimuovi «Track» dalla libreria']);
   });
 });

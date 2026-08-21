@@ -10,11 +10,10 @@
   },
   "about": {
     "title": "À propos de Media Audio Lib",
-    "description": "Gestionnaire de bibliothèque audio qui travaille sur les fichiers là où ils sont, sans les copier et sans connexion.",
-    "website": "Site du projet",
-    "repository": "Projet sur GitHub",
-    "changelog": "Notes de version",
-    "releases": "Versions publiées",
+    "description": "Lecteur audio et gestionnaire de bibliothèque : il modifie les tags et les pochettes directement dans les fichiers, les laisse où ils sont et les lit sans quitter la fenêtre.",
+    "website": "Site web",
+    "repository": "Projet GitHub",
+    "changelog": "Changelog",
     "close": "Fermer"
   },
   "settings": {
@@ -203,13 +202,13 @@
     "catalog": {
       "active": "en cours d'utilisation",
       "trackCount": "aucun morceau | 1 morceau | {count} morceaux",
-      "open": "Ouvrir la bibliothèque {name}",
+      "open": "Ouvrir la bibliothèque « {name} »",
       "openShort": "Ouvrir",
       "primary": "principale",
       "primaryShort": "Principale",
-      "setPrimary": "Définir {name} comme bibliothèque principale",
-      "export": "Exporter la bibliothèque {name}",
-      "remove": "Supprimer la bibliothèque {name}",
+      "setPrimary": "Définir « {name} » comme bibliothèque principale",
+      "export": "Exporter la bibliothèque « {name} »",
+      "remove": "Supprimer la bibliothèque « {name} »",
       "exported": "Bibliothèque exportée vers {path}",
       "switcher": {
         "open": "Changer de bibliothèque",
@@ -302,9 +301,9 @@
       "noCover": "Pas de pochette",
       "missing": "Fichier absent du disque",
       "playing": "En cours de lecture",
-      "actions": "Actions pour {title}",
-      "remove": "Retirer {title} de la bibliothèque",
-      "edit": "Modifier les métadonnées de {title}",
+      "actions": "Actions pour « {title} »",
+      "remove": "Retirer « {title} » de la bibliothèque",
+      "edit": "Modifier les métadonnées de « {title} »",
       "menu": {
         "edit": "Modifier",
         "remove": "Supprimer"
@@ -341,7 +340,7 @@
       "description": "Morceaux présents dans plusieurs fichiers, reconnus par le titre avec son artiste ou par le nom du fichier. Retirer une copie la sort de la bibliothèque : le fichier reste sur le disque.",
       "empty": "Aucun doublon : chaque titre n’est présent qu’une fois.",
       "copies": "{count} copies",
-      "remove": "Retirer cette copie de {title} de la bibliothèque",
+      "remove": "Retirer cette copie de « {title} » de la bibliothèque",
       "close": "Fermer"
     },
     "verification": {
@@ -396,14 +395,14 @@
       "albumCount": "aucun album | 1 album | {count} albums",
       "artistCount": "aucun artiste | 1 artiste | {count} artistes",
       "genreCount": "aucun genre | 1 genre | {count} genres",
-      "openLabel": "Ouvrir les morceaux liés à {name}",
-      "albumArtist": "Artiste : {artists}",
+      "openLabel": "Ouvrir les morceaux liés à « {name} »",
+      "albumArtist": "Artiste : « {artists} »",
       "variousArtists": "Artistes divers",
       "albumGenres": "Genre : {genres}",
-      "modalTitle": "Morceaux liés à {name}",
+      "modalTitle": "Morceaux liés à « {name} »",
       "detailTabs": "Détail des liens",
       "back": "Retour au détail précédent",
-      "backTo": "Retour à {name}",
+      "backTo": "Retour à « {name} »",
       "expandArtists": "Afficher la liste des artistes",
       "collapseArtists": "Revenir aux morceaux",
       "expandAlbumList": "Afficher la liste des albums",
@@ -489,7 +488,7 @@
     },
     "related": {
       "empty": "Aucun autre morceau lié dans cette bibliothèque.",
-      "play": "Lire {title}"
+      "play": "Lire « {title} »"
     }
   },
   "mini": {

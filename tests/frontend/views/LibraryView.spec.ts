@@ -138,7 +138,7 @@ describe('LibraryView', () => {
     await flushPromises();
 
     const dialog = wrapper.get('dialog');
-    expect(dialog.text()).toContain('Brani collegati a Artist A');
+    expect(dialog.text()).toContain('Brani collegati a «Artist A»');
     expect(dialog.text()).toContain('2 brani');
     expect(dialog.text()).toContain('Blue');
     expect(dialog.text()).toContain('Green');
@@ -286,16 +286,16 @@ describe('LibraryView', () => {
     await artistLinks[0]?.trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Artist A');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a «Artist A»');
 
     // The way back names where it lands, so the trail reads even three levels down.
-    expect(wrapper.get('[data-testid="facet-modal-back"]').text()).toContain('Torna a Album A');
+    expect(wrapper.get('[data-testid="facet-modal-back"]').text()).toContain('Torna a «Album A»');
 
     await wrapper.get('[data-testid="facet-modal-back"]').trigger('click');
     await flushPromises();
 
     const restoredDialog = wrapper.get('dialog');
-    expect(restoredDialog.text()).toContain('Brani collegati a Album A');
+    expect(restoredDialog.text()).toContain('Brani collegati a «Album A»');
     expect(
       restoredDialog
         .findAll('.library_album_summary_genres .library_album_summary_link')
@@ -319,7 +319,7 @@ describe('LibraryView', () => {
     await wrapper.get('.library_album_summary_genres .library_album_summary_link').trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Jazz');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a «Jazz»');
   });
 
   it('opens genre details on the tracks, with a tab for each section', async () => {
@@ -420,7 +420,7 @@ describe('LibraryView', () => {
     await wrapper.get('dialog').findAll('.library_facet_card')[0]?.trigger('click');
     await flushPromises();
 
-    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Artist A');
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a «Artist A»');
   });
 
   it('marks the playing track in the library', async () => {

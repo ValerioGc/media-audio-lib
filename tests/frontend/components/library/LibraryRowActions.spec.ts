@@ -86,7 +86,7 @@ describe('LibraryRowActions', () => {
       'Modifica',
       'Elimina',
     ]);
-    expect(items[0]?.attributes('aria-label')).toBe('Modifica i metadati di Blue in Green');
+    expect(items[0]?.attributes('aria-label')).toBe('Modifica i metadati di «Blue in Green»');
   });
 
   it('opens the menu from keyboard with ArrowDown', async () => {

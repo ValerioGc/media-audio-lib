@@ -10,11 +10,10 @@
   },
   "about": {
     "title": "Acerca de Media Audio Lib",
-    "description": "Gestor de biblioteca de audio que trabaja sobre los archivos donde están, sin copiarlos y sin conexión.",
-    "website": "Sitio del proyecto",
+    "description": "Reproductor de audio y gestor de biblioteca: edita etiquetas y carátulas directamente en los archivos, los deja donde están y los reproduce sin salir de la ventana.",
+    "website": "Sitio web",
     "repository": "Proyecto en GitHub",
-    "changelog": "Notas de versión",
-    "releases": "Versiones publicadas",
+    "changelog": "Changelog",
     "close": "Cerrar"
   },
   "settings": {
@@ -203,13 +202,13 @@
     "catalog": {
       "active": "en uso",
       "trackCount": "ninguna pista | 1 pista | {count} pistas",
-      "open": "Abrir la biblioteca {name}",
+      "open": "Abrir la biblioteca «{name}»",
       "openShort": "Abrir",
       "primary": "principal",
       "primaryShort": "Principal",
-      "setPrimary": "Definir {name} como biblioteca principal",
-      "export": "Exportar la biblioteca {name}",
-      "remove": "Eliminar la biblioteca {name}",
+      "setPrimary": "Definir «{name}» como biblioteca principal",
+      "export": "Exportar la biblioteca «{name}»",
+      "remove": "Eliminar la biblioteca «{name}»",
       "exported": "Biblioteca exportada a {path}",
       "switcher": {
         "open": "Cambiar de biblioteca",
@@ -302,9 +301,9 @@
       "noCover": "Sin carátula",
       "missing": "El archivo ya no está en el disco",
       "playing": "En reproducción",
-      "actions": "Acciones para {title}",
-      "remove": "Quitar {title} de la biblioteca",
-      "edit": "Editar los metadatos de {title}",
+      "actions": "Acciones para «{title}»",
+      "remove": "Quitar «{title}» de la biblioteca",
+      "edit": "Editar los metadatos de «{title}»",
       "menu": {
         "edit": "Editar",
         "remove": "Eliminar"
@@ -341,7 +340,7 @@
       "description": "Pistas presentes en varios archivos, reconocidas por el título con su artista o por el nombre del archivo. Quitar una copia la saca de la biblioteca: el archivo permanece en el disco.",
       "empty": "Ninguna pista duplicada: cada título aparece una sola vez.",
       "copies": "{count} copias",
-      "remove": "Quitar esta copia de {title} de la biblioteca",
+      "remove": "Quitar esta copia de «{title}» de la biblioteca",
       "close": "Cerrar"
     },
     "verification": {
@@ -396,14 +395,14 @@
       "albumCount": "ningún álbum | 1 álbum | {count} álbumes",
       "artistCount": "ningún artista | 1 artista | {count} artistas",
       "genreCount": "ningún género | 1 género | {count} géneros",
-      "openLabel": "Abrir las pistas vinculadas a {name}",
-      "albumArtist": "Artista: {artists}",
+      "openLabel": "Abrir las pistas vinculadas a «{name}»",
+      "albumArtist": "Artista: «{artists}»",
       "variousArtists": "Varios artistas",
       "albumGenres": "Género: {genres}",
-      "modalTitle": "Pistas vinculadas a {name}",
+      "modalTitle": "Pistas vinculadas a «{name}»",
       "detailTabs": "Detalle de los vínculos",
       "back": "Volver al detalle anterior",
-      "backTo": "Volver a {name}",
+      "backTo": "Volver a «{name}»",
       "expandArtists": "Mostrar la lista de artistas",
       "collapseArtists": "Volver a las pistas",
       "expandAlbumList": "Mostrar la lista de álbumes",
@@ -489,7 +488,7 @@
     },
     "related": {
       "empty": "Ninguna otra pista conectada en esta biblioteca.",
-      "play": "Reproducir {title}"
+      "play": "Reproducir «{title}»"
     }
   },
   "mini": {

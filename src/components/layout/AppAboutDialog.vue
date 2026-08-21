@@ -5,15 +5,9 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppModal from '@/components/common/AppModal.vue';
+import appLogo from '@/assets/logo.svg';
 import type { IconName } from '@/config/icons';
-import {
-  APP_NAME,
-  APP_VERSION,
-  CHANGELOG_URL,
-  GITHUB_URL,
-  RELEASES_URL,
-  WEBSITE_URL,
-} from '@/config/app-config';
+import { APP_NAME, APP_VERSION, CHANGELOG_URL, GITHUB_URL, WEBSITE_URL } from '@/config/app-config';
 import { openExternal } from '@/services/external-link';
 
 defineProps<{ open: boolean }>();
@@ -26,7 +20,6 @@ const links = computed<{ id: string; label: string; icon: IconName; url: string 
   { id: 'website', label: t('about.website'), icon: 'external', url: WEBSITE_URL },
   { id: 'repository', label: t('about.repository'), icon: 'external', url: GITHUB_URL },
   { id: 'changelog', label: t('about.changelog'), icon: 'list', url: CHANGELOG_URL },
-  { id: 'releases', label: t('about.releases'), icon: 'import', url: RELEASES_URL },
 ]);
 
 async function openLink(url: string) {
@@ -38,7 +31,7 @@ async function openLink(url: string) {
   <AppModal :open="open" :title="t('about.title')" @close="emit('close')">
     <div class="app_about">
       <p class="app_about_name">
-        <AppIcon name="note" />
+        <img class="app_about_logo" :src="appLogo" alt="" width="44" height="44" />
         <span>{{ APP_NAME }}</span>
         <span class="app_about_version">{{ APP_VERSION }}</span>
       </p>
@@ -71,6 +64,11 @@ async function openLink(url: string) {
   display: flex;
   flex-direction: column;
   gap: $space_md;
+
+  &_logo {
+    flex-shrink: 0;
+    align-self: center;
+  }
 
   &_name {
     display: flex;

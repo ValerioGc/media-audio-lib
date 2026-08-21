@@ -56,9 +56,9 @@ const { t } = useI18n();
             <AppIcon name="note" :label="t('library.row.noCover')" />
           </span>
           <span class="library_group_carousel_name" :title="group.name">{{ group.name }}</span>
-          <span v-if="group.meta !== null" class="library_group_carousel_meta">
-            {{ group.meta }}
-          </span>
+          <!-- The line is kept even when empty: without it a card without a year would
+               stand shorter than the ones beside it. -->
+          <span class="library_group_carousel_meta">{{ group.meta ?? '' }}</span>
         </button>
       </li>
     </ul>
@@ -176,6 +176,7 @@ const { t } = useI18n();
   }
 
   &_meta {
+    min-height: 1.2em;
     color: var(--color_text_muted);
     font-size: 0.8em;
     font-variant-numeric: tabular-nums;

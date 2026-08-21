@@ -224,7 +224,7 @@ describe('LibraryFacetList', () => {
       },
     });
 
-    expect(wrapper.text()).toContain('Autore: Miles Davis');
+    expect(wrapper.text()).toContain('Autore: «Miles Davis»');
   });
 
   it('marks the album card that contains the playing track', () => {

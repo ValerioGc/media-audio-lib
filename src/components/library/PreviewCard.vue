@@ -154,6 +154,8 @@ function select(event: MouseEvent) {
   }
 
   &_title {
+    @include selectable_text;
+
     overflow: hidden;
     font-size: 0.9375em;
     font-weight: 600;
@@ -162,6 +164,8 @@ function select(event: MouseEvent) {
   }
 
   &_meta {
+    @include selectable_text;
+
     overflow: hidden;
     color: var(--color_text_muted);
     font-size: 0.8125em;

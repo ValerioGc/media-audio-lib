@@ -708,11 +708,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 
   &_name_text {
+    @include selectable_text;
+
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   &_duration {
+    @include selectable_text;
+
     font-variant-numeric: tabular-nums;
   }
 

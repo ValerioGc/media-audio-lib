@@ -171,6 +171,8 @@ const accentStyle = computed(() => ({
   }
 
   &_title {
+    @include selectable_text;
+
     overflow: hidden;
     font-weight: 600;
     text-overflow: ellipsis;
@@ -178,6 +180,8 @@ const accentStyle = computed(() => ({
   }
 
   &_artist {
+    @include selectable_text;
+
     overflow: hidden;
     color: var(--color_text_muted);
     font-size: 0.875em;

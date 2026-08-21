@@ -236,6 +236,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   }
 
   &_title {
+    @include selectable_text;
+
     overflow: hidden;
     font-size: 1.6em;
     font-weight: 600;
@@ -246,6 +248,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   }
 
   &_artist {
+    @include selectable_text;
+
     color: var(--color_accent);
     font-size: 1.0625em;
     font-weight: 600;
@@ -288,6 +292,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     }
 
     &_value {
+      @include selectable_text;
+
       overflow: hidden;
       margin: 0;
       font-size: 0.9375em;

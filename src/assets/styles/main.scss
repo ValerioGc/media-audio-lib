@@ -29,6 +29,10 @@ body {
   margin: 0;
   background-color: var(--color_bg);
   color: var(--color_text);
+
+  // Labels, menus and commands are controls, not text to take away: only what the app
+  // reports about a file opts back in, through the `selectable_text` mixin.
+  user-select: none;
   transition:
     background-color $duration_base ease,
     color $duration_base ease;
@@ -53,6 +57,12 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+// A field is written in, so its content is always its own to select.
+input,
+textarea {
+  user-select: text;
 }
 
 // Scrollbars: one look in every scrollable area, in both themes.

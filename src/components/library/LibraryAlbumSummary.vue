@@ -96,6 +96,8 @@ const { t } = useI18n();
   }
 
   &_name {
+    @include selectable_text;
+
     overflow: hidden;
     color: var(--color_text);
     font-size: 1.25em;
@@ -106,6 +108,8 @@ const { t } = useI18n();
   }
 
   &_year {
+    @include selectable_text;
+
     color: var(--color_text_muted);
     font-variant-numeric: tabular-nums;
   }

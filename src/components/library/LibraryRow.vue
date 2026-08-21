@@ -185,6 +185,7 @@ function openActionsMenu(event: MouseEvent) {
   }
 
   &_text {
+    @include selectable_text;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -214,6 +215,8 @@ function openActionsMenu(event: MouseEvent) {
   }
 
   &_duration {
+    @include selectable_text;
+
     font-variant-numeric: tabular-nums;
   }
 

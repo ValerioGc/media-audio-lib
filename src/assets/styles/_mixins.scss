@@ -47,6 +47,13 @@
   scrollbar-gutter: $gutter;
 }
 
+/// Text the app reports rather than draws: a title, a tag, a path. The interface itself
+/// is not selectable, so these opt back in one by one.
+@mixin selectable_text {
+  user-select: text;
+  cursor: text;
+}
+
 /// Hides an element visually while keeping it available to screen readers.
 @mixin visually_hidden {
   position: absolute;

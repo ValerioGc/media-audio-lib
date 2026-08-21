@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
-import AppInput from '@/components/common/AppInput.vue';
 import LibraryDeleteDialog from '@/components/library/LibraryDeleteDialog.vue';
+import LibraryNameForm from '@/components/settings/LibraryNameForm.vue';
 import { useLibraryStore } from '@/stores/library';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibrarySummary } from '@/types/library';
@@ -14,40 +14,99 @@ const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
 
-const newName = ref('');
+const selectedId = ref<string | null>(null);
+const isRenaming = ref(false);
 const pendingDeletion = ref<LibrarySummary | null>(null);
+
+/** The commands above the list read the library picked in it, and wait until there is one. */
+const selected = computed<LibrarySummary | null>(
+  () => library.libraries.find((entry) => entry.id === selectedId.value) ?? null,
+);
 
 onMounted(async () => {
   await library.loadLibraries();
 });
 
-async function create() {
-  if (await library.createLibrary(newName.value)) {
-    newName.value = '';
-  }
+function select(entry: LibrarySummary) {
+  selectedId.value = entry.id;
+  isRenaming.value = false;
 }
 
 async function confirmDeletion(id: string) {
   pendingDeletion.value = null;
 
   if (await library.deleteLibrary(id)) {
+    if (selectedId.value === id) {
+      selectedId.value = null;
+      isRenaming.value = false;
+    }
+
     if (settings.mainLibraryId === id) {
       await settings.setMainLibraryId(library.activeLibraryId);
     }
   }
 }
 
-async function setMainLibrary(entry: LibrarySummary) {
-  if (!entry.active && !(await library.switchLibrary(entry.id))) {
+/** The backend renames the open library, so the chosen one is opened first. */
+async function open(entry: LibrarySummary): Promise<boolean> {
+  return entry.active || (await library.switchLibrary(entry.id));
+}
+
+async function setMainLibrary() {
+  const entry = selected.value;
+
+  if (entry === null || !(await open(entry))) {
     return;
   }
 
   await settings.setMainLibraryId(entry.id);
 }
+
+async function exportSelected() {
+  const entry = selected.value;
+
+  if (entry !== null) {
+    await library.exportLibrary(entry.id);
+  }
+}
+
+async function startRename() {
+  const entry = selected.value;
+
+  if (entry !== null && (await open(entry))) {
+    isRenaming.value = true;
+  }
+}
 </script>
 
 <template>
   <div class="library_list">
+    <div class="library_list_commands">
+      <AppButton :disabled="selected === null" data-testid="export-library" @click="exportSelected">
+        <AppIcon name="export" />
+        {{ t('library.name.menu.export') }}
+      </AppButton>
+      <AppButton :disabled="selected === null" data-testid="rename-library" @click="startRename">
+        <AppIcon name="edit" />
+        {{ t('library.name.menu.rename') }}
+      </AppButton>
+      <AppButton
+        :disabled="selected === null || selected.id === settings.mainLibraryId"
+        data-testid="set-main-library"
+        @click="setMainLibrary"
+      >
+        <AppIcon v-if="selected !== null && selected.id === settings.mainLibraryId" name="check" />
+        {{ t('library.catalog.primaryShort') }}
+      </AppButton>
+    </div>
+
+    <div v-if="isRenaming" class="library_list_rename" data-testid="library-rename">
+      <LibraryNameForm />
+      <AppButton variant="ghost" data-testid="rename-close" @click="isRenaming = false">
+        {{ t('library.name.cancel') }}
+      </AppButton>
+    </div>
+
     <ul class="library_list_items">
       <li
         v-for="entry in library.libraries"
@@ -56,7 +115,13 @@ async function setMainLibrary(entry: LibrarySummary) {
         :class="{ library_list_item_active: entry.active }"
         :data-library="entry.id"
       >
-        <div class="library_list_item_info">
+        <button
+          class="library_list_item_select"
+          type="button"
+          :aria-pressed="selectedId === entry.id"
+          data-testid="select-library"
+          @click="select(entry)"
+        >
           <span class="library_list_item_name">{{ entry.name }}</span>
           <span class="library_list_item_meta">
             {{ t('library.catalog.trackCount', entry.trackCount) }}
@@ -65,7 +130,7 @@ async function setMainLibrary(entry: LibrarySummary) {
               · {{ t('library.catalog.primary') }}
             </template>
           </span>
-        </div>
+        </button>
 
         <div class="library_list_item_actions">
           <AppButton
@@ -75,23 +140,6 @@ async function setMainLibrary(entry: LibrarySummary) {
             @click="library.switchLibrary(entry.id)"
           >
             {{ t('library.catalog.openShort') }}
-          </AppButton>
-          <AppButton
-            :disabled="entry.id === settings.mainLibraryId"
-            :aria-label="t('library.catalog.setPrimary', { name: entry.name })"
-            data-testid="set-main-library"
-            @click="setMainLibrary(entry)"
-          >
-            <AppIcon v-if="entry.id === settings.mainLibraryId" name="check" />
-            {{ t('library.catalog.primaryShort') }}
-          </AppButton>
-          <AppButton
-            :aria-label="t('library.catalog.export', { name: entry.name })"
-            data-testid="export-library"
-            @click="library.exportLibrary(entry.id)"
-          >
-            <AppIcon name="export" />
-            {{ t('library.name.menu.export') }}
           </AppButton>
           <AppButton
             variant="danger"
@@ -113,17 +161,6 @@ async function setMainLibrary(entry: LibrarySummary) {
       </AppButton>
     </output>
 
-    <form class="library_list_create" @submit.prevent="create">
-      <AppInput
-        v-model="newName"
-        :label="t('library.catalog.create.label')"
-        :placeholder="t('library.catalog.create.placeholder')"
-      />
-      <AppButton type="submit" variant="primary" data-testid="create-library">
-        {{ t('library.catalog.create.submit') }}
-      </AppButton>
-    </form>
-
     <LibraryDeleteDialog
       :library="pendingDeletion"
       @confirm="confirmDeletion"
@@ -137,6 +174,20 @@ async function setMainLibrary(entry: LibrarySummary) {
   display: flex;
   flex-direction: column;
   gap: $space_md;
+
+  &_commands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space_xs;
+  }
+
+  &_rename {
+    display: flex;
+    gap: $space_sm;
+    align-items: flex-end;
+    padding: $space_md;
+    @include surface_panel($radius_md, var(--color_surface_alt));
+  }
 
   &_items {
     display: flex;
@@ -159,10 +210,27 @@ async function setMainLibrary(entry: LibrarySummary) {
       border-color: var(--color_accent);
     }
 
-    &_info {
+    &:has(.library_list_item_select[aria-pressed='true']) {
+      border-color: var(--color_accent);
+      background-color: var(--row_selected_background);
+    }
+
+    // The whole entry picks the library the commands above act on.
+    &_select {
       display: flex;
+      flex: 1;
       flex-direction: column;
+      align-items: flex-start;
       min-width: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+
+      @include focus_ring;
     }
 
     &_name {
@@ -194,12 +262,6 @@ async function setMainLibrary(entry: LibrarySummary) {
     @include surface_panel($radius_md, var(--color_surface_alt));
     font-size: 0.875em;
     overflow-wrap: anywhere;
-  }
-
-  &_create {
-    display: flex;
-    gap: $space_sm;
-    align-items: flex-end;
   }
 }
 </style>

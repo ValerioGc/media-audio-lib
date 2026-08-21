@@ -9,6 +9,7 @@ import CoverGradientToggle from '@/components/settings/CoverGradientToggle.vue';
 import DefaultPlayerPanel from '@/components/settings/DefaultPlayerPanel.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
+import LibraryCreateForm from '@/components/settings/LibraryCreateForm.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
 import SettingsAppInfo from '@/components/settings/SettingsAppInfo.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
@@ -105,6 +106,13 @@ const tabs = computed(() => [
 
       <template #library>
         <div class="settings_view_group">
+          <SettingsSection
+            :title="t('settings.newLibrary.title')"
+            :description="t('settings.newLibrary.description')"
+          >
+            <LibraryCreateForm />
+          </SettingsSection>
+
           <SettingsSection
             :title="t('settings.importExport.title')"
             :description="t('settings.importExport.description')"

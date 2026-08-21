@@ -123,6 +123,10 @@
         "summary": "{total} Titel gelesen: {added} hinzugefügt, {updated} aktualisiert, {skipped} übersprungen, {missing} fehlende Dateien."
       }
     },
+    "newLibrary": {
+      "title": "Neue Bibliothek",
+      "description": "Lege eine leere Bibliothek an und fülle sie mit deinen Titeln. Die geöffnete bleibt in Gebrauch."
+    },
     "libraries": {
       "title": "Bibliotheken",
       "description": "Jede Bibliothek hat ihre eigene Titelliste. Sie können weitere anlegen, sie öffnen, die primäre wählen, exportieren oder löschen."

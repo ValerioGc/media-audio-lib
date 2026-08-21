@@ -69,10 +69,13 @@ describe('SettingsView', () => {
 
     await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
 
+    // Creating one comes first: the list below acts on what is already there.
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
+      'Nuova libreria',
       'Import / Export',
       'Librerie',
     ]);
+    expect(wrapper.find('.library_create_form').exists()).toBe(true);
     expect(wrapper.find('.import_export_panel').exists()).toBe(true);
     expect(wrapper.find('.library_list').exists()).toBe(true);
   });

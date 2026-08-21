@@ -55,16 +55,48 @@ describe('LibraryList', () => {
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
   });
 
-  it('marks a library as primary and opens it for the home', async () => {
+  it('keeps the commands off until a library is picked', async () => {
+    const { wrapper } = mountList();
+    const commands = () =>
+      ['export-library', 'rename-library', 'set-main-library'].map((id) =>
+        wrapper.get(`[data-testid="${id}"]`).attributes('disabled'),
+      );
+
+    expect(commands().every((state) => state !== undefined)).toBe(true);
+
+    await wrapper.findAll('[data-testid="select-library"]')[1]?.trigger('click');
+
+    expect(commands().every((state) => state === undefined)).toBe(true);
+  });
+
+  it('marks the picked library as primary and opens it for the home', async () => {
     const { wrapper, library } = mountList();
     const settings = useSettingsStore();
     const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
     const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
 
-    await wrapper.findAll('[data-testid="set-main-library"]')[1]?.trigger('click');
+    await wrapper.findAll('[data-testid="select-library"]')[1]?.trigger('click');
+    await wrapper.get('[data-testid="set-main-library"]').trigger('click');
 
     expect(switchLibrary).toHaveBeenCalledWith('lib-2');
     expect(setMainLibraryId).toHaveBeenCalledWith('lib-2');
+  });
+
+  it('opens the picked library before renaming it, since the backend renames the open one', async () => {
+    const { wrapper, library } = mountList();
+    const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
+
+    expect(wrapper.find('[data-testid="library-rename"]').exists()).toBe(false);
+
+    await wrapper.findAll('[data-testid="select-library"]')[1]?.trigger('click');
+    await wrapper.get('[data-testid="rename-library"]').trigger('click');
+
+    expect(switchLibrary).toHaveBeenCalledWith('lib-2');
+    expect(wrapper.find('.library_name_form').exists()).toBe(true);
+
+    await wrapper.get('[data-testid="rename-close"]').trigger('click');
+
+    expect(wrapper.find('[data-testid="library-rename"]').exists()).toBe(false);
   });
 
   it('shows the primary library marker', async () => {
@@ -75,11 +107,12 @@ describe('LibraryList', () => {
     expect(wrapper.findAll('.library_list_item_meta')[1]?.text()).toContain('principale');
   });
 
-  it('exports the chosen library', async () => {
+  it('exports the picked library', async () => {
     const { wrapper, library } = mountList();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
-    await wrapper.findAll('[data-testid="export-library"]')[1]?.trigger('click');
+    await wrapper.findAll('[data-testid="select-library"]')[1]?.trigger('click');
+    await wrapper.get('[data-testid="export-library"]').trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-2');
   });
@@ -125,26 +158,5 @@ describe('LibraryList', () => {
     const { wrapper } = mountList([catalog[0]!]);
 
     expect(wrapper.get('[data-testid="delete-library"]').attributes('disabled')).toBeDefined();
-  });
-
-  it('creates a library and clears the field', async () => {
-    const { wrapper, library } = mountList();
-    const createLibrary = vi.spyOn(library, 'createLibrary').mockResolvedValue(true);
-
-    await wrapper.get('input').setValue('Soundtracks');
-    await wrapper.get('.library_list_create').trigger('submit');
-
-    expect(createLibrary).toHaveBeenCalledWith('Soundtracks');
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('');
-  });
-
-  it('keeps the name when creation fails', async () => {
-    const { wrapper, library } = mountList();
-    vi.spyOn(library, 'createLibrary').mockResolvedValue(false);
-
-    await wrapper.get('input').setValue('Soundtracks');
-    await wrapper.get('.library_list_create').trigger('submit');
-
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Soundtracks');
   });
 });

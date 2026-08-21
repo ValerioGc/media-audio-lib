@@ -56,13 +56,16 @@ export interface AmbientOptions {
   enabled: boolean;
   style: AmbientStyle;
   direction: AmbientDirection;
+  /** Whether the panels opening over the window carry the same background. */
+  panels: boolean;
 }
 
 export function applyAmbientBackground(
-  { color, theme, enabled, style, direction }: AmbientOptions,
+  { color, theme, enabled, style, direction, panels }: AmbientOptions,
   root: HTMLElement = document.documentElement,
 ) {
   root.dataset.ambient = enabled ? 'on' : 'off';
+  root.dataset.ambientPanels = panels ? 'on' : 'off';
   root.style.setProperty('--app_ambient_layers', ambience(color, theme, style, direction).layers);
 }
 

@@ -58,4 +58,14 @@ describe('AppModal', () => {
 
     expect(wrapper.emitted('close')).toBeUndefined();
   });
+
+  it('takes the glass and the background of the window when asked', () => {
+    const plain = mount(AppModal, { props });
+    const glass = mount(AppModal, { props: { ...props, glass: true } });
+
+    expect(plain.get('.app_modal_panel').classes()).not.toContain('app_modal_panel_glass');
+    // The gradient itself is drawn by the stylesheet, which reads the two settings from
+    // the attributes of the document.
+    expect(glass.get('.app_modal_panel').classes()).toContain('app_modal_panel_glass');
+  });
 });

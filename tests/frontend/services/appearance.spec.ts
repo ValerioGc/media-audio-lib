@@ -80,11 +80,20 @@ describe('appearance', () => {
 
   it('writes the ambient layers and says the background is in use', () => {
     applyAmbientBackground(
-      { color: '#0067c0', theme: 'light', enabled: true, style: 'orbs', direction: 'topLeft' },
+      {
+        color: '#0067c0',
+        theme: 'light',
+        enabled: true,
+        style: 'orbs',
+        direction: 'topLeft',
+        panels: true,
+      },
       root,
     );
 
     expect(root.dataset.ambient).toBe('on');
+    // The panels opening over the window read the same answer.
+    expect(root.dataset.ambientPanels).toBe('on');
     expect(root.style.getPropertyValue('--app_ambient_layers')).toBe(
       ambience('#0067c0', 'light').layers,
     );
@@ -92,7 +101,14 @@ describe('appearance', () => {
 
   it('keeps the layers ready when the background is off', () => {
     applyAmbientBackground(
-      { color: '#0067c0', theme: 'light', enabled: false, style: 'orbs', direction: 'topLeft' },
+      {
+        color: '#0067c0',
+        theme: 'light',
+        enabled: false,
+        style: 'orbs',
+        direction: 'topLeft',
+        panels: true,
+      },
       root,
     );
 
@@ -117,6 +133,7 @@ describe('appearance', () => {
       color: '#e3008c',
       theme: 'dark',
       enabled: true,
+      panels: true,
       style: 'orbs',
       direction: 'topLeft',
     });

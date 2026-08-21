@@ -503,6 +503,7 @@ async function confirmRemoval() {
       :open="selectedFacet !== null"
       :title="t('library.groups.modalTitle', { name: selectedFacet?.name ?? '' })"
       wide
+      glass
       @close="closeFacetModal"
     >
       <div class="library_view_group_modal">

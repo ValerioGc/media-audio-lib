@@ -111,4 +111,15 @@ describe('AmbienceToggle', () => {
 
     expect(wrapper.find('[data-testid="ambience-preview"]').exists()).toBe(false);
   });
+
+  it('carries the background onto the detail panels', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(AmbienceToggle, options);
+
+    await wrapper.get('[data-testid="ambient-panels-toggle"]').setValue(false);
+
+    expect(settings.ambientOnPanels).toBe(false);
+    expect(document.documentElement.dataset.ambientPanels).toBe('off');
+  });
 });

@@ -139,6 +139,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.defaultPlayerBannerDismissed === 'boolean'
         ? source.defaultPlayerBannerDismissed
         : DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
+    ambientOnPanels: pickBoolean(source.ambientOnPanels, DEFAULT_SETTINGS.ambientOnPanels),
     closeToTray: pickBoolean(source.closeToTray, DEFAULT_SETTINGS.closeToTray),
     autostartEnabled: pickBoolean(source.autostartEnabled, DEFAULT_SETTINGS.autostartEnabled),
     autostartMinimized: pickBoolean(source.autostartMinimized, DEFAULT_SETTINGS.autostartMinimized),

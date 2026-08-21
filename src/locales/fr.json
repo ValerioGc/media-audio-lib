@@ -79,6 +79,7 @@
       },
       "glass": "Surfaces en verre (tableau, cartes et panneaux)",
       "preview": "Aperçu",
+      "panels": "Utiliser le même fond sur les fenêtres de détail",
       "hint": "La seconde couleur de l'arrière-plan dérive de la couleur d'accentuation et change donc avec elle. Les deux options sont indépendantes."
     },
     "coverGradient": {

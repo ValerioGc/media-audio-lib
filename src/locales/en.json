@@ -79,6 +79,7 @@
       },
       "glass": "Glass surfaces (table, cards and panels)",
       "preview": "Preview",
+      "panels": "Use the same background on the detail windows",
       "hint": "The second colour of the background comes from the accent, so it changes with it. The two options are independent."
     },
     "coverGradient": {

@@ -51,6 +51,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const ambientStyle = ref<AmbientStyle>(DEFAULT_SETTINGS.ambientStyle);
   const ambientDirection = ref<AmbientDirection>(DEFAULT_SETTINGS.ambientDirection);
   const glassSurfacesEnabled = ref(DEFAULT_SETTINGS.glassSurfacesEnabled);
+  const ambientOnPanels = ref(DEFAULT_SETTINGS.ambientOnPanels);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
@@ -86,6 +87,7 @@ export const useSettingsStore = defineStore('settings', () => {
     ambientStyle: ambientStyle.value,
     ambientDirection: ambientDirection.value,
     glassSurfacesEnabled: glassSurfacesEnabled.value,
+    ambientOnPanels: ambientOnPanels.value,
     viewMode: viewMode.value,
     mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
@@ -111,6 +113,7 @@ export const useSettingsStore = defineStore('settings', () => {
       enabled: ambientBackgroundEnabled.value,
       style: ambientStyle.value,
       direction: ambientDirection.value,
+      panels: ambientOnPanels.value,
     });
     applyGlassSurfaces(glassSurfacesEnabled.value);
     applyTextSize(textSize.value);
@@ -160,6 +163,7 @@ export const useSettingsStore = defineStore('settings', () => {
     ambientStyle.value = restored.ambientStyle;
     ambientDirection.value = restored.ambientDirection;
     glassSurfacesEnabled.value = restored.glassSurfacesEnabled;
+    ambientOnPanels.value = restored.ambientOnPanels;
     viewMode.value = restored.viewMode;
     mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
@@ -280,6 +284,13 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setPlayerBlur(next: number) {
     playerBlur.value = Math.min(MAX_PLAYER_BLUR, Math.max(0, next));
+    await persist();
+  }
+
+  /** The same background of the window, painted on the panels that open over it. */
+  async function setAmbientOnPanels(next: boolean) {
+    ambientOnPanels.value = next;
+    apply();
     await persist();
   }
 
@@ -404,6 +415,7 @@ export const useSettingsStore = defineStore('settings', () => {
     ambientStyle,
     ambientDirection,
     glassSurfacesEnabled,
+    ambientOnPanels,
     viewMode,
     mainLibraryId,
     coverGradientEnabled,
@@ -441,6 +453,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setPlayerTransparency,
     setPlayerBlur,
     dismissDefaultPlayerBanner,
+    setAmbientOnPanels,
     setCloseToTray,
     setAutostartEnabled,
     setAutostartMinimized,

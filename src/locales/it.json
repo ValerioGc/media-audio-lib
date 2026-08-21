@@ -79,6 +79,7 @@
       },
       "glass": "Superfici in vetro (tabella, card e pannelli)",
       "preview": "Anteprima",
+      "panels": "Usa lo stesso sfondo anche sulle finestre di dettaglio",
       "hint": "Il secondo colore dello sfondo deriva dall'accent, quindi cambia insieme a quello. Le due opzioni sono indipendenti."
     },
     "coverGradient": {

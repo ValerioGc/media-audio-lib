@@ -79,6 +79,7 @@
       },
       "glass": "Glasflächen (Tabelle, Karten und Bereiche)",
       "preview": "Vorschau",
+      "panels": "Denselben Hintergrund auch in den Detailfenstern verwenden",
       "hint": "Die zweite Farbe des Hintergrunds leitet sich aus der Akzentfarbe ab und ändert sich mit ihr. Die beiden Optionen sind voneinander unabhängig."
     },
     "coverGradient": {

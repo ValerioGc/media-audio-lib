@@ -5,6 +5,8 @@ const props = defineProps<{
   open: boolean;
   title: string;
   wide?: boolean;
+  /** Translucent panel, and the background of the window painted through it. */
+  glass?: boolean;
 }>();
 
 const emit = defineEmits<{ close: [] }>();
@@ -41,7 +43,7 @@ watch(
       <dialog
         open
         class="app_modal_panel"
-        :class="{ app_modal_panel_wide: wide }"
+        :class="{ app_modal_panel_wide: wide, app_modal_panel_glass: glass }"
         aria-modal="true"
         :aria-labelledby="titleId"
       >
@@ -85,6 +87,21 @@ watch(
 
     &_wide {
       width: min(62rem, 100%);
+    }
+
+    // Translucent and blurred, following the glass setting: with it off the tokens hold a
+    // plain surface and the panel looks like any other.
+    &_glass {
+      @include glass_surface($radius_lg);
+
+      box-shadow: var(--shadow_raised);
+    }
+
+    // The gradient of the window, painted through the glass. It follows the two settings
+    // that already draw it, so a panel never carries a background the window is without.
+    :root[data-ambient='on'][data-ambient-panels='on'] &_glass {
+      background-image: var(--app_ambient_layers);
+      background-repeat: no-repeat;
     }
   }
 

@@ -44,6 +44,10 @@ async function onBackgroundChange(event: Event) {
   await settings.setAmbientBackgroundEnabled((event.target as HTMLInputElement).checked);
 }
 
+async function onPanelsChange(event: Event) {
+  await settings.setAmbientOnPanels((event.target as HTMLInputElement).checked);
+}
+
 async function onGlassChange(event: Event) {
   await settings.setGlassSurfacesEnabled((event.target as HTMLInputElement).checked);
 }
@@ -91,6 +95,16 @@ async function onDirectionChange(value: string) {
       <div class="ambience_toggle_preview" :style="previewStyle" data-testid="ambience-preview">
         <span class="ambience_toggle_preview_card">{{ t('settings.ambience.preview') }}</span>
       </div>
+
+      <label class="ambience_toggle_check">
+        <input
+          type="checkbox"
+          :checked="settings.ambientOnPanels"
+          data-testid="ambient-panels-toggle"
+          @change="onPanelsChange"
+        />
+        <span>{{ t('settings.ambience.panels') }}</span>
+      </label>
     </template>
 
     <label class="ambience_toggle_check">

@@ -79,6 +79,7 @@
       },
       "glass": "Superficies de cristal (tabla, tarjetas y paneles)",
       "preview": "Vista previa",
+      "panels": "Usar el mismo fondo en las ventanas de detalle",
       "hint": "El segundo color del fondo deriva del acento, así que cambia con él. Las dos opciones son independientes."
     },
     "coverGradient": {

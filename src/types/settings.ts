@@ -103,6 +103,7 @@ export interface AppSettings {
   ambientStyle: AmbientStyle;
   ambientDirection: AmbientDirection;
   glassSurfacesEnabled: boolean;
+  ambientOnPanels: boolean;
   viewMode: ViewMode;
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
@@ -128,6 +129,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   ambientStyle: 'orbs',
   ambientDirection: 'topLeft',
   glassSurfacesEnabled: true,
+  ambientOnPanels: true,
   viewMode: 'preview',
   mainLibraryId: null,
   coverGradientEnabled: true,

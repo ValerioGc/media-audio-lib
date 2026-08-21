@@ -395,6 +395,7 @@ async function confirmRemoval() {
       <LibraryToolbar
         :view-mode="displayedViewMode"
         :selected-count="library.selectedIds.length"
+        :show-sort="activeTab === 'tracks' && displayedViewMode === 'preview'"
         @update:view-mode="setDisplayedViewMode"
         @edit-selected="openBulkEditor"
       />

@@ -115,6 +115,17 @@ export const useLibraryStore = defineStore('library', () => {
   const canDeleteLibrary = computed(() => libraries.value.length > 1);
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
+
+  /** How many different values the library holds for a field, blanks left out. */
+  function distinctCount(field: 'artist' | 'album' | 'genre'): number {
+    return new Set(
+      tracks.value.map((track) => track[field]?.trim() ?? '').filter((value) => value.length > 0),
+    ).size;
+  }
+
+  const artistCount = computed(() => distinctCount('artist'));
+  const albumCount = computed(() => distinctCount('album'));
+  const genreCount = computed(() => distinctCount('genre'));
   const artistSuggestions = computed(() => uniqueTrackValues(tracks.value, 'artist'));
   const albumSuggestions = computed(() => uniqueTrackValues(tracks.value, 'album'));
   const genreSuggestions = computed(() => uniqueTrackValues(tracks.value, 'genre'));
@@ -604,6 +615,9 @@ export const useLibraryStore = defineStore('library', () => {
     canDeleteLibrary,
     hasNoMatches,
     missingCount,
+    artistCount,
+    albumCount,
+    genreCount,
     artistSuggestions,
     albumSuggestions,
     genreSuggestions,

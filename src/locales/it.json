@@ -245,7 +245,10 @@
     "sort": {
       "sortBy": "Ordina per {column}",
       "asc": "crescente",
-      "desc": "decrescente"
+      "desc": "decrescente",
+      "field": "Ordina per",
+      "ascending": "Ordine crescente",
+      "descending": "Ordine decrescente"
     },
     "row": {
       "unknown": "—",
@@ -333,12 +336,14 @@
       "trackCount": "nessun brano | 1 brano | {count} brani",
       "albumCount": "nessun album | 1 album | {count} album",
       "artistCount": "nessun autore | 1 autore | {count} autori",
+      "genreCount": "nessun genere | 1 genere | {count} generi",
       "openLabel": "Apri i brani collegati a {name}",
       "albumArtist": "Autore: {artists}",
       "albumGenres": "Genere: {genres}",
       "modalTitle": "Brani collegati a {name}",
       "detailTabs": "Dettaglio collegamenti",
       "back": "Torna al dettaglio precedente",
+      "backTo": "Torna a {name}",
       "expandArtists": "Espandi la lista degli autori",
       "collapseArtists": "Torna ai brani",
       "expandAlbumList": "Espandi la lista degli album",

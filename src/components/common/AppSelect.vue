@@ -3,11 +3,16 @@ import { useId } from 'vue';
 
 import type { SelectOption } from '@/types/ui';
 
-defineProps<{
-  modelValue: string;
-  options: readonly SelectOption[];
-  label: string;
-}>();
+withDefaults(
+  defineProps<{
+    modelValue: string;
+    options: readonly SelectOption[];
+    label: string;
+    /** For a select that sits in a toolbar, where a label of its own would not fit. */
+    hideLabel?: boolean;
+  }>(),
+  { hideLabel: false },
+);
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 
@@ -20,7 +25,12 @@ function onChange(event: Event) {
 
 <template>
   <div class="app_select">
-    <label class="app_select_label" :for="selectId">{{ label }}</label>
+    <label
+      class="app_select_label"
+      :class="{ app_select_label_hidden: hideLabel }"
+      :for="selectId"
+      >{{ label }}</label
+    >
     <select :id="selectId" class="app_select_field" :value="modelValue" @change="onChange">
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
@@ -38,6 +48,10 @@ function onChange(event: Event) {
   &_label {
     font-size: 0.875em;
     color: var(--color_text_muted);
+
+    &_hidden {
+      @include visually_hidden;
+    }
   }
 
   &_field {

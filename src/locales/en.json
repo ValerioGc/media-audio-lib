@@ -245,7 +245,10 @@
     "sort": {
       "sortBy": "Sort by {column}",
       "asc": "ascending",
-      "desc": "descending"
+      "desc": "descending",
+      "field": "Sort by",
+      "ascending": "Ascending order",
+      "descending": "Descending order"
     },
     "row": {
       "unknown": "—",
@@ -333,12 +336,14 @@
       "trackCount": "no tracks | 1 track | {count} tracks",
       "albumCount": "no albums | 1 album | {count} albums",
       "artistCount": "no artist | 1 artist | {count} artists",
+      "genreCount": "no genre | 1 genre | {count} genres",
       "openLabel": "Open tracks linked to {name}",
       "albumArtist": "Artist: {artists}",
       "albumGenres": "Genre: {genres}",
       "modalTitle": "Tracks linked to {name}",
       "detailTabs": "Linked detail",
       "back": "Back to the previous detail",
+      "backTo": "Back to {name}",
       "expandArtists": "Expand the list of artists",
       "collapseArtists": "Back to the tracks",
       "expandAlbumList": "Expand the list of albums",

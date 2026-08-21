@@ -5,11 +5,17 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
 import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
+import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
 import type { ViewMode } from '@/types/settings';
 
-defineProps<{ viewMode?: ViewMode | undefined; selectedCount?: number }>();
+defineProps<{
+  viewMode?: ViewMode | undefined;
+  selectedCount?: number;
+  /** The preview has no column headers to sort from: it gets the control instead. */
+  showSort?: boolean;
+}>();
 const emit = defineEmits<{
   'update:viewMode': [mode: ViewMode];
   editSelected: [];
@@ -41,6 +47,16 @@ const searchValue = computed({
       <span data-testid="track-count">{{
         t('library.toolbar.count', { count: library.tracks.length }, library.tracks.length)
       }}</span>
+      <!-- What the library holds beside its tracks: read at a glance, without a tab change. -->
+      <span data-testid="album-count">{{
+        t('library.groups.albumCount', { count: library.albumCount }, library.albumCount)
+      }}</span>
+      <span data-testid="artist-count">{{
+        t('library.groups.artistCount', { count: library.artistCount }, library.artistCount)
+      }}</span>
+      <span data-testid="genre-count">{{
+        t('library.groups.genreCount', { count: library.genreCount }, library.genreCount)
+      }}</span>
       <span v-if="library.missingCount > 0" class="library_toolbar_missing">
         {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}
       </span>
@@ -64,6 +80,8 @@ const searchValue = computed({
     >
       {{ t('library.toolbar.editSelected', { count: selectedCount }) }}
     </AppButton>
+
+    <LibrarySortSelect v-if="showSort" class="library_toolbar_sort" />
 
     <!-- The view switch sits at the far right of the toolbar. -->
     <LibraryViewToggle
@@ -102,8 +120,17 @@ const searchValue = computed({
     border-radius: $radius_sm;
   }
 
+  &_sort {
+    margin-left: auto;
+  }
+
   &_view {
     margin-left: auto;
+  }
+
+  // With both on screen the sort keeps its place and only the switch is pushed right.
+  &_sort + &_view {
+    margin-left: 0;
   }
 }
 </style>

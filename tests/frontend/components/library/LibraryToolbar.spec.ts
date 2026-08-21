@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
-import { makeTracks } from '@tests/support/tracks';
+import { makeTrack, makeTracks } from '@tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
 
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
@@ -118,5 +118,38 @@ describe('LibraryToolbar', () => {
     await wrapper.get('[data-testid="bulk-edit-open"]').trigger('click');
 
     expect(wrapper.emitted('editSelected')).toHaveLength(1);
+  });
+
+  it('counts the albums, the artists and the genres beside the tracks', () => {
+    const options = withPinia();
+    const library = useLibraryStore();
+    library.tracks = [
+      makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ artist: 'Artist B', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ artist: 'Artist B', album: 'Album B', genre: null }),
+    ];
+    const wrapper = mount(LibraryToolbar, options);
+
+    expect(wrapper.get('[data-testid="track-count"]').text()).toBe('3 brani');
+    expect(wrapper.get('[data-testid="album-count"]').text()).toBe('2 album');
+    expect(wrapper.get('[data-testid="artist-count"]').text()).toBe('2 autori');
+    // The blank genre is not one of its own.
+    expect(wrapper.get('[data-testid="genre-count"]').text()).toBe('1 genere');
+  });
+
+  it('offers the sort only where there are no column headers', async () => {
+    const options = withPinia();
+    const library = useLibraryStore();
+    const wrapper = mount(LibraryToolbar, options);
+
+    expect(wrapper.find('[data-testid="preview-sort-field"]').exists()).toBe(false);
+
+    await wrapper.setProps({ showSort: true });
+
+    await wrapper.get('[data-testid="preview-sort-field"] select').setValue('album');
+    expect(library.sort).toEqual({ column: 'album', direction: 'asc' });
+
+    await wrapper.get('[data-testid="preview-sort-direction"]').trigger('click');
+    expect(library.sort).toEqual({ column: 'album', direction: 'desc' });
   });
 });

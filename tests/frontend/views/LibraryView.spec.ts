@@ -288,7 +288,10 @@ describe('LibraryView', () => {
 
     expect(wrapper.get('dialog').text()).toContain('Brani collegati a Artist A');
 
-    await wrapper.get('[title="Torna al dettaglio precedente"]').trigger('click');
+    // The way back names where it lands, so the trail reads even three levels down.
+    expect(wrapper.get('[data-testid="facet-modal-back"]').text()).toContain('Torna a Album A');
+
+    await wrapper.get('[data-testid="facet-modal-back"]').trigger('click');
     await flushPromises();
 
     const restoredDialog = wrapper.get('dialog');
@@ -298,7 +301,7 @@ describe('LibraryView', () => {
         .findAll('.library_album_summary_genres .library_album_summary_link')
         .map((link) => link.text()),
     ).toEqual(['Fusion', 'Jazz']);
-    expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
+    expect(restoredDialog.find('[data-testid="facet-modal-back"]').exists()).toBe(false);
   });
 
   it('opens a genre of the album from its header', async () => {

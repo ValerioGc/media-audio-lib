@@ -321,6 +321,8 @@ function openGenreFromSummary(key: string) {
   openFacet({ field: 'genre', key, name: facetNameOf('genre', key) });
 }
 
+const previousFacet = computed(() => facetModalHistory.value.at(-1)?.group ?? null);
+
 function goBackInFacetModal() {
   const previous = facetModalHistory.value.at(-1);
 
@@ -503,17 +505,23 @@ async function confirmRemoval() {
       @close="closeFacetModal"
     >
       <div class="library_view_group_modal">
+        <!-- The way back names the group it returns to: three levels down, an arrow alone
+             says nothing about where it lands. -->
+        <button
+          v-if="previousFacet !== null"
+          class="library_view_group_modal_back"
+          type="button"
+          :aria-label="t('library.groups.backTo', { name: previousFacet.name })"
+          data-testid="facet-modal-back"
+          @click="goBackInFacetModal"
+        >
+          <AppIcon name="back" />
+          <span class="library_view_group_modal_back_label">
+            {{ t('library.groups.backTo', { name: previousFacet.name }) }}
+          </span>
+        </button>
+
         <div class="library_view_group_modal_header">
-          <AppButton
-            v-if="facetModalHistory.length > 0"
-            class="library_view_group_modal_back_button"
-            variant="ghost"
-            :aria-label="t('library.groups.back')"
-            :title="t('library.groups.back')"
-            @click="goBackInFacetModal"
-          >
-            <AppIcon name="back" />
-          </AppButton>
           <LibraryAlbumSummary
             v-if="selectedFacet?.field === 'album'"
             :name="selectedFacet.name"
@@ -743,12 +751,37 @@ async function confirmRemoval() {
       min-height: 0;
     }
 
-    &_back_button {
-      width: 2rem;
-      height: 2rem;
+    &_back {
+      display: inline-flex;
+      gap: $space_xs;
+      align-self: flex-start;
+      align-items: center;
+      max-width: 100%;
       min-height: 2rem;
-      flex: 0 0 auto;
-      padding: 0;
+      padding: $space_2xs $space_sm $space_2xs $space_xs;
+      border: 1px solid var(--color_border);
+      border-radius: 999px;
+      background-color: var(--color_surface_alt);
+      color: var(--color_text);
+      font: inherit;
+      font-size: 0.875em;
+      cursor: pointer;
+      transition:
+        background-color $duration_fast ease,
+        border-color $duration_fast ease;
+
+      &:hover {
+        border-color: var(--color_accent);
+        background-color: var(--row_hover_background);
+      }
+
+      @include focus_ring;
+
+      &_label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     &_summary {

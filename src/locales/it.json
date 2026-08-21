@@ -147,6 +147,7 @@
         "rename": "Rinomina",
         "columns": "Colonne",
         "verifyAll": "Verifica file",
+        "duplicates": "Trova duplicati",
         "missingInfo": "Dati mancanti",
         "exportList": "Esporta elenco",
         "export": "Esporta libreria",
@@ -288,6 +289,14 @@
       "duplicates": "1 file già in libreria | {count} file già in libreria",
       "failed": "1 file non importato | {count} file non importati",
       "dismiss": "Chiudi"
+    },
+    "duplicates": {
+      "title": "Brani duplicati",
+      "description": "Brani presenti in più file. Rimuovere una copia la toglie dalla libreria: il file resta sul disco.",
+      "empty": "Nessun brano duplicato: ogni titolo è presente una volta sola.",
+      "copies": "{count} copie",
+      "remove": "Rimuovi questa copia di {title} dalla libreria",
+      "close": "Chiudi"
     },
     "verification": {
       "summary": "Verifica completata: file mancanti {missing} su {total} brani."

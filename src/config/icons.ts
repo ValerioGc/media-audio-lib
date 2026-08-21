@@ -31,6 +31,7 @@ export const ICON_GLYPHS = {
   search: '⌕',
   more: '⋮',
   verify: '✓',
+  duplicate: '⧉',
   check: '✔',
   drag: '⋮⋮',
   export: '⤓',

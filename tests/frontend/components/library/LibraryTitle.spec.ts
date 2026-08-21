@@ -125,6 +125,7 @@ describe('LibraryTitle', () => {
       'Rinomina',
       'Colonne',
       'Verifica file',
+      'Trova duplicati',
       'Dati mancanti',
       'Esporta elenco',
       'Esporta libreria',
@@ -244,7 +245,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
 
     expect(wrapper.get('dialog').text()).toContain('Dati mancanti');
 
@@ -258,7 +259,7 @@ describe('LibraryTitle', () => {
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
 
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
@@ -284,7 +285,7 @@ describe('LibraryTitle', () => {
     await wrapper.vm.$nextTick();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[5]?.trigger('click');
 
     expect(document.body.textContent).toContain('Esporta elenco brani');
   });
@@ -294,7 +295,7 @@ describe('LibraryTitle', () => {
     const deleteLibrary = vi.spyOn(library, 'deleteLibrary').mockResolvedValue(true);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[7]?.trigger('click');
 
     expect(wrapper.get('dialog').text()).toContain('Main');
     expect(deleteLibrary).not.toHaveBeenCalled();
@@ -315,7 +316,7 @@ describe('LibraryTitle', () => {
     const setMainLibraryId = vi.spyOn(settings, 'setMainLibraryId').mockResolvedValue();
 
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[6]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[7]?.trigger('click');
     await wrapper.get('[data-testid="confirm-library-delete"]').trigger('click');
 
     expect(setMainLibraryId).toHaveBeenCalledWith('lib-2');

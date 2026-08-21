@@ -147,6 +147,7 @@
         "rename": "Renombrar",
         "columns": "Columnas",
         "verifyAll": "Verificar los archivos",
+        "duplicates": "Buscar duplicados",
         "missingInfo": "Datos ausentes",
         "exportList": "Exportar la lista",
         "export": "Exportar la biblioteca",
@@ -288,6 +289,14 @@
       "duplicates": "1 archivo ya estaba en la biblioteca | {count} archivos ya estaban en la biblioteca",
       "failed": "1 archivo no importado | {count} archivos no importados",
       "dismiss": "Descartar"
+    },
+    "duplicates": {
+      "title": "Pistas duplicadas",
+      "description": "Pistas presentes en varios archivos. Quitar una copia la saca de la biblioteca: el archivo permanece en el disco.",
+      "empty": "Ninguna pista duplicada: cada título aparece una sola vez.",
+      "copies": "{count} copias",
+      "remove": "Quitar esta copia de {title} de la biblioteca",
+      "close": "Cerrar"
     },
     "verification": {
       "summary": "Verificación terminada: {missing} archivos ausentes de {total} pistas."

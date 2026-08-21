@@ -147,6 +147,7 @@
         "rename": "Rename",
         "columns": "Columns",
         "verifyAll": "Verify files",
+        "duplicates": "Find duplicates",
         "missingInfo": "Missing data",
         "exportList": "Export list",
         "export": "Export library",
@@ -288,6 +289,14 @@
       "duplicates": "1 file already in the library | {count} files already in the library",
       "failed": "1 file not imported | {count} files not imported",
       "dismiss": "Dismiss"
+    },
+    "duplicates": {
+      "title": "Duplicate tracks",
+      "description": "Tracks held in more than one file. Removing a copy takes it out of the library: the file stays on disk.",
+      "empty": "No duplicate track: every title is here once.",
+      "copies": "{count} copies",
+      "remove": "Remove this copy of {title} from the library",
+      "close": "Close"
     },
     "verification": {
       "summary": "Verification complete: missing files {missing} out of {total} tracks."

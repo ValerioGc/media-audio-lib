@@ -34,6 +34,13 @@ pub const MINIMIZED_ARG: &str = "--minimized";
 const TRAY_ID: &str = "main";
 const MAIN_WINDOW: &str = "main";
 
+/// The floating dock: a window of its own, so it survives the main one going to the tray.
+pub const MINI_WINDOW: &str = "mini";
+
+/// Size of the dock, in logical pixels, laid out along its longer side.
+pub const MINI_SIZE: (f64, f64) = (360.0, 96.0);
+pub const MINI_SIZE_VERTICAL: (f64, f64) = (200.0, 268.0);
+
 /// Asks the frontend to stop the playback: the sound is played by the webview, not here.
 pub const STOP_PLAYBACK_EVENT: &str = "tray://stop-playback";
 
@@ -171,6 +178,10 @@ pub fn run() {
             commands::app_info,
             commands::window::set_close_to_tray,
             commands::window::set_tray_menu,
+            commands::window::open_mini_player,
+            commands::window::close_mini_player,
+            commands::window::set_mini_player_shape,
+            commands::window::quit_app,
             commands::library::library_info,
             commands::library::rename_library,
             commands::library::add_tracks,

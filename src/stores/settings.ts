@@ -16,7 +16,7 @@ import {
   sanitizeSettings,
   type SettingsStorage,
 } from '@/services/settings-storage';
-import { applyCloseToTray, setAutostart } from '@/services/shell-integration';
+import { applyCloseToTray, applyMiniPlayerShape, setAutostart } from '@/services/shell-integration';
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   isLockedLeadingTableColumn,
@@ -33,6 +33,8 @@ import {
   type AmbientDirection,
   type AmbientStyle,
   type AppSettings,
+  type DockCloseAction,
+  type DockOrientation,
   type Locale,
   type ResolvedTheme,
   type TableColumnKey,
@@ -65,6 +67,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const autostartEnabled = ref(DEFAULT_SETTINGS.autostartEnabled);
   const autostartMinimized = ref(DEFAULT_SETTINGS.autostartMinimized);
   const keepPlayerOpen = ref(DEFAULT_SETTINGS.keepPlayerOpen);
+  const miniPlayerEnabled = ref(DEFAULT_SETTINGS.miniPlayerEnabled);
+  const miniPlayerAlwaysOnTop = ref(DEFAULT_SETTINGS.miniPlayerAlwaysOnTop);
+  const miniPlayerOrientation = ref<DockOrientation>(DEFAULT_SETTINGS.miniPlayerOrientation);
+  const miniPlayerCloseAction = ref<DockCloseAction>(DEFAULT_SETTINGS.miniPlayerCloseAction);
   const tableColumns = ref<TableColumnSetting[]>(
     DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
   );
@@ -101,6 +107,10 @@ export const useSettingsStore = defineStore('settings', () => {
     autostartEnabled: autostartEnabled.value,
     autostartMinimized: autostartMinimized.value,
     keepPlayerOpen: keepPlayerOpen.value,
+    miniPlayerEnabled: miniPlayerEnabled.value,
+    miniPlayerAlwaysOnTop: miniPlayerAlwaysOnTop.value,
+    miniPlayerOrientation: miniPlayerOrientation.value,
+    miniPlayerCloseAction: miniPlayerCloseAction.value,
     tableColumns: tableColumns.value,
   }));
 
@@ -177,6 +187,10 @@ export const useSettingsStore = defineStore('settings', () => {
     autostartEnabled.value = restored.autostartEnabled;
     autostartMinimized.value = restored.autostartMinimized;
     keepPlayerOpen.value = restored.keepPlayerOpen;
+    miniPlayerEnabled.value = restored.miniPlayerEnabled;
+    miniPlayerAlwaysOnTop.value = restored.miniPlayerAlwaysOnTop;
+    miniPlayerOrientation.value = restored.miniPlayerOrientation;
+    miniPlayerCloseAction.value = restored.miniPlayerCloseAction;
     await applyCloseToTray(closeToTray.value);
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
 
@@ -312,6 +326,30 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setMiniPlayerEnabled(next: boolean) {
+    miniPlayerEnabled.value = next;
+    await persist();
+  }
+
+  /** The dock is reshaped where it stands: the window follows without being reopened. */
+  async function setMiniPlayerAlwaysOnTop(next: boolean) {
+    miniPlayerAlwaysOnTop.value = next;
+    await applyMiniPlayerShape(miniPlayerOrientation.value === 'vertical', next);
+    await persist();
+  }
+
+  async function setMiniPlayerOrientation(next: DockOrientation) {
+    miniPlayerOrientation.value = next;
+    await applyMiniPlayerShape(next === 'vertical', miniPlayerAlwaysOnTop.value);
+    await persist();
+  }
+
+  /** Remembered from the dock, when the question was answered once and for all. */
+  async function setMiniPlayerCloseAction(next: DockCloseAction) {
+    miniPlayerCloseAction.value = next;
+    await persist();
+  }
+
   async function setKeepPlayerOpen(next: boolean) {
     keepPlayerOpen.value = next;
     await persist();
@@ -429,6 +467,10 @@ export const useSettingsStore = defineStore('settings', () => {
     autostartEnabled,
     autostartMinimized,
     keepPlayerOpen,
+    miniPlayerEnabled,
+    miniPlayerAlwaysOnTop,
+    miniPlayerOrientation,
+    miniPlayerCloseAction,
     tableColumns,
     systemTheme,
     isReady,
@@ -458,6 +500,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setAutostartEnabled,
     setAutostartMinimized,
     setKeepPlayerOpen,
+    setMiniPlayerEnabled,
+    setMiniPlayerAlwaysOnTop,
+    setMiniPlayerOrientation,
+    setMiniPlayerCloseAction,
     setTableColumnVisible,
     setTableColumnWidth,
     setTableColumnWidths,

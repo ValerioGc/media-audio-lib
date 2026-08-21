@@ -44,6 +44,14 @@ export const AMBIENT_DIRECTIONS = [
 ] as const;
 export type AmbientDirection = (typeof AMBIENT_DIRECTIONS)[number];
 
+/** Which way the floating dock lays out its controls. */
+export const DOCK_ORIENTATIONS = ['horizontal', 'vertical'] as const;
+export type DockOrientation = (typeof DOCK_ORIENTATIONS)[number];
+
+/** What closing the dock does, once the question has been answered for good. */
+export const DOCK_CLOSE_ACTIONS = ['ask', 'dock', 'app'] as const;
+export type DockCloseAction = (typeof DOCK_CLOSE_ACTIONS)[number];
+
 export const VIEW_MODES = ['table', 'preview'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
@@ -117,6 +125,10 @@ export interface AppSettings {
   autostartEnabled: boolean;
   autostartMinimized: boolean;
   keepPlayerOpen: boolean;
+  miniPlayerEnabled: boolean;
+  miniPlayerAlwaysOnTop: boolean;
+  miniPlayerOrientation: DockOrientation;
+  miniPlayerCloseAction: DockCloseAction;
   tableColumns: TableColumnSetting[];
 }
 
@@ -143,5 +155,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   autostartEnabled: false,
   autostartMinimized: false,
   keepPlayerOpen: false,
+  miniPlayerEnabled: true,
+  miniPlayerAlwaysOnTop: true,
+  miniPlayerOrientation: 'horizontal',
+  miniPlayerCloseAction: 'ask',
   tableColumns: DEFAULT_TABLE_COLUMNS,
 };

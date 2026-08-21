@@ -10,6 +10,8 @@ import {
   MIN_COVER_GRADIENT_INTENSITY,
   AMBIENT_DIRECTIONS,
   AMBIENT_STYLES,
+  DOCK_CLOSE_ACTIONS,
+  DOCK_ORIENTATIONS,
   TABLE_COLUMN_KEYS,
   TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
@@ -144,6 +146,21 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     autostartEnabled: pickBoolean(source.autostartEnabled, DEFAULT_SETTINGS.autostartEnabled),
     autostartMinimized: pickBoolean(source.autostartMinimized, DEFAULT_SETTINGS.autostartMinimized),
     keepPlayerOpen: pickBoolean(source.keepPlayerOpen, DEFAULT_SETTINGS.keepPlayerOpen),
+    miniPlayerEnabled: pickBoolean(source.miniPlayerEnabled, DEFAULT_SETTINGS.miniPlayerEnabled),
+    miniPlayerAlwaysOnTop: pickBoolean(
+      source.miniPlayerAlwaysOnTop,
+      DEFAULT_SETTINGS.miniPlayerAlwaysOnTop,
+    ),
+    miniPlayerOrientation: pickKnown(
+      DOCK_ORIENTATIONS,
+      source.miniPlayerOrientation,
+      DEFAULT_SETTINGS.miniPlayerOrientation,
+    ),
+    miniPlayerCloseAction: pickKnown(
+      DOCK_CLOSE_ACTIONS,
+      source.miniPlayerCloseAction,
+      DEFAULT_SETTINGS.miniPlayerCloseAction,
+    ),
     coverGradientStyle: pickKnown(
       AMBIENT_STYLES,
       source.coverGradientStyle,

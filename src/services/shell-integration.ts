@@ -94,3 +94,25 @@ export async function setAutostart(enabled: boolean): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Opens the floating dock, or brings back the one already on screen.
+ *
+ * It is a window of its own: the main one is going to the tray, and a webview goes with the
+ * window that holds it. The sound stays with the main window, so the dock only asks.
+ */
+export async function openMiniPlayer(vertical: boolean, alwaysOnTop: boolean): Promise<boolean> {
+  return invokeCommand('open_mini_player', { vertical, alwaysOnTop });
+}
+
+export async function closeMiniPlayer(): Promise<boolean> {
+  return invokeCommand('close_mini_player', {});
+}
+
+/** Reshapes the dock where it stands, without opening it again. */
+export async function applyMiniPlayerShape(
+  vertical: boolean,
+  alwaysOnTop: boolean,
+): Promise<boolean> {
+  return invokeCommand('set_mini_player_shape', { vertical, alwaysOnTop });
+}

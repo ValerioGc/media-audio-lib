@@ -36,6 +36,14 @@ export function remToPixels(value: number): number {
  * The cover fills its column, so widening that column has to make the row taller as well:
  * otherwise the image would be cut off by the row instead of growing.
  */
+/**
+ * The cover of a table that does not offer its column settings: a square that fills the
+ * row, the same in every one of them, and only the text size moves it.
+ */
+export function fixedCoverWidth(): number {
+  return Math.round(remToPixels(LIBRARY_ROW_HEIGHT_REM)) - LIBRARY_COVER_INSET_PX;
+}
+
 export function libraryRowHeight(coverWidth: number): number {
   return Math.max(
     remToPixels(LIBRARY_ROW_HEIGHT_REM),

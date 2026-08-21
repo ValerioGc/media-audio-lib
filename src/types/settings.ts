@@ -73,7 +73,7 @@ export const TABLE_COLUMN_WIDTHS: Record<
   TableColumnKey,
   { min: number; max: number; default: number }
 > = {
-  cover: { min: 44, max: 72, default: 48 },
+  cover: { min: 36, max: 60, default: 44 },
   title: { min: 180, max: 520, default: 260 },
   artist: { min: 120, max: 360, default: 180 },
   album: { min: 120, max: 360, default: 180 },

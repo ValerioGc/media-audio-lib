@@ -174,7 +174,8 @@ function openActionsMenu(event: MouseEvent) {
   &_cover {
     display: flex;
     align-items: center;
-    height: calc(var(--library_row_height) - #{$space_sm});
+    // A square of the cover column, never taller than the row it sits in.
+    height: min(var(--library_cover_size), calc(var(--library_row_height) - #{$space_sm}));
   }
 
   &_title {

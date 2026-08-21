@@ -279,12 +279,40 @@ describe('LibraryTable', () => {
 
     expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
 
+    // 60 is as wide as the cover column goes.
     await settings.setTableColumnWidth('cover', 72);
     await wrapper.vm.$nextTick();
 
     // The rows and the windowing maths read the same value, so they cannot drift apart.
-    expect(wrapper.attributes('style')).toContain('--library_row_height: 80px');
-    expect(reservedListHeight(wrapper, 80)).toBe(8000);
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 68px');
+    expect(reservedListHeight(wrapper, 68)).toBe(6800);
+
+    document.documentElement.style.removeProperty('font-size');
+  });
+
+  it('gives every contextual table the same cover, fixed to the row', async () => {
+    document.documentElement.style.fontSize = '16px';
+    const options = withPinia();
+    const settings = useSettingsStore();
+    await settings.setTableColumnWidth('cover', 60);
+
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: {
+        tracks: [makeTrack()],
+        sort: DEFAULT_SORT,
+        selectedIds: [],
+        playingId: null,
+        columnKeys: ['cover', 'title', 'duration'],
+        showColumnSettings: false,
+      },
+    });
+
+    // The library setting is left out of it: the square fills the row, and only the text
+    // size can move it.
+    expect(wrapper.attributes('style')).toContain('--library_cover_size: 48px');
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
+    expect(wrapper.find('.library_table_resize').exists()).toBe(false);
 
     document.documentElement.style.removeProperty('font-size');
   });

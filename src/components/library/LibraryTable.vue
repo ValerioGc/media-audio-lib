@@ -6,7 +6,7 @@ import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryRow from '@/components/library/LibraryRow.vue';
-import { libraryRowHeight } from '@/config/layout';
+import { fixedCoverWidth, libraryRowHeight } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
 import {
   fittedTableColumnWidths,
@@ -62,10 +62,24 @@ const { range, onScroll, measure } = useVirtualList({
   itemHeight: rowHeight,
 });
 
-const coverColumnWidth = computed(
-  () =>
-    settings.tableColumns.find((column) => column.key === 'cover')?.width ??
-    TABLE_COLUMN_WIDTHS.cover.default,
+// The row is measured in pixels, so the fixed cover is read again whenever the text size
+// changes the size of a rem.
+const fixedCover = ref(fixedCoverWidth());
+
+watch(
+  () => settings.textSize,
+  () => {
+    fixedCover.value = fixedCoverWidth();
+  },
+);
+
+// Only the track list of the library lets the cover be resized: everywhere else it is a
+// square of the row, so every contextual table shows covers of the same size.
+const coverColumnWidth = computed(() =>
+  props.columnKeys === undefined
+    ? (settings.tableColumns.find((column) => column.key === 'cover')?.width ??
+      TABLE_COLUMN_WIDTHS.cover.default)
+    : fixedCover.value,
 );
 
 // Rows grow with the text size and with the cover column: the windowing maths needs the
@@ -93,6 +107,7 @@ const columnSettings = computed(() => {
       key,
       width: TABLE_COLUMN_WIDTHS[key].default,
     }),
+    ...(key === 'cover' ? { width: coverColumnWidth.value } : {}),
     visible: true,
   }));
 });
@@ -121,6 +136,7 @@ const gridStyle = computed(() => ({
   '--library_grid_columns_fit': tableGridTemplate(columns.value, 'fit'),
   '--library_grid_columns_scroll': tableGridTemplate(columns.value, 'scroll'),
   '--library_row_height': `${rowHeight.value}px`,
+  '--library_cover_size': `${coverColumnWidth.value}px`,
 }));
 
 const columnLabels = computed<Record<TableColumnKey, string>>(

@@ -1,3 +1,4 @@
+import { flushPromises } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -27,6 +28,7 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     pickTrackListExportFile: vi.fn(),
     pickImportFile: vi.fn(),
     listTracks: vi.fn(),
+    refreshLibraryFromDisk: vi.fn(),
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
     verifyTrackFile: vi.fn(),
@@ -50,6 +52,7 @@ const pickExportFile = vi.mocked(api.pickExportFile);
 const pickTrackListExportFile = vi.mocked(api.pickTrackListExportFile);
 const pickImportFile = vi.mocked(api.pickImportFile);
 const listTracks = vi.mocked(api.listTracks);
+const refreshLibraryFromDisk = vi.mocked(api.refreshLibraryFromDisk);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
 const verifyTrackFile = vi.mocked(api.verifyTrackFile);
@@ -66,6 +69,7 @@ beforeEach(() => {
   libraryInfo.mockResolvedValue({ name: 'Media Audio Lib', metadata });
   renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
   listTracks.mockResolvedValue([]);
+  refreshLibraryFromDisk.mockResolvedValue({ refreshed: 0, missing: [] });
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
   verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
@@ -766,5 +770,51 @@ describe('useLibraryStore - multiple libraries', () => {
     await store.loadLibraries();
 
     expect(store.errorKey).toBe('shellUnavailable');
+  });
+});
+
+describe('refresh from disk', () => {
+  it('reads the files behind the list, and reports what changed outside the app', async () => {
+    const library = useLibraryStore();
+    const edited = makeTrack({ id: 'a', title: 'Edited outside' });
+    listTracks.mockResolvedValueOnce([makeTrack({ id: 'a', title: 'Stale' })]);
+    refreshLibraryFromDisk.mockResolvedValue({ refreshed: 1, missing: [] });
+    listTracks.mockResolvedValueOnce([edited]);
+
+    await library.loadHomeLibrary(null);
+    await flushPromises();
+
+    // The list is handed over first, then brought up to date.
+    expect(library.tracks[0]?.title).toBe('Edited outside');
+    expect(library.lastRefresh).toEqual({ refreshed: 1, missing: [] });
+    expect(library.hasMissingAfterRefresh).toBe(false);
+  });
+
+  it('reports the files that are no longer on disk', async () => {
+    const library = useLibraryStore();
+    refreshLibraryFromDisk.mockResolvedValue({ refreshed: 0, missing: ['C:/music/gone.mp3'] });
+    listTracks.mockResolvedValue([makeTrack({ missing: true })]);
+
+    await library.refreshFromDisk();
+
+    expect(library.hasMissingAfterRefresh).toBe(true);
+
+    library.dismissRefresh();
+
+    expect(library.lastRefresh).toBeNull();
+  });
+
+  it('leaves the list alone when the refresh fails', async () => {
+    const library = useLibraryStore();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    listTracks.mockResolvedValue([makeTrack({ id: 'a' })]);
+    await library.loadHomeLibrary(null);
+    await flushPromises();
+
+    refreshLibraryFromDisk.mockRejectedValue(new Error('disk busy'));
+    await library.refreshFromDisk();
+
+    expect(library.tracks).toHaveLength(1);
+    expect(library.lastRefresh).toBeNull();
   });
 });

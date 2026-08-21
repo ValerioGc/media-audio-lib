@@ -315,6 +315,10 @@
     "verification": {
       "summary": "Verification complete: missing files {missing} out of {total} tracks."
     },
+    "refresh": {
+      "missing": "{count} file is no longer where it was | {count} files are no longer where they were",
+      "refreshed": "{count} tracks edited outside the app were brought up to date"
+    },
     "exportList": {
       "title": "Export track list",
       "description": "Choose the format and information to include in the file.",

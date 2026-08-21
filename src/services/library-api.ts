@@ -7,6 +7,7 @@ import type {
   LibraryInfo,
   LibraryImportReport,
   LibraryImportStrategy,
+  LibraryRefreshReport,
   LibrarySummary,
   TrackExportField,
   TrackExportFormat,
@@ -162,6 +163,16 @@ export async function removeTrack(id: string): Promise<boolean> {
   requireShell();
 
   return invoke<boolean>('remove_track', { id });
+}
+
+/**
+ * Re-reads the files of the library, so tags edited by another program are picked up and
+ * the ones no longer on disk are reported.
+ */
+export async function refreshLibraryFromDisk(): Promise<LibraryRefreshReport> {
+  requireShell();
+
+  return invoke<LibraryRefreshReport>('refresh_library_from_disk');
 }
 
 export async function verifyTrackFile(id: string): Promise<TrackView> {

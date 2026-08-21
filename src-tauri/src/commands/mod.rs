@@ -12,8 +12,8 @@ pub use catalog::{
     create_library, delete_library, export_library, import_library, list_libraries, switch_library,
 };
 pub use library::{
-    add_tracks, export_track_list, library_info, list_tracks, remove_track, rename_library,
-    verify_track_file,
+    add_tracks, export_track_list, library_info, list_tracks, refresh_library_from_disk,
+    remove_track, rename_library, verify_track_file,
 };
 pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
 pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};

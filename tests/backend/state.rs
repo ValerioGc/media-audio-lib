@@ -85,6 +85,12 @@
 
         let state = LibraryState::from_file(file.clone());
 
+        // Opening only reconciles the paths: the tags are read again by the refresh the
+        // frontend asks for once the library is on screen.
+        state
+            .update(crate::library::refresh_metadata)
+            .expect("refresh succeeded");
+
         let track = state
             .read(|library| library.get(&id).cloned())
             .expect("read succeeded")
@@ -102,7 +108,7 @@
     }
 
     #[test]
-    fn current_schema_library_is_refreshed_from_file_tags() {
+    fn a_refresh_brings_in_the_tags_edited_outside_the_app() {
         let dir = TempDir::new("state-refresh");
         let file = dir.path().join("library.json");
         let track = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
@@ -117,6 +123,18 @@
         library.save(&file).expect("save succeeded");
 
         let state = LibraryState::from_file(file.clone());
+
+        // The list is handed over as it was saved, without a file read per track.
+        assert_eq!(
+            state
+                .read(|library| library.tracks()[0].title.clone())
+                .expect("read"),
+            "User chosen title"
+        );
+
+        state
+            .update(crate::library::refresh_metadata)
+            .expect("refresh succeeded");
 
         assert_eq!(
             state

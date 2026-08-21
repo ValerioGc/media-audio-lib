@@ -119,6 +119,12 @@ export const TRACK_EXPORT_FIELDS = [
 ] as const;
 export type TrackExportField = (typeof TRACK_EXPORT_FIELDS)[number];
 
+/** What a refresh from disk found: entries brought up to date, and files gone missing. */
+export interface LibraryRefreshReport {
+  refreshed: number;
+  missing: string[];
+}
+
 export interface TrackListVerificationReport {
   total: number;
   missing: number;

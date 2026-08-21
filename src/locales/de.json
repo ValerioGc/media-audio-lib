@@ -315,6 +315,10 @@
     "verification": {
       "summary": "Prüfung abgeschlossen: {missing} fehlende Dateien von {total} Titeln."
     },
+    "refresh": {
+      "missing": "{count} Datei ist nicht mehr an ihrem Platz | {count} Dateien sind nicht mehr an ihrem Platz",
+      "refreshed": "{count} außerhalb der App bearbeitete Titel wurden aktualisiert"
+    },
     "exportList": {
       "title": "Titelliste exportieren",
       "description": "Wählen Sie das Format und die Angaben, die in die Datei aufgenommen werden.",

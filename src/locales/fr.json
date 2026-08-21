@@ -315,6 +315,10 @@
     "verification": {
       "summary": "Vérification terminée : {missing} fichiers manquants sur {total} morceaux."
     },
+    "refresh": {
+      "missing": "{count} fichier n’est plus à sa place | {count} fichiers ne sont plus à leur place",
+      "refreshed": "{count} morceaux modifiés hors de l’app ont été mis à jour"
+    },
     "exportList": {
       "title": "Exporter la liste des morceaux",
       "description": "Choisissez le format et les informations à inclure dans le fichier.",

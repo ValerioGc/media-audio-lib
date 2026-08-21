@@ -2,13 +2,21 @@
 
 use std::path::PathBuf;
 
-use tauri::State;
+use tauri::{AppHandle, Manager as _, State};
 
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
 use crate::library::{self, AddReport, LibraryMetadata, TrackView};
 use crate::state::LibraryState;
+
+/// What a refresh found: how many entries changed, and which files are no longer there.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryRefreshReport {
+    pub refreshed: usize,
+    pub missing: Vec<String>,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -160,6 +168,23 @@ pub fn rename_library(state: State<'_, LibraryState>, name: String) -> AppResult
 #[tauri::command]
 pub fn add_tracks(state: State<'_, LibraryState>, paths: Vec<String>) -> AppResult<AddReport> {
     state.update(|library| library::add_paths(library, &paths, library::now_seconds()))
+}
+
+/// Re-reads from disk what other programs may have changed, and reports what is missing.
+///
+/// One file read per track: it runs off the main thread, so the window stays answerable
+/// while a large library is being gone through.
+#[tauri::command]
+pub async fn refresh_library_from_disk(app: AppHandle) -> AppResult<LibraryRefreshReport> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<LibraryState>();
+        let refreshed = state.update(library::refresh_metadata)?;
+        let missing = state.read(library::missing_paths)?;
+
+        Ok(LibraryRefreshReport { refreshed, missing })
+    })
+    .await
+    .map_err(|error| AppError::State(error.to_string()))?
 }
 
 /// Removes a track from the library without touching the file on disk.

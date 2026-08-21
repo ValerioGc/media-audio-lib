@@ -434,6 +434,44 @@ async function confirmRemoval() {
       </AppButton>
     </output>
 
+    <!-- What the refresh found on opening: files gone from disk are an error, tags read
+         again are a note that closes itself. -->
+    <p
+      v-if="library.hasMissingAfterRefresh"
+      class="library_view_error"
+      role="alert"
+      data-testid="refresh-missing"
+    >
+      <AppIcon name="warning" />
+      {{
+        t(
+          'library.refresh.missing',
+          { count: library.lastRefresh?.missing.length ?? 0 },
+          library.lastRefresh?.missing.length ?? 0,
+        )
+      }}
+      <AppButton variant="ghost" @click="library.dismissRefresh()">
+        {{ t('library.report.dismiss') }}
+      </AppButton>
+    </p>
+
+    <output
+      v-else-if="(library.lastRefresh?.refreshed ?? 0) > 0"
+      class="library_view_notice"
+      data-testid="refresh-updated"
+    >
+      {{
+        t(
+          'library.refresh.refreshed',
+          { count: library.lastRefresh?.refreshed ?? 0 },
+          library.lastRefresh?.refreshed ?? 0,
+        )
+      }}
+      <AppButton variant="ghost" @click="library.dismissRefresh()">
+        {{ t('library.report.dismiss') }}
+      </AppButton>
+    </output>
+
     <output v-if="library.lastVerification !== null" class="library_view_notice">
       {{
         t('library.verification.summary', {
@@ -714,6 +752,10 @@ async function confirmRemoval() {
   }
 
   &_error {
+    display: flex;
+    gap: $space_sm;
+    align-items: center;
+    justify-content: space-between;
     padding: $space_sm $space_md;
     color: var(--color_text);
 

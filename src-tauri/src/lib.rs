@@ -172,6 +172,7 @@ pub fn run() {
             commands::library::add_tracks,
             commands::library::remove_track,
             commands::library::list_tracks,
+            commands::library::refresh_library_from_disk,
             commands::library::verify_track_file,
             commands::library::export_track_list,
             commands::metadata::read_metadata,

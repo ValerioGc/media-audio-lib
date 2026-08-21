@@ -125,8 +125,9 @@ already are.
 
 - On **WAV**, a cover added by the app cannot be removed again: the container does not let
   the tag chunk shrink. On MP3, the priority format, the full cycle works.
-- Tags are re-read only when the library schema changes. A file edited by another program
-  is not noticed until you edit it from the app.
+- A file edited by another program while the library is open is noticed only at the next
+  opening: the check runs when the app starts and when a library is opened, not while it
+  sits on screen.
 
 ## Contributing or building from source
 

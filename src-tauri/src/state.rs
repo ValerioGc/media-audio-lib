@@ -27,8 +27,9 @@ impl LibraryState {
     /// Loads the library from `file`, starting empty when it cannot be read.
     ///
     /// Every app opening reconciles the saved list with the files on disk: ids are
-    /// realigned to canonical paths, duplicate entries are removed, and readable tags are
-    /// refreshed while missing files stay tracked for the UI to flag.
+    /// realigned to canonical paths and duplicate entries are removed. Re-reading the tags
+    /// costs one file read per track, so it is left to the refresh the frontend asks for
+    /// once the library is on screen.
     pub fn from_file(file: PathBuf) -> Self {
         let library = load_or_empty(&file);
         let state = Self::new(file, library);
@@ -79,12 +80,12 @@ impl LibraryState {
     }
 
     fn maintain_from_disk(&self) {
-        match self.update(crate::library::maintain_from_disk) {
+        match self.update(crate::library::maintain_paths) {
             Ok(report) => {
                 if report != crate::library::LibraryMaintenanceReport::default() {
                     eprintln!(
-                        "library refreshed from disk: {} tracks reread, {} duplicate entries removed, {} ids realigned",
-                        report.refreshed, report.deduplicated, report.ids_updated,
+                        "library reconciled with the disk: {} duplicate entries removed, {} ids realigned",
+                        report.deduplicated, report.ids_updated,
                     );
                 }
             }

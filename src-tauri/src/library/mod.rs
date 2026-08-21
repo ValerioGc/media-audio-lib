@@ -700,6 +700,30 @@ pub fn refresh_metadata(library: &mut Library) -> usize {
     refreshed
 }
 
+/// The part of the maintenance that only looks at paths: cheap enough to run while the
+/// library is being opened, unlike re-reading the tags of every file.
+pub fn maintain_paths(library: &mut Library) -> LibraryMaintenanceReport {
+    let ids_updated = update_track_ids(library);
+    let deduplicated = remove_duplicate_paths(library);
+    library.sync_metadata();
+
+    LibraryMaintenanceReport {
+        refreshed: 0,
+        deduplicated,
+        ids_updated,
+    }
+}
+
+/// Files of the library that are no longer where they were imported from.
+pub fn missing_paths(library: &Library) -> Vec<String> {
+    library
+        .tracks
+        .iter()
+        .filter(|track| !Path::new(&track.path).is_file())
+        .map(|track| track.path.clone())
+        .collect()
+}
+
 pub fn maintain_from_disk(library: &mut Library) -> LibraryMaintenanceReport {
     let ids_updated = update_track_ids(library);
     let deduplicated = remove_duplicate_paths(library);

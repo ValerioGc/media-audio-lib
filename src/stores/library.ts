@@ -19,6 +19,7 @@ import {
   type Track,
   type TrackExportField,
   type TrackExportFormat,
+  type LibraryRefreshReport,
   type TrackListVerificationReport,
   type TrackView,
 } from '@/types/library';
@@ -76,6 +77,8 @@ export const useLibraryStore = defineStore('library', () => {
   const lastExport = ref<string | null>(null);
   const lastLibraryImport = ref<LibraryImportReport | null>(null);
   const lastVerification = ref<TrackListVerificationReport | null>(null);
+  const lastRefresh = ref<LibraryRefreshReport | null>(null);
+  let refreshRequest = 0;
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
   const missingInfoFilter = ref<MissingInfoFilter>('all');
@@ -115,6 +118,7 @@ export const useLibraryStore = defineStore('library', () => {
   const canDeleteLibrary = computed(() => libraries.value.length > 1);
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
+  const hasMissingAfterRefresh = computed(() => (lastRefresh.value?.missing.length ?? 0) > 0);
 
   /** How many different values the library holds for a field, blanks left out. */
   function distinctCount(field: 'artist' | 'album' | 'genre'): number {
@@ -158,6 +162,49 @@ export const useLibraryStore = defineStore('library', () => {
     } finally {
       isLoading.value = false;
     }
+
+    // Opening the library does not wait for the disk: the list is on screen first, and what
+    // changed outside the app arrives as soon as the files have been gone through.
+    void refreshFromDisk();
+  }
+
+  /**
+   * Reads the files again, behind the list.
+   *
+   * A library opened while a refresh is still running makes that answer stale, so only the
+   * last request is allowed to touch the state.
+   */
+  async function refreshFromDisk() {
+    const request = ++refreshRequest;
+    lastRefresh.value = null;
+
+    try {
+      const report = await api.refreshLibraryFromDisk();
+
+      if (request !== refreshRequest) {
+        return;
+      }
+
+      if (report.refreshed > 0 || report.missing.length > 0) {
+        const refreshedTracks = await api.listTracks();
+
+        if (request !== refreshRequest) {
+          return;
+        }
+
+        tracks.value = refreshedTracks;
+        selectedIds.value = keepExistingIds(selectedIds.value, refreshedTracks);
+      }
+
+      lastRefresh.value = report;
+    } catch (error) {
+      // The list on screen stays usable: a refresh that failed is not a broken library.
+      console.error('Library refresh failed', error);
+    }
+  }
+
+  function dismissRefresh() {
+    lastRefresh.value = null;
   }
 
   async function renameLibrary(name: string): Promise<boolean> {
@@ -615,6 +662,8 @@ export const useLibraryStore = defineStore('library', () => {
     canDeleteLibrary,
     hasNoMatches,
     missingCount,
+    hasMissingAfterRefresh,
+    lastRefresh,
     artistCount,
     albumCount,
     genreCount,
@@ -640,6 +689,8 @@ export const useLibraryStore = defineStore('library', () => {
     pickFoldersAndAdd,
     remove,
     verifyTrack,
+    refreshFromDisk,
+    dismissRefresh,
     verifyAllTracks,
     loadCover,
     saveMetadata,

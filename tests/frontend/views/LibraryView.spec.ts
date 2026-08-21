@@ -610,4 +610,28 @@ describe('LibraryView', () => {
 
     expect(wrapper.find('[data-testid="bulk-metadata-editor"]').exists()).toBe(true);
   });
+
+  it('flags on the banner the files that left their place', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [makeTrack({ title: 'Gone', missing: true })];
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    const banner = wrapper.get('[data-testid="refresh-missing"]');
+
+    expect(banner.attributes('role')).toBe('alert');
+    expect(banner.text()).toContain('1 file non è più al suo posto');
+    // The row says it too, next to the title it belongs to.
+    expect(wrapper.find('.library_row_missing, .preview_card_missing').exists()).toBe(true);
+  });
+
+  it('notes the tracks brought up to date, without raising an alarm', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [makeTrack()];
+    store.lastRefresh = { refreshed: 3, missing: [] };
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="refresh-missing"]').exists()).toBe(false);
+    expect(wrapper.get('[data-testid="refresh-updated"]').text()).toContain('3');
+  });
 });

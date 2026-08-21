@@ -315,6 +315,10 @@
     "verification": {
       "summary": "Verificación terminada: {missing} archivos ausentes de {total} pistas."
     },
+    "refresh": {
+      "missing": "{count} archivo ya no está en su sitio | {count} archivos ya no están en su sitio",
+      "refreshed": "Se han actualizado {count} pistas modificadas fuera de la app"
+    },
     "exportList": {
       "title": "Exportar la lista de pistas",
       "description": "Elige el formato y la información que se incluirá en el archivo.",

@@ -17,7 +17,7 @@ Target platforms are **Windows** (NSIS installer) and **Linux** (AppImage and `.
 | Backend tests  | Rust's own test harness (`cargo test`)                 |
 | Quality        | ESLint, Prettier, Clippy, SonarQube                    |
 
-Key libraries: `lofty` (tags and cover art for MP3, FLAC, M4A, OGG, WAV), `serde`/`serde_json` (library persistence) and `thiserror` on the Rust side; `pinia` (state) and `vue-i18n` (translations) on the frontend. There is no router: the views are few and flat. Preferences are persisted with `tauri-plugin-store`, and playback uses the webview's native `<audio>` fed through Tauri's asset protocol.
+Key libraries: `lofty` (tags and cover art for MP3, FLAC, M4A, OGG, WAV), `serde`/`serde_json` (library persistence) and `thiserror` on the Rust side; `pinia` (state) and `vue-i18n` (translations) on the frontend. There is no router: the views are few and flat. Preferences are persisted with `tauri-plugin-store`, the system autostart entry through `tauri-plugin-autostart`, and playback uses the webview's native `<audio>` fed through Tauri's asset protocol. The tray icon comes from Tauri's own `tray-icon` feature.
 
 ## Requirements
 
@@ -87,7 +87,7 @@ media-audio-lib/
 ├─ src-tauri/
 │  ├─ capabilities/            # Tauri permissions, minimal allowlist
 │  ├─ src/
-│  │  ├─ commands/             # commands exposed to the frontend
+│  │  ├─ commands/             # commands exposed to the frontend, window included
 │  │  ├─ library/              # library file persistence
 │  │  ├─ metadata/             # tag and cover art reading and writing
 │  │  ├─ catalog.rs            # list of libraries and the active one
@@ -100,6 +100,22 @@ media-audio-lib/
 ```
 
 Frontend tests live under `tests/frontend/`, mirroring the structure of `src/`. Rust tests live in `#[cfg(test)]` modules inside the files they cover.
+
+### Two windows, one bundle
+
+The floating player is a second Tauri window (`mini`), opened by `commands/window.rs` on the
+same bundle with `index.html?view=mini`; `src/main.ts` reads that parameter and mounts
+`views/MiniPlayerView.vue` instead of `App.vue`.
+
+The audio is played by the main webview, and a webview dies with the window that holds it, so
+the dock is a remote control rather than a second player. The two talk over Tauri events, in
+`services/mini-player-bridge.ts`: the main window publishes `mini://state`, the dock sends
+`mini://command`. Anything the dock changes in the settings is read back from the same store
+file, which is also how it follows the theme.
+
+Both windows need to be listed in `src-tauri/capabilities/default.json`: a window missing
+from `windows` has no permissions at all, so it can neither invoke a command nor listen to an
+event.
 
 ## Development rules
 
@@ -125,6 +141,8 @@ These apply to **every** step and are part of the definition of done.
 6. **Errors**: no unjustified `unwrap()` in Rust. Errors are typed, propagated and turned into a message a user can understand.
 7. **i18n**: every string a user can see — labels, error messages, tooltips, dialog text — goes through `vue-i18n`. No hardcoded strings in components.
 8. **Comments**: code comments are written in English; documentation and the interface are in Italian.
+9. **Class names must be literal**: the CSS goes through PurgeCSS, which keeps only the class names the sources spell out. A class built from a prop — `` :class="`card_${size}`" `` — is dropped from the stylesheet without a word, and the component renders unstyled in the packaged app. Bind an object with the names written out instead.
+10. **HTML5 drag and drop is unavailable**: the window keeps Tauri's native file drop (`dragDropEnabled`, on by default), which on Windows takes the drag events away from the webview. Reordering inside the app is done with pointer events, as in the column settings dialog.
 
 ## Style guidelines
 
@@ -212,4 +230,4 @@ Deliberate debts rather than oversights. None of them blocks the remaining work.
 | TypeScript held at 6.x                   | `vue-tsc` 3.3.10 does not support TypeScript 7 (the `./lib/tsc` export was removed).                                                                                                                                                |
 | M4A and OGG fixtures missing             | Both formats go through the same `lofty` API as the others, but no generated file proves it: building one by hand needs a complete MP4/Ogg container.                                                                               |
 | Cover not removable on WAV               | `lofty` does not shrink the ID3 chunk inside a RIFF container. On MP3, the priority format, the full cycle works and is covered by tests.                                                                                           |
-| No tag re-read on demand                 | Tags are re-read only on a schema migration. A file edited by another program goes unnoticed until it is edited from the app.                                                                                                       |
+| No watcher on the library folders        | The files are read again when the app starts and when a library is opened, off the main thread. A file edited while the library is on screen goes unnoticed until the next opening: watching the filesystem is not implemented.      |

@@ -43,8 +43,12 @@ Everything happens locally. No account, no sync, no connection, no telemetry.
 Files are added one at a time, by folder, or by dropping them onto the window. Several
 libraries can live side by side and you switch between them from the menu next to the
 library name. Each one exports to a portable file and imports back elsewhere, duplicates
-handled. A track whose file was moved or deleted gets flagged rather than quietly
-disappearing, and the whole library can be checked in one pass.
+handled, and the track list on its own exports to text or CSV.
+
+Opening a library reads its files again in the background: tags edited by another program
+arrive on their own, and a track whose file was moved or deleted is flagged rather than
+quietly disappearing. The same check runs on demand, and a duplicate finder gathers the
+songs held in more than one file, matched by title and artist or by file name.
 
 ### Editing metadata
 
@@ -55,17 +59,32 @@ new cover can be pushed to every track of the album at once.
 ### Browsing and playing
 
 The **list view** gives columns you can sort, resize, reorder and hide; the **preview view**
-lays the cover art out on a grid. The same tracks regroup by artist, album or genre, each
-group opening a detail panel of its own. The player sits at the bottom of the window and
-expands to full page, with seeking, volume, shuffle and repeat — and its queue is simply the
-list in front of you, filters and sorting included.
+lays the cover art out on a grid, with a sort control of its own. The same tracks regroup by
+artist, album or genre, and each group opens a panel that can be walked through: from an
+album to its artist, from that artist to their albums, without going back to the library.
+
+The player sits at the bottom of the window and expands to full page, with seeking, volume,
+mute, shuffle and repeat — and its queue is simply the list in front of you, filters and
+sorting included. In the full view the artist, the album and the genre are links to
+everything else connected to them, ready to be played from there.
+
+### Staying out of the way
+
+The window can be sent to the system tray and keep playing. With a track on, a small
+**floating player** takes its place on screen: cover, title and controls in a window you drag
+where you like, laid out horizontally or vertically and kept above the others if you want it
+there. From the tray icon the window comes back, or the playback stops, or the app quits.
+
+The app can start with the system, minimized in the tray, and be told to stay there when the
+window is closed instead of quitting.
 
 ### Making it yours
 
-Light, dark or system theme, three interface text sizes, and an accent colour of your
+Light, dark or system theme, four interface text sizes, and an accent colour of your
 choosing that the interface adapts per theme so it stays readable. On top of that, an
-optional ambient background built from that same colour and optional glass surfaces, each
-switchable on its own.
+optional ambient background built from that same colour — its shape and its origin are
+yours — optional glass surfaces, and a player that takes its colours from the cover of what
+is playing.
 
 ## Languages
 

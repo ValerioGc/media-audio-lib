@@ -18,7 +18,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="preview_grid" role="listbox" aria-multiselectable="true">
+  <ul class="preview_grid">
     <PreviewCard
       v-for="track in tracks"
       :key="track.id"
@@ -31,7 +31,7 @@ const emit = defineEmits<{
       @remove="emit('remove', $event)"
       @verify="emit('verify', $event)"
     />
-  </div>
+  </ul>
 </template>
 
 <style scoped lang="scss">

@@ -42,14 +42,14 @@ describe('PreviewCard', () => {
     const wrapper = mountCard(makeTrack(), true);
 
     expect(wrapper.classes()).toContain('preview_card_selected');
-    expect(wrapper.attributes('aria-selected')).toBe('true');
+    expect(wrapper.get('.preview_card_select').attributes('aria-pressed')).toBe('true');
   });
 
   it('marks the playing card', () => {
     const wrapper = mountCard(makeTrack(), false, true);
 
     expect(wrapper.classes()).toContain('preview_card_playing');
-    expect(wrapper.attributes('aria-current')).toBe('true');
+    expect(wrapper.get('.preview_card_select').attributes('aria-current')).toBe('true');
     const bubble = wrapper.get('[data-testid="playing-bubble"]');
 
     // The state reads as a notification on the cover, not as a line of the body.
@@ -59,14 +59,18 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_body').text()).not.toContain('In riproduzione');
   });
 
-  it('is a selectable option of the grid, and can take focus', () => {
-    const wrapper = mountCard();
+  it('is an item of the grid list, selected through a button', () => {
+    const wrapper = mountCard(makeTrack({ title: 'Track' }));
 
-    // A div: an element that already carries a document role, such as li or article,
-    // must not be handed an interactive one on top of it.
-    expect(wrapper.element.tagName).toBe('DIV');
-    expect(wrapper.attributes('role')).toBe('option');
-    expect(wrapper.attributes('tabindex')).toBe('0');
+    // A native button rather than a role on the card: it takes focus and reads its state
+    // without an ARIA role, and it leaves room for the actions menu next to it.
+    expect(wrapper.element.tagName).toBe('LI');
+    expect(wrapper.attributes('role')).toBeUndefined();
+
+    const button = wrapper.get('.preview_card_select');
+
+    expect(button.attributes('aria-pressed')).toBe('false');
+    expect(button.attributes('aria-label')).toBe('Track');
   });
 
   it('reports files missing from disk', () => {
@@ -75,16 +79,16 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_badge').text()).toContain('File non più presente su disco');
   });
 
-  it('emits selection on click and Enter', async () => {
+  it('emits selection when the card button is pressed', async () => {
     const track = makeTrack();
     const wrapper = mountCard(track);
 
-    await wrapper.trigger('click');
-    await wrapper.trigger('keydown.enter');
+    await wrapper.get('.preview_card_select').trigger('click');
+    await wrapper.get('.preview_card_select').trigger('click', { ctrlKey: true });
 
     expect(wrapper.emitted('select')).toEqual([
       [{ id: track.id, additive: false, range: false }],
-      [{ id: track.id, additive: false, range: false }],
+      [{ id: track.id, additive: true, range: false }],
     ]);
   });
 

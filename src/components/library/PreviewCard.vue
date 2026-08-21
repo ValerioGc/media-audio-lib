@@ -23,31 +23,36 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-function select(event: MouseEvent | KeyboardEvent) {
+function select(event: MouseEvent) {
   emit('select', {
     id: props.track.id,
-    additive: event instanceof MouseEvent && (event.ctrlKey || event.metaKey),
+    additive: event.ctrlKey || event.metaKey,
     range: event.shiftKey,
   });
 }
 </script>
 
 <template>
-  <div
+  <li
     class="preview_card"
     :class="{
       preview_card_selected: selected,
       preview_card_missing: track.missing,
       preview_card_playing: playing,
     }"
-    role="option"
-    tabindex="0"
-    :aria-selected="selected"
-    :aria-current="playing ? 'true' : undefined"
-    @click="select($event)"
-    @dblclick="emit('play', track)"
-    @keydown.enter="select($event)"
   >
+    <!-- The whole card selects, but only a button can carry the click: the card holds the
+         actions menu, which a listbox option is not allowed to contain. -->
+    <button
+      class="preview_card_select"
+      type="button"
+      :aria-pressed="selected"
+      :aria-current="playing ? 'true' : undefined"
+      :aria-label="track.title"
+      @click="select($event)"
+      @dblclick="emit('play', track)"
+    />
+
     <PlayingBubble v-if="playing" />
 
     <CoverImage :track="track" size="card" />
@@ -73,7 +78,7 @@ function select(event: MouseEvent | KeyboardEvent) {
         @verify="emit('verify', $event)"
       />
     </div>
-  </div>
+  </li>
 </template>
 
 <style scoped lang="scss">
@@ -84,7 +89,6 @@ function select(event: MouseEvent | KeyboardEvent) {
   gap: $space_sm;
   padding: $space_sm;
   @include glass_surface($radius_lg);
-  cursor: pointer;
   transition:
     background-color $duration_fast ease,
     border-color $duration_fast ease;
@@ -93,7 +97,19 @@ function select(event: MouseEvent | KeyboardEvent) {
     background-color: var(--row_hover_background);
   }
 
-  @include focus_ring;
+  // The button covers the card so the whole surface stays clickable, and it sits under the
+  // menu so the actions keep their own clicks.
+  &_select {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    cursor: pointer;
+
+    @include focus_ring;
+  }
 
   &_selected {
     border-color: var(--color_accent);
@@ -149,6 +165,7 @@ function select(event: MouseEvent | KeyboardEvent) {
 
   &_actions {
     position: absolute;
+    z-index: 3;
     top: $space_sm;
     right: $space_sm;
     border-radius: $radius_md;

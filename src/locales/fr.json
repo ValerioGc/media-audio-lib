@@ -460,6 +460,10 @@
       "unsupported": "Ce format audio ne peut pas être lu ici.",
       "shellUnavailable": "La lecture n'est disponible que dans l'application de bureau.",
       "generic": "Échec de la lecture."
+    },
+    "related": {
+      "empty": "Aucun autre morceau lié dans cette bibliothèque.",
+      "play": "Lire {title}"
     }
   },
   "titlebar": {

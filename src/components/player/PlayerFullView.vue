@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
@@ -8,6 +8,9 @@ import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayerControls from '@/components/player/PlayerControls.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
+import PlayerRelatedDialog, {
+  type RelatedField,
+} from '@/components/player/PlayerRelatedDialog.vue';
 import PlayerSideControls from '@/components/player/PlayerSideControls.vue';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
@@ -31,12 +34,25 @@ const { t } = useI18n();
 const player = usePlayerStore();
 const settings = useSettingsStore();
 
-/** Everything that is not title and artist goes under the cover. */
+/**
+ * Everything that is not title and artist goes under the cover.
+ *
+ * Album and genre gather other tracks, so they open the list of what they hold: the year
+ * gathers nothing worth listening through, and stays plain text.
+ */
 const details = computed(() => [
-  { key: 'album', value: props.track.album },
-  { key: 'year', value: props.track.year },
-  { key: 'genre', value: props.track.genre },
+  { key: 'album', value: props.track.album, field: 'album' as RelatedField | null },
+  { key: 'year', value: props.track.year, field: null },
+  { key: 'genre', value: props.track.genre, field: 'genre' as RelatedField | null },
 ]);
+
+const related = ref<{ field: RelatedField; value: string } | null>(null);
+
+function openRelated(field: RelatedField, value: string | null) {
+  if (value !== null && value.trim() !== '') {
+    related.value = { field, value };
+  }
+}
 
 const accentStyle = computed(() => ({
   '--player_surface_strength': `${100 - settings.playerTransparency}%`,
@@ -104,7 +120,20 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
       <div class="player_full_stage">
         <div class="player_full_heading">
           <h1 class="player_full_title" :title="track.title">{{ track.title }}</h1>
-          <p class="player_full_artist">{{ track.artist ?? t('library.row.unknown') }}</p>
+
+          <p class="player_full_artist">
+            <button
+              v-if="track.artist !== null"
+              class="player_full_link"
+              type="button"
+              :aria-label="t('library.groups.openLabel', { name: track.artist })"
+              data-testid="player-open-artist"
+              @click="openRelated('artist', track.artist)"
+            >
+              {{ track.artist }}
+            </button>
+            <span v-else>{{ t('library.row.unknown') }}</span>
+          </p>
         </div>
 
         <div class="player_full_cover">
@@ -116,11 +145,27 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
           <div v-for="detail in details" :key="detail.key" class="player_full_detail">
             <dt class="player_full_detail_label">{{ t(`library.columns.${detail.key}`) }}</dt>
             <dd class="player_full_detail_value">
-              {{ detail.value ?? t('library.row.unknown') }}
+              <button
+                v-if="detail.field !== null && detail.value !== null"
+                class="player_full_link"
+                type="button"
+                :aria-label="t('library.groups.openLabel', { name: detail.value })"
+                :data-testid="`player-open-${detail.key}`"
+                @click="openRelated(detail.field, String(detail.value))"
+              >
+                {{ detail.value }}
+              </button>
+              <span v-else>{{ detail.value ?? t('library.row.unknown') }}</span>
             </dd>
           </div>
         </dl>
       </div>
+
+      <PlayerRelatedDialog
+        :field="related?.field ?? null"
+        :value="related?.value ?? null"
+        @close="related = null"
+      />
 
       <p v-if="player.errorKey !== null" class="player_full_error" role="alert">
         {{ t(`player.errors.${player.errorKey}`) }}
@@ -255,6 +300,25 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     color: var(--color_accent);
     font-size: 1.0625em;
     font-weight: 600;
+  }
+
+  // What gathers other tracks reads as a way in, not as a label.
+  &_link {
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+
+    &:hover {
+      color: var(--color_accent_hover);
+    }
+
+    @include focus_ring;
   }
 
   &_cover {

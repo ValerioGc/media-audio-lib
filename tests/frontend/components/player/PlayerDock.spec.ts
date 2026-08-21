@@ -180,6 +180,32 @@ describe('PlayerDock', () => {
     expect(wrapper.find('.player_bar').exists()).toBe(true);
   });
 
+  it('opens the tracks connected to the album, the artist and the genre', async () => {
+    const options = withPinia();
+    const player = usePlayerStore();
+    const library = useLibraryStore();
+    const track = makeTrack({ title: 'Track', artist: 'Artist', album: 'Album', genre: 'Jazz' });
+    library.tracks = [track, makeTrack({ id: 'other', title: 'Other', album: 'Album' })];
+    await player.play(track);
+    player.expand();
+
+    const wrapper = mountDock(options);
+
+    await wrapper.get('[data-testid="player-open-album"]').trigger('click');
+
+    // The list arrives without leaving the player: from here the playback carries on.
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Album');
+    expect(wrapper.findAll('.player_related_title').map((title) => title.text())).toEqual([
+      'Track',
+      'Other',
+    ]);
+
+    // The year gathers nothing to listen through, so it stays plain text.
+    expect(wrapper.find('[data-testid="player-open-year"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="player-open-artist"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="player-open-genre"]').exists()).toBe(true);
+  });
+
   it('closes the player from the bar', async () => {
     const options = withPinia();
     const player = usePlayerStore();

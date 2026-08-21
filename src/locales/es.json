@@ -460,6 +460,10 @@
       "unsupported": "Este formato de audio no puede reproducirse aquí.",
       "shellUnavailable": "La reproducción solo está disponible en la aplicación de escritorio.",
       "generic": "La reproducción ha fallado."
+    },
+    "related": {
+      "empty": "Ninguna otra pista conectada en esta biblioteca.",
+      "play": "Reproducir {title}"
     }
   },
   "titlebar": {

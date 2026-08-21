@@ -460,6 +460,10 @@
       "unsupported": "This audio format cannot be played here.",
       "shellUnavailable": "Playback is only available in the desktop application.",
       "generic": "Playback failed."
+    },
+    "related": {
+      "empty": "No other track connected to this one in the library.",
+      "play": "Play {title}"
     }
   },
   "titlebar": {

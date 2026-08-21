@@ -460,6 +460,10 @@
       "unsupported": "Questo formato audio non è riproducibile qui.",
       "shellUnavailable": "La riproduzione è disponibile solo nell'applicazione desktop.",
       "generic": "Riproduzione non riuscita."
+    },
+    "related": {
+      "empty": "Nessun altro brano collegato in questa libreria.",
+      "play": "Riproduci {title}"
     }
   },
   "titlebar": {

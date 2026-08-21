@@ -460,6 +460,10 @@
       "unsupported": "Dieses Audioformat kann hier nicht abgespielt werden.",
       "shellUnavailable": "Die Wiedergabe steht nur in der Desktop-Anwendung zur Verfügung.",
       "generic": "Die Wiedergabe ist fehlgeschlagen."
+    },
+    "related": {
+      "empty": "Kein weiterer verbundener Titel in dieser Bibliothek.",
+      "play": "{title} abspielen"
     }
   },
   "titlebar": {

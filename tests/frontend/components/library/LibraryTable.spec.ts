@@ -96,17 +96,20 @@ describe('LibraryTable', () => {
     expect(wrapper.text()).toContain('FLAC');
   });
 
-  it('can hide columns for contextual tables without changing user settings', () => {
+  it('lists a fixed set of columns for contextual tables, whatever the settings hold', async () => {
     const options = withPinia();
     const settings = useSettingsStore();
+
+    await settings.setTableColumnVisible('album', false);
+
     const wrapper = mount(LibraryTable, {
       ...options,
       props: {
-        tracks: [makeTrack({ artist: 'Artist A', genre: 'Jazz' })],
+        tracks: [makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' })],
         sort: DEFAULT_SORT,
         selectedIds: [],
         playingId: null,
-        hiddenColumnKeys: ['artist', 'genre'],
+        columnKeys: ['cover', 'title', 'artist', 'album', 'year', 'duration'],
         showColumnSettings: false,
       },
     });
@@ -114,10 +117,11 @@ describe('LibraryTable', () => {
       .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
 
-    expect(headings).not.toContain('Autore');
+    // The album column is hidden in the settings, yet the contextual table still asks for it.
+    expect(headings).toContain('Album');
     expect(headings).not.toContain('Genere');
     expect(wrapper.find('[data-testid="table-column-settings"]').exists()).toBe(false);
-    expect(settings.tableColumns.find((column) => column.key === 'artist')?.visible).toBe(true);
+    expect(settings.tableColumns.find((column) => column.key === 'album')?.visible).toBe(false);
   });
 
   it('opens column settings from the fixed actions header', async () => {

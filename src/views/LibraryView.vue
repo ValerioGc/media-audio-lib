@@ -53,20 +53,28 @@ const genreModalList = ref<GenreModalList>('tracks');
 const isArtistAlbumsExpanded = ref(false);
 const selectionAnchorId = ref<string | null>(null);
 const isBulkEditorOpen = ref(false);
-const artistModalHiddenColumnKeys = [
-  'artist',
-  'genre',
-  'format',
-  'path',
-  'missing',
+// The modal tables are read, not configured: each lists a fixed set of columns, without the
+// field the modal is already about.
+const artistModalColumnKeys = [
+  'cover',
+  'title',
+  'album',
+  'year',
+  'duration',
 ] as const satisfies readonly TableColumnKey[];
-const albumModalHiddenColumnKeys = [
+const albumModalColumnKeys = [
+  'cover',
+  'title',
+  'year',
+  'duration',
+] as const satisfies readonly TableColumnKey[];
+const genreModalColumnKeys = [
+  'cover',
+  'title',
   'artist',
   'album',
-  'genre',
-  'format',
-  'path',
-  'missing',
+  'year',
+  'duration',
 ] as const satisfies readonly TableColumnKey[];
 
 type GenreModalList = 'tracks' | 'artists' | 'albums';
@@ -554,7 +562,7 @@ async function confirmRemoval() {
             :sort="library.sort"
             :selected-ids="library.selectedIds"
             :playing-id="player.currentTrack?.id ?? null"
-            :hidden-column-keys="artistModalHiddenColumnKeys"
+            :column-keys="artistModalColumnKeys"
             :show-column-settings="false"
             @sort="library.toggleSort($event)"
             @select="selectFromTracks($event, selectedFacetTracks)"
@@ -585,6 +593,8 @@ async function confirmRemoval() {
               :sort="library.sort"
               :selected-ids="library.selectedIds"
               :playing-id="player.currentTrack?.id ?? null"
+              :column-keys="genreModalColumnKeys"
+              :show-column-settings="false"
               @sort="library.toggleSort($event)"
               @select="selectFromTracks($event, selectedFacetTracks)"
               @play="startFacetPlayback($event)"
@@ -622,7 +632,7 @@ async function confirmRemoval() {
             :sort="library.sort"
             :selected-ids="library.selectedIds"
             :playing-id="player.currentTrack?.id ?? null"
-            :hidden-column-keys="albumModalHiddenColumnKeys"
+            :column-keys="albumModalColumnKeys"
             :show-column-settings="false"
             @sort="library.toggleSort($event)"
             @select="selectFromTracks($event, selectedFacetTracks)"

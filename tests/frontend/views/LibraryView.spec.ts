@@ -320,6 +320,28 @@ describe('LibraryView', () => {
     expect(dialog.text()).not.toContain('Red');
   });
 
+  it('lists the genre tracks on fixed columns, with no way to change them', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[3]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    const dialog = wrapper.get('dialog');
+    const headings = dialog
+      .findAll('.library_table_heading')
+      .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
+
+    // The last heading holds the row actions, which have no label of their own.
+    expect(headings).toEqual(['Copertina', 'Nome', 'Autore', 'Album', 'Anno', 'Durata', '']);
+    expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
+    expect(dialog.find('[data-testid="table-fit-columns"]').exists()).toBe(false);
+  });
+
   it('swaps the genre list from the tabs, one section at a time', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [

@@ -69,6 +69,9 @@ watch(
   background-color: rgb(0 0 0 / 40%);
 
   &_panel {
+    // The browser lays a dialog out absolutely, pinned to the left of its backdrop: static
+    // puts it back in the flow, where the backdrop centres it like any other panel.
+    position: static;
     display: flex;
     flex-direction: column;
     gap: $space_md;

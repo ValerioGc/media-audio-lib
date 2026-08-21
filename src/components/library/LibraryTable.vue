@@ -30,11 +30,11 @@ const props = withDefaults(
     sort: SortState;
     selectedIds: readonly string[];
     playingId: string | null;
-    hiddenColumnKeys?: readonly TableColumnKey[];
+    columnKeys?: readonly TableColumnKey[] | undefined;
     showColumnSettings?: boolean;
     allowHorizontalScroll?: boolean;
   }>(),
-  { hiddenColumnKeys: () => [], showColumnSettings: true, allowHorizontalScroll: false },
+  { columnKeys: undefined, showColumnSettings: true, allowHorizontalScroll: false },
 );
 
 const emit = defineEmits<{
@@ -80,16 +80,32 @@ watch(
   { immediate: true },
 );
 
+// A contextual table lists the columns it needs: the library settings only lend their widths,
+// so what the main list shows cannot add or drop a column here.
+const columnSettings = computed(() => {
+  const keys = props.columnKeys;
+
+  if (keys === undefined) {
+    return visibleTableColumns(settings.tableColumns);
+  }
+
+  return keys.map((key) => ({
+    ...(settings.tableColumns.find((column) => column.key === key) ?? {
+      key,
+      width: TABLE_COLUMN_WIDTHS[key].default,
+    }),
+    visible: true,
+  }));
+});
+
 const columns = computed(() =>
-  visibleTableColumns(settings.tableColumns)
-    .filter((column) => !props.hiddenColumnKeys.includes(column.key))
-    .map((column) => ({
-      ...column,
-      label: t(`library.columns.${column.key}`),
-      sortable: isSortableTableColumn(column.key),
-      resizable: isResizableTableColumn(column.key),
-      active: props.sort.column === column.key,
-    })),
+  columnSettings.value.map((column) => ({
+    ...column,
+    label: t(`library.columns.${column.key}`),
+    sortable: isSortableTableColumn(column.key),
+    resizable: isResizableTableColumn(column.key),
+    active: props.sort.column === column.key,
+  })),
 );
 
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));

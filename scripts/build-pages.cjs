@@ -119,7 +119,29 @@ function renderRootPage() {
     <link rel="stylesheet" href="./styles.css">
 ${indent(alternates, 4)}
     <script>
-      window.location.replace('./${defaultLocale}/');
+      // The visitor lands on their own language when the browser asks for one we publish,
+      // and on the default language otherwise.
+      (function () {
+        var supported = [${siteLocales.map((locale) => `'${locale}'`).join(', ')}];
+        var preferences =
+          navigator.languages && navigator.languages.length
+            ? navigator.languages
+            : [navigator.language];
+        var target = '${defaultLocale}';
+
+        for (var index = 0; index < preferences.length; index += 1) {
+          var language = String(preferences[index] || '')
+            .split('-')[0]
+            .toLowerCase();
+
+          if (supported.indexOf(language) !== -1) {
+            target = language;
+            break;
+          }
+        }
+
+        window.location.replace('./' + target + '/');
+      })();
     </script>
   </head>
   <body>

@@ -2,7 +2,7 @@
   "site": {
     "name": "Media Audio Lib",
     "basePath": "https://valeriogc.github.io/media-audio-lib/",
-    "defaultLocale": "it",
+    "defaultLocale": "en",
     "repositoryUrl": "https://github.com/ValerioGc/media-audio-lib"
   },
   "locales": {
@@ -75,7 +75,13 @@
       "formatsKicker": "Compatibilità",
       "formatsTitle": "Formati supportati",
       "formatsLabel": "Elenco dei formati audio supportati",
-      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formats": [
+        "MP3",
+        "FLAC",
+        "M4A",
+        "OGG",
+        "WAV"
+      ],
       "formatsNote": "La lettura e la scrittura dei tag passano dalla stessa libreria per tutti i formati. Su WAV una copertina aggiunta dall'app non può essere rimossa di nuovo: è un limite del formato contenitore.",
       "privacyKicker": "Privacy",
       "privacyTitle": "Tutto resta sul tuo computer",
@@ -153,7 +159,13 @@
       "formatsKicker": "Compatibility",
       "formatsTitle": "Supported formats",
       "formatsLabel": "List of supported audio formats",
-      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formats": [
+        "MP3",
+        "FLAC",
+        "M4A",
+        "OGG",
+        "WAV"
+      ],
       "formatsNote": "Reading and writing tags goes through the same library for every format. On WAV, a cover added by the app cannot be removed again: that is a limit of the container format.",
       "privacyKicker": "Privacy",
       "privacyTitle": "Everything stays on your computer",
@@ -231,7 +243,13 @@
       "formatsKicker": "Compatibilité",
       "formatsTitle": "Formats pris en charge",
       "formatsLabel": "Liste des formats audio pris en charge",
-      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formats": [
+        "MP3",
+        "FLAC",
+        "M4A",
+        "OGG",
+        "WAV"
+      ],
       "formatsNote": "La lecture et l'écriture des tags passent par la même bibliothèque pour tous les formats. Sur WAV, une pochette ajoutée par l'application ne peut plus être retirée : c'est une limite du format conteneur.",
       "privacyKicker": "Confidentialité",
       "privacyTitle": "Tout reste sur votre ordinateur",
@@ -309,7 +327,13 @@
       "formatsKicker": "Compatibilidad",
       "formatsTitle": "Formatos admitidos",
       "formatsLabel": "Lista de formatos de audio admitidos",
-      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formats": [
+        "MP3",
+        "FLAC",
+        "M4A",
+        "OGG",
+        "WAV"
+      ],
       "formatsNote": "La lectura y la escritura de etiquetas pasan por la misma biblioteca en todos los formatos. En WAV, una carátula añadida por la aplicación ya no puede quitarse: es un límite del formato contenedor.",
       "privacyKicker": "Privacidad",
       "privacyTitle": "Todo se queda en tu ordenador",
@@ -387,7 +411,13 @@
       "formatsKicker": "Kompatibilität",
       "formatsTitle": "Unterstützte Formate",
       "formatsLabel": "Liste der unterstützten Audioformate",
-      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
+      "formats": [
+        "MP3",
+        "FLAC",
+        "M4A",
+        "OGG",
+        "WAV"
+      ],
       "formatsNote": "Das Lesen und Schreiben der Tags läuft bei allen Formaten über dieselbe Bibliothek. Bei WAV lässt sich ein von der Anwendung hinzugefügtes Cover nicht wieder entfernen: eine Grenze des Containerformats.",
       "privacyKicker": "Datenschutz",
       "privacyTitle": "Alles bleibt auf Ihrem Rechner",

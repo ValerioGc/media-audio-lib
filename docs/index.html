@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Media Audio Lib - Gestore di librerie audio per Windows e Linux</title>
-    <meta name="description" content="Applicazione desktop open source per gestire una libreria di file audio: modifica dei metadati, copertine, viste multiple e player integrato. Funziona interamente sul tuo computer, senza connessione e senza telemetria.">
+    <title>Media Audio Lib - Audio library manager for Windows and Linux</title>
+    <meta name="description" content="Open source desktop application for managing a library of audio files: metadata editing, cover art, multiple views and a built-in player. Runs entirely on your own computer, with no connection and no telemetry.">
     <link rel="icon" href="./logo.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
     <link rel="alternate" hreflang="it" href="./it/">
@@ -12,19 +12,41 @@
     <link rel="alternate" hreflang="fr" href="./fr/">
     <link rel="alternate" hreflang="es" href="./es/">
     <link rel="alternate" hreflang="de" href="./de/">
-    <link rel="alternate" hreflang="x-default" href="./it/">
+    <link rel="alternate" hreflang="x-default" href="./en/">
     <script>
-      window.location.replace('./it/');
+      // The visitor lands on their own language when the browser asks for one we publish,
+      // and on the default language otherwise.
+      (function () {
+        var supported = ['it', 'en', 'fr', 'es', 'de'];
+        var preferences =
+          navigator.languages && navigator.languages.length
+            ? navigator.languages
+            : [navigator.language];
+        var target = 'en';
+
+        for (var index = 0; index < preferences.length; index += 1) {
+          var language = String(preferences[index] || '')
+            .split('-')[0]
+            .toLowerCase();
+
+          if (supported.indexOf(language) !== -1) {
+            target = language;
+            break;
+          }
+        }
+
+        window.location.replace('./' + target + '/');
+      })();
     </script>
   </head>
   <body>
     <main class="locale_gate" aria-labelledby="language-title">
-      <a class="brand" href="./it/" aria-label="Media Audio Lib">
+      <a class="brand" href="./en/" aria-label="Media Audio Lib">
         <span class="brand_mark" aria-hidden="true"><img src="./logo.svg" alt=""></span>
         <span>Media Audio Lib</span>
       </a>
       <section>
-        <p class="eyebrow">Scegli la lingua</p>
+        <p class="eyebrow">Choose your language</p>
         <h1 id="language-title">Media Audio Lib</h1>
         <div class="language_grid">
         <a href="./it/" lang="it" hreflang="it">Italiano</a>

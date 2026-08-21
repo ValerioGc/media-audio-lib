@@ -451,6 +451,7 @@
     }
   },
   "titlebar": {
+    "tray": "In den Infobereich minimieren",
     "minimize": "Minimieren",
     "maximize": "Maximieren oder wiederherstellen",
     "close": "Anwendung schließen"

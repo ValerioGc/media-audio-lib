@@ -451,6 +451,7 @@
     }
   },
   "titlebar": {
+    "tray": "Send to the system tray",
     "minimize": "Minimise",
     "maximize": "Maximise or restore",
     "close": "Close the application"

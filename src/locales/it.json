@@ -451,6 +451,7 @@
     }
   },
   "titlebar": {
+    "tray": "Riduci nella barra di sistema",
     "minimize": "Riduci a icona",
     "maximize": "Ingrandisci o ripristina",
     "close": "Chiudi l'applicazione"

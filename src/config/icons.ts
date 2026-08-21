@@ -24,6 +24,7 @@ export const ICON_GLYPHS = {
   grid: '▦',
   external: '↗',
   minimize: '─',
+  tray: '⇩',
   maximize: '▢',
   help: '?',
   back: '←',

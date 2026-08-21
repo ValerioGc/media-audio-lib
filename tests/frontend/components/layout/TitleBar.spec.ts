@@ -5,6 +5,7 @@ import { resetI18n, withPinia } from '@tests/support/mount';
 import { APP_NAME } from '@/config/app-config';
 import * as windowControls from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
+import { useSettingsStore } from '@/stores/settings';
 
 import TitleBar from '@/components/layout/TitleBar.vue';
 
@@ -26,9 +27,12 @@ describe('TitleBar', () => {
     expect(wrapper.get('.titlebar_drag').attributes('data-tauri-drag-region')).toBeDefined();
   });
 
-  it('exposes the three window commands with labels', () => {
+  it('exposes the window commands with labels', () => {
     const wrapper = mount(TitleBar, withPinia());
 
+    expect(wrapper.get('[data-testid="window-tray"]').attributes('aria-label')).toBe(
+      'Riduci nella barra di sistema',
+    );
     expect(wrapper.get('[data-testid="window-minimize"]').attributes('aria-label')).toBe(
       'Riduci a icona',
     );
@@ -44,15 +48,31 @@ describe('TitleBar', () => {
     const minimize = vi.spyOn(windowControls, 'minimizeWindow').mockResolvedValue(true);
     const toggle = vi.spyOn(windowControls, 'toggleMaximizeWindow').mockResolvedValue(true);
     const close = vi.spyOn(windowControls, 'closeWindow').mockResolvedValue(true);
+    const hide = vi.spyOn(windowControls, 'hideWindow').mockResolvedValue(true);
     const wrapper = mount(TitleBar, withPinia());
 
+    await wrapper.get('[data-testid="window-tray"]').trigger('click');
     await wrapper.get('[data-testid="window-minimize"]').trigger('click');
     await wrapper.get('[data-testid="window-maximize"]').trigger('click');
     await wrapper.get('[data-testid="window-close"]').trigger('click');
 
+    expect(hide).toHaveBeenCalledTimes(1);
     expect(minimize).toHaveBeenCalledTimes(1);
     expect(toggle).toHaveBeenCalledTimes(1);
     expect(close).toHaveBeenCalledTimes(1);
+  });
+
+  it('closes into the tray when the settings ask for it', async () => {
+    const close = vi.spyOn(windowControls, 'closeWindow').mockResolvedValue(true);
+    const hide = vi.spyOn(windowControls, 'hideWindow').mockResolvedValue(true);
+    const options = withPinia();
+    useSettingsStore().closeToTray = true;
+    const wrapper = mount(TitleBar, options);
+
+    await wrapper.get('[data-testid="window-close"]').trigger('click');
+
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(close).not.toHaveBeenCalled();
   });
 
   it('maximizes on double click on the bar', async () => {

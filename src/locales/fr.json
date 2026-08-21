@@ -451,6 +451,7 @@
     }
   },
   "titlebar": {
+    "tray": "Réduire dans la zone de notification",
     "minimize": "Réduire",
     "maximize": "Agrandir ou restaurer",
     "close": "Fermer l'application"

@@ -451,6 +451,7 @@
     }
   },
   "titlebar": {
+    "tray": "Minimizar en la bandeja del sistema",
     "minimize": "Minimizar",
     "maximize": "Maximizar o restaurar",
     "close": "Cerrar la aplicación"

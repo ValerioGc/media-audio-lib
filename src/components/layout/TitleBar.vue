@@ -27,6 +27,13 @@ interface WindowControl {
 }
 
 const controls = computed<WindowControl[]>(() => [
+  // Out of the way without stopping: the sound carries on and the tray holds the app.
+  {
+    id: 'tray',
+    icon: 'tray',
+    label: t('titlebar.tray'),
+    action: () => hideWindow(),
+  },
   {
     id: 'minimize',
     icon: 'minimize',
@@ -96,6 +103,7 @@ const controls = computed<WindowControl[]>(() => [
         <button
           class="titlebar_button"
           :class="{
+            titlebar_button_tray: control.id === 'tray',
             titlebar_button_minimize: control.id === 'minimize',
             titlebar_button_maximize: control.id === 'maximize',
             titlebar_button_close: control.id === 'close',

@@ -391,4 +391,43 @@ describe('LibraryFacetList', () => {
       'Artisti vari',
     );
   });
+
+  it('sorts the cards of the artists from a control of their own', async () => {
+    const tracks = [
+      makeTrack({ title: 'Uno', artist: 'Artist A', album: 'Album A', durationMs: 60_000 }),
+      makeTrack({ title: 'Due', artist: 'Artist B', album: 'Album B', durationMs: 200_000 }),
+      makeTrack({ title: 'Tre', artist: 'Artist B', album: 'Album C', durationMs: 100_000 }),
+    ];
+
+    const wrapper = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'artist', viewMode: 'preview', tracks },
+    });
+    const names = () => wrapper.findAll('.library_facet_card_title').map((title) => title.text());
+
+    expect(names()).toEqual(['Artist A', 'Artist B']);
+
+    await wrapper.get('[data-testid="preview-sort-field"] select').setValue('duration');
+    expect(names()).toEqual(['Artist A', 'Artist B']);
+
+    await wrapper.get('[data-testid="preview-sort-direction"]').trigger('click');
+    expect(names()).toEqual(['Artist B', 'Artist A']);
+  });
+
+  it('leaves the genres out of it, and the table too', () => {
+    const tracks = [makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' })];
+
+    const genres = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'genre', viewMode: 'preview', tracks },
+    });
+    const table = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'album', viewMode: 'table', tracks },
+    });
+
+    // A genre is a short list of names, and a table sorts from its own headers.
+    expect(genres.find('[data-testid="preview-sort-field"]').exists()).toBe(false);
+    expect(table.find('[data-testid="preview-sort-field"]').exists()).toBe(false);
+  });
 });

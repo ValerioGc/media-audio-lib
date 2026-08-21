@@ -8,7 +8,7 @@ import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
 import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
-import type { LibraryContentTab } from '@/types/library';
+import { SORTABLE_COLUMNS, type LibraryContentTab, type SortableColumn } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
 
 const props = withDefaults(
@@ -54,6 +54,17 @@ const counts = computed(() => {
 
   return entries[props.tab];
 });
+
+const sortOptions = computed(() =>
+  SORTABLE_COLUMNS.map((column) => ({
+    value: column,
+    label: t(`library.columns.${column}`),
+  })),
+);
+
+function sortBy(column: string) {
+  library.toggleSort(column as SortableColumn);
+}
 </script>
 
 <template>
@@ -97,7 +108,14 @@ const counts = computed(() => {
       {{ t('library.toolbar.editSelected', { count: selectedCount }) }}
     </AppButton>
 
-    <LibrarySortSelect v-if="showSort" class="library_toolbar_sort" />
+    <LibrarySortSelect
+      v-if="showSort"
+      class="library_toolbar_sort"
+      :column="library.sort.column"
+      :direction="library.sort.direction"
+      :options="sortOptions"
+      @select="sortBy"
+    />
 
     <!-- The view switch sits at the far right of the toolbar. -->
     <LibraryViewToggle

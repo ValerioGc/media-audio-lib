@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import { MAX_LISTED_ARTISTS } from '@/config/app-config';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
@@ -227,6 +228,16 @@ const sortedGroups = computed(() => {
   });
 });
 
+/**
+ * The cards have no column headers to sort from, so they get the control instead. A genre
+ * is read as one list of a few names: it is left alone.
+ */
+const showsSortSelect = computed(() => props.viewMode === 'preview' && props.field !== 'genre');
+
+const sortOptions = computed(() =>
+  listColumns.value.map((column) => ({ value: column.key, label: column.label })),
+);
+
 function ariaSort(column: FacetSortColumn) {
   if (sort.value.column !== column) {
     return 'none';
@@ -261,6 +272,15 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 </script>
 
 <template>
+  <LibrarySortSelect
+    v-if="showsSortSelect"
+    class="library_facet_sort"
+    :column="sort.column"
+    :direction="sort.direction"
+    :options="sortOptions"
+    @select="toggleSort($event as FacetSortColumn)"
+  />
+
   <section
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
@@ -270,7 +290,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     <!-- A real button rather than a card pretending to be one: Enter, Space and focus
          come with the element instead of being wired by hand. -->
     <button
-      v-for="group in groups"
+      v-for="group in sortedGroups"
       :key="group.key"
       class="library_facet_card"
       :class="{
@@ -410,6 +430,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 </template>
 
 <style scoped lang="scss">
+.library_facet_sort {
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
+
 .library_facet_preview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));

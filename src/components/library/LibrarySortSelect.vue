@@ -5,32 +5,32 @@ import { useI18n } from 'vue-i18n';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppSelect from '@/components/common/AppSelect.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
-import { useLibraryStore } from '@/stores/library';
-import { SORTABLE_COLUMNS, type SortableColumn } from '@/types/library';
+import type { SortDirection } from '@/types/library';
+import type { SelectOption } from '@/types/ui';
+
+/**
+ * The order of a view that has no column headers to click.
+ *
+ * It only draws and reports: the tracks answer to the library store, the artists and the
+ * albums to the list that gathers them, and both drive the same control.
+ */
+const props = defineProps<{
+  column: string;
+  direction: SortDirection;
+  options: readonly SelectOption[];
+}>();
+
+const emit = defineEmits<{ select: [column: string] }>();
 
 const { t } = useI18n();
-const library = useLibraryStore();
-
-const options = computed(() =>
-  SORTABLE_COLUMNS.map((column) => ({
-    value: column,
-    label: t(`library.columns.${column}`),
-  })),
-);
 
 const directionLabel = computed(() =>
-  library.sort.direction === 'asc' ? t('library.sort.ascending') : t('library.sort.descending'),
+  props.direction === 'asc' ? t('library.sort.ascending') : t('library.sort.descending'),
 );
 
-function onFieldChange(value: string) {
-  if (value !== library.sort.column) {
-    library.toggleSort(value as SortableColumn);
-  }
-}
-
-/** Sorting the column already in use is what turns the order around. */
+/** Asking again for the column in use is what turns the order around. */
 function toggleDirection() {
-  library.toggleSort(library.sort.column);
+  emit('select', props.column);
 }
 </script>
 
@@ -38,12 +38,12 @@ function toggleDirection() {
   <div class="library_sort_select">
     <AppSelect
       class="library_sort_select_field"
-      :model-value="library.sort.column"
-      :options="options"
+      :model-value="props.column"
+      :options="props.options"
       :label="t('library.sort.field')"
       hide-label
       data-testid="preview-sort-field"
-      @update:model-value="onFieldChange"
+      @update:model-value="emit('select', $event)"
     />
 
     <AppTooltip :text="directionLabel" align="center">
@@ -54,7 +54,7 @@ function toggleDirection() {
         data-testid="preview-sort-direction"
         @click="toggleDirection"
       >
-        <AppIcon :name="library.sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'" />
+        <AppIcon :name="props.direction === 'asc' ? 'sortAsc' : 'sortDesc'" />
       </button>
     </AppTooltip>
   </div>

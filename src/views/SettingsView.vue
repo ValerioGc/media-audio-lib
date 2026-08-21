@@ -20,9 +20,9 @@ import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
 const { t } = useI18n();
 
 const tabs = computed(() => [
+  { id: 'library', label: t('settings.tabs.library') },
   { id: 'general', label: t('settings.tabs.general') },
   { id: 'appearance', label: t('settings.tabs.appearance') },
-  { id: 'library', label: t('settings.tabs.library') },
 ]);
 </script>
 
@@ -39,6 +39,24 @@ const tabs = computed(() => [
     </header>
 
     <SettingsTabs :tabs="tabs">
+      <template #library>
+        <div class="settings_view_group">
+          <SettingsSection
+            :title="t('settings.importExport.title')"
+            :description="t('settings.importExport.description')"
+          >
+            <ImportExportPanel />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.libraries.title')"
+            :description="t('settings.libraries.description')"
+          >
+            <LibraryCreateForm />
+            <LibraryList />
+          </SettingsSection>
+        </div>
+      </template>
       <template #general>
         <div class="settings_view_group">
           <SettingsSection
@@ -100,31 +118,6 @@ const tabs = computed(() => [
             :description="t('settings.coverGradient.description')"
           >
             <CoverGradientToggle />
-          </SettingsSection>
-        </div>
-      </template>
-
-      <template #library>
-        <div class="settings_view_group">
-          <SettingsSection
-            :title="t('settings.newLibrary.title')"
-            :description="t('settings.newLibrary.description')"
-          >
-            <LibraryCreateForm />
-          </SettingsSection>
-
-          <SettingsSection
-            :title="t('settings.importExport.title')"
-            :description="t('settings.importExport.description')"
-          >
-            <ImportExportPanel />
-          </SettingsSection>
-
-          <SettingsSection
-            :title="t('settings.libraries.title')"
-            :description="t('settings.libraries.description')"
-          >
-            <LibraryList />
           </SettingsSection>
         </div>
       </template>

@@ -123,10 +123,6 @@
         "summary": "{total} brani letti: {added} aggiunti, {updated} aggiornati, {skipped} saltati, {missing} file mancanti."
       }
     },
-    "newLibrary": {
-      "title": "Nuova libreria",
-      "description": "Crea una libreria vuota da riempire con i tuoi brani. Quella in uso resta aperta."
-    },
     "libraries": {
       "title": "Librerie",
       "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, scegliere quella principale, esportarle o eliminarle."

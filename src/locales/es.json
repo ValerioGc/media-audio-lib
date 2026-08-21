@@ -123,10 +123,6 @@
         "summary": "{total} pistas leídas: {added} añadidas, {updated} actualizadas, {skipped} omitidas, {missing} archivos ausentes."
       }
     },
-    "newLibrary": {
-      "title": "Nueva biblioteca",
-      "description": "Crea una biblioteca vacía para llenarla con tus pistas. La que está en uso permanece abierta."
-    },
     "libraries": {
       "title": "Bibliotecas",
       "description": "Cada biblioteca tiene su propia lista de pistas. Puedes crear más, abrirlas, elegir la principal, exportarlas o eliminarlas."

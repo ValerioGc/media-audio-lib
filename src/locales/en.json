@@ -123,10 +123,6 @@
         "summary": "{total} tracks read: {added} added, {updated} updated, {skipped} skipped, {missing} missing files."
       }
     },
-    "newLibrary": {
-      "title": "New library",
-      "description": "Create an empty library to fill with your tracks. The one in use stays open."
-    },
     "libraries": {
       "title": "Libraries",
       "description": "Each library has its own track list. You can create more, open them, choose the primary one, export or delete them."

@@ -17,18 +17,20 @@ afterEach(() => {
 });
 
 describe('SettingsView', () => {
-  it('splits settings between general and library', () => {
+  it('opens on the library, then general and appearance', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
+      'Libreria',
       'Generale',
       'Aspetto',
-      'Libreria',
     ]);
   });
 
-  it('groups general application settings under the first tab', () => {
+  it('groups general application settings under their tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
+
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
 
@@ -38,7 +40,7 @@ describe('SettingsView', () => {
   it('groups appearance settings with application and audio player dividers', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
 
     expect(wrapper.findAll('.settings_view_divider').map((divider) => divider.text())).toEqual([
       'Applicazione',
@@ -56,22 +58,17 @@ describe('SettingsView', () => {
   it('does not show rename in the library tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
-
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).not.toContain(
       'Nome della libreria',
     );
     expect(wrapper.find('.library_name_form').exists()).toBe(false);
   });
 
-  it('shows the library list in the library tab', async () => {
+  it('shows the library list in the library tab, which comes first', () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
-
-    // Creating one comes first: the list below acts on what is already there.
+    // Creating one sits in the same section as the list it feeds.
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
-      'Nuova libreria',
       'Import / Export',
       'Librerie',
     ]);
@@ -96,16 +93,16 @@ describe('SettingsView', () => {
 
     expect(wrapper.get('.settings_view_title').text()).toBe('Settings');
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
+      'Library',
       'General',
       'Appearance',
-      'Library',
     ]);
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
-      'Language',
-      'Default audio player',
+      'Import / Export',
+      'Libraries',
     ]);
 
-    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
 
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
       'Text size',

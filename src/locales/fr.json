@@ -123,10 +123,6 @@
         "summary": "{total} morceaux lus : {added} ajoutés, {updated} mis à jour, {skipped} ignorés, {missing} fichiers manquants."
       }
     },
-    "newLibrary": {
-      "title": "Nouvelle bibliothèque",
-      "description": "Créez une bibliothèque vide à remplir avec vos morceaux. Celle en cours reste ouverte."
-    },
     "libraries": {
       "title": "Bibliothèques",
       "description": "Chaque bibliothèque a sa propre liste de morceaux. Vous pouvez en créer d'autres, les ouvrir, choisir la principale, les exporter ou les supprimer."

@@ -512,77 +512,135 @@
         "title": "Ajouter des morceaux et des dossiers",
         "where": "barre du haut de la Bibliothèque, ou en déposant sur la fenêtre.",
         "steps": [
-          "Appuyez sur « Ajouter des morceaux » pour choisir un ou plusieurs fichiers audio.",
-          "Appuyez sur « Ajouter un dossier » pour importer toute la musique d'un dossier, sous-dossiers compris.",
-          "Vous pouvez aussi déposer fichiers ou dossiers directement sur la fenêtre.",
-          "Un résumé indique ensuite ce qui a été ajouté, ce qui était déjà là et ce qui n'a pas pu être importé. Un import sans problème disparaît de lui-même.",
+          "Appuyez sur « Ajouter des morceaux » pour choisir un ou plusieurs fichiers audio, ou sur « Ajouter un dossier » pour importer toute la musique d’un dossier et de ses sous-dossiers.",
+          "Vous pouvez aussi déposer des fichiers ou des dossiers sur la fenêtre : la bibliothèque s’éclaire pour dire qu’elle est prête.",
+          "Formats lus : MP3, FLAC, M4A, OGG et WAV.",
+          "Un même fichier n’entre jamais deux fois : s’il est déjà là, il est compté parmi les ignorés.",
+          "Un récapitulatif indique ensuite ce qui a été ajouté, ce qui était déjà présent et ce qui n’a pas pu être importé ; un import sans souci se referme seul.",
           "Les fichiers restent où ils sont : la bibliothèque ne garde que la liste."
         ]
       },
       "organize": {
-        "title": "Rechercher et trier",
-        "where": "barre du haut et en-têtes de colonnes, dans la vue liste.",
+        "title": "Chercher, filtrer et trier",
+        "where": "barre du haut, en-têtes de colonnes et menu de la bibliothèque.",
         "steps": [
-          "Saisissez du texte dans le champ de recherche pour filtrer par titre, artiste, album, genre ou chemin.",
-          "Cliquez sur un en-tête de colonne pour trier les morceaux.",
-          "Un nouveau clic sur la même colonne inverse l'ordre.",
-          "Les morceaux dépourvus de ce champ tombent toujours en bas de liste."
+          "Écrivez dans le champ de recherche pour filtrer par titre, artiste, album, genre ou chemin.",
+          "Cliquez sur un en-tête de colonne pour trier ; un second clic sur la même colonne inverse l’ordre.",
+          "Dans les vues en aperçu, sans en-têtes, utilisez le sélecteur de tri à côté du commutateur de vue.",
+          "Les morceaux sans cette donnée restent toujours en bas, dans les deux sens.",
+          "« Données manquantes », dans le menu de la bibliothèque, ne laisse que les morceaux sans pochette, artiste, album, année ou genre.",
+          "Le compteur à côté des onglets dit combien d’éléments contient l’onglet ouvert."
         ]
       },
       "views": {
-        "title": "Changer de vue",
-        "where": "les deux icônes à droite de la barre Bibliothèque.",
+        "title": "Vues, onglets et liens",
+        "where": "les deux icônes à droite de la barre, et les onglets en dessous.",
         "steps": [
-          "L'icône liste affiche le tableau avec toutes les colonnes.",
-          "L'icône grille affiche les aperçus des pochettes.",
-          "La vue choisie est retenue pour la prochaine ouverture de l'application."
+          "L’icône en lignes montre les colonnes, celle en grille montre les pochettes ; le choix est retenu.",
+          "Les onglets Morceaux, Artistes, Albums et Genres rassemblent la même bibliothèque de quatre façons.",
+          "Un clic sur un artiste, un album ou un genre ouvre la fenêtre des morceaux liés.",
+          "De là vous pouvez descendre encore : d’un album vers son artiste, d’un artiste vers ses albums, d’un genre vers ses artistes.",
+          "Le bouton en haut à gauche de cette fenêtre revient en arrière et nomme l’endroit où il mène.",
+          "Les colonnes affichées et leur ordre se règlent depuis « Colonnes », dans le menu de la bibliothèque."
         ]
       },
       "metadata": {
         "title": "Modifier les métadonnées",
-        "where": "menu à trois points sur la ligne ou la carte du morceau, ou clic droit sur la ligne.",
+        "where": "menu à trois points sur la ligne ou sur la carte, ou clic droit sur la ligne.",
         "steps": [
           "Ouvrez le menu à trois points, ou faites un clic droit sur la ligne, et choisissez Modifier.",
-          "Modifiez nom, artiste, album, année et genre ; le genre peut être choisi ou saisi.",
-          "Utilisez « Choisir une image… » pour remplacer la pochette (PNG ou JPEG, jusqu'à 5 Mo).",
+          "Changez le titre, l’artiste, l’album, l’année et le genre ; le genre se choisit parmi ceux déjà présents ou s’écrit.",
+          "Avec « Choisir une image… » vous remplacez la pochette (PNG ou JPEG, jusqu’à 5 Mo).",
           "Appuyez sur « Enregistrer » : les modifications sont écrites dans les tags du fichier, pas seulement dans la bibliothèque.",
-          "Laisser un champ vide retire cette valeur du fichier."
+          "Laisser un champ vide retire la donnée du fichier.",
+          "En sélectionnant plusieurs morceaux avec Ctrl ou Maj, « Modifier la sélection » écrit la même valeur sur tous."
+        ]
+      },
+      "files": {
+        "title": "Agir sur les fichiers",
+        "where": "menu de la bibliothèque et menu à trois points de la ligne.",
+        "steps": [
+          "À l’ouverture, l’application relit les fichiers : les tags modifiés ailleurs arrivent d’eux-mêmes, et les fichiers disparus sont signalés par un bandeau et une icône sur la ligne.",
+          "« Vérifier les fichiers », dans le menu de la bibliothèque, refait le contrôle à la demande et dit combien manquent.",
+          "« Trouver les doublons » liste les morceaux présents dans plusieurs fichiers, reconnus par le titre avec son artiste ou par le nom du fichier.",
+          "De là vous pouvez retirer la copie en trop : elle quitte la bibliothèque, le fichier reste sur le disque.",
+          "« Supprimer », dans le menu de la ligne, retire le morceau de la liste sans rien effacer du disque.",
+          "Un morceau dont le fichier a disparu ne peut être ni modifié ni lu, mais reste listé jusqu’à ce que vous le retiriez."
         ]
       },
       "player": {
-        "title": "Écouter un morceau",
-        "where": "double-cliquez sur une ligne ou une carte ; le lecteur apparaît en bas.",
+        "title": "Écouter la musique",
+        "where": "double-clic sur une ligne ou une carte ; le lecteur apparaît en bas.",
         "steps": [
-          "Double-cliquez sur le morceau à écouter : la liste à l'écran devient la file de lecture.",
-          "Le lecteur apparaît en bas de la fenêtre avec pochette, titre et artiste.",
-          "Utilisez les contrôles pour mettre en pause, arrêter ou passer au morceau précédent et suivant.",
-          "Faites glisser la barre de progression pour vous déplacer dans le morceau, et celle de droite pour le volume.",
-          "La flèche l'agrandit en pleine page ; Échap ou la flèche vers le bas ramène la barre.",
-          "La croix ferme le lecteur."
+          "Double-cliquez le morceau à écouter : la liste affichée devient la file de lecture.",
+          "Le lecteur en bas porte la pochette, le titre, l’artiste, l’avancement, le volume et la coupure du son.",
+          "La lecture aléatoire et la répétition changent la façon dont la file avance.",
+          "La flèche en haut à droite du lecteur ouvre la vue plein écran, la croix arrête la lecture.",
+          "En plein écran, l’artiste, l’album et le genre sont des liens : ils ouvrent les morceaux liés, d’où un autre peut être lancé.",
+          "Les réglages permettent de laisser le lecteur à l’écran, réduit, même après la fermeture du morceau."
+        ]
+      },
+      "dock": {
+        "title": "Lecteur flottant",
+        "where": "apparaît quand l’app passe dans la zone de notification pendant la lecture.",
+        "steps": [
+          "Le bouton au trait bas, dans la barre de titre, envoie l’app dans la zone de notification : la lecture continue.",
+          "S’il y a un morceau en cours, le lecteur flottant apparaît : une petite fenêtre avec pochette, titre et commandes.",
+          "Il se déplace en le faisant glisser depuis n’importe quel endroit libre.",
+          "Son menu le fait passer de l’horizontale à la verticale et décide s’il reste au premier plan.",
+          "Le bouton d’agrandissement ramène l’application à l’écran et ferme le lecteur flottant.",
+          "À sa fermeture, il demande s’il faut quitter l’application ou la laisser dans la zone de notification : la réponse peut être retenue."
         ]
       },
       "libraries": {
-        "title": "Utiliser plusieurs bibliothèques",
-        "where": "menu à côté du nom de la bibliothèque sur la page d'accueil, et onglet Bibliothèque dans les paramètres.",
+        "title": "Plusieurs bibliothèques",
+        "where": "icône aux deux flèches près du nom, et Réglages → Bibliothèque.",
         "steps": [
-          "Dans les paramètres, onglet Bibliothèque, saisissez un nom et appuyez sur Créer pour ajouter une bibliothèque.",
-          "Depuis le menu à côté du nom sur la page d'accueil, choisissez la bibliothèque à ouvrir : la coche indique celle en cours d'utilisation.",
-          "Exporter enregistre une copie de la bibliothèque dans un fichier JSON de votre choix.",
-          "Supprimer la bibliothèque la retire de la liste ; les fichiers audio restent sur le disque.",
-          "La dernière bibliothèque ne peut pas être supprimée : il y en a toujours une d'ouverte."
+          "Chaque bibliothèque a sa propre liste : une pour la musique de tous les jours, une pour le travail, et ainsi de suite.",
+          "L’icône aux deux flèches près du nom ouvre le changement rapide de bibliothèque.",
+          "Dans Réglages → Bibliothèque, une nouvelle bibliothèque se crée depuis le champ en haut de la section.",
+          "Sélectionnez une bibliothèque dans la liste pour activer les commandes au-dessus : exporter, renommer et définir comme principale.",
+          "La bibliothèque principale est celle qui s’ouvre au démarrage ; « Ouvrir » et « Supprimer » restent sur la ligne de chacune.",
+          "Supprimer une bibliothèque n’enlève que sa liste : les fichiers audio ne sont pas touchés."
+        ]
+      },
+      "transfer": {
+        "title": "Importer et exporter",
+        "where": "menu de la bibliothèque et Réglages → Bibliothèque.",
+        "steps": [
+          "« Exporter la bibliothèque » enregistre un fichier avec la liste des morceaux et leurs données, pochettes comprises.",
+          "L’import d’une bibliothèque demande comment la fusionner : remplacer celle qui est ouverte, n’ajouter que les nouveaux morceaux, ou mettre aussi à jour ceux déjà présents.",
+          "Un récapitulatif dit ensuite combien de morceaux sont entrés, combien ont été mis à jour, combien ignorés et quels fichiers restent introuvables.",
+          "« Exporter la liste » enregistre plutôt un fichier texte ou CSV avec les champs choisis : à lire ailleurs.",
+          "Une liste exportée ne contient aucun audio : elle renvoie toujours à l’endroit où les fichiers se trouvent sur le disque."
+        ]
+      },
+      "appearance": {
+        "title": "Apparence",
+        "where": "Réglages → Apparence.",
+        "steps": [
+          "Taille du texte : quatre paliers, de très petit à grand, qui mettent toute l’interface à l’échelle.",
+          "Thème : clair, sombre, ou celui du système.",
+          "Couleur d’accent : la couleur des commandes, de la sélection et du fond dégradé.",
+          "Fond et effet verre : active le dégradé construit sur l’accent, choisit sa forme et son origine, et rend les surfaces translucides. Il peut aussi être porté sur les fenêtres de détail.",
+          "Fond depuis la pochette : le lecteur prend la couleur de la pochette du morceau ; transparence, intensité, flou, forme et origine sont réglables.",
+          "Chaque choix s’applique aussitôt et est retenu pour la fois suivante."
         ]
       },
       "settings": {
-        "title": "Personnaliser l'application",
-        "where": "icône d'engrenage en haut à droite.",
+        "title": "Démarrage, fenêtre et général",
+        "where": "Réglages → Général, et barre de titre.",
         "steps": [
-          "Sous l'onglet « Général », choisissez la langue de l'interface.",
-          "Sous l'onglet « Apparence », choisissez la taille du texte, le thème clair ou sombre et le rendu du lecteur.",
-          "Le thème « Système » suit le réglage de Windows.",
-          "Chaque choix s'applique aussitôt et est mémorisé."
+          "Langue : italien, anglais, français, espagnol et allemand, avec effet immédiat.",
+          "Démarrage et fenêtre : lancer l’app avec le système, démarrer réduite dans la zone de notification, et y rester à la fermeture au lieu de quitter.",
+          "Depuis la zone de notification, un clic rouvre la fenêtre, un clic droit propose d’arrêter la lecture ou de quitter.",
+          "Lecteur : laisser le lecteur ouvert après la fermeture du morceau, et régler le lecteur flottant — apparition, premier plan, disposition et effet de sa fermeture.",
+          "Lecteur audio par défaut : ouvre les réglages de Windows pour associer les fichiers audio à cette application.",
+          "Le bouton « i » de la barre de titre ouvre les informations : version, site, projet sur GitHub, notes de version et versions publiées."
         ]
       }
-    }
+    },
+    "index": "Sommaire"
   },
   "tray": {
     "show": "Ouvrir Media Audio Lib",

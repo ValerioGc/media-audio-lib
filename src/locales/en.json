@@ -512,77 +512,135 @@
         "title": "Adding tracks and folders",
         "where": "top bar of the Library, or by dropping onto the window.",
         "steps": [
-          "Press \"Add tracks\" to pick one or more audio files.",
-          "Press \"Add folder\" to import all the music inside a folder, subfolders included.",
-          "You can also drop files or folders straight onto the window.",
-          "A summary then lists what was added, what was already there and what could not be imported. A clean import dismisses itself.",
-          "Files stay where they are: the library only keeps the list."
+          "Press \"Add tracks\" to choose one or more audio files, or \"Add folder\" to import all the music in a folder and its subfolders.",
+          "You can also drop files or folders onto the window: the library lights up to say it is ready for them.",
+          "Formats read: MP3, FLAC, M4A, OGG and WAV.",
+          "The same file never enters twice: one already in the library is counted among the skipped ones.",
+          "A summary then says what was added, what was already there and what could not be imported; a clean import closes itself.",
+          "The files stay where they are: the library only keeps the list."
         ]
       },
       "organize": {
-        "title": "Searching and sorting",
-        "where": "top bar and column headers, in the list view.",
+        "title": "Searching, filtering and sorting",
+        "where": "top bar, column headers and library menu.",
         "steps": [
-          "Type in the search box to filter by title, artist, album, genre or path.",
-          "Click a column header to sort the tracks.",
-          "Clicking the same column again reverses the order.",
-          "Tracks missing that field always sink to the bottom."
+          "Type in the search field to filter by title, artist, album, genre or path.",
+          "Click a column header to sort; a second click on the same column turns the order around.",
+          "In the preview views, which have no headers, use the sort control beside the view switch.",
+          "Tracks without that field always sink to the bottom, in both directions.",
+          "\"Missing data\", in the library menu, leaves on screen only the tracks without a cover, an artist, an album, a year or a genre.",
+          "The count beside the tabs says how many items the open tab holds."
         ]
       },
       "views": {
-        "title": "Switching view",
-        "where": "the two icons on the right of the Library bar.",
+        "title": "Views, tabs and connections",
+        "where": "the two icons on the right of the bar, and the tabs under it.",
         "steps": [
-          "The list icon shows the table with every column.",
-          "The grid icon shows the cover previews.",
-          "The chosen view is remembered next time you open the app."
+          "The list icon shows the columns, the grid icon shows the covers; the choice is remembered.",
+          "The Tracks, Artists, Albums and Genres tabs gather the same library in four ways.",
+          "A click on an artist, an album or a genre opens the window of the tracks connected to it.",
+          "From there you can go further down: from an album to its artist, from an artist to their albums, from a genre to its artists.",
+          "The button at the top left of that window goes back, and names where it lands.",
+          "Which columns the list shows, and in which order, is set from \"Columns\" in the library menu."
         ]
       },
       "metadata": {
-        "title": "Editing metadata",
-        "where": "three dots menu on the track row or card, or right click the row.",
+        "title": "Editing the metadata",
+        "where": "the three dots menu on the row or on the card, or a right click on the row.",
         "steps": [
           "Open the three dots menu, or right click the row, and choose Edit.",
-          "Edit name, artist, album, year and genre; the genre can be picked or typed.",
-          "Use \"Choose image…\" to replace the cover (PNG or JPEG, up to 5 MB).",
-          "Press \"Save\": the changes are written into the file tags, not just the library.",
-          "Leaving a field empty removes that value from the file."
+          "Change title, artist, album, year and genre; the genre can be picked among the ones already in the library or typed.",
+          "With \"Choose image…\" you replace the cover (PNG or JPEG, up to 5 MB).",
+          "Press \"Save\": the changes are written into the tags of the file, not only into the library.",
+          "Leaving a field empty removes that value from the file.",
+          "Selecting several tracks with Ctrl or Shift brings up \"Edit selected\": it writes the same value on all of them."
+        ]
+      },
+      "files": {
+        "title": "Working on the files",
+        "where": "library menu and the three dots menu on the row.",
+        "steps": [
+          "Opening a library reads the files again: tags edited by another program arrive on their own, and files that left their place are reported with a banner and an icon on the row.",
+          "\"Check files\", in the library menu, runs the check on request and says how many are missing.",
+          "\"Find duplicates\" lists the tracks held in more than one file, matched by title with its artist or by file name.",
+          "From there you can remove the copy too many: it leaves the library, the file stays on disk.",
+          "\"Delete\", in the row menu, takes the track out of the list without deleting anything from the disk.",
+          "A track whose file is gone can be neither edited nor played, but stays listed until you remove it."
         ]
       },
       "player": {
-        "title": "Playing a track",
+        "title": "Listening to the music",
         "where": "double click a row or a card; the player appears at the bottom.",
         "steps": [
-          "Double click the track you want to hear: the list on screen becomes the play queue.",
-          "The player appears at the bottom of the window with cover, title and artist.",
-          "Use the controls to pause, stop or move to the previous and next track.",
-          "Drag the progress bar to move inside the track, and the one on the right for volume.",
-          "The arrow expands it to full page; Esc or the down arrow brings back the bar.",
-          "The X closes the player."
+          "Double click the track to listen to: the list you are looking at becomes the queue.",
+          "The player at the bottom carries cover, title, artist, progress, volume and mute.",
+          "Shuffle and repeat one change the way the queue moves on.",
+          "The arrow at the top right of the player opens the full view, the X closes the playback.",
+          "In the full view artist, album and genre are links: they open the connected tracks, and from there another one can be started.",
+          "The settings can leave the player on screen, minimized, even after the track is closed."
+        ]
+      },
+      "dock": {
+        "title": "Floating player",
+        "where": "appears when the app goes to the system tray while something is playing.",
+        "steps": [
+          "The low dash button, in the title bar, sends the app to the system tray: the playback carries on.",
+          "With a track playing, the floating player appears: a small window with cover, title and controls.",
+          "It is moved by dragging it from any free spot.",
+          "Its menu turns it between horizontal and vertical, and decides whether it stays above other windows.",
+          "The expand button brings the application back on screen and closes the floating player.",
+          "Closing it asks whether to quit the application or leave it in the system tray: the answer can be remembered."
         ]
       },
       "libraries": {
-        "title": "Using several libraries",
-        "where": "menu next to the library name on the homepage, and the Library tab in settings.",
+        "title": "More than one library",
+        "where": "the two arrows icon beside the name, and Settings → Library.",
         "steps": [
-          "In settings, Library tab, type a name and press Create to add a library.",
-          "From the menu next to the name on the homepage pick which library to open: the tick marks the one in use.",
-          "Export saves a copy of the library to a JSON file you choose.",
-          "Delete library removes it from the list; the audio files stay on disk.",
-          "The last library cannot be deleted: one is always open."
+          "Each library has its own list of tracks: one for everyday music, one for work, and so on.",
+          "The two arrows icon beside the name opens the quick switch between libraries.",
+          "In Settings → Library a new library is created from the field at the top of the section.",
+          "Pick a library from the list to arm the commands above it: export, rename and set as main.",
+          "The main library is the one that opens at startup; \"Open\" and \"Delete\" stay on the row of each.",
+          "Deleting a library removes only its list: the audio files are left untouched."
+        ]
+      },
+      "transfer": {
+        "title": "Importing and exporting",
+        "where": "library menu and Settings → Library.",
+        "steps": [
+          "\"Export library\" saves a file with the list of tracks and their data, covers included.",
+          "Importing a library asks how to merge it: replace the open one, add only the new tracks, or update the ones already there as well.",
+          "A summary then says how many tracks entered, how many were updated, how many skipped and which files could not be found.",
+          "\"Export list\" saves instead a text or CSV file with the fields you choose: it is meant to be read elsewhere.",
+          "An exported list holds no audio: it always refers to where the files are on disk."
+        ]
+      },
+      "appearance": {
+        "title": "Appearance",
+        "where": "Settings → Appearance.",
+        "steps": [
+          "Text size: four steps, from very small to large, scaling the whole interface.",
+          "Theme: light, dark, or the one of the system.",
+          "Accent colour: the colour of the controls, of the selection and of the gradient background.",
+          "Background and glass: turns on the gradient built from the accent, picks its shape and its origin, and makes the surfaces translucent. It can be carried onto the detail windows too.",
+          "Cover background: the player takes its colour from the cover of the track; transparency, intensity, blur, shape and origin are all adjustable.",
+          "Every choice applies at once and is remembered for the next time."
         ]
       },
       "settings": {
-        "title": "Personalising the app",
-        "where": "gear icon in the top right corner.",
+        "title": "Startup, window and general",
+        "where": "Settings → General, and the title bar.",
         "steps": [
-          "Under the \"General\" tab choose the interface language.",
-          "Under the \"Appearance\" tab choose text size, light or dark theme and player rendering.",
-          "The \"System\" theme follows the Windows setting.",
-          "Every choice applies straight away and is remembered."
+          "Language: Italian, English, French, Spanish and German, applied immediately.",
+          "Startup and window: start the app with the system, start minimized in the system tray, and stay there on close instead of quitting.",
+          "From the tray a click reopens the window, a right click offers to stop the playback or to quit.",
+          "Player: leave the player open after the track is closed, and set the floating player — when it appears, whether it stays on top, its layout and what closing it does.",
+          "Default audio player: opens the Windows settings to associate audio files with this app.",
+          "The \"i\" button in the title bar opens the about window: version, website, project on GitHub, release notes and published releases."
         ]
       }
-    }
+    },
+    "index": "Index"
   },
   "tray": {
     "show": "Open Media Audio Lib",

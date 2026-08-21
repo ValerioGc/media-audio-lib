@@ -17,18 +17,35 @@ function mountHelp() {
 }
 
 describe('HelpView', () => {
-  it('documents every planned feature', () => {
+  it('indexes every topic of the guide, and opens the first one', () => {
     const wrapper = mountHelp();
 
-    const topics = wrapper.findAll('.help_topic').map((card) => card.attributes('data-topic'));
+    const entries = wrapper
+      .findAll('.help_view_index_entry')
+      .map((entry) => entry.attributes('data-testid'));
 
-    expect(topics).toEqual([...HELP_TOPICS]);
+    expect(entries).toEqual(HELP_TOPICS.map((topic) => `help-index-${topic}`));
+    // One topic at a time: the guide is long, and the index says what else is in it.
+    expect(wrapper.findAll('.help_topic')).toHaveLength(1);
+    expect(wrapper.get('.help_topic').attributes('data-topic')).toBe(HELP_TOPICS[0]);
   });
 
-  it('states where each item is and how to use it', () => {
+  it('changes the page from the index', async () => {
     const wrapper = mountHelp();
 
-    for (const card of wrapper.findAll('.help_topic')) {
+    await wrapper.get('[data-testid="help-index-dock"]').trigger('click');
+
+    expect(wrapper.get('.help_topic').attributes('data-topic')).toBe('dock');
+    expect(wrapper.get('[data-testid="help-index-dock"]').attributes('aria-current')).toBe('true');
+  });
+
+  it('states where each topic is and how to use it', async () => {
+    const wrapper = mountHelp();
+
+    for (const topic of HELP_TOPICS) {
+      await wrapper.get(`[data-testid="help-index-${topic}"]`).trigger('click');
+      const card = wrapper.get('.help_topic');
+
       expect(card.get('.help_topic_title').text().length).toBeGreaterThan(0);
       expect(card.get('.help_topic_where').text()).toContain('Dove:');
       expect(card.findAll('.help_topic_steps li').length).toBeGreaterThan(0);

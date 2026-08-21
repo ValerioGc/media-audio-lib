@@ -512,77 +512,135 @@
         "title": "Añadir pistas y carpetas",
         "where": "barra superior de la Biblioteca, o soltando sobre la ventana.",
         "steps": [
-          "Pulsa «Añadir pistas» para elegir uno o varios archivos de audio.",
-          "Pulsa «Añadir carpeta» para importar toda la música de una carpeta, subcarpetas incluidas.",
-          "También puedes soltar archivos o carpetas directamente sobre la ventana.",
-          "Después, un resumen indica qué se ha añadido, qué ya estaba y qué no se ha podido importar. Una importación sin incidencias se descarta sola.",
+          "Pulsa «Añadir pistas» para elegir uno o varios archivos de audio, o «Añadir carpeta» para importar toda la música de una carpeta y sus subcarpetas.",
+          "También puedes soltar archivos o carpetas en la ventana: la biblioteca se ilumina para indicar que está lista.",
+          "Formatos que lee: MP3, FLAC, M4A, OGG y WAV.",
+          "El mismo archivo nunca entra dos veces: si ya está, se cuenta entre los omitidos.",
+          "Al final un resumen dice qué se ha añadido, qué ya estaba y qué no se ha podido importar; una importación limpia se cierra sola.",
           "Los archivos se quedan donde están: la biblioteca solo guarda la lista."
         ]
       },
       "organize": {
-        "title": "Buscar y ordenar",
-        "where": "barra superior y encabezados de columna, en la vista de lista.",
+        "title": "Buscar, filtrar y ordenar",
+        "where": "barra superior, cabeceras de columna y menú de la biblioteca.",
         "steps": [
           "Escribe en el campo de búsqueda para filtrar por título, artista, álbum, género o ruta.",
-          "Haz clic en un encabezado de columna para ordenar las pistas.",
-          "Volver a hacer clic en la misma columna invierte el orden.",
-          "Las pistas sin ese campo caen siempre al final de la lista."
+          "Haz clic en una cabecera para ordenar; un segundo clic en la misma columna invierte el orden.",
+          "En las vistas de vista previa, sin cabeceras, usa el selector de orden junto al conmutador de vista.",
+          "Las pistas sin ese dato quedan siempre al final, en ambos sentidos.",
+          "«Datos faltantes», en el menú de la biblioteca, deja en pantalla solo las pistas sin carátula, artista, álbum, año o género.",
+          "El recuento junto a las pestañas dice cuántos elementos tiene la pestaña abierta."
         ]
       },
       "views": {
-        "title": "Cambiar de vista",
-        "where": "los dos iconos a la derecha de la barra de la Biblioteca.",
+        "title": "Vistas, pestañas y enlaces",
+        "where": "los dos iconos a la derecha de la barra, y las pestañas debajo.",
         "steps": [
-          "El icono de lista muestra la tabla con todas las columnas.",
-          "El icono de cuadrícula muestra las vistas previas de las carátulas.",
-          "La vista elegida se recuerda la próxima vez que abras la aplicación."
+          "El icono de líneas muestra las columnas, el de cuadrícula las carátulas; la elección se recuerda.",
+          "Las pestañas Pistas, Artistas, Álbumes y Géneros agrupan la misma biblioteca de cuatro formas.",
+          "Un clic en un artista, un álbum o un género abre la ventana de las pistas conectadas.",
+          "Desde ahí puedes bajar más: del álbum a su artista, del artista a sus álbumes, del género a sus artistas.",
+          "El botón arriba a la izquierda de esa ventana vuelve atrás y dice adónde lleva.",
+          "Qué columnas muestra la lista, y en qué orden, se ajusta en «Columnas», en el menú de la biblioteca."
         ]
       },
       "metadata": {
         "title": "Editar los metadatos",
-        "where": "menú de tres puntos en la fila o la tarjeta de la pista, o clic derecho en la fila.",
+        "where": "menú de tres puntos en la fila o en la tarjeta, o clic derecho en la fila.",
         "steps": [
           "Abre el menú de tres puntos, o haz clic derecho en la fila, y elige Editar.",
-          "Edita nombre, artista, álbum, año y género; el género se puede elegir o escribir.",
-          "Usa «Elegir imagen…» para reemplazar la carátula (PNG o JPEG, hasta 5 MB).",
+          "Cambia título, artista, álbum, año y género; el género se elige entre los ya presentes o se escribe.",
+          "Con «Elegir imagen…» sustituyes la carátula (PNG o JPEG, hasta 5 MB).",
           "Pulsa «Guardar»: los cambios se escriben en las etiquetas del archivo, no solo en la biblioteca.",
-          "Dejar un campo vacío quita ese valor del archivo."
+          "Dejar un campo vacío elimina ese dato del archivo.",
+          "Al seleccionar varias pistas con Ctrl o Mayús aparece «Editar seleccionadas»: escribe el mismo valor en todas."
+        ]
+      },
+      "files": {
+        "title": "Trabajar con los archivos",
+        "where": "menú de la biblioteca y menú de tres puntos de la fila.",
+        "steps": [
+          "Al abrir la biblioteca la app relee los archivos: las etiquetas editadas fuera llegan solas, y los archivos que ya no están se avisan con un aviso y un icono en la fila.",
+          "«Verificar archivos», en el menú de la biblioteca, repite la comprobación cuando lo pidas y dice cuántos faltan.",
+          "«Buscar duplicados» lista las pistas presentes en varios archivos, reconocidas por el título con su artista o por el nombre del archivo.",
+          "Desde ahí puedes quitar la copia sobrante: sale de la biblioteca, el archivo permanece en el disco.",
+          "«Eliminar», en el menú de la fila, saca la pista de la lista sin borrar nada del disco.",
+          "Una pista cuyo archivo ya no existe no se puede editar ni reproducir, pero sigue en la lista hasta que la quites."
         ]
       },
       "player": {
-        "title": "Escuchar una pista",
+        "title": "Escuchar la música",
         "where": "doble clic en una fila o una tarjeta; el reproductor aparece abajo.",
         "steps": [
-          "Haz doble clic en la pista que quieras escuchar: la lista en pantalla se convierte en la cola de reproducción.",
-          "El reproductor aparece en la parte inferior de la ventana con carátula, título y artista.",
-          "Usa los controles para pausar, detener o pasar a la pista anterior y siguiente.",
-          "Arrastra la barra de progreso para moverte dentro de la pista, y la de la derecha para el volumen.",
-          "La flecha lo amplía a pantalla completa; Esc o la flecha hacia abajo devuelve la barra.",
-          "La X cierra el reproductor."
+          "Haz doble clic en la pista que quieras oír: la lista que estás viendo se convierte en la cola.",
+          "El reproductor de abajo lleva carátula, título, artista, avance, volumen y silencio.",
+          "La reproducción aleatoria y la repetición cambian cómo avanza la cola.",
+          "La flecha arriba a la derecha del reproductor abre la vista a pantalla completa, la X cierra la reproducción.",
+          "En pantalla completa, artista, álbum y género son enlaces: abren las pistas conectadas, y desde ahí se puede lanzar otra.",
+          "Los ajustes permiten dejar el reproductor en pantalla, minimizado, incluso tras cerrar la pista."
+        ]
+      },
+      "dock": {
+        "title": "Reproductor flotante",
+        "where": "aparece al minimizar la app en la bandeja del sistema mientras suena algo.",
+        "steps": [
+          "El botón con el guion bajo, en la barra de título, envía la app a la bandeja del sistema: la reproducción continúa.",
+          "Si hay una pista sonando aparece el reproductor flotante: una ventanita con carátula, título y mandos.",
+          "Se mueve arrastrándolo desde cualquier punto libre.",
+          "Su menú lo cambia entre horizontal y vertical y decide si se mantiene en primer plano.",
+          "El botón de expandir devuelve la aplicación a la pantalla y cierra el reproductor flotante.",
+          "Al cerrarlo se pregunta si salir de la aplicación o dejarla en la bandeja: la respuesta se puede recordar."
         ]
       },
       "libraries": {
-        "title": "Usar varias bibliotecas",
-        "where": "menú junto al nombre de la biblioteca en la página de inicio, y pestaña Biblioteca en los ajustes.",
+        "title": "Varias bibliotecas",
+        "where": "icono de las dos flechas junto al nombre, y Ajustes → Biblioteca.",
         "steps": [
-          "En los ajustes, pestaña Biblioteca, escribe un nombre y pulsa Crear para añadir una biblioteca.",
-          "Desde el menú junto al nombre en la página de inicio, elige qué biblioteca abrir: la marca señala la que está en uso.",
-          "Exportar guarda una copia de la biblioteca en un archivo JSON que elijas.",
-          "Eliminar la biblioteca la quita de la lista; los archivos de audio permanecen en el disco.",
-          "La última biblioteca no puede eliminarse: siempre hay una abierta."
+          "Cada biblioteca tiene su propia lista de pistas: una para la música diaria, otra para el trabajo, y así.",
+          "El icono de las dos flechas junto al nombre abre el cambio rápido de biblioteca.",
+          "En Ajustes → Biblioteca se crea una nueva desde el campo en lo alto de la sección.",
+          "Selecciona una biblioteca de la lista para activar los mandos de arriba: exportar, renombrar y marcar como principal.",
+          "La biblioteca principal es la que se abre al arrancar; «Abrir» y «Eliminar» siguen en la fila de cada una.",
+          "Eliminar una biblioteca quita solo su lista: los archivos de audio no se tocan."
+        ]
+      },
+      "transfer": {
+        "title": "Importar y exportar",
+        "where": "menú de la biblioteca y Ajustes → Biblioteca.",
+        "steps": [
+          "«Exportar biblioteca» guarda un archivo con la lista de pistas y sus datos, carátulas incluidas.",
+          "Importar una biblioteca pregunta cómo unirla: sustituir la abierta, añadir solo las pistas nuevas, o actualizar también las que ya están.",
+          "Al final un resumen dice cuántas pistas entraron, cuántas se actualizaron, cuántas se omitieron y qué archivos no se encontraron.",
+          "«Exportar lista» guarda en cambio un archivo de texto o CSV con los campos que elijas: para leerlo en otro sitio.",
+          "Una lista exportada no contiene audio: siempre remite a dónde están los archivos en el disco."
+        ]
+      },
+      "appearance": {
+        "title": "Aspecto",
+        "where": "Ajustes → Aspecto.",
+        "steps": [
+          "Tamaño del texto: cuatro pasos, de muy pequeño a grande, que escalan toda la interfaz.",
+          "Tema: claro, oscuro o el del sistema.",
+          "Color de acento: el color de los mandos, de la selección y del fondo degradado.",
+          "Fondo y efecto cristal: activa el degradado construido sobre el acento, elige su forma y su origen, y vuelve translúcidas las superficies. También puede llevarse a las ventanas de detalle.",
+          "Fondo desde la carátula: el reproductor toma el color de la carátula; transparencia, intensidad, desenfoque, forma y origen son ajustables.",
+          "Cada elección se aplica al momento y se recuerda para la próxima vez."
         ]
       },
       "settings": {
-        "title": "Personalizar la aplicación",
-        "where": "icono de engranaje en la esquina superior derecha.",
+        "title": "Inicio, ventana y generales",
+        "where": "Ajustes → General, y barra de título.",
         "steps": [
-          "En la pestaña «General» elige el idioma de la interfaz.",
-          "En la pestaña «Aspecto» elige el tamaño del texto, el tema claro u oscuro y el aspecto del reproductor.",
-          "El tema «Sistema» sigue la configuración de Windows.",
-          "Cada elección se aplica al momento y se recuerda."
+          "Idioma: italiano, inglés, francés, español y alemán, con efecto inmediato.",
+          "Inicio y ventana: arrancar la app con el sistema, empezar minimizada en la bandeja, y quedarse ahí al cerrar en vez de salir.",
+          "Desde la bandeja, un clic reabre la ventana y el botón derecho ofrece detener la reproducción o salir.",
+          "Reproductor: dejar el reproductor abierto tras cerrar la pista, y ajustar el reproductor flotante — aparición, primer plano, disposición y qué hace al cerrarse.",
+          "Reproductor de audio predeterminado: abre los ajustes de Windows para asociar los archivos de audio a esta app.",
+          "El botón «i» de la barra de título abre la información: versión, sitio, proyecto en GitHub, notas de versión y versiones publicadas."
         ]
       }
-    }
+    },
+    "index": "Índice"
   },
   "tray": {
     "show": "Abrir Media Audio Lib",

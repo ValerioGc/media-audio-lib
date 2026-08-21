@@ -8,18 +8,17 @@ import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
 import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
-import { SORTABLE_COLUMNS, type LibraryContentTab, type SortableColumn } from '@/types/library';
+import { SORTABLE_COLUMNS, type SortableColumn } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     viewMode?: ViewMode | undefined;
     selectedCount?: number | undefined;
     /** The preview has no column headers to sort from: it gets the control instead. */
     showSort?: boolean;
-    tab?: LibraryContentTab;
   }>(),
-  { viewMode: undefined, selectedCount: 0, tab: 'tracks' },
+  { viewMode: undefined, selectedCount: 0 },
 );
 const emit = defineEmits<{
   'update:viewMode': [mode: ViewMode];
@@ -32,27 +31,6 @@ const library = useLibraryStore();
 const searchValue = computed({
   get: () => library.query,
   set: (value: string) => library.setQuery(value),
-});
-
-/**
- * What the open tab is about, counted.
- *
- * A tab answers for its own subject, so it carries that count alone. A genre is the one
- * that gathers the others: beside how many there are, it says what they hold.
- */
-const counts = computed(() => {
-  const entries = {
-    tracks: [{ key: 'track', label: t('library.toolbar.count', library.tracks.length) }],
-    artists: [{ key: 'artist', label: t('library.groups.artistCount', library.artistCount) }],
-    albums: [{ key: 'album', label: t('library.groups.albumCount', library.albumCount) }],
-    genres: [
-      { key: 'genre', label: t('library.groups.genreCount', library.genreCount) },
-      { key: 'artist', label: t('library.groups.artistCount', library.artistCount) },
-      { key: 'album', label: t('library.groups.albumCount', library.albumCount) },
-    ],
-  } as const satisfies Record<LibraryContentTab, readonly { key: string; label: string }[]>;
-
-  return entries[props.tab];
 });
 
 const sortOptions = computed(() =>
@@ -79,26 +57,6 @@ function sortBy(column: string) {
       :label="t('library.toolbar.search')"
       :placeholder="t('library.toolbar.searchPlaceholder')"
     />
-
-    <p class="library_toolbar_counts">
-      <span v-for="count in counts" :key="count.key" :data-testid="`${count.key}-count`">{{
-        count.label
-      }}</span>
-      <span v-if="library.missingCount > 0" class="library_toolbar_missing">
-        {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}
-      </span>
-      <span
-        v-if="library.missingInfoFilter !== 'all'"
-        class="library_toolbar_missing"
-        data-testid="missing-info-active"
-      >
-        {{
-          t('library.toolbar.missingInfo.active', {
-            filter: t(`library.toolbar.missingInfo.options.${library.missingInfoFilter}`),
-          })
-        }}
-      </span>
-    </p>
 
     <AppButton
       v-if="(selectedCount ?? 0) > 1"
@@ -137,21 +95,6 @@ function sortBy(column: string) {
     flex: 1;
     min-width: 12rem;
     max-width: 22rem;
-  }
-
-  &_counts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space_sm;
-    align-items: center;
-    color: var(--color_text_muted);
-    font-size: 0.875em;
-  }
-
-  &_missing {
-    padding: 0 $space_sm;
-    border: 1px solid var(--color_border_strong);
-    border-radius: $radius_sm;
   }
 
   &_sort {

@@ -7,6 +7,7 @@ import AppIcon from '@/components/common/AppIcon.vue';
 import AppModal from '@/components/common/AppModal.vue';
 import DefaultPlayerBanner from '@/components/library/DefaultPlayerBanner.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
+import LibraryCounts from '@/components/library/LibraryCounts.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
 import LibraryAlbumSummary from '@/components/library/LibraryAlbumSummary.vue';
 import LibraryFacetList, {
@@ -400,7 +401,6 @@ async function confirmRemoval() {
         :view-mode="displayedViewMode"
         :selected-count="library.selectedIds.length"
         :show-sort="activeTab === 'tracks' && displayedViewMode === 'preview'"
-        :tab="activeTab"
         @update:view-mode="setDisplayedViewMode"
         @edit-selected="openBulkEditor"
       />
@@ -492,7 +492,11 @@ async function confirmRemoval() {
 
     <LibraryEmptyState v-if="library.isEmpty" variant="empty" />
     <template v-else>
-      <LibraryContentTabs v-model="activeTab" />
+      <!-- The tabs name what is on screen, the counts say how much of it there is. -->
+      <div class="library_view_tabs">
+        <LibraryContentTabs v-model="activeTab" />
+        <LibraryCounts :tab="activeTab" />
+      </div>
 
       <section
         :id="`library-panel-${activeTab}`"
@@ -762,6 +766,16 @@ async function confirmRemoval() {
     @include surface_panel($radius_md, var(--color_surface_alt));
 
     border-color: var(--color_border_strong);
+  }
+
+  // A little air above the line, so the counts do not touch the toolbar over them.
+  &_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space_sm $space_md;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: $space_xs;
   }
 
   &_panel {

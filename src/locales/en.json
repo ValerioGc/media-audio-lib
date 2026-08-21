@@ -35,7 +35,20 @@
     "playerBehaviour": {
       "title": "Player",
       "description": "What stays on screen when you close the playing track.",
-      "keepOpen": "Leave the player open, minimized, when the track is closed"
+      "keepOpen": "Leave the player open, minimized, when the track is closed",
+      "dock": "Show the floating player when the app goes to the system tray",
+      "alwaysOnTop": "Keep the floating player above other windows",
+      "orientation": "Floating player layout",
+      "orientations": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertical"
+      },
+      "closeAction": "When the floating player is closed",
+      "closeActions": {
+        "ask": "Ask every time",
+        "dock": "Close the floating player only",
+        "app": "Close the whole application"
+      }
     },
     "textSize": {
       "title": "Text size",
@@ -464,6 +477,24 @@
     "related": {
       "empty": "No other track connected to this one in the library.",
       "play": "Play {title}"
+    }
+  },
+  "mini": {
+    "idle": "Nothing playing",
+    "expand": "Open the application",
+    "close": "Close the floating player",
+    "menu": {
+      "label": "Floating player options",
+      "horizontal": "Lay out horizontally",
+      "vertical": "Lay out vertically",
+      "alwaysOnTop": "Always on top"
+    },
+    "confirm": {
+      "title": "Close the floating player?",
+      "message": "You can close the player alone and leave the app in the system tray, or quit altogether.",
+      "remember": "Remember this choice",
+      "dockOnly": "Player only",
+      "wholeApp": "Close everything"
     }
   },
   "titlebar": {

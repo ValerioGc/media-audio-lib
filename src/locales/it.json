@@ -35,7 +35,20 @@
     "playerBehaviour": {
       "title": "Player",
       "description": "Cosa resta sullo schermo quando chiudi il brano in riproduzione.",
-      "keepOpen": "Lascia il player aperto, ridotto, quando chiudi il brano"
+      "keepOpen": "Lascia il player aperto, ridotto, quando chiudi il brano",
+      "dock": "Mostra il player flottante quando riduci l’app nella barra di sistema",
+      "alwaysOnTop": "Tieni il player flottante sempre in primo piano",
+      "orientation": "Orientamento del player flottante",
+      "orientations": {
+        "horizontal": "Orizzontale",
+        "vertical": "Verticale"
+      },
+      "closeAction": "Chiudendo il player flottante",
+      "closeActions": {
+        "ask": "Chiedi ogni volta",
+        "dock": "Chiudi solo il player flottante",
+        "app": "Chiudi tutta l’applicazione"
+      }
     },
     "textSize": {
       "title": "Dimensione testo",
@@ -464,6 +477,24 @@
     "related": {
       "empty": "Nessun altro brano collegato in questa libreria.",
       "play": "Riproduci {title}"
+    }
+  },
+  "mini": {
+    "idle": "Nulla in riproduzione",
+    "expand": "Apri l’applicazione",
+    "close": "Chiudi il player flottante",
+    "menu": {
+      "label": "Opzioni del player flottante",
+      "horizontal": "Disponi in orizzontale",
+      "vertical": "Disponi in verticale",
+      "alwaysOnTop": "Sempre in primo piano"
+    },
+    "confirm": {
+      "title": "Chiudere il player flottante?",
+      "message": "Puoi chiudere solo il player e lasciare l’applicazione nella barra di sistema, oppure uscire del tutto.",
+      "remember": "Ricorda la scelta",
+      "dockOnly": "Solo il player",
+      "wholeApp": "Chiudi tutto"
     }
   },
   "titlebar": {

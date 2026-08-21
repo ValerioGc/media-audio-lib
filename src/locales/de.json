@@ -35,7 +35,20 @@
     "playerBehaviour": {
       "title": "Player",
       "description": "Was auf dem Bildschirm bleibt, wenn der laufende Titel geschlossen wird.",
-      "keepOpen": "Player beim Schließen des Titels geöffnet und minimiert lassen"
+      "keepOpen": "Player beim Schließen des Titels geöffnet und minimiert lassen",
+      "dock": "Den schwebenden Player zeigen, wenn die App in den Infobereich geht",
+      "alwaysOnTop": "Den schwebenden Player über anderen Fenstern halten",
+      "orientation": "Anordnung des schwebenden Players",
+      "orientations": {
+        "horizontal": "Waagerecht",
+        "vertical": "Senkrecht"
+      },
+      "closeAction": "Beim Schließen des schwebenden Players",
+      "closeActions": {
+        "ask": "Jedes Mal fragen",
+        "dock": "Nur den schwebenden Player schließen",
+        "app": "Die ganze Anwendung schließen"
+      }
     },
     "textSize": {
       "title": "Textgröße",
@@ -464,6 +477,24 @@
     "related": {
       "empty": "Kein weiterer verbundener Titel in dieser Bibliothek.",
       "play": "{title} abspielen"
+    }
+  },
+  "mini": {
+    "idle": "Nichts in Wiedergabe",
+    "expand": "Anwendung öffnen",
+    "close": "Schwebenden Player schließen",
+    "menu": {
+      "label": "Optionen des schwebenden Players",
+      "horizontal": "Waagerecht anordnen",
+      "vertical": "Senkrecht anordnen",
+      "alwaysOnTop": "Immer im Vordergrund"
+    },
+    "confirm": {
+      "title": "Den schwebenden Player schließen?",
+      "message": "Du kannst nur den Player schließen und die App im Infobereich lassen, oder ganz beenden.",
+      "remember": "Diese Wahl merken",
+      "dockOnly": "Nur den Player",
+      "wholeApp": "Alles schließen"
     }
   },
   "titlebar": {

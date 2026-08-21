@@ -63,6 +63,11 @@ impl CloseToTray {
 
 /// Brings the window back from the tray, wherever it was left.
 pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
+    // The dock stands in for the window: with the window back, it has nothing left to do.
+    if let Some(dock) = app.get_webview_window(MINI_WINDOW) {
+        let _ = dock.close();
+    }
+
     if let Some(window) = app.get_webview_window(MAIN_WINDOW) {
         let _ = window.show();
         let _ = window.unminimize();

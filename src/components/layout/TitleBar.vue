@@ -14,11 +14,29 @@ import {
   toggleMaximizeWindow,
 } from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
+import { openMiniPlayer } from '@/services/shell-integration';
+import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const navigation = useNavigationStore();
+const player = usePlayerStore();
 const settings = useSettingsStore();
+
+/**
+ * Out of sight, but not out of reach: with something playing, the dock takes the place of
+ * the window on screen.
+ */
+async function sendToTray(): Promise<boolean> {
+  if (settings.miniPlayerEnabled && player.isActive) {
+    await openMiniPlayer(
+      settings.miniPlayerOrientation === 'vertical',
+      settings.miniPlayerAlwaysOnTop,
+    );
+  }
+
+  return hideWindow();
+}
 
 const isAboutOpen = ref(false);
 
@@ -35,7 +53,7 @@ const controls = computed<WindowControl[]>(() => [
     id: 'tray',
     icon: 'tray',
     label: t('titlebar.tray'),
-    action: () => hideWindow(),
+    action: () => sendToTray(),
   },
   {
     id: 'minimize',
@@ -53,7 +71,7 @@ const controls = computed<WindowControl[]>(() => [
     id: 'close',
     icon: 'close',
     label: t('titlebar.close'),
-    action: () => (settings.closeToTray ? hideWindow() : closeWindow()),
+    action: () => (settings.closeToTray ? sendToTray() : closeWindow()),
   },
 ]);
 </script>

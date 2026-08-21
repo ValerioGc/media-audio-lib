@@ -35,7 +35,20 @@
     "playerBehaviour": {
       "title": "Reproductor",
       "description": "Qué permanece en pantalla al cerrar la pista en reproducción.",
-      "keepOpen": "Dejar el reproductor abierto, minimizado, al cerrar la pista"
+      "keepOpen": "Dejar el reproductor abierto, minimizado, al cerrar la pista",
+      "dock": "Mostrar el reproductor flotante cuando la app pasa a la bandeja del sistema",
+      "alwaysOnTop": "Mantener el reproductor flotante sobre las demás ventanas",
+      "orientation": "Disposición del reproductor flotante",
+      "orientations": {
+        "horizontal": "Horizontal",
+        "vertical": "Vertical"
+      },
+      "closeAction": "Al cerrar el reproductor flotante",
+      "closeActions": {
+        "ask": "Preguntar cada vez",
+        "dock": "Cerrar solo el reproductor flotante",
+        "app": "Cerrar toda la aplicación"
+      }
     },
     "textSize": {
       "title": "Tamaño del texto",
@@ -464,6 +477,24 @@
     "related": {
       "empty": "Ninguna otra pista conectada en esta biblioteca.",
       "play": "Reproducir {title}"
+    }
+  },
+  "mini": {
+    "idle": "Nada en reproducción",
+    "expand": "Abrir la aplicación",
+    "close": "Cerrar el reproductor flotante",
+    "menu": {
+      "label": "Opciones del reproductor flotante",
+      "horizontal": "Disponer en horizontal",
+      "vertical": "Disponer en vertical",
+      "alwaysOnTop": "Siempre en primer plano"
+    },
+    "confirm": {
+      "title": "¿Cerrar el reproductor flotante?",
+      "message": "Puedes cerrar solo el reproductor y dejar la app en la bandeja del sistema, o salir del todo.",
+      "remember": "Recordar esta elección",
+      "dockOnly": "Solo el reproductor",
+      "wholeApp": "Cerrar todo"
     }
   },
   "titlebar": {

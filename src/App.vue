@@ -5,8 +5,14 @@ import { useI18n } from 'vue-i18n';
 import TitleBar from '@/components/layout/TitleBar.vue';
 import PlayerDock from '@/components/player/PlayerDock.vue';
 import { startupAudioFile } from '@/services/playback-api';
-import { applyTrayMenu, onTrayStopPlayback } from '@/services/shell-integration';
-import { showWindow } from '@/services/window-controls';
+import {
+  onMiniCommand,
+  publishPlayerState,
+  type MiniPlayerCommand,
+} from '@/services/mini-player-bridge';
+import { applyTrayMenu, closeMiniPlayer, onTrayStopPlayback } from '@/services/shell-integration';
+import { useLibraryStore } from '@/stores/library';
+import { quitApp, showWindow } from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
@@ -15,6 +21,7 @@ import LibraryView from '@/views/LibraryView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 
 const { t } = useI18n();
+const library = useLibraryStore();
 const settings = useSettingsStore();
 const navigation = useNavigationStore();
 const player = usePlayerStore();
@@ -28,11 +35,69 @@ async function writeTrayMenu() {
 }
 
 let stopTrayListener: (() => void) | null = null;
+let miniCommandListener: (() => void) | null = null;
+
+/**
+ * What the dock draws, sent over on every change.
+ *
+ * The dock is a separate webview: it cannot reach the audio, which lives here, so it is
+ * told what is playing and asks for the rest.
+ */
+async function publishToDock() {
+  const track = player.currentTrack;
+
+  if (track === null) {
+    await publishPlayerState(null);
+    return;
+  }
+
+  await publishPlayerState({
+    title: track.title,
+    artist: track.artist,
+    cover: await library.loadCover(track),
+    isPlaying: player.isPlaying,
+    hasNext: player.hasNext,
+    hasPrevious: player.hasPrevious,
+  });
+}
+
+async function runDockCommand(command: MiniPlayerCommand) {
+  if (command === 'toggle') {
+    await player.toggle();
+    return;
+  }
+
+  if (command === 'next') {
+    await player.next();
+    return;
+  }
+
+  if (command === 'previous') {
+    await player.previous();
+    return;
+  }
+
+  if (command === 'stop') {
+    player.stop();
+    return;
+  }
+
+  if (command === 'expand') {
+    await closeMiniPlayer();
+    await showWindow();
+    return;
+  }
+
+  await quitApp();
+}
 
 async function initializeApp() {
   await settings.initialize();
   await writeTrayMenu();
   stopTrayListener = await onTrayStopPlayback(() => player.stop());
+  miniCommandListener = await onMiniCommand((command) => {
+    void runDockCommand(command);
+  });
 
   // The system may have started the app out of sight: the window comes back unless the
   // settings ask it to wait in the tray.
@@ -53,9 +118,24 @@ onMounted(initializeApp);
 
 watch([() => settings.locale, () => player.isActive], writeTrayMenu);
 
+// The dock follows the track, the playing state and the queue it can move through.
+watch(
+  [
+    () => player.currentTrack,
+    () => player.isPlaying,
+    () => player.hasNext,
+    () => player.hasPrevious,
+  ],
+  () => {
+    void publishToDock();
+  },
+);
+
 onBeforeUnmount(() => {
   stopTrayListener?.();
   stopTrayListener = null;
+  miniCommandListener?.();
+  miniCommandListener = null;
   settings.dispose();
 });
 </script>

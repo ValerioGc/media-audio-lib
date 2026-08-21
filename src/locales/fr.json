@@ -35,7 +35,20 @@
     "playerBehaviour": {
       "title": "Lecteur",
       "description": "Ce qui reste à l’écran quand vous fermez le morceau en cours.",
-      "keepOpen": "Laisser le lecteur ouvert, réduit, à la fermeture du morceau"
+      "keepOpen": "Laisser le lecteur ouvert, réduit, à la fermeture du morceau",
+      "dock": "Afficher le lecteur flottant quand l’app passe dans la zone de notification",
+      "alwaysOnTop": "Garder le lecteur flottant au-dessus des autres fenêtres",
+      "orientation": "Disposition du lecteur flottant",
+      "orientations": {
+        "horizontal": "Horizontale",
+        "vertical": "Verticale"
+      },
+      "closeAction": "À la fermeture du lecteur flottant",
+      "closeActions": {
+        "ask": "Demander à chaque fois",
+        "dock": "Fermer le lecteur flottant seul",
+        "app": "Fermer toute l’application"
+      }
     },
     "textSize": {
       "title": "Taille du texte",
@@ -464,6 +477,24 @@
     "related": {
       "empty": "Aucun autre morceau lié dans cette bibliothèque.",
       "play": "Lire {title}"
+    }
+  },
+  "mini": {
+    "idle": "Aucune lecture",
+    "expand": "Ouvrir l’application",
+    "close": "Fermer le lecteur flottant",
+    "menu": {
+      "label": "Options du lecteur flottant",
+      "horizontal": "Disposer à l’horizontale",
+      "vertical": "Disposer à la verticale",
+      "alwaysOnTop": "Toujours au premier plan"
+    },
+    "confirm": {
+      "title": "Fermer le lecteur flottant ?",
+      "message": "Vous pouvez fermer le lecteur seul et laisser l’app dans la zone de notification, ou tout quitter.",
+      "remember": "Retenir ce choix",
+      "dockOnly": "Le lecteur seul",
+      "wholeApp": "Tout fermer"
     }
   },
   "titlebar": {

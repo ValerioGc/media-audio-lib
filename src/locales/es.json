@@ -540,6 +540,7 @@
   },
   "tray": {
     "show": "Abrir Media Audio Lib",
+    "stop": "Detener la reproducción",
     "quit": "Salir"
   }
 }

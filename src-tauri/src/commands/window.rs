@@ -15,12 +15,17 @@ pub fn set_close_to_tray(state: State<'_, CloseToTray>, enabled: bool) {
 
 /// Writes the tray menu in the language of the interface.
 #[tauri::command]
-pub fn set_tray_labels<R: Runtime>(app: AppHandle<R>, show: String, quit: String) -> bool {
+pub fn set_tray_labels<R: Runtime>(
+    app: AppHandle<R>,
+    show: String,
+    stop: String,
+    quit: String,
+) -> bool {
     let Some(tray) = app.tray_by_id("main") else {
         return false;
     };
 
-    match tray_menu(&app, &show, &quit) {
+    match tray_menu(&app, &show, &stop, &quit) {
         Ok(menu) => tray.set_menu(Some(menu)).is_ok(),
         Err(_) => false,
     }

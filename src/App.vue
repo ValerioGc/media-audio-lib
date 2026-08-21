@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import TitleBar from '@/components/layout/TitleBar.vue';
 import PlayerDock from '@/components/player/PlayerDock.vue';
 import { startupAudioFile } from '@/services/playback-api';
-import { applyTrayLabels } from '@/services/shell-integration';
+import { applyTrayLabels, onTrayStopPlayback } from '@/services/shell-integration';
 import { showWindow } from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
@@ -21,12 +21,15 @@ const player = usePlayerStore();
 
 /** The tray menu is written by the shell, so it is handed the words of the interface. */
 async function writeTrayMenu() {
-  await applyTrayLabels(t('tray.show'), t('tray.quit'));
+  await applyTrayLabels(t('tray.show'), t('tray.stop'), t('tray.quit'));
 }
+
+let stopTrayListener: (() => void) | null = null;
 
 async function initializeApp() {
   await settings.initialize();
   await writeTrayMenu();
+  stopTrayListener = await onTrayStopPlayback(() => player.stop());
 
   // The system may have started the app out of sight: the window comes back unless the
   // settings ask it to wait in the tray.
@@ -48,6 +51,8 @@ onMounted(initializeApp);
 watch(() => settings.locale, writeTrayMenu);
 
 onBeforeUnmount(() => {
+  stopTrayListener?.();
+  stopTrayListener = null;
   settings.dispose();
 });
 </script>

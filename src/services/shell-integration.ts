@@ -28,8 +28,36 @@ export async function applyCloseToTray(enabled: boolean): Promise<boolean> {
 }
 
 /** Writes the tray menu in the language of the interface. */
-export async function applyTrayLabels(show: string, quit: string): Promise<boolean> {
-  return invokeCommand('set_tray_labels', { show, quit });
+export async function applyTrayLabels(
+  show: string,
+  stop: string,
+  quit: string,
+): Promise<boolean> {
+  return invokeCommand('set_tray_labels', { show, stop, quit });
+}
+
+/**
+ * Runs the callback when the tray asks for the playback to stop.
+ *
+ * The sound is played by the webview, so the menu item can only send word: returns the
+ * function that stops listening, or null outside the desktop shell.
+ */
+export async function onTrayStopPlayback(
+  stop: () => void,
+): Promise<(() => void) | null> {
+  if (!isTauriRuntime()) {
+    return null;
+  }
+
+  try {
+    const { listen } = await import('@tauri-apps/api/event');
+
+    return await listen('tray://stop-playback', () => stop());
+  } catch (error) {
+    console.error('Tray listener failed', error);
+
+    return null;
+  }
 }
 
 /**

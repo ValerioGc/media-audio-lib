@@ -19,7 +19,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Manager as _, Runtime, WindowEvent};
+use tauri::{AppHandle, Emitter as _, Manager as _, Runtime, WindowEvent};
 
 use crate::catalog::CatalogState;
 use crate::metadata::CoverCache;
@@ -33,6 +33,9 @@ pub const MINIMIZED_ARG: &str = "--minimized";
 
 const TRAY_ID: &str = "main";
 const MAIN_WINDOW: &str = "main";
+
+/// Asks the frontend to stop the playback: the sound is played by the webview, not here.
+pub const STOP_PLAYBACK_EVENT: &str = "tray://stop-playback";
 
 /// Whether closing the window leaves the app in the tray instead of quitting it.
 ///
@@ -67,11 +70,17 @@ fn hide_main_window<R: Runtime>(app: &AppHandle<R>) {
 }
 
 /// The tray menu, rebuilt whenever the interface changes language.
-pub fn tray_menu<R: Runtime>(app: &AppHandle<R>, show: &str, quit: &str) -> tauri::Result<Menu<R>> {
+pub fn tray_menu<R: Runtime>(
+    app: &AppHandle<R>,
+    show: &str,
+    stop: &str,
+    quit: &str,
+) -> tauri::Result<Menu<R>> {
     Menu::with_items(
         app,
         &[
             &MenuItem::with_id(app, "show", show, true, None::<&str>)?,
+            &MenuItem::with_id(app, "stop", stop, true, None::<&str>)?,
             &MenuItem::with_id(app, "quit", quit, true, None::<&str>)?,
         ],
     )
@@ -83,10 +92,13 @@ fn build_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
             tauri::Error::AssetNotFound("the window icon is needed for the tray".to_owned())
         })?)
         .tooltip("Media Audio Lib")
-        .menu(&tray_menu(app, "Show", "Quit")?)
+        .menu(&tray_menu(app, "Show", "Stop playback", "Quit")?)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
             "show" => show_main_window(app),
+            "stop" => {
+                let _ = app.emit(STOP_PLAYBACK_EVENT, ());
+            }
             "quit" => app.exit(0),
             _ => {}
         })

@@ -120,7 +120,7 @@ describe('LibraryToolbar', () => {
     expect(wrapper.emitted('editSelected')).toHaveLength(1);
   });
 
-  it('counts the albums, the artists and the genres beside the tracks', () => {
+  it('counts what the open tab is about, and nothing else', async () => {
     const options = withPinia();
     const library = useLibraryStore();
     library.tracks = [
@@ -131,10 +131,23 @@ describe('LibraryToolbar', () => {
     const wrapper = mount(LibraryToolbar, options);
 
     expect(wrapper.get('[data-testid="track-count"]').text()).toBe('3 brani');
-    expect(wrapper.get('[data-testid="album-count"]').text()).toBe('2 album');
+    expect(wrapper.find('[data-testid="album-count"]').exists()).toBe(false);
+
+    await wrapper.setProps({ tab: 'artists' });
     expect(wrapper.get('[data-testid="artist-count"]').text()).toBe('2 autori');
-    // The blank genre is not one of its own.
-    expect(wrapper.get('[data-testid="genre-count"]').text()).toBe('1 genere');
+    expect(wrapper.find('[data-testid="track-count"]').exists()).toBe(false);
+
+    await wrapper.setProps({ tab: 'albums' });
+    expect(wrapper.get('[data-testid="album-count"]').text()).toBe('2 album');
+
+    // A genre gathers the others, so it says how many it holds as well. The blank genre is
+    // not one of its own.
+    await wrapper.setProps({ tab: 'genres' });
+    expect(wrapper.findAll('.library_toolbar_counts span').map((count) => count.text())).toEqual([
+      '1 genere',
+      '2 autori',
+      '2 album',
+    ]);
   });
 
   it('offers the sort only where there are no column headers', async () => {

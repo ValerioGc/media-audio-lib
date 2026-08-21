@@ -8,14 +8,19 @@ import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
 import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
+import type { LibraryContentTab } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
 
-defineProps<{
-  viewMode?: ViewMode | undefined;
-  selectedCount?: number;
-  /** The preview has no column headers to sort from: it gets the control instead. */
-  showSort?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    viewMode?: ViewMode | undefined;
+    selectedCount?: number | undefined;
+    /** The preview has no column headers to sort from: it gets the control instead. */
+    showSort?: boolean;
+    tab?: LibraryContentTab;
+  }>(),
+  { viewMode: undefined, selectedCount: 0, tab: 'tracks' },
+);
 const emit = defineEmits<{
   'update:viewMode': [mode: ViewMode];
   editSelected: [];
@@ -27,6 +32,27 @@ const library = useLibraryStore();
 const searchValue = computed({
   get: () => library.query,
   set: (value: string) => library.setQuery(value),
+});
+
+/**
+ * What the open tab is about, counted.
+ *
+ * A tab answers for its own subject, so it carries that count alone. A genre is the one
+ * that gathers the others: beside how many there are, it says what they hold.
+ */
+const counts = computed(() => {
+  const entries = {
+    tracks: [{ key: 'track', label: t('library.toolbar.count', library.tracks.length) }],
+    artists: [{ key: 'artist', label: t('library.groups.artistCount', library.artistCount) }],
+    albums: [{ key: 'album', label: t('library.groups.albumCount', library.albumCount) }],
+    genres: [
+      { key: 'genre', label: t('library.groups.genreCount', library.genreCount) },
+      { key: 'artist', label: t('library.groups.artistCount', library.artistCount) },
+      { key: 'album', label: t('library.groups.albumCount', library.albumCount) },
+    ],
+  } as const satisfies Record<LibraryContentTab, readonly { key: string; label: string }[]>;
+
+  return entries[props.tab];
 });
 </script>
 
@@ -44,18 +70,8 @@ const searchValue = computed({
     />
 
     <p class="library_toolbar_counts">
-      <span data-testid="track-count">{{
-        t('library.toolbar.count', { count: library.tracks.length }, library.tracks.length)
-      }}</span>
-      <!-- What the library holds beside its tracks: read at a glance, without a tab change. -->
-      <span data-testid="album-count">{{
-        t('library.groups.albumCount', { count: library.albumCount }, library.albumCount)
-      }}</span>
-      <span data-testid="artist-count">{{
-        t('library.groups.artistCount', { count: library.artistCount }, library.artistCount)
-      }}</span>
-      <span data-testid="genre-count">{{
-        t('library.groups.genreCount', { count: library.genreCount }, library.genreCount)
+      <span v-for="count in counts" :key="count.key" :data-testid="`${count.key}-count`">{{
+        count.label
       }}</span>
       <span v-if="library.missingCount > 0" class="library_toolbar_missing">
         {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}

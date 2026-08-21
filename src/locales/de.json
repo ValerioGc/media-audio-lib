@@ -306,7 +306,7 @@
     },
     "duplicates": {
       "title": "Doppelte Titel",
-      "description": "Titel, die in mehreren Dateien liegen. Eine Kopie zu entfernen nimmt sie aus der Bibliothek: die Datei bleibt auf der Festplatte.",
+      "description": "Titel, die in mehreren Dateien liegen, erkannt am Titel mit seinem Interpreten oder am Dateinamen. Eine Kopie zu entfernen nimmt sie aus der Bibliothek: die Datei bleibt auf der Festplatte.",
       "empty": "Keine doppelten Titel: jeder Titel ist einmal vorhanden.",
       "copies": "{count} Kopien",
       "remove": "Diese Kopie von {title} aus der Bibliothek entfernen",

@@ -306,7 +306,7 @@
     },
     "duplicates": {
       "title": "Morceaux en double",
-      "description": "Morceaux présents dans plusieurs fichiers. Retirer une copie la sort de la bibliothèque : le fichier reste sur le disque.",
+      "description": "Morceaux présents dans plusieurs fichiers, reconnus par le titre avec son artiste ou par le nom du fichier. Retirer une copie la sort de la bibliothèque : le fichier reste sur le disque.",
       "empty": "Aucun doublon : chaque titre n’est présent qu’une fois.",
       "copies": "{count} copies",
       "remove": "Retirer cette copie de {title} de la bibliothèque",

@@ -306,7 +306,7 @@
     },
     "duplicates": {
       "title": "Duplicate tracks",
-      "description": "Tracks held in more than one file. Removing a copy takes it out of the library: the file stays on disk.",
+      "description": "Tracks held in more than one file, matched by title with its artist or by file name. Removing a copy takes it out of the library: the file stays on disk.",
       "empty": "No duplicate track: every title is here once.",
       "copies": "{count} copies",
       "remove": "Remove this copy of {title} from the library",

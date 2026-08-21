@@ -12,33 +12,93 @@ function normalize(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/gu, ' ');
 }
 
+/** The file name alone, without its folders and without its extension. */
+function fileName(path: string): string {
+  const normalized = path.replaceAll('\\', '/');
+  const name = normalized.slice(normalized.lastIndexOf('/') + 1);
+  const dot = name.lastIndexOf('.');
+
+  return normalize(dot <= 0 ? name : name.slice(0, dot));
+}
+
+/** The keys a track answers to: two tracks sharing any of them are the same song. */
+function matchKeys(track: TrackView): string[] {
+  const title = normalize(track.title);
+  const name = fileName(track.path);
+  const keys: string[] = [];
+
+  if (title !== '') {
+    keys.push(`title:${title}\u0000${normalize(track.artist ?? '')}`);
+  }
+
+  if (name !== '') {
+    keys.push(`file:${name}`);
+  }
+
+  return keys;
+}
+
 /**
- * Groups the tracks that name the same song, whatever file they came from.
+ * Groups the tracks that hold the same song, whatever file they came from.
  *
- * Title and artist are what a listener calls the same song: the two copies are usually
- * different files, encoded differently and often of a slightly different length, so the
- * duration is left out of the match and shown instead, to be read before choosing.
+ * Two things give a copy away, and either is enough: the title with its artist, which is
+ * what a listener calls the same song, and the file name, since the library refuses to
+ * import one file twice and the same name in two folders is a copy. The duration is left
+ * out of the match and shown instead: two copies are usually encoded differently and run
+ * a fraction of a second apart.
  */
 export function duplicateGroups(tracks: readonly TrackView[]): DuplicateGroup[] {
-  const groups = new Map<string, DuplicateGroup>();
+  const groupOfKey = new Map<string, number>();
+  const parents = tracks.map((_, index) => index);
 
-  for (const track of tracks) {
-    const title = normalize(track.title);
+  function rootOf(index: number): number {
+    let root = index;
 
-    if (title === '') {
-      continue;
+    while (parents[root] !== root) {
+      root = parents[root] ?? root;
     }
 
-    const key = `${title}\u0000${normalize(track.artist ?? '')}`;
-    const group = groups.get(key);
+    return root;
+  }
+
+  function join(first: number, second: number) {
+    const [left, right] = [rootOf(first), rootOf(second)];
+
+    if (left !== right) {
+      parents[right] = left;
+    }
+  }
+
+  tracks.forEach((track, index) => {
+    for (const key of matchKeys(track)) {
+      const seen = groupOfKey.get(key);
+
+      if (seen === undefined) {
+        groupOfKey.set(key, index);
+      } else {
+        join(seen, index);
+      }
+    }
+  });
+
+  const groups = new Map<number, DuplicateGroup>();
+
+  tracks.forEach((track, index) => {
+    const root = rootOf(index);
+    const group = groups.get(root);
 
     if (group === undefined) {
-      groups.set(key, { key, title: track.title, artist: track.artist, tracks: [track] });
-      continue;
+      groups.set(root, {
+        key: track.id,
+        title: track.title,
+        artist: track.artist,
+        tracks: [track],
+      });
+      return;
     }
 
     group.tracks.push(track);
-  }
+  });
 
   return [...groups.values()]
     .filter((group) => group.tracks.length > 1)

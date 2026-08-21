@@ -306,7 +306,7 @@
     },
     "duplicates": {
       "title": "Pistas duplicadas",
-      "description": "Pistas presentes en varios archivos. Quitar una copia la saca de la biblioteca: el archivo permanece en el disco.",
+      "description": "Pistas presentes en varios archivos, reconocidas por el título con su artista o por el nombre del archivo. Quitar una copia la saca de la biblioteca: el archivo permanece en el disco.",
       "empty": "Ninguna pista duplicada: cada título aparece una sola vez.",
       "copies": "{count} copias",
       "remove": "Quitar esta copia de {title} de la biblioteca",

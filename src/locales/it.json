@@ -306,7 +306,7 @@
     },
     "duplicates": {
       "title": "Brani duplicati",
-      "description": "Brani presenti in più file. Rimuovere una copia la toglie dalla libreria: il file resta sul disco.",
+      "description": "Brani presenti in più file, riconosciuti dal titolo con il suo autore o dal nome del file. Rimuovere una copia la toglie dalla libreria: il file resta sul disco.",
       "empty": "Nessun brano duplicato: ogni titolo è presente una volta sola.",
       "copies": "{count} copie",
       "remove": "Rimuovi questa copia di {title} dalla libreria",

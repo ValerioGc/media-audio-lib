@@ -98,11 +98,24 @@ watch(
     border-radius: $radius_sm;
   }
 
+  // The square is reserved by the padding, not by the picture: a card keeps the same height
+  // while its cover loads, and `aspect-ratio` alone would not, since a column flex item is
+  // measured before its width is stretched.
   &_card {
+    position: relative;
     width: 100%;
-    aspect-ratio: 1;
+    height: 0;
+    padding-bottom: 100%;
     border-radius: $radius_md;
     font-size: 2rem;
+
+    > * {
+      position: absolute;
+      display: flex;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   // Sized by the height of its row, which already follows the width of the cover column.

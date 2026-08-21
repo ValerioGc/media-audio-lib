@@ -71,6 +71,21 @@ describe('sortTracks', () => {
     expect(sorted.map((track) => track.year)).toEqual([1999, 2020, null]);
   });
 
+  it('sorts by duration, which the track stores in milliseconds', () => {
+    const timed = [
+      makeTrack({ id: 'a', title: 'Zebra', durationMs: 200_000 }),
+      makeTrack({ id: 'b', title: 'alfa', durationMs: 60_000 }),
+      makeTrack({ id: 'c', title: 'Mezzo', durationMs: 125_000 }),
+    ];
+
+    const sorted = sortTracks(timed, { column: 'duration', direction: 'asc' });
+
+    expect(sorted.map((track) => track.durationMs)).toEqual([60_000, 125_000, 200_000]);
+    expect(
+      sortTracks(timed, { column: 'duration', direction: 'desc' }).map((track) => track.durationMs),
+    ).toEqual([200_000, 125_000, 60_000]);
+  });
+
   it('keeps empty fields at the bottom in both directions', () => {
     const ascending = sortTracks(tracks, { column: 'album', direction: 'asc' });
     const descending = sortTracks(tracks, { column: 'album', direction: 'desc' });

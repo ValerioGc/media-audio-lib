@@ -132,6 +132,25 @@ describe('LibraryTitle', () => {
     ]);
   });
 
+  it('closes the header line with the options button, and says what it opens', async () => {
+    const { wrapper } = mountTitle();
+    const menu = wrapper.get('.library_title_menu');
+    const switcher = wrapper.get('.library_title_switch');
+
+    // The name and the switcher open the row, the options close it.
+    expect(
+      switcher.element.compareDocumentPosition(menu.element) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeGreaterThan(0);
+
+    await menu.get('.app_tooltip').trigger('mouseenter');
+
+    expect(wrapper.get('.app_tooltip_bubble').text()).toBe(
+      'Opzioni della libreria: rinomina, colonne, verifica file, dati mancanti ed esportazione',
+    );
+
+    await menu.get('.app_tooltip').trigger('mouseleave');
+  });
+
   it('opens the library switcher from the title', async () => {
     const { wrapper, library } = mountTitle();
     const switchLibrary = vi.spyOn(library, 'switchLibrary').mockResolvedValue(true);
@@ -171,6 +190,9 @@ describe('LibraryTitle', () => {
     );
     expect(wrapper.find('[data-testid="column-move-up-genre"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="column-move-down-genre"]').exists()).toBe(true);
+    // The file status is read from the row itself, not from a column of its own.
+    expect(wrapper.find('[data-testid="column-visible-missing"]').exists()).toBe(false);
+    expect(wrapper.get('dialog').text()).not.toContain('Stato file');
 
     await wrapper.get('[data-testid="column-fit"]').trigger('click');
     expect(settings.tableColumns.find((column) => column.key === 'title')?.width).toBeGreaterThan(

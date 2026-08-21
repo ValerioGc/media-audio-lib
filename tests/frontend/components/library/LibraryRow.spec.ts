@@ -73,12 +73,11 @@ describe('LibraryRow', () => {
     const settings = useSettingsStore();
     await settings.setTableColumnVisible('format', true);
     await settings.setTableColumnVisible('path', true);
-    await settings.setTableColumnVisible('missing', true);
 
     const wrapper = mount(LibraryRow, {
       ...options,
       props: {
-        track: makeTrack({ format: 'flac', path: 'C:/music/song.flac', missing: true }),
+        track: makeTrack({ format: 'flac', path: 'C:/music/song.flac' }),
         selected: false,
         playing: false,
       },
@@ -86,7 +85,6 @@ describe('LibraryRow', () => {
 
     expect(wrapper.text()).toContain('FLAC');
     expect(wrapper.text()).toContain('C:/music/song.flac');
-    expect(wrapper.text()).toContain('Mancante');
   });
 
   it('reports files missing from disk', () => {

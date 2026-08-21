@@ -390,6 +390,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       :deep(.cover_image) {
         width: 100%;
         height: 100%;
+        padding-bottom: 0;
         border: 0;
         border-radius: 0;
       }

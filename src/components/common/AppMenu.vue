@@ -2,6 +2,7 @@
 import { nextTick, onUnmounted, ref, watch } from 'vue';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import AppTooltip from '@/components/common/AppTooltip.vue';
 import type { IconName } from '@/config/icons';
 import type { MenuItem } from '@/types/menu';
 
@@ -10,8 +11,10 @@ const props = withDefaults(
     items: readonly MenuItem[];
     label: string;
     icon?: IconName;
+    /** Read on hover in place of the label, when the button needs more than its name. */
+    hint?: string | undefined;
   }>(),
-  { icon: 'more' },
+  { icon: 'more', hint: undefined },
 );
 
 const emit = defineEmits<{ select: [id: string] }>();
@@ -100,19 +103,20 @@ defineExpose({ close: closeMenu, open: openMenu });
 
 <template>
   <div ref="root" class="app_menu">
-    <button
-      ref="trigger"
-      class="app_menu_trigger"
-      type="button"
-      :aria-label="props.label"
-      :title="props.label"
-      :aria-expanded="isOpen"
-      aria-haspopup="menu"
-      @click="toggleMenu"
-      @keydown="onTriggerKeydown"
-    >
-      <AppIcon :name="props.icon" />
-    </button>
+    <AppTooltip :text="props.hint ?? props.label">
+      <button
+        ref="trigger"
+        class="app_menu_trigger"
+        type="button"
+        :aria-label="props.label"
+        :aria-expanded="isOpen"
+        aria-haspopup="menu"
+        @click="toggleMenu"
+        @keydown="onTriggerKeydown"
+      >
+        <AppIcon :name="props.icon" />
+      </button>
+    </AppTooltip>
 
     <div v-if="isOpen" class="app_menu_panel" role="menu">
       <template v-for="item in props.items" :key="item.id">

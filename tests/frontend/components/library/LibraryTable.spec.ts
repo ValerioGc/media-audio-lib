@@ -62,12 +62,13 @@ describe('LibraryTable', () => {
     expect(wrapper.get('table').attributes('aria-rowcount')).toBe('3');
   });
 
-  it('requests sorting on header click', async () => {
+  it('requests sorting on header click, duration included', async () => {
     const wrapper = mountTable([makeTrack()]);
 
     await wrapper.findAll('.library_table_sort')[1]?.trigger('click');
+    await wrapper.findAll('.library_table_sort').at(-1)?.trigger('click');
 
-    expect(wrapper.emitted('sort')).toEqual([['artist']]);
+    expect(wrapper.emitted('sort')).toEqual([['artist'], ['duration']]);
   });
 
   it('uses the saved column visibility and widths', async () => {

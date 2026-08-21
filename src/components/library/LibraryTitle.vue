@@ -191,7 +191,13 @@ async function submit() {
       </button>
     </AppTooltip>
 
-    <AppMenu :items="menuItems" :label="t('library.name.actions')" @select="run" />
+    <AppMenu
+      class="library_title_menu"
+      :items="menuItems"
+      :label="t('library.name.actions')"
+      :hint="t('library.name.actionsHint')"
+      @select="run"
+    />
 
     <LibraryDeleteDialog
       :library="pendingDeletion"
@@ -284,6 +290,20 @@ async function submit() {
     }
 
     @include focus_ring;
+  }
+
+  // The actions close the header line instead of crowding the name, and they carry the
+  // weight of a button: three dots on their own read as decoration at this size.
+  &_menu {
+    margin-left: auto;
+
+    :deep(.app_menu_trigger) {
+      width: 2.25rem;
+      height: 2.25rem;
+      border: 1px solid var(--color_border_strong);
+      color: var(--color_text);
+      font-size: 1.25em;
+    }
   }
 
   &_switch {

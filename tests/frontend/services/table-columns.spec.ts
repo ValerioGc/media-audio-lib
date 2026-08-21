@@ -19,7 +19,7 @@ describe('isMandatoryTableColumn', () => {
   });
 
   it('leaves every other column free to be hidden', () => {
-    for (const key of ['artist', 'album', 'year', 'genre', 'format', 'path', 'missing'] as const) {
+    for (const key of ['artist', 'album', 'year', 'genre', 'format', 'path'] as const) {
       expect(isMandatoryTableColumn(key)).toBe(false);
     }
   });

@@ -48,7 +48,20 @@
         "ask": "Chiedi ogni volta",
         "dock": "Chiudi solo il player flottante",
         "app": "Chiudi tutta l’applicazione"
-      }
+      },
+      "level": "Livello di partenza del player flottante",
+      "levels": {
+        "compact": "Ridotto",
+        "expanded": "Esteso"
+      },
+      "remembersLevel": "Ricorda l’ultimo livello usato",
+      "progress": "Barra di riproduzione nel player flottante",
+      "progressStyles": {
+        "bar": "Barra con i tempi",
+        "line": "Linea sottile",
+        "none": "Nessuna"
+      },
+      "gradient": "Sfondo dalla copertina nel player flottante"
     },
     "textSize": {
       "title": "Dimensione testo",
@@ -487,7 +500,8 @@
       "label": "Opzioni del player flottante",
       "horizontal": "Disponi in orizzontale",
       "vertical": "Disponi in verticale",
-      "alwaysOnTop": "Sempre in primo piano"
+      "alwaysOnTop": "Sempre in primo piano",
+      "gradient": "Sfondo dalla copertina"
     },
     "confirm": {
       "title": "Chiudere il player flottante?",
@@ -495,7 +509,9 @@
       "remember": "Ricorda la scelta",
       "dockOnly": "Solo il player",
       "wholeApp": "Chiudi tutto"
-    }
+    },
+    "collapse": "Riduci i comandi",
+    "expandDock": "Mostra tutti i comandi"
   },
   "titlebar": {
     "tray": "Riduci nella barra di sistema",

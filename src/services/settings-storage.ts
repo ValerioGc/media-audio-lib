@@ -11,7 +11,10 @@ import {
   AMBIENT_DIRECTIONS,
   AMBIENT_STYLES,
   DOCK_CLOSE_ACTIONS,
+  DOCK_LEVELS,
   DOCK_ORIENTATIONS,
+  DOCK_PROGRESS_STYLES,
+  type DockPosition,
   TABLE_COLUMN_KEYS,
   TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
@@ -32,6 +35,19 @@ export interface SettingsStorage {
 
 function pickKnown<T extends string>(allowed: readonly T[], value: unknown, fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback;
+}
+
+/** A position is kept only when both of its numbers survived the trip. */
+function pickPosition(value: unknown): DockPosition | null {
+  if (typeof value !== 'object' || value === null) {
+    return null;
+  }
+
+  const { x, y } = value as Record<string, unknown>;
+
+  return typeof x === 'number' && Number.isFinite(x) && typeof y === 'number' && Number.isFinite(y)
+    ? { x, y }
+    : null;
 }
 
 function pickBoolean(value: unknown, fallback: boolean): boolean {
@@ -161,6 +177,22 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       source.miniPlayerCloseAction,
       DEFAULT_SETTINGS.miniPlayerCloseAction,
     ),
+    miniPlayerLevel: pickKnown(
+      DOCK_LEVELS,
+      source.miniPlayerLevel,
+      DEFAULT_SETTINGS.miniPlayerLevel,
+    ),
+    miniPlayerRemembersLevel: pickBoolean(
+      source.miniPlayerRemembersLevel,
+      DEFAULT_SETTINGS.miniPlayerRemembersLevel,
+    ),
+    miniPlayerProgress: pickKnown(
+      DOCK_PROGRESS_STYLES,
+      source.miniPlayerProgress,
+      DEFAULT_SETTINGS.miniPlayerProgress,
+    ),
+    miniPlayerGradient: pickBoolean(source.miniPlayerGradient, DEFAULT_SETTINGS.miniPlayerGradient),
+    miniPlayerPosition: pickPosition(source.miniPlayerPosition),
     coverGradientStyle: pickKnown(
       AMBIENT_STYLES,
       source.coverGradientStyle,

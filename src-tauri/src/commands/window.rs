@@ -2,15 +2,37 @@
 
 use tauri::{AppHandle, Manager as _, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 
-use crate::{tray_menu, CloseToTray, MINI_SIZE, MINI_SIZE_VERTICAL, MINI_WINDOW};
+use crate::{
+    tray_menu, CloseToTray, MINI_SCREEN_MARGIN, MINI_SIZE, MINI_SIZE_EXPANDED, MINI_SIZE_VERTICAL,
+    MINI_SIZE_VERTICAL_EXPANDED, MINI_WINDOW,
+};
 
-/// The two ways the dock lays out its controls.
-fn mini_size(vertical: bool) -> (f64, f64) {
-    if vertical {
-        MINI_SIZE_VERTICAL
-    } else {
-        MINI_SIZE
+/// How much room the dock takes, for the layout and the level it is in.
+fn mini_size(vertical: bool, expanded: bool) -> (f64, f64) {
+    match (vertical, expanded) {
+        (true, true) => MINI_SIZE_VERTICAL_EXPANDED,
+        (true, false) => MINI_SIZE_VERTICAL,
+        (false, true) => MINI_SIZE_EXPANDED,
+        (false, false) => MINI_SIZE,
     }
+}
+
+/// Where the dock stands the first time: the corner the taskbar is in, out of its way.
+fn corner_position<R: Runtime>(
+    window: &tauri::WebviewWindow<R>,
+    width: f64,
+    height: f64,
+) -> Option<tauri::LogicalPosition<f64>> {
+    let monitor = window.current_monitor().ok().flatten()?;
+    let scale = monitor.scale_factor();
+    let area = monitor.size().to_logical::<f64>(scale);
+    let origin = monitor.position().to_logical::<f64>(scale);
+
+    Some(tauri::LogicalPosition::new(
+        origin.x + area.width - width - MINI_SCREEN_MARGIN,
+        // The taskbar sits at the bottom by default: the dock stops short of it.
+        origin.y + area.height - height - MINI_SCREEN_MARGIN * 4.0,
+    ))
 }
 
 /// Whether closing the window hides the app in the tray instead of quitting it.
@@ -31,6 +53,8 @@ pub async fn open_mini_player<R: Runtime>(
     app: AppHandle<R>,
     vertical: bool,
     always_on_top: bool,
+    expanded: bool,
+    position: Option<(f64, f64)>,
 ) -> bool {
     if let Some(window) = app.get_webview_window(MINI_WINDOW) {
         let _ = window.set_always_on_top(always_on_top);
@@ -40,9 +64,9 @@ pub async fn open_mini_player<R: Runtime>(
         return true;
     }
 
-    let (width, height) = mini_size(vertical);
+    let (width, height) = mini_size(vertical, expanded);
 
-    WebviewWindowBuilder::new(
+    let built = WebviewWindowBuilder::new(
         &app,
         MINI_WINDOW,
         WebviewUrl::App("index.html?view=mini".into()),
@@ -54,8 +78,29 @@ pub async fn open_mini_player<R: Runtime>(
     .always_on_top(always_on_top)
     .skip_taskbar(true)
     .shadow(true)
-    .build()
-    .is_ok()
+    .visible(false)
+    .build();
+
+    let Ok(window) = built else {
+        return false;
+    };
+
+    // Where it was left, or the corner it belongs to the first time. The window is placed
+    // before it is shown, so it never appears in one spot and jumps to another.
+    match position {
+        Some((x, y)) => {
+            let _ = window.set_position(tauri::LogicalPosition::new(x, y));
+        }
+        None => {
+            if let Some(corner) = corner_position(&window, width, height) {
+                let _ = window.set_position(corner);
+            }
+        }
+    }
+
+    let _ = window.show();
+
+    true
 }
 
 #[tauri::command]
@@ -71,12 +116,13 @@ pub fn set_mini_player_shape<R: Runtime>(
     app: AppHandle<R>,
     vertical: bool,
     always_on_top: bool,
+    expanded: bool,
 ) -> bool {
     let Some(window) = app.get_webview_window(MINI_WINDOW) else {
         return false;
     };
 
-    let (width, height) = mini_size(vertical);
+    let (width, height) = mini_size(vertical, expanded);
     let _ = window.set_always_on_top(always_on_top);
 
     window

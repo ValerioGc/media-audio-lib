@@ -34,7 +34,10 @@ import {
   type AmbientStyle,
   type AppSettings,
   type DockCloseAction,
+  type DockLevel,
   type DockOrientation,
+  type DockPosition,
+  type DockProgressStyle,
   type Locale,
   type ResolvedTheme,
   type TableColumnKey,
@@ -71,6 +74,11 @@ export const useSettingsStore = defineStore('settings', () => {
   const miniPlayerAlwaysOnTop = ref(DEFAULT_SETTINGS.miniPlayerAlwaysOnTop);
   const miniPlayerOrientation = ref<DockOrientation>(DEFAULT_SETTINGS.miniPlayerOrientation);
   const miniPlayerCloseAction = ref<DockCloseAction>(DEFAULT_SETTINGS.miniPlayerCloseAction);
+  const miniPlayerLevel = ref<DockLevel>(DEFAULT_SETTINGS.miniPlayerLevel);
+  const miniPlayerRemembersLevel = ref(DEFAULT_SETTINGS.miniPlayerRemembersLevel);
+  const miniPlayerProgress = ref<DockProgressStyle>(DEFAULT_SETTINGS.miniPlayerProgress);
+  const miniPlayerGradient = ref(DEFAULT_SETTINGS.miniPlayerGradient);
+  const miniPlayerPosition = ref<DockPosition | null>(DEFAULT_SETTINGS.miniPlayerPosition);
   const tableColumns = ref<TableColumnSetting[]>(
     DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
   );
@@ -111,6 +119,11 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerAlwaysOnTop: miniPlayerAlwaysOnTop.value,
     miniPlayerOrientation: miniPlayerOrientation.value,
     miniPlayerCloseAction: miniPlayerCloseAction.value,
+    miniPlayerLevel: miniPlayerLevel.value,
+    miniPlayerRemembersLevel: miniPlayerRemembersLevel.value,
+    miniPlayerProgress: miniPlayerProgress.value,
+    miniPlayerGradient: miniPlayerGradient.value,
+    miniPlayerPosition: miniPlayerPosition.value,
     tableColumns: tableColumns.value,
   }));
 
@@ -191,6 +204,11 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerAlwaysOnTop.value = restored.miniPlayerAlwaysOnTop;
     miniPlayerOrientation.value = restored.miniPlayerOrientation;
     miniPlayerCloseAction.value = restored.miniPlayerCloseAction;
+    miniPlayerLevel.value = restored.miniPlayerLevel;
+    miniPlayerRemembersLevel.value = restored.miniPlayerRemembersLevel;
+    miniPlayerProgress.value = restored.miniPlayerProgress;
+    miniPlayerGradient.value = restored.miniPlayerGradient;
+    miniPlayerPosition.value = restored.miniPlayerPosition;
     await applyCloseToTray(closeToTray.value);
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
 
@@ -332,15 +350,57 @@ export const useSettingsStore = defineStore('settings', () => {
   }
 
   /** The dock is reshaped where it stands: the window follows without being reopened. */
+  async function reshapeMiniPlayer() {
+    await applyMiniPlayerShape(
+      miniPlayerOrientation.value === 'vertical',
+      miniPlayerAlwaysOnTop.value,
+      miniPlayerLevel.value === 'expanded',
+    );
+  }
+
   async function setMiniPlayerAlwaysOnTop(next: boolean) {
     miniPlayerAlwaysOnTop.value = next;
-    await applyMiniPlayerShape(miniPlayerOrientation.value === 'vertical', next);
+    await reshapeMiniPlayer();
     await persist();
   }
 
   async function setMiniPlayerOrientation(next: DockOrientation) {
     miniPlayerOrientation.value = next;
-    await applyMiniPlayerShape(next === 'vertical', miniPlayerAlwaysOnTop.value);
+    await reshapeMiniPlayer();
+    await persist();
+  }
+
+  /**
+   * The level the dock is in. It is written down only when asked to be remembered: without
+   * that, the dock opens in the level chosen in the settings whatever it was left in.
+   */
+  async function setMiniPlayerLevel(next: DockLevel, remembered = true) {
+    miniPlayerLevel.value = next;
+    await reshapeMiniPlayer();
+
+    if (remembered) {
+      await persist();
+    }
+  }
+
+  async function setMiniPlayerRemembersLevel(next: boolean) {
+    miniPlayerRemembersLevel.value = next;
+    await persist();
+  }
+
+  async function setMiniPlayerProgress(next: DockProgressStyle) {
+    miniPlayerProgress.value = next;
+    await persist();
+  }
+
+  async function setMiniPlayerGradient(next: boolean) {
+    miniPlayerGradient.value = next;
+    await persist();
+  }
+
+  /** Where the dock was left, so it comes back to the same corner of the screen. */
+  async function setMiniPlayerPosition(next: DockPosition) {
+    miniPlayerPosition.value = next;
     await persist();
   }
 
@@ -471,6 +531,11 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerAlwaysOnTop,
     miniPlayerOrientation,
     miniPlayerCloseAction,
+    miniPlayerLevel,
+    miniPlayerRemembersLevel,
+    miniPlayerProgress,
+    miniPlayerGradient,
+    miniPlayerPosition,
     tableColumns,
     systemTheme,
     isReady,
@@ -504,6 +569,11 @@ export const useSettingsStore = defineStore('settings', () => {
     setMiniPlayerAlwaysOnTop,
     setMiniPlayerOrientation,
     setMiniPlayerCloseAction,
+    setMiniPlayerLevel,
+    setMiniPlayerRemembersLevel,
+    setMiniPlayerProgress,
+    setMiniPlayerGradient,
+    setMiniPlayerPosition,
     setTableColumnVisible,
     setTableColumnWidth,
     setTableColumnWidths,

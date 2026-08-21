@@ -48,7 +48,20 @@
         "ask": "Jedes Mal fragen",
         "dock": "Nur den schwebenden Player schließen",
         "app": "Die ganze Anwendung schließen"
-      }
+      },
+      "level": "Startstufe des schwebenden Players",
+      "levels": {
+        "compact": "Klein",
+        "expanded": "Erweitert"
+      },
+      "remembersLevel": "Zuletzt genutzte Stufe merken",
+      "progress": "Fortschrittsleiste im schwebenden Player",
+      "progressStyles": {
+        "bar": "Leiste mit Zeiten",
+        "line": "Dünne Linie",
+        "none": "Keine"
+      },
+      "gradient": "Hintergrund aus dem Cover im schwebenden Player"
     },
     "textSize": {
       "title": "Textgröße",
@@ -487,7 +500,8 @@
       "label": "Optionen des schwebenden Players",
       "horizontal": "Waagerecht anordnen",
       "vertical": "Senkrecht anordnen",
-      "alwaysOnTop": "Immer im Vordergrund"
+      "alwaysOnTop": "Immer im Vordergrund",
+      "gradient": "Hintergrund aus dem Cover"
     },
     "confirm": {
       "title": "Den schwebenden Player schließen?",
@@ -495,7 +509,9 @@
       "remember": "Diese Wahl merken",
       "dockOnly": "Nur den Player",
       "wholeApp": "Alles schließen"
-    }
+    },
+    "collapse": "Weniger Bedienelemente",
+    "expandDock": "Alle Bedienelemente zeigen"
   },
   "titlebar": {
     "tray": "In den Infobereich minimieren",

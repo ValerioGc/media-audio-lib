@@ -8,10 +8,20 @@ export interface MiniPlayerState {
   isPlaying: boolean;
   hasNext: boolean;
   hasPrevious: boolean;
+  position: number;
+  duration: number;
+  volume: number;
+  isMuted: boolean;
+  /** The colour taken from the cover, ready to be painted behind the dock. */
+  gradient: string | null;
 }
 
 /** What the dock asks for. The main window is the one that can do any of it. */
-export type MiniPlayerCommand = 'toggle' | 'next' | 'previous' | 'stop' | 'expand' | 'quit';
+export interface MiniPlayerCommand {
+  action: 'toggle' | 'next' | 'previous' | 'stop' | 'expand' | 'quit' | 'seek' | 'volume' | 'mute';
+  /** Seconds for a seek, a fraction of one for the volume. */
+  value?: number;
+}
 
 const STATE_EVENT = 'mini://state';
 const COMMAND_EVENT = 'mini://command';
@@ -64,8 +74,11 @@ export async function onPlayerState(
 }
 
 /** Dock: asks the main window for something only it can do. */
-export async function sendMiniCommand(command: MiniPlayerCommand): Promise<boolean> {
-  return emitEvent(COMMAND_EVENT, command);
+export async function sendMiniCommand(
+  action: MiniPlayerCommand['action'],
+  value?: number,
+): Promise<boolean> {
+  return emitEvent(COMMAND_EVENT, value === undefined ? { action } : { action, value });
 }
 
 /** Main window: answers the dock. */

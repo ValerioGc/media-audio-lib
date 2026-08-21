@@ -48,6 +48,20 @@ export type AmbientDirection = (typeof AMBIENT_DIRECTIONS)[number];
 export const DOCK_ORIENTATIONS = ['horizontal', 'vertical'] as const;
 export type DockOrientation = (typeof DOCK_ORIENTATIONS)[number];
 
+/** How much of itself the dock shows. */
+export const DOCK_LEVELS = ['compact', 'expanded'] as const;
+export type DockLevel = (typeof DOCK_LEVELS)[number];
+
+/** How the dock draws the progress of the track. */
+export const DOCK_PROGRESS_STYLES = ['bar', 'line', 'none'] as const;
+export type DockProgressStyle = (typeof DOCK_PROGRESS_STYLES)[number];
+
+/** Where the dock was left on screen, in logical pixels. */
+export interface DockPosition {
+  x: number;
+  y: number;
+}
+
 /** What closing the dock does, once the question has been answered for good. */
 export const DOCK_CLOSE_ACTIONS = ['ask', 'dock', 'app'] as const;
 export type DockCloseAction = (typeof DOCK_CLOSE_ACTIONS)[number];
@@ -129,6 +143,11 @@ export interface AppSettings {
   miniPlayerAlwaysOnTop: boolean;
   miniPlayerOrientation: DockOrientation;
   miniPlayerCloseAction: DockCloseAction;
+  miniPlayerLevel: DockLevel;
+  miniPlayerRemembersLevel: boolean;
+  miniPlayerProgress: DockProgressStyle;
+  miniPlayerGradient: boolean;
+  miniPlayerPosition: DockPosition | null;
   tableColumns: TableColumnSetting[];
 }
 
@@ -159,5 +178,10 @@ export const DEFAULT_SETTINGS: AppSettings = {
   miniPlayerAlwaysOnTop: true,
   miniPlayerOrientation: 'horizontal',
   miniPlayerCloseAction: 'ask',
+  miniPlayerLevel: 'compact',
+  miniPlayerRemembersLevel: true,
+  miniPlayerProgress: 'bar',
+  miniPlayerGradient: true,
+  miniPlayerPosition: null,
   tableColumns: DEFAULT_TABLE_COLUMNS,
 };

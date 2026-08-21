@@ -101,8 +101,18 @@ export async function setAutostart(enabled: boolean): Promise<boolean> {
  * It is a window of its own: the main one is going to the tray, and a webview goes with the
  * window that holds it. The sound stays with the main window, so the dock only asks.
  */
-export async function openMiniPlayer(vertical: boolean, alwaysOnTop: boolean): Promise<boolean> {
-  return invokeCommand('open_mini_player', { vertical, alwaysOnTop });
+export async function openMiniPlayer(
+  vertical: boolean,
+  alwaysOnTop: boolean,
+  expanded: boolean,
+  position: { x: number; y: number } | null,
+): Promise<boolean> {
+  return invokeCommand('open_mini_player', {
+    vertical,
+    alwaysOnTop,
+    expanded,
+    position: position === null ? null : [position.x, position.y],
+  });
 }
 
 export async function closeMiniPlayer(): Promise<boolean> {
@@ -113,6 +123,7 @@ export async function closeMiniPlayer(): Promise<boolean> {
 export async function applyMiniPlayerShape(
   vertical: boolean,
   alwaysOnTop: boolean,
+  expanded: boolean,
 ): Promise<boolean> {
-  return invokeCommand('set_mini_player_shape', { vertical, alwaysOnTop });
+  return invokeCommand('set_mini_player_shape', { vertical, alwaysOnTop, expanded });
 }

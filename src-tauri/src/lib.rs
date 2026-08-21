@@ -37,9 +37,14 @@ const MAIN_WINDOW: &str = "main";
 /// The floating dock: a window of its own, so it survives the main one going to the tray.
 pub const MINI_WINDOW: &str = "mini";
 
-/// Size of the dock, in logical pixels, laid out along its longer side.
-pub const MINI_SIZE: (f64, f64) = (360.0, 96.0);
-pub const MINI_SIZE_VERTICAL: (f64, f64) = (200.0, 268.0);
+/// Sizes of the dock, in logical pixels: one per layout, one per level.
+pub const MINI_SIZE: (f64, f64) = (360.0, 104.0);
+pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 216.0);
+pub const MINI_SIZE_VERTICAL: (f64, f64) = (232.0, 268.0);
+pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (232.0, 400.0);
+
+/// Room left between the dock and the corner of the screen it first appears in.
+pub const MINI_SCREEN_MARGIN: f64 = 16.0;
 
 /// Asks the frontend to stop the playback: the sound is played by the webview, not here.
 pub const STOP_PLAYBACK_EVENT: &str = "tray://stop-playback";

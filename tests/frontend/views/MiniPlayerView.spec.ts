@@ -10,6 +10,20 @@ import MiniPlayerView from '@/views/MiniPlayerView.vue';
 
 const mocks = vi.hoisted(() => ({ state: vi.fn() }));
 
+const playing = {
+  title: 'Blue in Green',
+  artist: 'Miles',
+  cover: null,
+  isPlaying: true,
+  hasNext: true,
+  hasPrevious: false,
+  position: 30,
+  duration: 180,
+  volume: 0.8,
+  isMuted: false,
+  gradient: 'linear-gradient(rgb(10 20 30 / 28%), transparent)',
+};
+
 beforeEach(() => {
   resetI18n();
   vi.restoreAllMocks();
@@ -40,14 +54,7 @@ describe('MiniPlayerView', () => {
 
     expect(wrapper.get('.mini_player_title').text()).toBe('Nulla in riproduzione');
 
-    mocks.state({
-      title: 'Blue in Green',
-      artist: 'Miles',
-      cover: null,
-      isPlaying: true,
-      hasNext: true,
-      hasPrevious: false,
-    });
+    mocks.state(playing);
     await flushPromises();
 
     expect(wrapper.get('.mini_player_title').text()).toBe('Blue in Green');
@@ -55,33 +62,87 @@ describe('MiniPlayerView', () => {
     expect(wrapper.get('[data-testid="mini-toggle"]').attributes('aria-label')).toBe(
       'Metti in pausa',
     );
-    expect(wrapper.get('[data-testid="mini-previous"]').attributes('disabled')).toBeDefined();
     expect(wrapper.get('[data-testid="mini-next"]').attributes('disabled')).toBeUndefined();
+    // The colour of the cover is painted behind the dock while the setting asks for it.
+    expect(wrapper.get('.mini_player').classes()).toContain('mini_player_accented');
+  });
+
+  it('keeps the window commands on the top line, transport apart', async () => {
+    const { wrapper } = await mountDock();
+    const bar = wrapper.get('.mini_player_bar');
+
+    expect(bar.find('[data-testid="mini-expand"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-close"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-level"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-toggle"]').exists()).toBe(false);
+  });
+
+  it('holds back the second level until it is asked for', async () => {
+    const { wrapper, settings } = await mountDock();
+
+    expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="mini-orientation"]').exists()).toBe(false);
+
+    await wrapper.get('[data-testid="mini-level"]').trigger('click');
+    await flushPromises();
+
+    expect(settings.miniPlayerLevel).toBe('expanded');
+    expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="mini-stop"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(true);
+  });
+
+  it('draws the progress the way the settings ask for', async () => {
+    const { wrapper, settings } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="player-position"]').text()).toBe('0:30');
+
+    settings.miniPlayerProgress = 'line';
+    await flushPromises();
+    expect(wrapper.find('[data-testid="player-position"]').exists()).toBe(false);
+    expect(wrapper.find('.mini_player_progress').exists()).toBe(true);
+
+    settings.miniPlayerProgress = 'none';
+    await flushPromises();
+    expect(wrapper.find('.mini_player_progress').exists()).toBe(false);
   });
 
   it('asks the main window for what only it can do', async () => {
     const send = vi.spyOn(bridge, 'sendMiniCommand').mockResolvedValue(true);
-    const { wrapper } = await mountDock();
+    const { wrapper, settings } = await mountDock();
+    settings.miniPlayerLevel = 'expanded';
+    mocks.state(playing);
+    await flushPromises();
 
     await wrapper.get('[data-testid="mini-toggle"]').trigger('click');
     await wrapper.get('[data-testid="mini-stop"]').trigger('click');
+    await wrapper.get('[data-testid="mini-mute"]').trigger('click');
     await wrapper.get('[data-testid="mini-expand"]').trigger('click');
 
-    expect(send.mock.calls.map(([command]) => command)).toEqual(['toggle', 'stop', 'expand']);
+    expect(send.mock.calls.map(([action]) => action)).toEqual([
+      'toggle',
+      'stop',
+      'mute',
+      'expand',
+    ]);
   });
 
-  it('turns the dock on its side and keeps it in front, from its own menu', async () => {
+  it('turns the dock on its side, keeps it in front and paints it, from its own options', async () => {
     const { wrapper, settings } = await mountDock();
+    settings.miniPlayerLevel = 'expanded';
+    await flushPromises();
 
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
-
+    await wrapper.get('[data-testid="mini-orientation"]').trigger('click');
     expect(settings.miniPlayerOrientation).toBe('vertical');
 
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
-
+    await wrapper.get('[data-testid="mini-on-top"]').trigger('click');
     expect(settings.miniPlayerAlwaysOnTop).toBe(false);
+
+    await wrapper.get('[data-testid="mini-gradient"]').trigger('click');
+    expect(settings.miniPlayerGradient).toBe(false);
   });
 
   it('asks before closing, and can be told once and for all', async () => {

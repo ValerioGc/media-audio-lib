@@ -48,7 +48,20 @@
         "ask": "Ask every time",
         "dock": "Close the floating player only",
         "app": "Close the whole application"
-      }
+      },
+      "level": "Floating player starts",
+      "levels": {
+        "compact": "Compact",
+        "expanded": "Expanded"
+      },
+      "remembersLevel": "Remember the last level used",
+      "progress": "Progress bar in the floating player",
+      "progressStyles": {
+        "bar": "Bar with times",
+        "line": "Thin line",
+        "none": "None"
+      },
+      "gradient": "Background from the cover in the floating player"
     },
     "textSize": {
       "title": "Text size",
@@ -487,7 +500,8 @@
       "label": "Floating player options",
       "horizontal": "Lay out horizontally",
       "vertical": "Lay out vertically",
-      "alwaysOnTop": "Always on top"
+      "alwaysOnTop": "Always on top",
+      "gradient": "Background from the cover"
     },
     "confirm": {
       "title": "Close the floating player?",
@@ -495,7 +509,9 @@
       "remember": "Remember this choice",
       "dockOnly": "Player only",
       "wholeApp": "Close everything"
-    }
+    },
+    "collapse": "Fewer controls",
+    "expandDock": "Show every control"
   },
   "titlebar": {
     "tray": "Send to the system tray",

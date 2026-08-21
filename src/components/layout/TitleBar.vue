@@ -32,6 +32,8 @@ async function sendToTray(): Promise<boolean> {
     await openMiniPlayer(
       settings.miniPlayerOrientation === 'vertical',
       settings.miniPlayerAlwaysOnTop,
+      settings.miniPlayerLevel === 'expanded',
+      settings.miniPlayerPosition,
     );
   }
 

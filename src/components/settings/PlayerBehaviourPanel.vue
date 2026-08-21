@@ -6,9 +6,13 @@ import AppSelect from '@/components/common/AppSelect.vue';
 import { useSettingsStore } from '@/stores/settings';
 import {
   DOCK_CLOSE_ACTIONS,
+  DOCK_LEVELS,
   DOCK_ORIENTATIONS,
+  DOCK_PROGRESS_STYLES,
   type DockCloseAction,
+  type DockLevel,
   type DockOrientation,
+  type DockProgressStyle,
 } from '@/types/settings';
 
 const { t } = useI18n();
@@ -21,6 +25,20 @@ const orientationOptions = computed(() =>
   DOCK_ORIENTATIONS.map((orientation) => ({
     value: orientation,
     label: t(`settings.playerBehaviour.orientations.${orientation}`),
+  })),
+);
+
+const levelOptions = computed(() =>
+  DOCK_LEVELS.map((level) => ({
+    value: level,
+    label: t(`settings.playerBehaviour.levels.${level}`),
+  })),
+);
+
+const progressOptions = computed(() =>
+  DOCK_PROGRESS_STYLES.map((style) => ({
+    value: style,
+    label: t(`settings.playerBehaviour.progressStyles.${style}`),
   })),
 );
 
@@ -45,6 +63,22 @@ async function onAlwaysOnTopChange(event: Event) {
 
 async function onOrientationChange(value: string) {
   await settings.setMiniPlayerOrientation(value as DockOrientation);
+}
+
+async function onLevelChange(value: string) {
+  await settings.setMiniPlayerLevel(value as DockLevel);
+}
+
+async function onRemembersLevelChange(event: Event) {
+  await settings.setMiniPlayerRemembersLevel((event.target as HTMLInputElement).checked);
+}
+
+async function onProgressChange(value: string) {
+  await settings.setMiniPlayerProgress(value as DockProgressStyle);
+}
+
+async function onGradientChange(event: Event) {
+  await settings.setMiniPlayerGradient((event.target as HTMLInputElement).checked);
 }
 
 async function onCloseActionChange(value: string) {
@@ -94,6 +128,44 @@ async function onCloseActionChange(value: string) {
         :label="t('settings.playerBehaviour.orientation')"
         data-testid="mini-player-orientation"
         @update:model-value="onOrientationChange"
+      />
+
+      <label class="player_behaviour_panel_check player_behaviour_panel_check_nested">
+        <input
+          type="checkbox"
+          :checked="settings.miniPlayerGradient"
+          data-testid="mini-player-gradient-toggle"
+          @change="onGradientChange"
+        />
+        <span>{{ t('settings.playerBehaviour.gradient') }}</span>
+      </label>
+
+      <AppSelect
+        class="player_behaviour_panel_select"
+        :model-value="settings.miniPlayerLevel"
+        :options="levelOptions"
+        :label="t('settings.playerBehaviour.level')"
+        data-testid="mini-player-level"
+        @update:model-value="onLevelChange"
+      />
+
+      <label class="player_behaviour_panel_check player_behaviour_panel_check_nested">
+        <input
+          type="checkbox"
+          :checked="settings.miniPlayerRemembersLevel"
+          data-testid="mini-player-remembers-level"
+          @change="onRemembersLevelChange"
+        />
+        <span>{{ t('settings.playerBehaviour.remembersLevel') }}</span>
+      </label>
+
+      <AppSelect
+        class="player_behaviour_panel_select"
+        :model-value="settings.miniPlayerProgress"
+        :options="progressOptions"
+        :label="t('settings.playerBehaviour.progress')"
+        data-testid="mini-player-progress"
+        @update:model-value="onProgressChange"
       />
 
       <AppSelect

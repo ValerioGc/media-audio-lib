@@ -48,7 +48,20 @@
         "ask": "Demander à chaque fois",
         "dock": "Fermer le lecteur flottant seul",
         "app": "Fermer toute l’application"
-      }
+      },
+      "level": "Niveau de départ du lecteur flottant",
+      "levels": {
+        "compact": "Réduit",
+        "expanded": "Étendu"
+      },
+      "remembersLevel": "Retenir le dernier niveau utilisé",
+      "progress": "Barre de lecture du lecteur flottant",
+      "progressStyles": {
+        "bar": "Barre avec les durées",
+        "line": "Ligne fine",
+        "none": "Aucune"
+      },
+      "gradient": "Fond depuis la pochette dans le lecteur flottant"
     },
     "textSize": {
       "title": "Taille du texte",
@@ -487,7 +500,8 @@
       "label": "Options du lecteur flottant",
       "horizontal": "Disposer à l’horizontale",
       "vertical": "Disposer à la verticale",
-      "alwaysOnTop": "Toujours au premier plan"
+      "alwaysOnTop": "Toujours au premier plan",
+      "gradient": "Fond depuis la pochette"
     },
     "confirm": {
       "title": "Fermer le lecteur flottant ?",
@@ -495,7 +509,9 @@
       "remember": "Retenir ce choix",
       "dockOnly": "Le lecteur seul",
       "wholeApp": "Tout fermer"
-    }
+    },
+    "collapse": "Moins de commandes",
+    "expandDock": "Afficher toutes les commandes"
   },
   "titlebar": {
     "tray": "Réduire dans la zone de notification",

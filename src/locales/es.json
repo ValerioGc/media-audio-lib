@@ -48,7 +48,20 @@
         "ask": "Preguntar cada vez",
         "dock": "Cerrar solo el reproductor flotante",
         "app": "Cerrar toda la aplicación"
-      }
+      },
+      "level": "Nivel inicial del reproductor flotante",
+      "levels": {
+        "compact": "Reducido",
+        "expanded": "Ampliado"
+      },
+      "remembersLevel": "Recordar el último nivel usado",
+      "progress": "Barra de reproducción en el reproductor flotante",
+      "progressStyles": {
+        "bar": "Barra con tiempos",
+        "line": "Línea fina",
+        "none": "Ninguna"
+      },
+      "gradient": "Fondo desde la carátula en el reproductor flotante"
     },
     "textSize": {
       "title": "Tamaño del texto",
@@ -487,7 +500,8 @@
       "label": "Opciones del reproductor flotante",
       "horizontal": "Disponer en horizontal",
       "vertical": "Disponer en vertical",
-      "alwaysOnTop": "Siempre en primer plano"
+      "alwaysOnTop": "Siempre en primer plano",
+      "gradient": "Fondo desde la carátula"
     },
     "confirm": {
       "title": "¿Cerrar el reproductor flotante?",
@@ -495,7 +509,9 @@
       "remember": "Recordar esta elección",
       "dockOnly": "Solo el reproductor",
       "wholeApp": "Cerrar todo"
-    }
+    },
+    "collapse": "Menos mandos",
+    "expandDock": "Mostrar todos los mandos"
   },
   "titlebar": {
     "tray": "Minimizar en la bandeja del sistema",

@@ -5,10 +5,15 @@ import { useI18n } from 'vue-i18n';
 import AppSlider from '@/components/common/AppSlider.vue';
 import { formatDuration } from '@/services/track-sorting';
 
-const props = defineProps<{
-  position: number;
-  duration: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    position: number;
+    duration: number;
+    /** For the places too small to spell the times out, like the floating dock. */
+    hideTimes?: boolean;
+  }>(),
+  { hideTimes: false },
+);
 
 const emit = defineEmits<{ seek: [seconds: number] }>();
 
@@ -22,7 +27,9 @@ const isSeekable = computed(() => props.duration > 0);
 
 <template>
   <div class="player_progress">
-    <span class="player_progress_time" data-testid="player-position">{{ elapsed }}</span>
+    <span v-if="!props.hideTimes" class="player_progress_time" data-testid="player-position">{{
+      elapsed
+    }}</span>
     <AppSlider
       :model-value="props.position"
       :label="t('player.progress')"
@@ -33,7 +40,9 @@ const isSeekable = computed(() => props.duration > 0);
       hide-label
       @update:model-value="emit('seek', $event)"
     />
-    <span class="player_progress_time" data-testid="player-duration">{{ total }}</span>
+    <span v-if="!props.hideTimes" class="player_progress_time" data-testid="player-duration">{{
+      total
+    }}</span>
   </div>
 </template>
 

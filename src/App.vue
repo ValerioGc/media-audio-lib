@@ -58,31 +58,54 @@ async function publishToDock() {
     isPlaying: player.isPlaying,
     hasNext: player.hasNext,
     hasPrevious: player.hasPrevious,
+    position: player.position,
+    duration: player.duration,
+    volume: player.volume,
+    isMuted: player.isMuted,
+    gradient:
+      settings.miniPlayerGradient && player.coverAccent !== null
+        ? player.coverAccent.surfaceGradient
+        : null,
   });
 }
 
-async function runDockCommand(command: MiniPlayerCommand) {
-  if (command === 'toggle') {
+async function runDockCommand({ action, value }: MiniPlayerCommand) {
+  if (action === 'toggle') {
     await player.toggle();
     return;
   }
 
-  if (command === 'next') {
+  if (action === 'next') {
     await player.next();
     return;
   }
 
-  if (command === 'previous') {
+  if (action === 'previous') {
     await player.previous();
     return;
   }
 
-  if (command === 'stop') {
+  if (action === 'stop') {
     player.stop();
     return;
   }
 
-  if (command === 'expand') {
+  if (action === 'seek') {
+    player.seek(value ?? 0);
+    return;
+  }
+
+  if (action === 'volume') {
+    player.setVolume(value ?? 0);
+    return;
+  }
+
+  if (action === 'mute') {
+    player.toggleMute();
+    return;
+  }
+
+  if (action === 'expand') {
     await closeMiniPlayer();
     await showWindow();
     return;
@@ -118,13 +141,18 @@ onMounted(initializeApp);
 
 watch([() => settings.locale, () => player.isActive], writeTrayMenu);
 
-// The dock follows the track, the playing state and the queue it can move through.
+// The dock follows the track, how far it has got, and everything it can act on.
 watch(
   [
     () => player.currentTrack,
     () => player.isPlaying,
     () => player.hasNext,
     () => player.hasPrevious,
+    () => Math.floor(player.position),
+    () => player.volume,
+    () => player.isMuted,
+    () => player.coverAccent,
+    () => settings.miniPlayerGradient,
   ],
   () => {
     void publishToDock();

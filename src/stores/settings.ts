@@ -16,6 +16,7 @@ import {
   sanitizeSettings,
   type SettingsStorage,
 } from '@/services/settings-storage';
+import { applyCloseToTray, setAutostart } from '@/services/shell-integration';
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   isLockedLeadingTableColumn,
@@ -59,6 +60,10 @@ export const useSettingsStore = defineStore('settings', () => {
   const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
   const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
   const defaultPlayerBannerDismissed = ref(DEFAULT_SETTINGS.defaultPlayerBannerDismissed);
+  const closeToTray = ref(DEFAULT_SETTINGS.closeToTray);
+  const autostartEnabled = ref(DEFAULT_SETTINGS.autostartEnabled);
+  const autostartMinimized = ref(DEFAULT_SETTINGS.autostartMinimized);
+  const keepPlayerOpen = ref(DEFAULT_SETTINGS.keepPlayerOpen);
   const tableColumns = ref<TableColumnSetting[]>(
     DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
   );
@@ -90,6 +95,10 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency: playerTransparency.value,
     playerBlur: playerBlur.value,
     defaultPlayerBannerDismissed: defaultPlayerBannerDismissed.value,
+    closeToTray: closeToTray.value,
+    autostartEnabled: autostartEnabled.value,
+    autostartMinimized: autostartMinimized.value,
+    keepPlayerOpen: keepPlayerOpen.value,
     tableColumns: tableColumns.value,
   }));
 
@@ -160,6 +169,11 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency.value = restored.playerTransparency;
     playerBlur.value = restored.playerBlur;
     defaultPlayerBannerDismissed.value = restored.defaultPlayerBannerDismissed;
+    closeToTray.value = restored.closeToTray;
+    autostartEnabled.value = restored.autostartEnabled;
+    autostartMinimized.value = restored.autostartMinimized;
+    keepPlayerOpen.value = restored.keepPlayerOpen;
+    await applyCloseToTray(closeToTray.value);
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
 
     apply();
@@ -266,6 +280,29 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setPlayerBlur(next: number) {
     playerBlur.value = Math.min(MAX_PLAYER_BLUR, Math.max(0, next));
+    await persist();
+  }
+
+  async function setCloseToTray(next: boolean) {
+    closeToTray.value = next;
+    await applyCloseToTray(next);
+    await persist();
+  }
+
+  async function setAutostartEnabled(next: boolean) {
+    autostartEnabled.value = next;
+    await setAutostart(next);
+    await persist();
+  }
+
+  /** Read at launch, when the app decides whether to show itself or wait in the tray. */
+  async function setAutostartMinimized(next: boolean) {
+    autostartMinimized.value = next;
+    await persist();
+  }
+
+  async function setKeepPlayerOpen(next: boolean) {
+    keepPlayerOpen.value = next;
     await persist();
   }
 
@@ -376,6 +413,10 @@ export const useSettingsStore = defineStore('settings', () => {
     playerTransparency,
     playerBlur,
     defaultPlayerBannerDismissed,
+    closeToTray,
+    autostartEnabled,
+    autostartMinimized,
+    keepPlayerOpen,
     tableColumns,
     systemTheme,
     isReady,
@@ -400,6 +441,10 @@ export const useSettingsStore = defineStore('settings', () => {
     setPlayerTransparency,
     setPlayerBlur,
     dismissDefaultPlayerBanner,
+    setCloseToTray,
+    setAutostartEnabled,
+    setAutostartMinimized,
+    setKeepPlayerOpen,
     setTableColumnVisible,
     setTableColumnWidth,
     setTableColumnWidths,

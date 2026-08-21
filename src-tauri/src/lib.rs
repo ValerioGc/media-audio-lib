@@ -67,11 +67,7 @@ fn hide_main_window<R: Runtime>(app: &AppHandle<R>) {
 }
 
 /// The tray menu, rebuilt whenever the interface changes language.
-pub fn tray_menu<R: Runtime>(
-    app: &AppHandle<R>,
-    show: &str,
-    quit: &str,
-) -> tauri::Result<Menu<R>> {
+pub fn tray_menu<R: Runtime>(app: &AppHandle<R>, show: &str, quit: &str) -> tauri::Result<Menu<R>> {
     Menu::with_items(
         app,
         &[

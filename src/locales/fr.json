@@ -14,6 +14,19 @@
       "title": "Langue",
       "description": "Langue de l'interface. Le changement est immédiat."
     },
+    "startup": {
+      "title": "Démarrage et fenêtre",
+      "description": "Comment l’application se comporte au démarrage et à la fermeture.",
+      "autostart": "Démarrer avec le système",
+      "minimized": "Démarrer réduite dans la zone de notification",
+      "closeToTray": "À la fermeture, rester dans la zone de notification",
+      "hint": "Depuis la zone de notification, un clic ouvre la fenêtre, un clic droit propose de quitter."
+    },
+    "playerBehaviour": {
+      "title": "Lecteur",
+      "description": "Ce qui reste à l’écran quand vous fermez le morceau en cours.",
+      "keepOpen": "Laisser le lecteur ouvert, réduit, à la fermeture du morceau"
+    },
     "textSize": {
       "title": "Taille du texte",
       "description": "Met à l'échelle la typographie de toute l'interface.",
@@ -522,5 +535,9 @@
         ]
       }
     }
+  },
+  "tray": {
+    "show": "Ouvrir Media Audio Lib",
+    "quit": "Quitter"
   }
 }

@@ -27,6 +27,10 @@ interface WindowHandle {
   minimize: () => Promise<void>;
   toggleMaximize: () => Promise<void>;
   close: () => Promise<void>;
+  hide: () => Promise<void>;
+  show: () => Promise<void>;
+  unminimize: () => Promise<void>;
+  setFocus: () => Promise<void>;
 }
 
 export async function minimizeWindow(): Promise<boolean> {
@@ -39,4 +43,18 @@ export async function toggleMaximizeWindow(): Promise<boolean> {
 
 export async function closeWindow(): Promise<boolean> {
   return withWindow((appWindow) => appWindow.close());
+}
+
+/** Leaves the app running with no window on screen, reachable from the tray. */
+export async function hideWindow(): Promise<boolean> {
+  return withWindow((appWindow) => appWindow.hide());
+}
+
+/** Brings the window back, wherever the system left it. */
+export async function showWindow(): Promise<boolean> {
+  return withWindow(async (appWindow) => {
+    await appWindow.show();
+    await appWindow.unminimize();
+    await appWindow.setFocus();
+  });
 }

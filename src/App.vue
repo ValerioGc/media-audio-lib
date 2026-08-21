@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import TitleBar from '@/components/layout/TitleBar.vue';
 import PlayerDock from '@/components/player/PlayerDock.vue';
 import { startupAudioFile } from '@/services/playback-api';
+import { applyTrayLabels } from '@/services/shell-integration';
+import { showWindow } from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
@@ -11,12 +14,25 @@ import HelpView from '@/views/HelpView.vue';
 import LibraryView from '@/views/LibraryView.vue';
 import SettingsView from '@/views/SettingsView.vue';
 
+const { t } = useI18n();
 const settings = useSettingsStore();
 const navigation = useNavigationStore();
 const player = usePlayerStore();
 
+/** The tray menu is written by the shell, so it is handed the words of the interface. */
+async function writeTrayMenu() {
+  await applyTrayLabels(t('tray.show'), t('tray.quit'));
+}
+
 async function initializeApp() {
   await settings.initialize();
+  await writeTrayMenu();
+
+  // The system may have started the app out of sight: the window comes back unless the
+  // settings ask it to wait in the tray.
+  if (!settings.autostartMinimized) {
+    await showWindow();
+  }
 
   const startupTrack = await startupAudioFile();
 
@@ -28,6 +44,8 @@ async function initializeApp() {
 }
 
 onMounted(initializeApp);
+
+watch(() => settings.locale, writeTrayMenu);
 
 onBeforeUnmount(() => {
   settings.dispose();

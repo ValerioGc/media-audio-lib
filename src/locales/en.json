@@ -14,6 +14,19 @@
       "title": "Language",
       "description": "Interface language. The change applies immediately."
     },
+    "startup": {
+      "title": "Startup and window",
+      "description": "How the application behaves when it starts and when you close it.",
+      "autostart": "Start when the system starts",
+      "minimized": "Start minimized to the system tray",
+      "closeToTray": "On close, stay in the system tray",
+      "hint": "From the tray a click opens the window, a right click offers to quit."
+    },
+    "playerBehaviour": {
+      "title": "Player",
+      "description": "What stays on screen when you close the playing track.",
+      "keepOpen": "Leave the player open, minimized, when the track is closed"
+    },
     "textSize": {
       "title": "Text size",
       "description": "Scales the typography across the whole interface.",
@@ -522,5 +535,9 @@
         ]
       }
     }
+  },
+  "tray": {
+    "show": "Open Media Audio Lib",
+    "quit": "Quit"
   }
 }

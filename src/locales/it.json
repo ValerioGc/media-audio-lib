@@ -14,6 +14,19 @@
       "title": "Lingua",
       "description": "Lingua dell'interfaccia. Il cambio è immediato."
     },
+    "startup": {
+      "title": "Avvio e finestra",
+      "description": "Come si comporta l'applicazione quando parte e quando la chiudi.",
+      "autostart": "Avvia all'accensione del sistema",
+      "minimized": "Parti ridotta nella barra di sistema",
+      "closeToTray": "Chiudendo, resta nella barra di sistema",
+      "hint": "Dalla barra di sistema il click apre la finestra, il tasto destro offre di uscire."
+    },
+    "playerBehaviour": {
+      "title": "Player",
+      "description": "Cosa resta sullo schermo quando chiudi il brano in riproduzione.",
+      "keepOpen": "Lascia il player aperto, ridotto, quando chiudi il brano"
+    },
     "textSize": {
       "title": "Dimensione testo",
       "description": "Scala la tipografia di tutta l'interfaccia.",
@@ -522,5 +535,9 @@
         ]
       }
     }
+  },
+  "tray": {
+    "show": "Apri Media Audio Lib",
+    "quit": "Esci"
   }
 }

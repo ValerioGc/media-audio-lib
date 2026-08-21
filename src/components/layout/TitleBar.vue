@@ -6,11 +6,18 @@ import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import { APP_NAME } from '@/config/app-config';
 import type { IconName } from '@/config/icons';
-import { closeWindow, minimizeWindow, toggleMaximizeWindow } from '@/services/window-controls';
+import {
+  closeWindow,
+  hideWindow,
+  minimizeWindow,
+  toggleMaximizeWindow,
+} from '@/services/window-controls';
 import { useNavigationStore } from '@/stores/navigation';
+import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const navigation = useNavigationStore();
+const settings = useSettingsStore();
 
 interface WindowControl {
   id: string;
@@ -36,7 +43,7 @@ const controls = computed<WindowControl[]>(() => [
     id: 'close',
     icon: 'close',
     label: t('titlebar.close'),
-    action: () => closeWindow(),
+    action: () => (settings.closeToTray ? hideWindow() : closeWindow()),
   },
 ]);
 </script>

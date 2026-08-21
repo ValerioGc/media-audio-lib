@@ -14,6 +14,19 @@
       "title": "Sprache",
       "description": "Sprache der Oberfläche. Die Änderung wirkt sofort."
     },
+    "startup": {
+      "title": "Start und Fenster",
+      "description": "Wie sich die Anwendung beim Start und beim Schließen verhält.",
+      "autostart": "Mit dem System starten",
+      "minimized": "Minimiert im Infobereich starten",
+      "closeToTray": "Beim Schließen im Infobereich bleiben",
+      "hint": "Im Infobereich öffnet ein Klick das Fenster, die rechte Maustaste bietet das Beenden an."
+    },
+    "playerBehaviour": {
+      "title": "Player",
+      "description": "Was auf dem Bildschirm bleibt, wenn der laufende Titel geschlossen wird.",
+      "keepOpen": "Player beim Schließen des Titels geöffnet und minimiert lassen"
+    },
     "textSize": {
       "title": "Textgröße",
       "description": "Skaliert die Typografie der gesamten Oberfläche.",
@@ -522,5 +535,9 @@
         ]
       }
     }
+  },
+  "tray": {
+    "show": "Media Audio Lib öffnen",
+    "quit": "Beenden"
   }
 }

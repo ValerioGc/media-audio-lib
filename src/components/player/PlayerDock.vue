@@ -66,7 +66,13 @@ function openLibraryFromPlayer() {
 }
 
 function closePlayer() {
-  player.close();
+  // The bar can outlive the track it was opened for: the queue stays, the sound stops.
+  if (settings.keepPlayerOpen) {
+    player.stop();
+    player.collapse();
+  } else {
+    player.close();
+  }
 
   if (navigation.isPlayer) {
     navigation.go('library');

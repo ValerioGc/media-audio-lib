@@ -112,6 +112,10 @@ export interface AppSettings {
   playerTransparency: number;
   playerBlur: number;
   defaultPlayerBannerDismissed: boolean;
+  closeToTray: boolean;
+  autostartEnabled: boolean;
+  autostartMinimized: boolean;
+  keepPlayerOpen: boolean;
   tableColumns: TableColumnSetting[];
 }
 
@@ -133,5 +137,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   playerTransparency: 12,
   playerBlur: 12,
   defaultPlayerBannerDismissed: false,
+  closeToTray: false,
+  autostartEnabled: false,
+  autostartMinimized: false,
+  keepPlayerOpen: false,
   tableColumns: DEFAULT_TABLE_COLUMNS,
 };

@@ -14,6 +14,19 @@
       "title": "Idioma",
       "description": "Idioma de la interfaz. El cambio se aplica de inmediato."
     },
+    "startup": {
+      "title": "Inicio y ventana",
+      "description": "Cómo se comporta la aplicación al arrancar y al cerrarla.",
+      "autostart": "Iniciar con el sistema",
+      "minimized": "Iniciar minimizada en la bandeja del sistema",
+      "closeToTray": "Al cerrar, permanecer en la bandeja del sistema",
+      "hint": "Desde la bandeja, un clic abre la ventana y el botón derecho ofrece salir."
+    },
+    "playerBehaviour": {
+      "title": "Reproductor",
+      "description": "Qué permanece en pantalla al cerrar la pista en reproducción.",
+      "keepOpen": "Dejar el reproductor abierto, minimizado, al cerrar la pista"
+    },
     "textSize": {
       "title": "Tamaño del texto",
       "description": "Escala la tipografía de toda la interfaz.",
@@ -522,5 +535,9 @@
         ]
       }
     }
+  },
+  "tray": {
+    "show": "Abrir Media Audio Lib",
+    "quit": "Salir"
   }
 }

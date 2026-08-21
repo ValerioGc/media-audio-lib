@@ -32,6 +32,10 @@ function pickKnown<T extends string>(allowed: readonly T[], value: unknown, fall
   return allowed.includes(value as T) ? (value as T) : fallback;
 }
 
+function pickBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === 'boolean' ? value : fallback;
+}
+
 function pickNumber(value: unknown, fallback: number, min: number, max: number): number {
   return typeof value === 'number' && Number.isFinite(value)
     ? Math.min(max, Math.max(min, value))
@@ -135,6 +139,10 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.defaultPlayerBannerDismissed === 'boolean'
         ? source.defaultPlayerBannerDismissed
         : DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
+    closeToTray: pickBoolean(source.closeToTray, DEFAULT_SETTINGS.closeToTray),
+    autostartEnabled: pickBoolean(source.autostartEnabled, DEFAULT_SETTINGS.autostartEnabled),
+    autostartMinimized: pickBoolean(source.autostartMinimized, DEFAULT_SETTINGS.autostartMinimized),
+    keepPlayerOpen: pickBoolean(source.keepPlayerOpen, DEFAULT_SETTINGS.keepPlayerOpen),
     coverGradientStyle: pickKnown(
       AMBIENT_STYLES,
       source.coverGradientStyle,

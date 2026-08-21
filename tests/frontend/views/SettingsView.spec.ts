@@ -34,7 +34,7 @@ describe('SettingsView', () => {
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
 
-    expect(titles).toEqual(['Lingua', 'Player audio predefinito']);
+    expect(titles).toEqual(['Lingua', 'Avvio e finestra', 'Player', 'Player audio predefinito']);
   });
 
   it('groups appearance settings with application and audio player dividers', async () => {

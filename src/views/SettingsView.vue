@@ -11,9 +11,11 @@ import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
 import LanguageSelect from '@/components/settings/LanguageSelect.vue';
 import LibraryCreateForm from '@/components/settings/LibraryCreateForm.vue';
 import LibraryList from '@/components/settings/LibraryList.vue';
+import PlayerBehaviourPanel from '@/components/settings/PlayerBehaviourPanel.vue';
 import SettingsAppInfo from '@/components/settings/SettingsAppInfo.vue';
 import SettingsSection from '@/components/settings/SettingsSection.vue';
 import SettingsTabs from '@/components/settings/SettingsTabs.vue';
+import StartupPanel from '@/components/settings/StartupPanel.vue';
 import TextSizeSelect from '@/components/settings/TextSizeSelect.vue';
 import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
 
@@ -64,6 +66,20 @@ const tabs = computed(() => [
             :description="t('settings.language.description')"
           >
             <LanguageSelect />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.startup.title')"
+            :description="t('settings.startup.description')"
+          >
+            <StartupPanel />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.playerBehaviour.title')"
+            :description="t('settings.playerBehaviour.description')"
+          >
+            <PlayerBehaviourPanel />
           </SettingsSection>
 
           <SettingsSection

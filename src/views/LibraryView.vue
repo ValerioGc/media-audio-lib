@@ -21,6 +21,7 @@ import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryTabs from '@/components/library/LibraryTabs.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
+import type { PreviewCardMeta } from '@/components/library/PreviewCard.vue';
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import BulkMetadataEditor from '@/components/metadata/BulkMetadataEditor.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
@@ -61,12 +62,14 @@ const artistModalColumnKeys = [
   'year',
   'duration',
 ] as const satisfies readonly TableColumnKey[];
+// The album modal names its year and its artists in the header: the list underneath repeats
+// neither, in table or in preview.
 const albumModalColumnKeys = [
   'cover',
   'title',
-  'year',
   'duration',
 ] as const satisfies readonly TableColumnKey[];
+const albumModalPreviewMetaKeys = [] as const satisfies readonly PreviewCardMeta[];
 const genreModalColumnKeys = [
   'cover',
   'title',
@@ -605,6 +608,7 @@ async function confirmRemoval() {
             :tracks="selectedFacetTracks"
             :selected-ids="library.selectedIds"
             :playing-id="player.currentTrack?.id ?? null"
+            :meta-keys="albumModalPreviewMetaKeys"
             @select="selectFromTracks($event, selectedFacetTracks)"
             @play="startFacetPlayback($event)"
             @edit="openEditor"

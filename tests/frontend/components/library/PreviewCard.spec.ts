@@ -32,6 +32,21 @@ describe('PreviewCard', () => {
     expect(wrapper.findAll('.preview_card_meta').map((meta) => meta.text())).toEqual(['—', '—']);
   });
 
+  it('drops the lines the caller does not ask for', () => {
+    const wrapper = mount(PreviewCard, {
+      ...withPinia(),
+      props: {
+        track: makeTrack({ title: 'Track', artist: 'Artist', album: 'Album' }),
+        selected: false,
+        playing: false,
+        metaKeys: [],
+      },
+    });
+
+    expect(wrapper.get('.preview_card_title').text()).toBe('Track');
+    expect(wrapper.findAll('.preview_card_meta')).toHaveLength(0);
+  });
+
   it('includes the cover in card format', () => {
     const wrapper = mountCard();
 
@@ -71,6 +86,8 @@ describe('PreviewCard', () => {
 
     expect(button.attributes('aria-pressed')).toBe('false');
     expect(button.attributes('aria-label')).toBe('Track');
+    // The button covers the card, so the title has to hang from it to be read on hover.
+    expect(button.attributes('title')).toBe('Track');
   });
 
   it('reports files missing from disk', () => {

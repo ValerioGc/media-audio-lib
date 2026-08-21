@@ -7,11 +7,19 @@ import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
-const props = defineProps<{
-  track: TrackView;
-  selected: boolean;
-  playing: boolean;
-}>();
+/** The lines the card carries under its title. */
+export type PreviewCardMeta = 'artist' | 'album';
+
+const props = withDefaults(
+  defineProps<{
+    track: TrackView;
+    selected: boolean;
+    playing: boolean;
+    /** Dropped where the modal already names them, as an album does in its header. */
+    metaKeys?: readonly PreviewCardMeta[];
+  }>(),
+  { metaKeys: () => ['artist', 'album'] },
+);
 
 const emit = defineEmits<{
   select: [intent: TrackSelectionIntent];
@@ -49,6 +57,7 @@ function select(event: MouseEvent) {
       :aria-pressed="selected"
       :aria-current="playing ? 'true' : undefined"
       :aria-label="track.title"
+      :title="track.title"
       @click="select($event)"
       @dblclick="emit('play', track)"
     />
@@ -59,10 +68,12 @@ function select(event: MouseEvent) {
 
     <div class="preview_card_body">
       <h3 class="preview_card_title" :title="track.title">{{ track.title }}</h3>
-      <p class="preview_card_meta" :title="track.artist ?? ''">
+      <p v-if="metaKeys.includes('artist')" class="preview_card_meta" :title="track.artist ?? ''">
         {{ track.artist ?? t('library.row.unknown') }}
       </p>
-      <p class="preview_card_meta">{{ track.album ?? t('library.row.unknown') }}</p>
+      <p v-if="metaKeys.includes('album')" class="preview_card_meta">
+        {{ track.album ?? t('library.row.unknown') }}
+      </p>
       <p v-if="track.missing" class="preview_card_badge">
         <AppIcon name="warning" />
         {{ t('library.row.missing') }}

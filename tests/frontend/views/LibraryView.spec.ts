@@ -276,7 +276,8 @@ describe('LibraryView', () => {
     expect(summary.text()).not.toContain('Genere:');
     expect(summary.text()).not.toContain('Autore:');
     expect(artistLinks.map((link) => link.text())).toEqual(['Artist A', 'Artist B']);
-    expect(headings).toEqual(['Copertina', 'Nome', 'Anno', 'Durata', '']);
+    // The header already carries the year: the list repeats neither it nor the artists.
+    expect(headings).toEqual(['Copertina', 'Nome', 'Durata', '']);
     expect(dialog.find('[data-testid="table-column-settings"]').exists()).toBe(false);
 
     await artistLinks[0]?.trigger('click');

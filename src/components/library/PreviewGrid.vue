@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import PreviewCard from '@/components/library/PreviewCard.vue';
+import PreviewCard, { type PreviewCardMeta } from '@/components/library/PreviewCard.vue';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
-defineProps<{
-  tracks: readonly TrackView[];
-  selectedIds: readonly string[];
-  playingId: string | null;
-}>();
+withDefaults(
+  defineProps<{
+    tracks: readonly TrackView[];
+    selectedIds: readonly string[];
+    playingId: string | null;
+    metaKeys?: readonly PreviewCardMeta[];
+  }>(),
+  { metaKeys: () => ['artist', 'album'] },
+);
 
 const emit = defineEmits<{
   select: [intent: TrackSelectionIntent];
@@ -22,6 +26,7 @@ const emit = defineEmits<{
     <li v-for="track in tracks" :key="track.id" class="preview_grid_item">
       <PreviewCard
         :track="track"
+        :meta-keys="metaKeys"
         :selected="selectedIds.includes(track.id)"
         :playing="track.id === playingId"
         @select="emit('select', $event)"

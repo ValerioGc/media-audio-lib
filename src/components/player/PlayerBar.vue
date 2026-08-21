@@ -149,15 +149,17 @@ const accentStyle = computed(() => ({
   &_tab {
     display: flex;
     position: absolute;
-    right: $page_gutter;
+    right: 0;
     bottom: 100%;
     gap: $space_2xs;
     align-items: center;
-    padding: $space_2xs $space_md;
+    padding: $space_2xs $space_sm $space_2xs $space_md;
     border: 1px solid var(--color_border);
+    border-right: 0;
     border-bottom: 0;
     background-color: var(--color_surface);
-    clip-path: polygon(0.75rem 0, calc(100% - 0.75rem) 0, 100% 100%, 0 100%);
+    // Flush with the edge of the window: only the side that faces the bar is cut back.
+    clip-path: polygon(0.75rem 0, 100% 0, 100% 100%, 0 100%);
 
     &_button {
       display: inline-flex;

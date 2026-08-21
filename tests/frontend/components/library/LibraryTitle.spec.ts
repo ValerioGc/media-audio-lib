@@ -211,18 +211,24 @@ describe('LibraryTitle', () => {
       'year',
     ]);
 
-    const dataTransfer = {
-      effectAllowed: '',
-      values: new Map<string, string>(),
-      getData(type: string) {
-        return this.values.get(type) ?? '';
-      },
-      setData(type: string, value: string) {
-        this.values.set(type, value);
-      },
-    };
-    await wrapper.get('[data-testid="column-row-genre"]').trigger('dragstart', { dataTransfer });
-    await wrapper.get('[data-testid="column-row-cover"]').trigger('drop', { dataTransfer });
+    // The reorder runs on pointer events: the desktop shell leaves the webview without
+    // drag events of its own, so the handle drags the row by hand.
+    const coverRow = wrapper.get('[data-testid="column-row-cover"]').element;
+    // jsdom lays nothing out, so the row under the pointer is named outright.
+    document.elementFromPoint = () => coverRow;
+
+    await wrapper.get('[data-testid="column-handle-genre"]').trigger('pointerdown');
+    await wrapper.get('[data-testid="column-handle-genre"]').trigger('pointermove');
+    await wrapper.get('[data-testid="column-handle-genre"]').trigger('pointerup');
+
+    // Duration stays: it can be moved like any other column, but not taken away.
+    expect(
+      wrapper.get('[data-testid="column-visible-duration"]').attributes('disabled'),
+    ).toBeDefined();
+    expect(wrapper.find('[data-testid="column-handle-duration"]').exists()).toBe(true);
+    expect(
+      wrapper.get('[data-testid="column-move-up-duration"]').attributes('disabled'),
+    ).toBeUndefined();
 
     expect(settings.tableColumns.find((column) => column.key === 'format')?.visible).toBe(true);
     expect(settings.tableColumns.map((column) => column.key).slice(0, 3)).toEqual([

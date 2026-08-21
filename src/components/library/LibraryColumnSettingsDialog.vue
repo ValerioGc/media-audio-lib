@@ -28,6 +28,7 @@ const { t } = useI18n();
 const library = useLibraryStore();
 const settings = useSettingsStore();
 const draggedKey = ref<TableColumnKey | null>(null);
+const dropTargetKey = ref<TableColumnKey | null>(null);
 
 const columns = computed(() => settings.tableColumns);
 const columnLabels = computed<Record<TableColumnKey, string>>(
@@ -78,27 +79,48 @@ async function fitColumnsToContent() {
   );
 }
 
-function onDragStart(event: DragEvent, column: TableColumnSetting) {
+/**
+ * The reorder runs on pointer events rather than on the HTML5 drag and drop: the desktop
+ * shell keeps the native file drop of the window, and on Windows that leaves the webview
+ * without drag events of its own.
+ */
+function columnKeyUnder(event: PointerEvent): TableColumnKey | null {
+  const element = document.elementFromPoint(event.clientX, event.clientY);
+  const row = element?.closest<HTMLElement>('[data-column-key]');
+  const key = row?.dataset.columnKey ?? '';
+
+  return isTableColumnKey(key) ? key : null;
+}
+
+function startReorder(event: PointerEvent, column: TableColumnSetting) {
   if (isLocked(column)) {
     return;
   }
 
-  event.dataTransfer?.setData('text/plain', column.key);
-
-  if (event.dataTransfer !== null) {
-    event.dataTransfer.effectAllowed = 'move';
-  }
-
+  event.preventDefault();
+  (event.target as HTMLElement).setPointerCapture?.(event.pointerId);
   draggedKey.value = column.key;
+  dropTargetKey.value = column.key;
 }
 
-async function onDrop(event: DragEvent, target: TableColumnSetting) {
-  event.preventDefault();
-  const source = draggedKey.value ?? event.dataTransfer?.getData('text/plain') ?? '';
-  draggedKey.value = null;
+function trackReorder(event: PointerEvent) {
+  if (draggedKey.value === null) {
+    return;
+  }
 
-  if (isTableColumnKey(source) && source !== target.key) {
-    await settings.moveTableColumn(source, target.key);
+  // A pinned row is a valid landing place: the column goes to the front, and the order is
+  // normalized so cover and title keep their seats.
+  dropTargetKey.value = columnKeyUnder(event);
+}
+
+async function endReorder() {
+  const source = draggedKey.value;
+  const target = dropTargetKey.value;
+  draggedKey.value = null;
+  dropTargetKey.value = null;
+
+  if (source !== null && target !== null && source !== target) {
+    await settings.moveTableColumn(source, target);
   }
 }
 </script>
@@ -127,16 +149,21 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
           class="library_column_settings_row"
           :class="{
             library_column_settings_row_dragging: draggedKey === column.key,
+            library_column_settings_row_over: draggedKey !== null && dropTargetKey === column.key,
             library_column_settings_row_locked: isLocked(column),
           }"
-          :draggable="!isLocked(column)"
+          :data-column-key="column.key"
           :data-testid="`column-row-${column.key}`"
-          @dragstart="onDragStart($event, column)"
-          @dragend="draggedKey = null"
-          @dragover.prevent
-          @drop="onDrop($event, column)"
         >
-          <span class="library_column_settings_handle" aria-hidden="true">
+          <span
+            class="library_column_settings_handle"
+            :aria-hidden="isLocked(column) ? 'true' : undefined"
+            :data-testid="`column-handle-${column.key}`"
+            @pointerdown="startReorder($event, column)"
+            @pointermove="trackReorder"
+            @pointerup="endReorder"
+            @pointercancel="endReorder"
+          >
             <AppIcon :name="isLocked(column) ? 'check' : 'drag'" />
           </span>
 
@@ -260,6 +287,12 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
       opacity: 0.55;
     }
 
+    // Where the column lands if the pointer is released here.
+    &_over {
+      border-color: var(--color_accent);
+      background-color: var(--row_selected_background);
+    }
+
     &_locked {
       background-color: var(--color_surface_alt);
     }
@@ -267,8 +300,17 @@ async function onDrop(event: DragEvent, target: TableColumnSetting) {
 
   &_handle {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    min-height: 1.75rem;
     color: var(--color_text_muted);
+    touch-action: none;
     cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 
   &_row_locked &_handle {

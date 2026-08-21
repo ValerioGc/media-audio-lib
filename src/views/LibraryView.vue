@@ -391,7 +391,9 @@ async function confirmRemoval() {
 </script>
 
 <template>
-  <div class="library_view">
+  <!-- Files can be dropped anywhere on the library, so the outline is the view itself: an
+       empty library is exactly where the first drop lands. -->
+  <div class="library_view" :class="{ library_view_dropping: isDraggingOver }">
     <header class="library_view_header">
       <LibraryTitle />
       <LibraryToolbar
@@ -456,7 +458,6 @@ async function confirmRemoval() {
       <section
         :id="`library-panel-${activeTab}`"
         class="library_view_panel"
-        :class="{ library_view_panel_dropping: isDraggingOver }"
         role="tabpanel"
         :aria-labelledby="`library-tab-${activeTab}`"
       >
@@ -681,7 +682,16 @@ async function confirmRemoval() {
   min-height: 0;
   border: 2px dashed transparent;
   border-radius: $radius_lg;
-  transition: border-color $duration_fast ease;
+  transition:
+    background-color $duration_fast ease,
+    border-color $duration_fast ease;
+
+  // Files land anywhere on the library, so the whole view lights up: the panel alone left an
+  // empty library, the very case where the first drop happens, without a target.
+  &_dropping {
+    border-color: var(--color_accent);
+    background-color: var(--color_accent_soft);
+  }
 
   &_header {
     display: flex;
@@ -715,16 +725,6 @@ async function confirmRemoval() {
     flex: 1;
     flex-direction: column;
     min-height: 0;
-    border: 2px dashed transparent;
-    border-radius: $radius_lg;
-    transition:
-      background-color $duration_fast ease,
-      border-color $duration_fast ease;
-
-    &_dropping {
-      border-color: var(--color_accent);
-      background-color: var(--color_accent_soft);
-    }
   }
 
   &_group_modal {

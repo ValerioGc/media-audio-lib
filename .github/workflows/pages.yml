@@ -3,16 +3,10 @@ name: GitHub Pages
 on:
   push:
     branches: [main]
+    # The generated pages are committed under docs: a push that leaves them untouched has
+    # nothing to deploy, whatever else it changed.
     paths:
-      - '.github/workflows/pages.yml'
-      - 'docs/site-content.json'
-      - 'docs/styles.css'
-      - 'docs/screenshot/**'
-      - 'scripts/build-pages.cjs'
-      - 'src/assets/logo.svg'
-      - 'src/assets/icons/flag-*.svg'
-      # The site must offer the same languages as the app: the builder reads them here.
-      - 'src/types/settings.ts'
+      - 'docs/**'
   workflow_dispatch:
 
 concurrency:

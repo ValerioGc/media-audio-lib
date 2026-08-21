@@ -38,6 +38,10 @@ const emit = defineEmits<{
 .preview_grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  // The rows keep the height of their cards: a grid stretches them over the free space
+  // instead, which a short list has plenty of.
+  align-content: start;
+  grid-auto-rows: min-content;
   gap: $space_md;
   flex: 1;
   min-height: 0;

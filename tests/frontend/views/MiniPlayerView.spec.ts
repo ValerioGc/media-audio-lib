@@ -122,12 +122,7 @@ describe('MiniPlayerView', () => {
     await wrapper.get('[data-testid="mini-mute"]').trigger('click');
     await wrapper.get('[data-testid="mini-expand"]').trigger('click');
 
-    expect(send.mock.calls.map(([action]) => action)).toEqual([
-      'toggle',
-      'stop',
-      'mute',
-      'expand',
-    ]);
+    expect(send.mock.calls.map(([action]) => action)).toEqual(['toggle', 'stop', 'mute', 'expand']);
   });
 
   it('turns the dock on its side, keeps it in front and paints it, from its own options', async () => {

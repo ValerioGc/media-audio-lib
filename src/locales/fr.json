@@ -12,20 +12,14 @@
     "subtitle": "Réglez la langue, la lisibilité et l'apparence de l'application.",
     "language": {
       "title": "Langue",
-      "description": "Langue de l'interface. Le changement est immédiat.",
-      "options": {
-        "it": "Italien",
-        "en": "Anglais",
-        "fr": "Français",
-        "es": "Espagnol",
-        "de": "Allemand"
-      }
+      "description": "Langue de l'interface. Le changement est immédiat."
     },
     "textSize": {
       "title": "Taille du texte",
       "description": "Met à l'échelle la typographie de toute l'interface.",
       "preview": "Aperçu du texte à la taille choisie.",
       "options": {
+        "xsmall": "Très petit",
         "small": "Petite",
         "medium": "Moyenne",
         "large": "Grande"
@@ -133,8 +127,8 @@
       "title": "Bibliothèques",
       "description": "Chaque bibliothèque a sa propre liste de morceaux. Vous pouvez en créer d'autres, les ouvrir, choisir la principale, les exporter ou les supprimer."
     },
-    "footer": {
-      "version": "version {version}",
+    "about": {
+      "website": "Site du projet",
       "repository": "Projet sur GitHub"
     }
   },

@@ -20,12 +20,12 @@ afterEach(() => {
 });
 
 describe('LanguageSelect', () => {
-  it('lists supported languages translated', () => {
+  it('names every language in that language, not in the current one', () => {
     const wrapper = mount(LanguageSelect, withPinia());
 
     const labels = wrapper.findAll('.app_option_group_text').map((text) => text.text());
 
-    expect(labels).toEqual(['Italiano', 'Inglese', 'Francese', 'Spagnolo', 'Tedesco']);
+    expect(labels).toEqual(['Italiano', 'English', 'Français', 'Español', 'Deutsch']);
   });
 
   it('shows the flag of each language before its name', () => {

@@ -80,7 +80,7 @@ describe('SettingsView', () => {
   it('shows name, version, and project link at the bottom', () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    expect(wrapper.get('.settings_footer_name').text()).toBe(APP_NAME);
+    expect(wrapper.get('.settings_app_info_name').text()).toBe(APP_NAME);
     expect(wrapper.find('[data-testid="github-link"]').exists()).toBe(true);
   });
 

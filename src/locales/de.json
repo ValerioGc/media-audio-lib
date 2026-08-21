@@ -12,20 +12,14 @@
     "subtitle": "Sprache, Lesbarkeit und Erscheinungsbild der Anwendung anpassen.",
     "language": {
       "title": "Sprache",
-      "description": "Sprache der Oberfläche. Die Änderung wirkt sofort.",
-      "options": {
-        "it": "Italienisch",
-        "en": "Englisch",
-        "fr": "Französisch",
-        "es": "Spanisch",
-        "de": "Deutsch"
-      }
+      "description": "Sprache der Oberfläche. Die Änderung wirkt sofort."
     },
     "textSize": {
       "title": "Textgröße",
       "description": "Skaliert die Typografie der gesamten Oberfläche.",
       "preview": "Vorschau des Textes in der gewählten Größe.",
       "options": {
+        "xsmall": "Sehr klein",
         "small": "Klein",
         "medium": "Mittel",
         "large": "Groß"
@@ -133,8 +127,8 @@
       "title": "Bibliotheken",
       "description": "Jede Bibliothek hat ihre eigene Titelliste. Sie können weitere anlegen, sie öffnen, die primäre wählen, exportieren oder löschen."
     },
-    "footer": {
-      "version": "Version {version}",
+    "about": {
+      "website": "Projektwebseite",
       "repository": "Projekt auf GitHub"
     }
   },

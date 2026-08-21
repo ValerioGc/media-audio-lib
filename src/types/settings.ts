@@ -1,7 +1,7 @@
 export const LOCALES = ['it', 'en', 'fr', 'es', 'de'] as const;
 export type Locale = (typeof LOCALES)[number];
 
-export const TEXT_SIZES = ['small', 'medium', 'large'] as const;
+export const TEXT_SIZES = ['xsmall', 'small', 'medium', 'large'] as const;
 export type TextSize = (typeof TEXT_SIZES)[number];
 
 export const THEME_CHOICES = ['light', 'dark', 'system'] as const;

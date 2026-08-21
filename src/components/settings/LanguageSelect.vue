@@ -11,6 +11,18 @@ import flagIt from '@/assets/icons/flag-it.svg';
 import { useSettingsStore } from '@/stores/settings';
 import { LOCALES, type Locale } from '@/types/settings';
 
+/**
+ * Each language names itself, whatever the interface is set to: a reader looking for their
+ * own language recognises `Deutsch`, not its translation.
+ */
+const LANGUAGE_NAMES: Record<Locale, string> = {
+  it: 'Italiano',
+  en: 'English',
+  fr: 'Français',
+  es: 'Español',
+  de: 'Deutsch',
+};
+
 /** The same flags the GitHub Pages site uses for its language switcher. */
 const FLAGS: Record<Locale, string> = {
   it: flagIt,
@@ -26,7 +38,7 @@ const settings = useSettingsStore();
 const options = computed(() =>
   LOCALES.map((locale) => ({
     value: locale,
-    label: t(`settings.language.options.${locale}`),
+    label: LANGUAGE_NAMES[locale],
     icon: FLAGS[locale],
   })),
 );

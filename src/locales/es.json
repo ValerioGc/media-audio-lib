@@ -12,20 +12,14 @@
     "subtitle": "Ajusta el idioma, la legibilidad y el aspecto de la aplicación.",
     "language": {
       "title": "Idioma",
-      "description": "Idioma de la interfaz. El cambio se aplica de inmediato.",
-      "options": {
-        "it": "Italiano",
-        "en": "Inglés",
-        "fr": "Francés",
-        "es": "Español",
-        "de": "Alemán"
-      }
+      "description": "Idioma de la interfaz. El cambio se aplica de inmediato."
     },
     "textSize": {
       "title": "Tamaño del texto",
       "description": "Escala la tipografía de toda la interfaz.",
       "preview": "Vista previa del texto en el tamaño elegido.",
       "options": {
+        "xsmall": "Muy pequeño",
         "small": "Pequeño",
         "medium": "Mediano",
         "large": "Grande"
@@ -133,8 +127,8 @@
       "title": "Bibliotecas",
       "description": "Cada biblioteca tiene su propia lista de pistas. Puedes crear más, abrirlas, elegir la principal, exportarlas o eliminarlas."
     },
-    "footer": {
-      "version": "versión {version}",
+    "about": {
+      "website": "Sitio del proyecto",
       "repository": "Proyecto en GitHub"
     }
   },

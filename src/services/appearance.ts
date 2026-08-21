@@ -10,6 +10,7 @@ import {
 } from '@/types/settings';
 
 export const TEXT_SIZE_SCALE: Record<TextSize, number> = {
+  xsmall: 0.8125,
   small: 0.875,
   medium: 1,
   large: 1.125,

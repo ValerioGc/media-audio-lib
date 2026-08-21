@@ -2,7 +2,8 @@ export const APP_NAME = 'Media Audio Lib';
 
 export const APP_VERSION: string = import.meta.env.VITE_APP_VERSION ?? '0.1.0';
 
-/** Repository shown in the settings footer. Update here if the project moves. */
+/** Project site and repository shown in the settings header. Update here if they move. */
+export const WEBSITE_URL = 'https://valeriogc.github.io/media-audio-lib/';
 export const GITHUB_URL = 'https://github.com/ValerioGc/media-audio-lib';
 
 /** Audio formats handled by the library. Tag reading lands in phase 3. */

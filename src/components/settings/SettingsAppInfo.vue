@@ -2,10 +2,14 @@
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
-import { APP_NAME, APP_VERSION, GITHUB_URL } from '@/config/app-config';
+import { APP_NAME, APP_VERSION, GITHUB_URL, WEBSITE_URL } from '@/config/app-config';
 import { openExternal } from '@/services/external-link';
 
 const { t } = useI18n();
+
+async function openWebsite() {
+  await openExternal(WEBSITE_URL);
+}
 
 async function openRepository() {
   await openExternal(GITHUB_URL);
@@ -13,46 +17,58 @@ async function openRepository() {
 </script>
 
 <template>
-  <footer class="settings_footer">
-    <p class="settings_footer_app">
-      <span class="settings_footer_name">{{ APP_NAME }}</span>
-      <span class="settings_footer_version">{{
-        t('settings.footer.version', { version: APP_VERSION })
-      }}</span>
+  <div class="settings_app_info">
+    <p class="settings_app_info_app">
+      <span class="settings_app_info_name">{{ APP_NAME }}</span>
+      <span class="settings_app_info_version">{{ APP_VERSION }}</span>
     </p>
 
     <button
-      class="settings_footer_link"
+      class="settings_app_info_link"
+      type="button"
+      data-testid="website-link"
+      @click="openWebsite"
+    >
+      {{ t('settings.about.website') }}
+      <AppIcon name="external" />
+    </button>
+
+    <button
+      class="settings_app_info_link"
       type="button"
       data-testid="github-link"
       @click="openRepository"
     >
-      {{ t('settings.footer.repository') }}
+      {{ t('settings.about.repository') }}
       <AppIcon name="external" />
     </button>
-  </footer>
+  </div>
 </template>
 
 <style scoped lang="scss">
-.settings_footer {
+// The name, the version and the two links read as one line beside the way back, and wrap
+// onto lines of their own when the window is too narrow to hold them.
+.settings_app_info {
   display: flex;
   flex-wrap: wrap;
-  gap: $space_sm;
+  gap: $space_2xs $space_sm;
   align-items: center;
-  justify-content: center;
-  padding-top: $space_md;
-  border-top: 1px solid var(--color_border);
+  justify-content: flex-end;
   color: var(--color_text_muted);
   font-size: 0.875em;
 
   &_app {
     display: flex;
-    gap: $space_sm;
+    gap: $space_xs;
     align-items: baseline;
   }
 
   &_name {
     font-weight: 600;
+  }
+
+  &_version {
+    font-variant-numeric: tabular-nums;
   }
 
   &_link {

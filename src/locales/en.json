@@ -12,20 +12,14 @@
     "subtitle": "Tune the language, readability and appearance of the application.",
     "language": {
       "title": "Language",
-      "description": "Interface language. The change applies immediately.",
-      "options": {
-        "it": "Italian",
-        "en": "English",
-        "fr": "French",
-        "es": "Spanish",
-        "de": "German"
-      }
+      "description": "Interface language. The change applies immediately."
     },
     "textSize": {
       "title": "Text size",
       "description": "Scales the typography across the whole interface.",
       "preview": "Preview of the text at the selected size.",
       "options": {
+        "xsmall": "Very small",
         "small": "Small",
         "medium": "Medium",
         "large": "Large"
@@ -133,8 +127,8 @@
       "title": "Libraries",
       "description": "Each library has its own track list. You can create more, open them, choose the primary one, export or delete them."
     },
-    "footer": {
-      "version": "version {version}",
+    "about": {
+      "website": "Project website",
       "repository": "Project on GitHub"
     }
   },

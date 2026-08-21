@@ -32,9 +32,19 @@ describe('TextSizeSelect', () => {
     const wrapper = mount(TextSizeSelect, withPinia());
     const store = useSettingsStore();
 
-    await wrapper.findAll('input[type="radio"]')[2]?.trigger('change');
+    await wrapper.findAll('input[type="radio"]')[3]?.trigger('change');
 
     expect(store.textSize).toBe('large');
     expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('1.125');
+  });
+
+  it('offers a step below small', async () => {
+    const wrapper = mount(TextSizeSelect, withPinia());
+    const store = useSettingsStore();
+
+    await wrapper.findAll('input[type="radio"]')[0]?.trigger('change');
+
+    expect(store.textSize).toBe('xsmall');
+    expect(document.documentElement.style.getPropertyValue('--app_font_scale')).toBe('0.8125');
   });
 });

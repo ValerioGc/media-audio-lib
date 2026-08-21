@@ -12,20 +12,14 @@
     "subtitle": "Personalizza lingua, leggibilità e aspetto dell'applicazione.",
     "language": {
       "title": "Lingua",
-      "description": "Lingua dell'interfaccia. Il cambio è immediato.",
-      "options": {
-        "it": "Italiano",
-        "en": "Inglese",
-        "fr": "Francese",
-        "es": "Spagnolo",
-        "de": "Tedesco"
-      }
+      "description": "Lingua dell'interfaccia. Il cambio è immediato."
     },
     "textSize": {
       "title": "Dimensione testo",
       "description": "Scala la tipografia di tutta l'interfaccia.",
       "preview": "Anteprima del testo alla dimensione scelta.",
       "options": {
+        "xsmall": "Molto piccolo",
         "small": "Piccolo",
         "medium": "Medio",
         "large": "Grande"
@@ -133,8 +127,8 @@
       "title": "Librerie",
       "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, scegliere quella principale, esportarle o eliminarle."
     },
-    "footer": {
-      "version": "versione {version}",
+    "about": {
+      "website": "Sito del progetto",
       "repository": "Progetto su GitHub"
     }
   },

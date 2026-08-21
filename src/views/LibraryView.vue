@@ -113,20 +113,18 @@ const selectedFacetTracks = computed(() => {
   return library.visibleTracks.filter((track) => facetKeyOf(track, facet.field) === facet.key);
 });
 
-const selectedAlbumGenres = computed(() => {
+const selectedAlbumGenreLinks = computed<FacetGroupOpenPayload[]>(() => {
   if (selectedFacet.value?.field !== 'album') {
     return [];
   }
 
-  const genres = [
-    ...new Set(
-      selectedFacetTracks.value
-        .map((track) => track.genre?.trim() ?? '')
-        .filter((genre) => genre.length > 0),
-    ),
-  ].sort((left, right) => left.localeCompare(right));
-
-  return genres.length > 0 ? genres : [t('library.groups.unknown.genre')];
+  return [...new Set(selectedFacetTracks.value.map((track) => facetKeyOf(track, 'genre')))]
+    .sort((left, right) => facetNameOf('genre', left).localeCompare(facetNameOf('genre', right)))
+    .map((key) => ({
+      field: 'genre',
+      key,
+      name: facetNameOf('genre', key),
+    }));
 });
 
 const selectedAlbumCoverTrack = computed<TrackView | null>(() => {
@@ -317,6 +315,10 @@ function openAlbumFromCarousel(key: string) {
 
 function openArtistFromCarousel(key: string) {
   openFacet({ field: 'artist', key, name: facetNameOf('artist', key) });
+}
+
+function openGenreFromSummary(key: string) {
+  openFacet({ field: 'genre', key, name: facetNameOf('genre', key) });
 }
 
 function goBackInFacetModal() {
@@ -517,9 +519,10 @@ async function confirmRemoval() {
             :cover-track="selectedAlbumCoverTrack"
             :year="selectedAlbumYear"
             :artists="selectedAlbumArtistLinks"
-            :genres="selectedAlbumGenres"
+            :genres="selectedAlbumGenreLinks"
             :track-count="selectedFacetTracks.length"
             @open-artist="openArtistFromCarousel"
+            @open-genre="openGenreFromSummary"
           />
           <div v-else class="library_view_group_modal_summary">
             <p>

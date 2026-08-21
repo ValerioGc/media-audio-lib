@@ -106,6 +106,12 @@ function tableColumnTrack(column: TableColumnSetting, mode: TableGridMode): stri
     return fixedWidth;
   }
 
+  // The cover is a square as tall as its row: a share of the free space would only pad it
+  // with emptiness, so it keeps the width it was given and the text takes the rest.
+  if (column.key === 'cover') {
+    return `${column.width}px`;
+  }
+
   if (mode === 'fit') {
     return `minmax(0, ${column.width}fr)`;
   }

@@ -18,7 +18,7 @@ function mountSummary(props: Partial<InstanceType<typeof LibraryAlbumSummary>['$
       coverTrack: makeTrack({ hasCover: true }),
       year: 2018,
       artists: [{ key: 'Colle Der Fomento', name: 'Colle Der Fomento' }],
-      genres: ['Hip Hop/Rap Italiano'],
+      genres: [{ key: 'Hip Hop/Rap Italiano', name: 'Hip Hop/Rap Italiano' }],
       trackCount: 1,
       ...props,
     },
@@ -32,7 +32,7 @@ describe('LibraryAlbumSummary', () => {
     expect(wrapper.find('.library_album_summary_cover').exists()).toBe(true);
     expect(wrapper.get('.library_album_summary_name').text()).toBe('Adversus');
     expect(wrapper.get('.library_album_summary_year').text()).toBe('2018');
-    expect(wrapper.get('.library_album_summary_artist').text()).toBe('Colle Der Fomento');
+    expect(wrapper.get('.library_album_summary_artists').text()).toBe('Colle Der Fomento');
     expect(wrapper.get('.library_album_summary_genres').text()).toBe('Hip Hop/Rap Italiano');
     expect(wrapper.get('.library_album_summary_count').text()).toBe('1 brano');
   });
@@ -47,24 +47,37 @@ describe('LibraryAlbumSummary', () => {
         { key: 'Artist A', name: 'Artist A' },
         { key: 'Artist B', name: 'Artist B' },
       ],
-      genres: ['Jazz', 'Fusion'],
+      genres: [
+        { key: 'Jazz', name: 'Jazz' },
+        { key: 'Fusion', name: 'Fusion' },
+      ],
     });
 
-    expect(wrapper.findAll('.library_album_summary_artist').map((link) => link.text())).toEqual([
-      'Artist A',
-      'Artist B',
-    ]);
-    expect(wrapper.get('.library_album_summary_genres').text()).toBe('Jazz, Fusion');
+    expect(
+      wrapper
+        .findAll('.library_album_summary_artists .library_album_summary_link')
+        .map((link) => link.text()),
+    ).toEqual(['Artist A', 'Artist B']);
+    expect(
+      wrapper
+        .findAll('.library_album_summary_genres .library_album_summary_link')
+        .map((link) => link.text()),
+    ).toEqual(['Jazz', 'Fusion']);
   });
 
-  it('opens the artist it was asked for, by key', async () => {
+  it('opens the artist and the genre it was asked for, by key', async () => {
     const wrapper = mountSummary({
       artists: [{ key: '__unknown__', name: 'Senza autore' }],
+      genres: [{ key: 'Jazz', name: 'Jazz' }],
     });
 
-    await wrapper.get('.library_album_summary_artist').trigger('click');
+    await wrapper
+      .get('.library_album_summary_artists .library_album_summary_link')
+      .trigger('click');
+    await wrapper.get('.library_album_summary_genres .library_album_summary_link').trigger('click');
 
     expect(wrapper.emitted('openArtist')).toEqual([['__unknown__']]);
+    expect(wrapper.emitted('openGenre')).toEqual([['Jazz']]);
   });
 
   it('drops the lines it has nothing to put on', () => {

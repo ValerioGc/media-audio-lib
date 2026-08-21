@@ -263,7 +263,10 @@ describe('LibraryView', () => {
 
     const dialog = wrapper.get('dialog');
     const summary = dialog.get('.library_album_summary');
-    const artistLinks = summary.findAll('.library_album_summary_artist');
+    const artistLinks = summary.findAll(
+      '.library_album_summary_artists .library_album_summary_link',
+    );
+    const genreLinks = summary.findAll('.library_album_summary_genres .library_album_summary_link');
     const headings = dialog
       .findAll('.library_table_heading')
       .map((heading) => heading.text().replace(/[▲▼]/u, '').trim());
@@ -272,7 +275,7 @@ describe('LibraryView', () => {
     expect(summary.get('.library_album_summary_name').text()).toBe('Album A');
     expect(summary.get('.library_album_summary_year').text()).toBe('1999');
     // The fields speak for themselves: no label in front of any of them.
-    expect(summary.get('.library_album_summary_genres').text()).toBe('Fusion, Jazz');
+    expect(genreLinks.map((link) => link.text())).toEqual(['Fusion', 'Jazz']);
     expect(summary.text()).not.toContain('Genere:');
     expect(summary.text()).not.toContain('Autore:');
     expect(artistLinks.map((link) => link.text())).toEqual(['Artist A', 'Artist B']);
@@ -290,8 +293,30 @@ describe('LibraryView', () => {
 
     const restoredDialog = wrapper.get('dialog');
     expect(restoredDialog.text()).toContain('Brani collegati a Album A');
-    expect(restoredDialog.get('.library_album_summary_genres').text()).toBe('Fusion, Jazz');
+    expect(
+      restoredDialog
+        .findAll('.library_album_summary_genres .library_album_summary_link')
+        .map((link) => link.text()),
+    ).toEqual(['Fusion', 'Jazz']);
     expect(restoredDialog.find('[title="Torna al dettaglio precedente"]').exists()).toBe(false);
+  });
+
+  it('opens a genre of the album from its header', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [
+      makeTrack({ title: 'Blue', artist: 'Artist A', album: 'Album A', genre: 'Jazz' }),
+      makeTrack({ title: 'Red', artist: 'Artist B', album: 'Album B', genre: 'Rock' }),
+    ];
+    await flushPromises();
+
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+    await wrapper.findAll('.library_facet_card')[0]?.trigger('click');
+    await flushPromises();
+
+    await wrapper.get('.library_album_summary_genres .library_album_summary_link').trigger('click');
+    await flushPromises();
+
+    expect(wrapper.get('dialog').text()).toContain('Brani collegati a Jazz');
   });
 
   it('opens genre details on the tracks, with a tab for each section', async () => {

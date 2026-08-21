@@ -4,8 +4,8 @@ import { useI18n } from 'vue-i18n';
 import CoverImage from '@/components/library/CoverImage.vue';
 import type { TrackView } from '@/types/library';
 
-/** One artist of the album, ready to be opened as a group of its own. */
-export interface AlbumSummaryArtist {
+/** An artist or a genre of the album, ready to be opened as a group of its own. */
+export interface AlbumSummaryLink {
   key: string;
   name: string;
 }
@@ -14,12 +14,12 @@ const props = defineProps<{
   name: string;
   coverTrack: TrackView | null;
   year: number | null;
-  artists: readonly AlbumSummaryArtist[];
-  genres: readonly string[];
+  artists: readonly AlbumSummaryLink[];
+  genres: readonly AlbumSummaryLink[];
   trackCount: number;
 }>();
 
-const emit = defineEmits<{ openArtist: [key: string] }>();
+const emit = defineEmits<{ openArtist: [key: string]; openGenre: [key: string] }>();
 
 const { t } = useI18n();
 </script>
@@ -44,7 +44,7 @@ const { t } = useI18n();
         <button
           v-for="artist in props.artists"
           :key="artist.key"
-          class="library_album_summary_artist"
+          class="library_album_summary_link"
           type="button"
           @click="emit('openArtist', artist.key)"
         >
@@ -53,7 +53,15 @@ const { t } = useI18n();
       </p>
 
       <p v-if="props.genres.length > 0" class="library_album_summary_genres">
-        {{ props.genres.join(', ') }}
+        <button
+          v-for="genre in props.genres"
+          :key="genre.key"
+          class="library_album_summary_link library_album_summary_link_muted"
+          type="button"
+          @click="emit('openGenre', genre.key)"
+        >
+          {{ genre.name }}
+        </button>
       </p>
 
       <p class="library_album_summary_count">
@@ -77,12 +85,14 @@ const { t } = useI18n();
     box-shadow: var(--shadow_card);
   }
 
+  // The modal header reads in small type: the facts of the album sit a step above it.
   &_facts {
     display: flex;
     flex: 1;
     flex-direction: column;
     gap: $space_2xs;
     min-width: 0;
+    font-size: 1.0714em;
   }
 
   &_name {
@@ -100,14 +110,15 @@ const { t } = useI18n();
     font-variant-numeric: tabular-nums;
   }
 
-  &_artists {
+  &_artists,
+  &_genres {
     display: flex;
     flex-wrap: wrap;
     gap: $space_2xs $space_sm;
     min-width: 0;
   }
 
-  &_artist {
+  &_link {
     min-width: 0;
     padding: 0;
     border: 0;
@@ -124,9 +135,13 @@ const { t } = useI18n();
     }
 
     @include focus_ring;
+
+    // A genre is a lead, not a heading: it carries less weight than the artists.
+    &_muted {
+      font-weight: 400;
+    }
   }
 
-  &_genres,
   &_count {
     overflow: hidden;
     color: var(--color_text_muted);

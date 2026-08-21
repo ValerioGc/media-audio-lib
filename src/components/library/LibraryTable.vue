@@ -102,7 +102,7 @@ const columns = computed(() =>
     ...column,
     label: t(`library.columns.${column.key}`),
     sortable: isSortableTableColumn(column.key),
-    resizable: isResizableTableColumn(column.key),
+    resizable: props.columnKeys === undefined && isResizableTableColumn(column.key),
     active: props.sort.column === column.key,
   })),
 );

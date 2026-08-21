@@ -57,31 +57,33 @@
         },
         {
           "title": "Vista elenco e vista anteprime",
-          "body": "L'elenco mostra colonne ordinabili, ridimensionabili e nascondibili a piacere; le anteprime mostrano le copertine a griglia. Le sezioni Autori, Album e Generi raggruppano gli stessi brani per quello che ti serve."
+          "body": "L'elenco mostra colonne che puoi ordinare, ridimensionare e nascondere; le anteprime dispongono le copertine su una griglia, con un ordinamento proprio. Le sezioni Autori, Album e Generi raggruppano gli stessi brani, e ogni gruppo apre un pannello che si può percorrere: dall'album al suo autore, da lì ai suoi album."
         },
         {
           "title": "Player integrato",
-          "body": "Un player in fondo alla finestra, espandibile a tutta pagina, con avanzamento, volume, riproduzione casuale e ripetizione. La coda è l'elenco che hai davanti, filtri e ordinamento compresi."
+          "body": "Un player agganciato in fondo alla finestra, espandibile a tutta pagina, con avanzamento, volume, silenziamento, riproduzione casuale e ripetizione. La coda è l'elenco che hai davanti, filtri e ordinamento compresi, e a tutto schermo autore, album e genere sono collegamenti a tutto ciò che è legato a loro."
         },
         {
-          "title": "Aspetto personalizzabile",
-          "body": "Tema chiaro o scuro, tre dimensioni del testo, colore d'accento a scelta e sfondo sfumato costruito su quel colore, con superfici in vetro attivabili a parte."
+          "title": "L'aspetto che scegli",
+          "body": "Tema chiaro o scuro, quattro dimensioni del testo, un colore accent a tua scelta e uno sfondo sfumato costruito su quel colore, di cui decidi forma e origine, con superfici in vetro attivabili a parte e un player che prende i colori dalla copertina in ascolto."
         },
         {
           "title": "Import ed export",
           "body": "L'elenco dei brani si esporta in un file portabile e si reimporta altrove, con gestione dei duplicati. I file spostati o cancellati vengono segnalati invece di sparire in silenzio."
+        },
+        {
+          "title": "File sempre allineati",
+          "body": "All'apertura la libreria rilegge i file: i tag modificati con altri programmi arrivano da soli e i file spostati o cancellati vengono segnalati invece di sparire in silenzio. Un cercatore di duplicati raccoglie i brani presenti in più file, riconosciuti dal titolo con il suo autore o dal nome del file."
+        },
+        {
+          "title": "Player flottante e barra di sistema",
+          "body": "Riducendo l'app nella barra di sistema la musica continua, e al posto della finestra compare un player flottante: copertina, titolo e comandi in una finestrella che sposti dove vuoi, orizzontale o verticale, sempre in primo piano se lo preferisci. L'app può anche avviarsi con il sistema, già ridotta."
         }
       ],
       "formatsKicker": "Compatibilità",
       "formatsTitle": "Formati supportati",
       "formatsLabel": "Elenco dei formati audio supportati",
-      "formats": [
-        "MP3",
-        "FLAC",
-        "M4A",
-        "OGG",
-        "WAV"
-      ],
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
       "formatsNote": "La lettura e la scrittura dei tag passano dalla stessa libreria per tutti i formati. Su WAV una copertina aggiunta dall'app non può essere rimossa di nuovo: è un limite del formato contenitore.",
       "privacyKicker": "Privacy",
       "privacyTitle": "Tutto resta sul tuo computer",
@@ -141,31 +143,33 @@
         },
         {
           "title": "List view and preview view",
-          "body": "The list shows columns you can sort, resize and hide as you please; the previews show the cover art on a grid. The Artists, Albums and Genres sections group the same tracks by whatever you need."
+          "body": "The list shows columns you can sort, resize and hide as you please; the previews lay the cover art on a grid, with a sort control of their own. The Artists, Albums and Genres sections group the same tracks, and each group opens a panel you can walk through: from an album to its artist, and from there to their albums."
         },
         {
           "title": "Built-in player",
-          "body": "A player docked at the bottom of the window, expandable to full page, with progress, volume, shuffle and repeat. The queue is the list in front of you, filters and sorting included."
+          "body": "A player docked at the bottom of the window, expandable to full page, with progress, volume, mute, shuffle and repeat. The queue is the list in front of you, filters and sorting included, and in the full view the artist, the album and the genre are links to everything else connected to them."
         },
         {
           "title": "Appearance you choose",
-          "body": "Light or dark theme, three text sizes, an accent colour of your choosing and a soft background built on that colour, with glass surfaces you can switch on separately."
+          "body": "Light or dark theme, four text sizes, an accent colour of your choosing and a soft background built on that colour, whose shape and origin are yours, with glass surfaces you can switch on separately and a player that takes its colours from the cover playing."
         },
         {
           "title": "Import and export",
           "body": "The track list exports to a portable file and imports back elsewhere, duplicates handled. Files that were moved or deleted are reported rather than quietly disappearing."
+        },
+        {
+          "title": "Files kept in step",
+          "body": "Opening a library reads its files again: tags edited with another program arrive on their own, and files moved or deleted are reported instead of quietly disappearing. A duplicate finder gathers the songs held in more than one file, matched by title with its artist or by file name."
+        },
+        {
+          "title": "Floating player and system tray",
+          "body": "Send the app to the system tray and the music carries on, with a small floating player taking the place of the window: cover, title and controls in a window you drag where you like, horizontal or vertical, kept above the others if you want it there. The app can also start with the system, already minimized."
         }
       ],
       "formatsKicker": "Compatibility",
       "formatsTitle": "Supported formats",
       "formatsLabel": "List of supported audio formats",
-      "formats": [
-        "MP3",
-        "FLAC",
-        "M4A",
-        "OGG",
-        "WAV"
-      ],
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
       "formatsNote": "Reading and writing tags goes through the same library for every format. On WAV, a cover added by the app cannot be removed again: that is a limit of the container format.",
       "privacyKicker": "Privacy",
       "privacyTitle": "Everything stays on your computer",
@@ -225,31 +229,33 @@
         },
         {
           "title": "Vue liste et vue aperçus",
-          "body": "La liste affiche des colonnes que vous pouvez trier, redimensionner et masquer à votre guise ; les aperçus montrent les pochettes en grille. Les sections Artistes, Albums et Genres regroupent les mêmes morceaux selon vos besoins."
+          "body": "La liste montre des colonnes que vous pouvez trier, redimensionner et masquer ; les aperçus disposent les pochettes en grille, avec leur propre tri. Les sections Artistes, Albums et Genres regroupent les mêmes morceaux, et chaque groupe ouvre un panneau que l’on peut parcourir : de l’album à son artiste, et de là à ses albums."
         },
         {
           "title": "Lecteur intégré",
-          "body": "Un lecteur ancré en bas de la fenêtre, extensible en pleine page, avec progression, volume, lecture aléatoire et répétition. La file de lecture est la liste que vous avez sous les yeux, filtres et tri compris."
+          "body": "Un lecteur ancré en bas de la fenêtre, extensible en pleine page, avec avancement, volume, coupure du son, lecture aléatoire et répétition. La file est la liste que vous avez sous les yeux, filtres et tri compris, et en plein écran l’artiste, l’album et le genre sont des liens vers tout ce qui leur est lié."
         },
         {
-          "title": "Apparence à votre goût",
-          "body": "Thème clair ou sombre, trois tailles de texte, couleur d'accentuation au choix et arrière-plan dégradé construit sur cette couleur, avec des surfaces en verre activables séparément."
+          "title": "L’apparence que vous choisissez",
+          "body": "Thème clair ou sombre, quatre tailles de texte, une couleur d’accent à votre goût et un fond dégradé construit sur cette couleur, dont vous décidez la forme et l’origine, avec des surfaces en verre activables à part et un lecteur qui prend ses couleurs de la pochette en cours."
         },
         {
           "title": "Import et export",
           "body": "La liste des morceaux s’exporte dans un fichier portable et se réimporte ailleurs, doublons gérés. Les fichiers déplacés ou supprimés sont signalés au lieu de disparaître en silence."
+        },
+        {
+          "title": "Des fichiers toujours à jour",
+          "body": "À l’ouverture, la bibliothèque relit ses fichiers : les tags modifiés avec un autre programme arrivent d’eux-mêmes, et les fichiers déplacés ou supprimés sont signalés au lieu de disparaître en silence. Un chercheur de doublons rassemble les morceaux présents dans plusieurs fichiers, reconnus par le titre avec son artiste ou par le nom du fichier."
+        },
+        {
+          "title": "Lecteur flottant et zone de notification",
+          "body": "En envoyant l’app dans la zone de notification la musique continue, et un lecteur flottant prend la place de la fenêtre : pochette, titre et commandes dans une petite fenêtre que vous déplacez à votre guise, horizontale ou verticale, au premier plan si vous le souhaitez. L’app peut aussi démarrer avec le système, déjà réduite."
         }
       ],
       "formatsKicker": "Compatibilité",
       "formatsTitle": "Formats pris en charge",
       "formatsLabel": "Liste des formats audio pris en charge",
-      "formats": [
-        "MP3",
-        "FLAC",
-        "M4A",
-        "OGG",
-        "WAV"
-      ],
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
       "formatsNote": "La lecture et l'écriture des tags passent par la même bibliothèque pour tous les formats. Sur WAV, une pochette ajoutée par l'application ne peut plus être retirée : c'est une limite du format conteneur.",
       "privacyKicker": "Confidentialité",
       "privacyTitle": "Tout reste sur votre ordinateur",
@@ -308,32 +314,34 @@
           "body": "Título, artista, álbum, año, género y carátula se editan desde la aplicación y se reescriben en las etiquetas del archivo, no solo en la base de la biblioteca. La edición múltiple aplica el mismo campo a varias pistas a la vez."
         },
         {
-          "title": "Vista de lista y de vistas previas",
-          "body": "La lista muestra columnas que puedes ordenar, redimensionar y ocultar a tu gusto; las vistas previas muestran las carátulas en cuadrícula. Las secciones Artistas, Álbumes y Géneros agrupan las mismas pistas según lo que necesites."
+          "title": "Vista de lista y vista previa",
+          "body": "La lista muestra columnas que puedes ordenar, redimensionar y ocultar; las vistas previas disponen las carátulas en una cuadrícula, con un orden propio. Las secciones Artistas, Álbumes y Géneros agrupan las mismas pistas, y cada grupo abre un panel que se puede recorrer: del álbum a su artista, y de ahí a sus álbumes."
         },
         {
           "title": "Reproductor integrado",
-          "body": "Un reproductor anclado en la parte inferior de la ventana, ampliable a pantalla completa, con progreso, volumen, reproducción aleatoria y repetición. La cola es la lista que tienes delante, filtros y orden incluidos."
+          "body": "Un reproductor anclado abajo, ampliable a pantalla completa, con avance, volumen, silencio, reproducción aleatoria y repetición. La cola es la lista que tienes delante, filtros y orden incluidos, y a pantalla completa el artista, el álbum y el género son enlaces a todo lo relacionado con ellos."
         },
         {
-          "title": "Aspecto a tu gusto",
-          "body": "Tema claro u oscuro, tres tamaños de texto, color de acento a elegir y fondo degradado construido sobre ese color, con superficies de cristal activables por separado."
+          "title": "El aspecto que elijas",
+          "body": "Tema claro u oscuro, cuatro tamaños de texto, un color de acento a tu gusto y un fondo degradado construido sobre ese color, del que decides forma y origen, con superficies de cristal activables aparte y un reproductor que toma los colores de la carátula en reproducción."
         },
         {
           "title": "Importar y exportar",
           "body": "La lista de pistas se exporta a un archivo portable y se reimporta en otro sitio, con los duplicados gestionados. Los archivos movidos o borrados se señalan en lugar de desaparecer en silencio."
+        },
+        {
+          "title": "Archivos siempre al día",
+          "body": "Al abrirla, la biblioteca relee sus archivos: las etiquetas editadas con otro programa llegan solas, y los archivos movidos o borrados se avisan en vez de desaparecer en silencio. Un buscador de duplicados reúne las pistas presentes en varios archivos, reconocidas por el título con su artista o por el nombre del archivo."
+        },
+        {
+          "title": "Reproductor flotante y bandeja del sistema",
+          "body": "Al minimizar la app en la bandeja del sistema la música sigue, y en lugar de la ventana aparece un reproductor flotante: carátula, título y mandos en una ventanita que mueves donde quieras, horizontal o vertical, y en primer plano si lo prefieres. La app también puede arrancar con el sistema, ya minimizada."
         }
       ],
       "formatsKicker": "Compatibilidad",
       "formatsTitle": "Formatos admitidos",
       "formatsLabel": "Lista de formatos de audio admitidos",
-      "formats": [
-        "MP3",
-        "FLAC",
-        "M4A",
-        "OGG",
-        "WAV"
-      ],
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
       "formatsNote": "La lectura y la escritura de etiquetas pasan por la misma biblioteca en todos los formatos. En WAV, una carátula añadida por la aplicación ya no puede quitarse: es un límite del formato contenedor.",
       "privacyKicker": "Privacidad",
       "privacyTitle": "Todo se queda en tu ordenador",
@@ -392,32 +400,34 @@
           "body": "Titel, Interpret, Album, Jahr, Genre und Cover werden in der Anwendung bearbeitet und in die Tags der Datei zurückgeschrieben, nicht nur in die Datenbank der Bibliothek. Die Mehrfachbearbeitung wendet dasselbe Feld auf mehrere Titel zugleich an."
         },
         {
-          "title": "Listen- und Vorschauansicht",
-          "body": "Die Liste zeigt Spalten, die Sie sortieren, in der Breite ändern und ausblenden können; die Vorschau zeigt die Cover im Raster. Die Bereiche Interpreten, Alben und Genres gruppieren dieselben Titel so, wie Sie es gerade brauchen."
+          "title": "Listenansicht und Kachelansicht",
+          "body": "Die Liste zeigt Spalten, die du sortieren, in der Breite ändern und ausblenden kannst; die Kacheln legen die Cover auf ein Raster, mit eigener Sortierung. Die Bereiche Interpreten, Alben und Genres fassen dieselben Titel zusammen, und jede Gruppe öffnet eine Ansicht, durch die man wandern kann: vom Album zum Interpreten und von dort zu seinen Alben."
         },
         {
           "title": "Eingebauter Player",
-          "body": "Ein Player am unteren Rand des Fensters, auf ganze Seite erweiterbar, mit Fortschritt, Lautstärke, Zufallswiedergabe und Wiederholung. Die Warteschlange ist die Liste vor Ihnen, samt Filtern und Sortierung."
+          "body": "Ein Player am unteren Rand, auf ganze Seite erweiterbar, mit Fortschritt, Lautstärke, Stummschaltung, Zufallswiedergabe und Wiederholung. Die Warteschlange ist die Liste vor dir, Filter und Sortierung eingeschlossen, und im Vollbild sind Interpret, Album und Genre Verweise auf alles, was mit ihnen verbunden ist."
         },
         {
-          "title": "Erscheinungsbild nach Wunsch",
-          "body": "Helles oder dunkles Design, drei Textgrößen, frei wählbare Akzentfarbe und ein weicher Hintergrund auf Basis dieser Farbe, mit separat zuschaltbaren Glasflächen."
+          "title": "Das Aussehen deiner Wahl",
+          "body": "Helles oder dunkles Thema, vier Textgrößen, eine Akzentfarbe nach deinem Geschmack und ein weicher Hintergrund aus dieser Farbe, dessen Form und Ursprung du bestimmst, mit getrennt zuschaltbaren Glasflächen und einem Player, der seine Farben vom laufenden Cover nimmt."
         },
         {
           "title": "Import und Export",
           "body": "Die Titelliste lässt sich in eine portable Datei exportieren und anderswo wieder einlesen, Duplikate inbegriffen. Verschobene oder gelöschte Dateien werden gemeldet, statt still zu verschwinden."
+        },
+        {
+          "title": "Dateien bleiben im Takt",
+          "body": "Beim Öffnen liest die Bibliothek ihre Dateien erneut: mit anderen Programmen geänderte Tags kommen von allein an, verschobene oder gelöschte Dateien werden gemeldet statt stillschweigend zu verschwinden. Eine Duplikatsuche sammelt Titel, die in mehreren Dateien liegen, erkannt am Titel mit seinem Interpreten oder am Dateinamen."
+        },
+        {
+          "title": "Schwebender Player und Infobereich",
+          "body": "Geht die App in den Infobereich, läuft die Musik weiter, und an die Stelle des Fensters tritt ein schwebender Player: Cover, Titel und Bedienelemente in einem kleinen Fenster, das du hinziehst, wo du willst, waagerecht oder senkrecht, auf Wunsch immer im Vordergrund. Die App kann auch mit dem System starten, bereits minimiert."
         }
       ],
       "formatsKicker": "Kompatibilität",
       "formatsTitle": "Unterstützte Formate",
       "formatsLabel": "Liste der unterstützten Audioformate",
-      "formats": [
-        "MP3",
-        "FLAC",
-        "M4A",
-        "OGG",
-        "WAV"
-      ],
+      "formats": ["MP3", "FLAC", "M4A", "OGG", "WAV"],
       "formatsNote": "Das Lesen und Schreiben der Tags läuft bei allen Formaten über dieselbe Bibliothek. Bei WAV lässt sich ein von der Anwendung hinzugefügtes Cover nicht wieder entfernen: eine Grenze des Containerformats.",
       "privacyKicker": "Datenschutz",
       "privacyTitle": "Alles bleibt auf Ihrem Rechner",

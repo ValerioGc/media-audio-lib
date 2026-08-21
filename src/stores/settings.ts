@@ -54,6 +54,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
   const coverGradientIntensity = ref(DEFAULT_SETTINGS.coverGradientIntensity);
+  const coverGradientStyle = ref<AmbientStyle>(DEFAULT_SETTINGS.coverGradientStyle);
+  const coverGradientDirection = ref<AmbientDirection>(DEFAULT_SETTINGS.coverGradientDirection);
   const playerTransparency = ref(DEFAULT_SETTINGS.playerTransparency);
   const playerBlur = ref(DEFAULT_SETTINGS.playerBlur);
   const defaultPlayerBannerDismissed = ref(DEFAULT_SETTINGS.defaultPlayerBannerDismissed);
@@ -83,6 +85,8 @@ export const useSettingsStore = defineStore('settings', () => {
     mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
     coverGradientIntensity: coverGradientIntensity.value,
+    coverGradientStyle: coverGradientStyle.value,
+    coverGradientDirection: coverGradientDirection.value,
     playerTransparency: playerTransparency.value,
     playerBlur: playerBlur.value,
     defaultPlayerBannerDismissed: defaultPlayerBannerDismissed.value,
@@ -150,6 +154,8 @@ export const useSettingsStore = defineStore('settings', () => {
     viewMode.value = restored.viewMode;
     mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
+    coverGradientStyle.value = restored.coverGradientStyle;
+    coverGradientDirection.value = restored.coverGradientDirection;
     coverGradientIntensity.value = restored.coverGradientIntensity;
     playerTransparency.value = restored.playerTransparency;
     playerBlur.value = restored.playerBlur;
@@ -232,6 +238,16 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setCoverGradientEnabled(next: boolean) {
     coverGradientEnabled.value = next;
+    await persist();
+  }
+
+  async function setCoverGradientStyle(next: AmbientStyle) {
+    coverGradientStyle.value = next;
+    await persist();
+  }
+
+  async function setCoverGradientDirection(next: AmbientDirection) {
+    coverGradientDirection.value = next;
     await persist();
   }
 
@@ -355,6 +371,8 @@ export const useSettingsStore = defineStore('settings', () => {
     mainLibraryId,
     coverGradientEnabled,
     coverGradientIntensity,
+    coverGradientStyle,
+    coverGradientDirection,
     playerTransparency,
     playerBlur,
     defaultPlayerBannerDismissed,
@@ -377,6 +395,8 @@ export const useSettingsStore = defineStore('settings', () => {
     setMainLibraryId,
     setCoverGradientEnabled,
     setCoverGradientIntensity,
+    setCoverGradientStyle,
+    setCoverGradientDirection,
     setPlayerTransparency,
     setPlayerBlur,
     dismissDefaultPlayerBanner,

@@ -135,6 +135,16 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       typeof source.defaultPlayerBannerDismissed === 'boolean'
         ? source.defaultPlayerBannerDismissed
         : DEFAULT_SETTINGS.defaultPlayerBannerDismissed,
+    coverGradientStyle: pickKnown(
+      AMBIENT_STYLES,
+      source.coverGradientStyle,
+      DEFAULT_SETTINGS.coverGradientStyle,
+    ),
+    coverGradientDirection: pickKnown(
+      AMBIENT_DIRECTIONS,
+      source.coverGradientDirection,
+      DEFAULT_SETTINGS.coverGradientDirection,
+    ),
     tableColumns: sanitizeTableColumns(source.tableColumns),
   };
 }

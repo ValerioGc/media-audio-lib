@@ -72,6 +72,8 @@
       "title": "Hintergrund aus dem Cover",
       "description": "Verwendet die vorherrschende Farbe des Covers für den Hintergrund des Players und die laufende Zeile.",
       "toggle": "Verlauf aus dem Cover aktivieren",
+      "style": "Form des Verlaufs",
+      "direction": "Ursprung des Verlaufs",
       "intensity": "Intensität",
       "transparency": "Transparenz des Players",
       "blur": "Weichzeichnen des Players"
@@ -411,6 +413,8 @@
     "repeatOne": "Titel wiederholen",
     "progress": "Fortschritt des Titels",
     "volume": "Lautstärke",
+    "mute": "Stummschalten",
+    "unmute": "Ton einschalten",
     "volumeValue": "Lautstärke {value} %",
     "errors": {
       "missing": "Die Datei dieses Titels ist nicht mehr auf der Festplatte.",

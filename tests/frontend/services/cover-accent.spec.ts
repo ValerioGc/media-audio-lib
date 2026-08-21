@@ -12,7 +12,7 @@ describe('coverAccentFromRgb', () => {
   });
 
   it('increases the gradient intensity', () => {
-    const accent = coverAccentFromRgb(12.2, 99.8, 260, 150);
+    const accent = coverAccentFromRgb(12.2, 99.8, 260, { intensity: 150 });
 
     expect(accent.surfaceGradient).toContain('rgb(20 108 255 / 87%)');
     expect(accent.rowGradient).toContain('rgb(20 108 255 / 66%)');

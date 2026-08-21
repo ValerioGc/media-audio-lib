@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 
 import PlayerBar from '@/components/player/PlayerBar.vue';
 import PlayerFullView from '@/components/player/PlayerFullView.vue';
@@ -14,6 +14,19 @@ const navigation = useNavigationStore();
 const player = usePlayerStore();
 const settings = useSettingsStore();
 
+/**
+ * The player is part of the library, not of the pages read over it: settings and help take
+ * the whole window, so the dock steps aside there. Only the view goes: the engine lives in
+ * the store and keeps playing.
+ */
+const isCovered = computed(() => navigation.isSettings || navigation.isHelp);
+
+watch(isCovered, (covered) => {
+  if (covered) {
+    player.collapse();
+  }
+});
+
 let accentRequest = 0;
 
 watch(
@@ -21,8 +34,10 @@ watch(
     () => player.currentTrack,
     () => settings.coverGradientEnabled,
     () => settings.coverGradientIntensity,
+    () => settings.coverGradientStyle,
+    () => settings.coverGradientDirection,
   ],
-  async ([track, enabled, intensity]) => {
+  async ([track, enabled, intensity, style, direction]) => {
     const request = ++accentRequest;
     player.setCoverAccent(null);
 
@@ -36,7 +51,7 @@ watch(
       return;
     }
 
-    const accent = await dominantCoverAccent(source, intensity);
+    const accent = await dominantCoverAccent(source, { intensity, style, direction });
 
     if (request === accentRequest) {
       player.setCoverAccent(accent);
@@ -61,7 +76,7 @@ function closePlayer() {
 
 <template>
   <!-- Nothing is shown until a track is loaded: the dock only exists while playing. -->
-  <template v-if="player.currentTrack !== null">
+  <template v-if="player.currentTrack !== null && !isCovered">
     <PlayerFullView
       v-if="player.isExpanded"
       :track="player.currentTrack"

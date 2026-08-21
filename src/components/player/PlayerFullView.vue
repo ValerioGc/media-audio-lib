@@ -151,8 +151,10 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
           <PlayerSideControls
             class="player_full_transport_side"
             :volume="player.volume"
+            :muted="player.isMuted"
             :disabled="player.isLoading"
             @stop="player.stop()"
+            @toggle-mute="player.toggleMute()"
             @update:volume="player.setVolume($event)"
           />
         </div>

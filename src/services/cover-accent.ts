@@ -1,3 +1,6 @@
+import { ORIGINS } from '@/services/ambience';
+import { DEFAULT_SETTINGS, type AmbientDirection, type AmbientStyle } from '@/types/settings';
+
 export interface CoverAccent {
   rgb: string;
   surfaceGradient: string;
@@ -28,24 +31,60 @@ function liftDarkColor(red: number, green: number, blue: number): [number, numbe
   return [red + lift * 0.7, green + lift * 0.7, blue + lift * 0.9];
 }
 
+/**
+ * The player surface, drawn from the colour of the cover: the same three shapes and the
+ * same origins as the app background, so the two read as one family.
+ */
+function surfaceLayers(
+  rgb: string,
+  intensity: number,
+  style: AmbientStyle,
+  direction: AmbientDirection,
+): string {
+  const { x, y, angle } = ORIGINS[direction];
+  const strong = gradientAlpha(58, intensity);
+  const mid = gradientAlpha(32, intensity);
+  const linear = gradientAlpha(42, intensity);
+  const linearSoft = gradientAlpha(18, intensity);
+  const wash = `linear-gradient(${angle}deg, rgb(${rgb} / ${linear}%), rgb(${rgb} / ${linearSoft}%) 54%, transparent 88%)`;
+
+  if (style === 'linear') {
+    return `linear-gradient(${angle}deg, rgb(${rgb} / ${strong}%), rgb(${rgb} / ${linearSoft}%) 72%, transparent 100%)`;
+  }
+
+  if (style === 'spotlight') {
+    return `radial-gradient(circle at ${x}% ${y}%, rgb(${rgb} / ${strong}%), rgb(${rgb} / ${mid}%) 46%, transparent 82%), ${wash}`;
+  }
+
+  return `radial-gradient(circle at ${x}% ${y}%, rgb(${rgb} / ${strong}%), rgb(${rgb} / ${mid}%) 34%, transparent 68%), ${wash}`;
+}
+
+/** How strong the gradient is drawn, in which shape, and from which corner. */
+export interface CoverGradientShape {
+  intensity?: number;
+  style?: AmbientStyle;
+  direction?: AmbientDirection;
+}
+
 export function coverAccentFromRgb(
   red: number,
   green: number,
   blue: number,
-  intensity = 100,
+  shape: CoverGradientShape = {},
 ): CoverAccent {
+  const {
+    intensity = 100,
+    style = DEFAULT_SETTINGS.coverGradientStyle,
+    direction = DEFAULT_SETTINGS.coverGradientDirection,
+  } = shape;
   const [visibleRed, visibleGreen, visibleBlue] = liftDarkColor(red, green, blue);
   const rgb = `${clampChannel(visibleRed)} ${clampChannel(visibleGreen)} ${clampChannel(visibleBlue)}`;
-  const surfaceStrong = gradientAlpha(58, intensity);
-  const surfaceMid = gradientAlpha(32, intensity);
-  const surfaceLinear = gradientAlpha(42, intensity);
-  const surfaceLinearSoft = gradientAlpha(18, intensity);
   const rowStrong = gradientAlpha(44, intensity);
   const rowSoft = gradientAlpha(24, intensity);
 
   return {
     rgb,
-    surfaceGradient: `radial-gradient(circle at 12% 18%, rgb(${rgb} / ${surfaceStrong}%), rgb(${rgb} / ${surfaceMid}%) 34%, transparent 68%), linear-gradient(135deg, rgb(${rgb} / ${surfaceLinear}%), rgb(${rgb} / ${surfaceLinearSoft}%) 54%, transparent 88%)`,
+    surfaceGradient: surfaceLayers(rgb, intensity, style, direction),
     rowGradient: `linear-gradient(90deg, rgb(${rgb} / ${rowStrong}%), rgb(${rgb} / ${rowSoft}%) 48%, transparent 100%)`,
   };
 }
@@ -61,7 +100,7 @@ function imageFromSource(source: string): Promise<HTMLImageElement> {
 
 export async function dominantCoverAccent(
   source: string,
-  intensity = 100,
+  shape: CoverGradientShape = {},
 ): Promise<CoverAccent | null> {
   if (typeof document === 'undefined') {
     return null;
@@ -99,7 +138,7 @@ export async function dominantCoverAccent(
 
     return samples === 0
       ? null
-      : coverAccentFromRgb(red / samples, green / samples, blue / samples, intensity);
+      : coverAccentFromRgb(red / samples, green / samples, blue / samples, shape);
   } catch {
     return null;
   }

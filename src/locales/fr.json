@@ -72,6 +72,8 @@
       "title": "Arrière-plan depuis la pochette",
       "description": "Utilise la couleur dominante de la pochette pour l'arrière-plan du lecteur et la ligne en cours de lecture.",
       "toggle": "Activer le dégradé depuis la pochette",
+      "style": "Forme du dégradé",
+      "direction": "Origine du dégradé",
       "intensity": "Intensité",
       "transparency": "Transparence du lecteur",
       "blur": "Flou du lecteur"
@@ -411,6 +413,8 @@
     "repeatOne": "Répéter le morceau",
     "progress": "Progression du morceau",
     "volume": "Volume",
+    "mute": "Couper le son",
+    "unmute": "Rétablir le son",
     "volumeValue": "Volume {value} %",
     "errors": {
       "missing": "Le fichier de ce morceau n'est plus sur le disque.",

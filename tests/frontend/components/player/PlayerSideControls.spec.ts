@@ -10,7 +10,10 @@ beforeEach(() => {
 });
 
 function mountControls(props: Partial<InstanceType<typeof PlayerSideControls>['$props']> = {}) {
-  return mount(PlayerSideControls, { ...withPinia(), props: { volume: 0.5, ...props } });
+  return mount(PlayerSideControls, {
+    ...withPinia(),
+    props: { volume: 0.5, muted: false, ...props },
+  });
 }
 
 describe('PlayerSideControls', () => {
@@ -41,6 +44,24 @@ describe('PlayerSideControls', () => {
     const wrapper = mountControls({ volume: 0.25 });
 
     expect(wrapper.get<HTMLInputElement>('input[type="range"]').element.value).toBe('25');
+  });
+
+  it('asks for the sound to be silenced, and says so while it is', async () => {
+    const wrapper = mountControls();
+
+    await wrapper.get('[data-testid="player-mute"]').trigger('click');
+
+    expect(wrapper.emitted('toggle-mute')).toHaveLength(1);
+    expect(wrapper.get('[data-testid="player-mute"]').attributes('aria-label')).toBe(
+      'Disattiva audio',
+    );
+
+    const muted = mountControls({ muted: true });
+
+    expect(muted.get('[data-testid="player-mute"]').attributes('aria-label')).toBe(
+      'Riattiva audio',
+    );
+    expect(muted.get('[data-testid="player-mute"]').attributes('aria-pressed')).toBe('true');
   });
 
   it('disables stop while the track is loading', () => {

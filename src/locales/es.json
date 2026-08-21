@@ -72,6 +72,8 @@
       "title": "Fondo desde la carátula",
       "description": "Usa el color dominante de la carátula para el fondo del reproductor y la fila en reproducción.",
       "toggle": "Activar el degradado desde la carátula",
+      "style": "Forma del degradado",
+      "direction": "Origen del degradado",
       "intensity": "Intensidad",
       "transparency": "Transparencia del reproductor",
       "blur": "Desenfoque del reproductor"
@@ -411,6 +413,8 @@
     "repeatOne": "Repetir la pista",
     "progress": "Progreso de la pista",
     "volume": "Volumen",
+    "mute": "Silenciar",
+    "unmute": "Activar sonido",
     "volumeValue": "Volumen {value} %",
     "errors": {
       "missing": "El archivo de esta pista ya no está en el disco.",

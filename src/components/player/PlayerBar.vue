@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
@@ -43,6 +42,33 @@ const accentStyle = computed(() => ({
     :style="accentStyle"
     :aria-label="t('player.nowPlaying')"
   >
+    <!-- The two window commands of the player sit on a tab of their own, cut into the top
+         edge on the right, so they never mix with the transport. -->
+    <div class="player_bar_tab">
+      <AppTooltip :text="t('player.expand')" align="center">
+        <button
+          class="player_bar_tab_button"
+          type="button"
+          :aria-label="t('player.expand')"
+          data-testid="player-expand"
+          @click="emit('expand')"
+        >
+          <AppIcon name="expand" />
+        </button>
+      </AppTooltip>
+      <AppTooltip :text="t('player.close')" align="center">
+        <button
+          class="player_bar_tab_button"
+          type="button"
+          :aria-label="t('player.close')"
+          data-testid="player-close"
+          @click="emit('close')"
+        >
+          <AppIcon name="close" />
+        </button>
+      </AppTooltip>
+    </div>
+
     <p v-if="player.errorKey !== null" class="player_bar_error" role="alert">
       {{ t(`player.errors.${player.errorKey}`) }}
     </p>
@@ -82,30 +108,12 @@ const accentStyle = computed(() => ({
       <div class="player_bar_actions">
         <PlayerSideControls
           :volume="player.volume"
+          :muted="player.isMuted"
           :disabled="player.isLoading"
           @stop="player.stop()"
+          @toggle-mute="player.toggleMute()"
           @update:volume="player.setVolume($event)"
         />
-        <AppTooltip :text="t('player.expand')">
-          <AppButton
-            variant="ghost"
-            :aria-label="t('player.expand')"
-            data-testid="player-expand"
-            @click="emit('expand')"
-          >
-            <AppIcon name="expand" />
-          </AppButton>
-        </AppTooltip>
-        <AppTooltip :text="t('player.close')">
-          <AppButton
-            variant="ghost"
-            :aria-label="t('player.close')"
-            data-testid="player-close"
-            @click="emit('close')"
-          >
-            <AppIcon name="close" />
-          </AppButton>
-        </AppTooltip>
       </div>
     </div>
   </section>
@@ -114,6 +122,7 @@ const accentStyle = computed(() => ({
 <style scoped lang="scss">
 .player_bar {
   display: flex;
+  position: relative;
   flex-direction: column;
   padding: $space_sm $page_gutter;
   border-top: 1px solid var(--color_border);
@@ -133,6 +142,56 @@ const accentStyle = computed(() => ({
     background:
       var(--cover_accent_gradient),
       color-mix(in srgb, var(--color_surface) var(--player_surface_strength), transparent);
+  }
+
+  // Cut corners rather than a plain rectangle: the tab reads as part of the bar, hung
+  // above its edge, and the sides slope back into it.
+  &_tab {
+    display: flex;
+    position: absolute;
+    right: $page_gutter;
+    bottom: 100%;
+    gap: $space_2xs;
+    align-items: center;
+    padding: $space_2xs $space_md;
+    border: 1px solid var(--color_border);
+    border-bottom: 0;
+    background-color: var(--color_surface);
+    clip-path: polygon(0.75rem 0, calc(100% - 0.75rem) 0, 100% 100%, 0 100%);
+
+    &_button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.5rem;
+      border: 0;
+      border-radius: $radius_sm;
+      background: none;
+      color: var(--color_text_muted);
+      font: inherit;
+      font-size: 0.8em;
+      cursor: pointer;
+      transition:
+        background-color $duration_fast ease,
+        color $duration_fast ease;
+
+      &:hover {
+        background-color: var(--color_surface_hover);
+        color: var(--color_text);
+      }
+
+      @include focus_ring;
+    }
+  }
+
+  &_glass &_tab {
+    background-color: color-mix(
+      in srgb,
+      var(--color_surface) var(--player_surface_strength),
+      transparent
+    );
+    backdrop-filter: blur(var(--player_blur));
   }
 
   &_error {

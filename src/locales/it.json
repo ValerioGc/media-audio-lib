@@ -72,6 +72,8 @@
       "title": "Sfondo da copertina",
       "description": "Usa il colore dominante della copertina per lo sfondo del player e della riga in riproduzione.",
       "toggle": "Abilita gradiente dalla copertina",
+      "style": "Forma del gradiente",
+      "direction": "Origine del gradiente",
       "intensity": "Intensità",
       "transparency": "Trasparenza player",
       "blur": "Blur player"
@@ -411,6 +413,8 @@
     "repeatOne": "Ripeti brano",
     "progress": "Avanzamento del brano",
     "volume": "Volume",
+    "mute": "Disattiva audio",
+    "unmute": "Riattiva audio",
     "volumeValue": "Volume {value}%",
     "errors": {
       "missing": "Il file di questo brano non è più presente su disco.",

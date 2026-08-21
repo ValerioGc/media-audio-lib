@@ -87,4 +87,28 @@ describe('CoverGradientToggle', () => {
     expect(setCoverGradientIntensity).toHaveBeenCalledWith(160);
     expect(setPlayerBlur).toHaveBeenCalledWith(14);
   });
+
+  it('offers the shape and the origin of the gradient, as the background does', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(CoverGradientToggle, options);
+
+    await wrapper.get('[data-testid="cover-gradient-style"] input[value="linear"]').setValue(true);
+    await wrapper.get('[data-testid="cover-gradient-direction"] select').setValue('bottomRight');
+
+    expect(settings.coverGradientStyle).toBe('linear');
+    expect(settings.coverGradientDirection).toBe('bottomRight');
+  });
+
+  it('hides shape and origin while the gradient is off', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(CoverGradientToggle, options);
+
+    settings.coverGradientEnabled = false;
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-testid="cover-gradient-style"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="cover-gradient-direction"]').exists()).toBe(false);
+  });
 });

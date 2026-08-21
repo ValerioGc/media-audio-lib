@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '@tests/support/mount';
 import { makeTrack, makeTracks } from '@tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
+import { useNavigationStore } from '@/stores/navigation';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -75,6 +76,31 @@ describe('PlayerDock', () => {
     expect(wrapper.find('.player_full').exists()).toBe(false);
   });
 
+  it('steps aside on the settings and on the help, without stopping the sound', async () => {
+    const options = withPinia();
+    const player = usePlayerStore();
+    const navigation = useNavigationStore();
+    await player.play(makeTrack({ title: 'Track' }));
+    player.expand();
+
+    const wrapper = mountDock(options);
+    expect(wrapper.find('.player_full').exists()).toBe(true);
+
+    navigation.go('settings');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('.player_bar').exists()).toBe(false);
+    expect(wrapper.find('.player_full').exists()).toBe(false);
+    // The view goes, the queue stays: the engine keeps playing behind the page.
+    expect(player.currentTrack?.title).toBe('Track');
+    expect(player.isExpanded).toBe(false);
+
+    navigation.go('library');
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('.player_bar').exists()).toBe(true);
+  });
+
   it('applies the cover gradient to the player', async () => {
     const options = withPinia();
     const player = usePlayerStore();
@@ -85,7 +111,12 @@ describe('PlayerDock', () => {
     const wrapper = mountDock(options);
     await flushPromises();
 
-    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('data:image/png;base64,AAA', 100);
+    // The shape and the origin travel with the intensity, as they do for the app background.
+    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('data:image/png;base64,AAA', {
+      intensity: 100,
+      style: 'orbs',
+      direction: 'topLeft',
+    });
     expect(player.coverAccent?.rgb).toBe('10 20 30');
     expect(wrapper.get('.player_bar').classes()).toContain('player_bar_accented');
   });

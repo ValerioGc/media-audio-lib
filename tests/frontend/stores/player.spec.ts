@@ -394,6 +394,34 @@ describe('usePlayerStore', () => {
     expect(mocks.createAudioEngine).toHaveBeenCalledTimes(2);
   });
 
+  it('silences the sound and brings the level back', () => {
+    const player = usePlayerStore();
+
+    player.setVolume(0.4);
+    player.toggleMute();
+
+    expect(player.volume).toBe(0);
+    expect(player.isMuted).toBe(true);
+
+    player.toggleMute();
+
+    expect(player.volume).toBe(0.4);
+    expect(player.isMuted).toBe(false);
+  });
+
+  it('reads a volume dragged to zero as muted', () => {
+    const player = usePlayerStore();
+
+    player.setVolume(0);
+
+    expect(player.isMuted).toBe(true);
+
+    // Nothing to come back to: unmuting falls back to the default level.
+    player.toggleMute();
+
+    expect(player.volume).toBeGreaterThan(0);
+  });
+
   it('expands and collapses the view', () => {
     const player = usePlayerStore();
 

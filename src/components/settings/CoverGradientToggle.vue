@@ -2,11 +2,35 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import AppOptionGroup from '@/components/common/AppOptionGroup.vue';
+import AppSelect from '@/components/common/AppSelect.vue';
 import { useSettingsStore } from '@/stores/settings';
-import { MAX_PLAYER_BLUR } from '@/types/settings';
+import {
+  AMBIENT_DIRECTIONS,
+  AMBIENT_STYLES,
+  MAX_PLAYER_BLUR,
+  type AmbientDirection,
+  type AmbientStyle,
+} from '@/types/settings';
 
 const { t } = useI18n();
 const settings = useSettingsStore();
+
+// The shape and the origin come from the same vocabulary as the app background: the two
+// gradients are the same idea, one taken from the accent and one from the cover.
+const styleOptions = computed(() =>
+  AMBIENT_STYLES.map((style) => ({
+    value: style,
+    label: t(`settings.ambience.styles.${style}`),
+  })),
+);
+
+const directionOptions = computed(() =>
+  AMBIENT_DIRECTIONS.map((direction) => ({
+    value: direction,
+    label: t(`settings.ambience.directions.${direction}`),
+  })),
+);
 const blurPercent = computed(() => Math.round((settings.playerBlur / MAX_PLAYER_BLUR) * 100));
 
 /** The sliders tune the background taken from the cover: without it they have no subject. */
@@ -25,6 +49,14 @@ async function onBlurChange(event: Event) {
   await settings.setPlayerBlur((percentage / 100) * MAX_PLAYER_BLUR);
 }
 
+async function onStyleChange(value: string) {
+  await settings.setCoverGradientStyle(value as AmbientStyle);
+}
+
+async function onDirectionChange(value: string) {
+  await settings.setCoverGradientDirection(value as AmbientDirection);
+}
+
 async function onIntensityChange(event: Event) {
   await settings.setCoverGradientIntensity(Number((event.target as HTMLInputElement).value));
 }
@@ -41,6 +73,26 @@ async function onIntensityChange(event: Event) {
       />
       <span>{{ t('settings.coverGradient.toggle') }}</span>
     </label>
+
+    <!-- The shape and the origin only mean something while the gradient is drawn. -->
+    <template v-if="settings.coverGradientEnabled">
+      <AppOptionGroup
+        :model-value="settings.coverGradientStyle"
+        :options="styleOptions"
+        :legend="t('settings.coverGradient.style')"
+        data-testid="cover-gradient-style"
+        @update:model-value="onStyleChange"
+      />
+
+      <AppSelect
+        class="cover_gradient_toggle_direction"
+        :model-value="settings.coverGradientDirection"
+        :options="directionOptions"
+        :label="t('settings.coverGradient.direction')"
+        data-testid="cover-gradient-direction"
+        @update:model-value="onDirectionChange"
+      />
+    </template>
 
     <label
       class="cover_gradient_toggle_slider"

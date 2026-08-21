@@ -9,6 +9,7 @@ import PlayerVolume from '@/components/player/PlayerVolume.vue';
 const props = withDefaults(
   defineProps<{
     volume: number;
+    muted: boolean;
     disabled?: boolean;
   }>(),
   { disabled: false },
@@ -16,6 +17,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   stop: [];
+  'toggle-mute': [];
   'update:volume': [value: number];
 }>();
 
@@ -39,6 +41,20 @@ const { t } = useI18n();
       </AppButton>
     </AppTooltip>
 
+    <AppTooltip :text="props.muted ? t('player.unmute') : t('player.mute')" align="center">
+      <AppButton
+        variant="ghost"
+        class="player_side_controls_mute"
+        :class="{ player_side_controls_mute_on: props.muted }"
+        :aria-label="props.muted ? t('player.unmute') : t('player.mute')"
+        :aria-pressed="props.muted"
+        data-testid="player-mute"
+        @click="emit('toggle-mute')"
+      >
+        <AppIcon :name="props.muted ? 'mute' : 'volume'" />
+      </AppButton>
+    </AppTooltip>
+
     <PlayerVolume :model-value="props.volume" @update:model-value="emit('update:volume', $event)" />
   </div>
 </template>
@@ -50,12 +66,18 @@ const { t } = useI18n();
   gap: $space_sm;
   align-items: center;
 
-  &_stop {
+  &_stop,
+  &_mute {
     width: 2.25rem;
     height: 2.25rem;
     padding: 0;
     border-radius: 999px;
     color: var(--color_text_muted);
+    font-size: 0.75em;
+  }
+
+  &_mute_on {
+    color: var(--color_accent);
   }
 }
 </style>

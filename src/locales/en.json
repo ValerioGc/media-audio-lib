@@ -72,6 +72,8 @@
       "title": "Cover background",
       "description": "Use the dominant cover color for the player background and the playing row.",
       "toggle": "Enable cover gradient",
+      "style": "Gradient shape",
+      "direction": "Gradient origin",
       "intensity": "Intensity",
       "transparency": "Player transparency",
       "blur": "Player blur"
@@ -411,6 +413,8 @@
     "repeatOne": "Repeat track",
     "progress": "Track progress",
     "volume": "Volume",
+    "mute": "Mute",
+    "unmute": "Unmute",
     "volumeValue": "Volume {value}%",
     "errors": {
       "missing": "The file of this track is no longer on disk.",

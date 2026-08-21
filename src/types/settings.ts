@@ -107,6 +107,8 @@ export interface AppSettings {
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
   coverGradientIntensity: number;
+  coverGradientStyle: AmbientStyle;
+  coverGradientDirection: AmbientDirection;
   playerTransparency: number;
   playerBlur: number;
   defaultPlayerBannerDismissed: boolean;
@@ -126,6 +128,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   mainLibraryId: null,
   coverGradientEnabled: true,
   coverGradientIntensity: 100,
+  coverGradientStyle: 'orbs',
+  coverGradientDirection: 'topLeft',
   playerTransparency: 12,
   playerBlur: 12,
   defaultPlayerBannerDismissed: false,

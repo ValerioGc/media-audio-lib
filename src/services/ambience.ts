@@ -13,7 +13,7 @@ import {
 export const AMBIENT_HUE_SHIFT = 140;
 
 /** Where the background starts from, as a point in the window, and the angle away from it. */
-const ORIGINS: Record<AmbientDirection, { x: number; y: number; angle: number }> = {
+export const ORIGINS: Record<AmbientDirection, { x: number; y: number; angle: number }> = {
   topLeft: { x: 6, y: -12, angle: 135 },
   top: { x: 50, y: -18, angle: 180 },
   topRight: { x: 94, y: -12, angle: 225 },

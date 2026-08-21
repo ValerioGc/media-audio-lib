@@ -83,6 +83,8 @@ export const usePlayerStore = defineStore('player', () => {
   const position = ref(0);
   const duration = ref(0);
   const volume = ref(DEFAULT_VOLUME);
+  const volumeBeforeMute = ref(DEFAULT_VOLUME);
+  const isMuted = ref(false);
   const errorKey = ref<PlayerErrorKey>(null);
 
   let engine: AudioEngine | null = null;
@@ -252,7 +254,19 @@ export const usePlayerStore = defineStore('player', () => {
 
   function setVolume(value: number) {
     volume.value = clamp(value, 0, 1);
+    isMuted.value = volume.value === 0;
     engine?.setVolume(volume.value);
+  }
+
+  /** Silences the playback without stopping it, and remembers the level to come back to. */
+  function toggleMute() {
+    if (isMuted.value) {
+      setVolume(volumeBeforeMute.value === 0 ? DEFAULT_VOLUME : volumeBeforeMute.value);
+      return;
+    }
+
+    volumeBeforeMute.value = volume.value;
+    setVolume(0);
   }
 
   function toggleShuffle() {
@@ -319,6 +333,7 @@ export const usePlayerStore = defineStore('player', () => {
     position,
     duration,
     volume,
+    isMuted,
     errorKey,
     currentTrack,
     isActive,
@@ -335,6 +350,7 @@ export const usePlayerStore = defineStore('player', () => {
     previous,
     seek,
     setVolume,
+    toggleMute,
     toggleShuffle,
     toggleRepeatOne,
     setCoverAccent,

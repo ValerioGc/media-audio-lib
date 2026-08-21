@@ -6,6 +6,15 @@ export const APP_VERSION: string = import.meta.env.VITE_APP_VERSION ?? '0.1.0';
 export const WEBSITE_URL = 'https://valeriogc.github.io/media-audio-lib/';
 export const GITHUB_URL = 'https://github.com/ValerioGc/media-audio-lib';
 
+/**
+ * How many artists a group names before it gives up and says they are various.
+ *
+ * A compilation lists nothing useful: past a handful of names the line stops being read
+ * and starts being scrolled. Genres are left out of this: they are few and each one says
+ * something about the group.
+ */
+export const MAX_LISTED_ARTISTS = 3;
+
 /** Audio formats handled by the library. Tag reading lands in phase 3. */
 export const SUPPORTED_EXTENSIONS = ['mp3', 'flac', 'm4a', 'ogg', 'wav'] as const;
 

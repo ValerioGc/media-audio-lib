@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { MAX_LISTED_ARTISTS } from '@/config/app-config';
 import CoverImage from '@/components/library/CoverImage.vue';
 import type { TrackView } from '@/types/library';
 
@@ -22,6 +24,10 @@ const props = defineProps<{
 const emit = defineEmits<{ openArtist: [key: string]; openGenre: [key: string] }>();
 
 const { t } = useI18n();
+
+// Past a handful of names the line says nothing: the album is a compilation, and that is
+// what it reports. The genres are always named, however many they are.
+const hasVariousArtists = computed(() => props.artists.length > MAX_LISTED_ARTISTS);
 </script>
 
 <template>
@@ -40,7 +46,15 @@ const { t } = useI18n();
 
       <p v-if="props.year !== null" class="library_album_summary_year">{{ props.year }}</p>
 
-      <p v-if="props.artists.length > 0" class="library_album_summary_artists">
+      <p
+        v-if="hasVariousArtists"
+        class="library_album_summary_artists library_album_summary_various"
+        data-testid="album-various-artists"
+      >
+        {{ t('library.groups.variousArtists') }}
+      </p>
+
+      <p v-else-if="props.artists.length > 0" class="library_album_summary_artists">
         <button
           v-for="artist in props.artists"
           :key="artist.key"
@@ -120,6 +134,12 @@ const { t } = useI18n();
     flex-wrap: wrap;
     gap: $space_2xs $space_sm;
     min-width: 0;
+  }
+
+  &_various {
+    @include selectable_text;
+
+    font-weight: 700;
   }
 
   &_link {

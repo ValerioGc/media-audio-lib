@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import { MAX_LISTED_ARTISTS } from '@/config/app-config';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import { formatDuration } from '@/services/track-sorting';
@@ -183,6 +184,7 @@ function sortValueOf(group: FacetGroup, column: FacetSortColumn): string | numbe
   }
 
   if (column === 'artist') {
+    // Sorted on the names themselves: a compilation is not filed under "various".
     return group.artists.join(', ');
   }
 
@@ -238,6 +240,13 @@ function toggleSort(column: FacetSortColumn) {
     sort.value.column === column
       ? { column, direction: sort.value.direction === 'asc' ? 'desc' : 'asc' }
       : { column, direction: 'asc' };
+}
+
+/** The artists of an album, or the fact that there are too many to name. */
+function artistsLabel(artists: readonly string[]): string {
+  return artists.length > MAX_LISTED_ARTISTS
+    ? t('library.groups.variousArtists')
+    : artists.join(', ');
 }
 
 function openGroup(group: FacetGroup) {
@@ -301,7 +310,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       <div class="library_facet_card_body">
         <h3 class="library_facet_card_title">{{ group.name }}</h3>
         <p v-if="field === 'album'" class="library_facet_card_meta">
-          {{ t('library.groups.albumArtist', { artists: group.artists.join(', ') }) }}
+          {{ t('library.groups.albumArtist', { artists: artistsLabel(group.artists) }) }}
         </p>
         <p v-if="field === 'genre'" class="library_facet_card_meta">
           {{ t('library.groups.artistCount', { count: group.artistCount }, group.artistCount) }}
@@ -381,7 +390,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
           </span>
         </td>
         <td v-if="field === 'album'" class="library_facet_list_cell">
-          {{ group.artists.join(', ') }}
+          {{ artistsLabel(group.artists) }}
         </td>
         <td v-if="field === 'genre'" class="library_facet_list_cell">
           {{ t('library.groups.artistCount', { count: group.artistCount }, group.artistCount) }}

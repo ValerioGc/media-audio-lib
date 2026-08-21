@@ -368,4 +368,27 @@ describe('LibraryFacetList', () => {
     expect(rows[0]?.text()).toContain('Jazz');
     expect(rows[1]?.text()).toContain('Senza genere');
   });
+
+  it('reports a compilation as various artists, in the cards and in the list', async () => {
+    const tracks = ['A', 'B', 'C', 'D'].map((artist, index) =>
+      makeTrack({ title: `Track ${index}`, artist, album: 'Compilation' }),
+    );
+
+    const preview = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'album', viewMode: 'preview', tracks },
+    });
+
+    expect(preview.get('.library_facet_card_meta').text()).toContain('Artisti vari');
+
+    const list = mount(LibraryFacetList, {
+      ...withPinia(),
+      props: { field: 'album', viewMode: 'table', tracks },
+    });
+
+    // The first cell holds the album, the second the artists it gathers.
+    expect(list.findAll('.library_facet_list_body .library_facet_list_cell')[1]?.text()).toBe(
+      'Artisti vari',
+    );
+  });
 });

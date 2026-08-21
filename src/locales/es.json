@@ -362,6 +362,7 @@
       "genreCount": "ningún género | 1 género | {count} géneros",
       "openLabel": "Abrir las pistas vinculadas a {name}",
       "albumArtist": "Artista: {artists}",
+      "variousArtists": "Varios artistas",
       "albumGenres": "Género: {genres}",
       "modalTitle": "Pistas vinculadas a {name}",
       "detailTabs": "Detalle de los vínculos",

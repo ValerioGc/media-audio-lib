@@ -89,4 +89,32 @@ describe('LibraryAlbumSummary', () => {
     expect(wrapper.find('.library_album_summary_genres').exists()).toBe(false);
     expect(wrapper.get('.library_album_summary_name').text()).toBe('Adversus');
   });
+
+  it('says the artists are various past a handful, and still names every genre', () => {
+    const wrapper = mountSummary({
+      artists: ['A', 'B', 'C', 'D'].map((name) => ({ key: name, name })),
+      genres: ['Jazz', 'Fusion', 'Rock', 'Soul'].map((name) => ({ key: name, name })),
+    });
+
+    expect(wrapper.get('[data-testid="album-various-artists"]').text()).toBe('Artisti vari');
+    expect(
+      wrapper.findAll('.library_album_summary_artists .library_album_summary_link'),
+    ).toHaveLength(0);
+    expect(
+      wrapper
+        .findAll('.library_album_summary_genres .library_album_summary_link')
+        .map((link) => link.text()),
+    ).toEqual(['Jazz', 'Fusion', 'Rock', 'Soul']);
+  });
+
+  it('still names three artists, one link each', () => {
+    const wrapper = mountSummary({
+      artists: ['A', 'B', 'C'].map((name) => ({ key: name, name })),
+    });
+
+    expect(wrapper.find('[data-testid="album-various-artists"]').exists()).toBe(false);
+    expect(
+      wrapper.findAll('.library_album_summary_artists .library_album_summary_link'),
+    ).toHaveLength(3);
+  });
 });

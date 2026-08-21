@@ -362,6 +362,7 @@
       "genreCount": "no genre | 1 genre | {count} genres",
       "openLabel": "Open tracks linked to {name}",
       "albumArtist": "Artist: {artists}",
+      "variousArtists": "Various artists",
       "albumGenres": "Genre: {genres}",
       "modalTitle": "Tracks linked to {name}",
       "detailTabs": "Linked detail",

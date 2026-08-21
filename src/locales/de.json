@@ -362,6 +362,7 @@
       "genreCount": "kein Genre | 1 Genre | {count} Genres",
       "openLabel": "Titel öffnen, die mit {name} verknüpft sind",
       "albumArtist": "Interpret: {artists}",
+      "variousArtists": "Verschiedene Interpreten",
       "albumGenres": "Genre: {genres}",
       "modalTitle": "Titel, die mit {name} verknüpft sind",
       "detailTabs": "Detail der Verknüpfungen",

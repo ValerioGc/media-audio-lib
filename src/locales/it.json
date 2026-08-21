@@ -362,6 +362,7 @@
       "genreCount": "nessun genere | 1 genere | {count} generi",
       "openLabel": "Apri i brani collegati a {name}",
       "albumArtist": "Autore: {artists}",
+      "variousArtists": "Artisti vari",
       "albumGenres": "Genere: {genres}",
       "modalTitle": "Brani collegati a {name}",
       "detailTabs": "Dettaglio collegamenti",

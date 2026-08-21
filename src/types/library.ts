@@ -86,7 +86,7 @@ export interface MetadataUpdate {
   genre: string | null;
 }
 
-export const SORTABLE_COLUMNS = ['title', 'artist', 'album', 'year', 'genre'] as const;
+export const SORTABLE_COLUMNS = ['title', 'artist', 'album', 'year', 'genre', 'duration'] as const;
 export type SortableColumn = (typeof SORTABLE_COLUMNS)[number];
 
 export const LIBRARY_CONTENT_TABS = ['tracks', 'artists', 'albums', 'genres'] as const;

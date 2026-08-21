@@ -24,6 +24,11 @@ function compareText(left: string, right: string): number {
 }
 
 function valueOf(track: TrackView, column: SortState['column']): string | number | null {
+  // The column is named after what the list shows, the track after what it stores.
+  if (column === 'duration') {
+    return track.durationMs;
+  }
+
   const value = track[column];
 
   return value === '' ? null : value;

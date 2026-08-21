@@ -146,6 +146,7 @@
       "save": "Save the name",
       "cancel": "Cancel the change",
       "actions": "Library options",
+      "actionsHint": "Library options: rename, columns, file check, missing data and export",
       "menu": {
         "rename": "Rename",
         "columns": "Columns",
@@ -230,7 +231,6 @@
       "genre": "Genre",
       "format": "Format",
       "path": "Path",
-      "missing": "File status",
       "duration": "Duration",
       "actions": "Actions",
       "resize": "Resize {column}"
@@ -255,8 +255,6 @@
       "unknown": "—",
       "noCover": "No cover",
       "missing": "File no longer on disk",
-      "missingShort": "Missing",
-      "present": "Present",
       "playing": "Now playing",
       "actions": "Actions for {title}",
       "remove": "Remove {title} from the library",

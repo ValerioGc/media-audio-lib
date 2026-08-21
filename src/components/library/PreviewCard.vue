@@ -88,6 +88,7 @@ function select(event: MouseEvent) {
   flex: 1;
   flex-direction: column;
   gap: $space_sm;
+  min-width: 0;
   padding: $space_sm;
   @include glass_surface($radius_lg);
   transition:

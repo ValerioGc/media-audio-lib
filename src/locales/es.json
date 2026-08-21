@@ -146,6 +146,7 @@
       "save": "Guardar el nombre",
       "cancel": "Cancelar el cambio",
       "actions": "Opciones de la biblioteca",
+      "actionsHint": "Opciones de la biblioteca: renombrar, columnas, verificación de archivos, datos faltantes y exportación",
       "menu": {
         "rename": "Renombrar",
         "columns": "Columnas",
@@ -230,7 +231,6 @@
       "genre": "Género",
       "format": "Formato",
       "path": "Ruta",
-      "missing": "Estado del archivo",
       "duration": "Duración",
       "actions": "Acciones",
       "resize": "Redimensionar {column}"
@@ -255,8 +255,6 @@
       "unknown": "—",
       "noCover": "Sin carátula",
       "missing": "El archivo ya no está en el disco",
-      "missingShort": "Ausente",
-      "present": "Presente",
       "playing": "En reproducción",
       "actions": "Acciones para {title}",
       "remove": "Quitar {title} de la biblioteca",

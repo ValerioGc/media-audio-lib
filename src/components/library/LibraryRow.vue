@@ -49,13 +49,7 @@ const showsPlayingLabel = computed(() => {
 });
 
 function valueFor(column: TableColumnSetting): string {
-  return tableColumnValue(
-    props.track,
-    column.key,
-    t('library.row.unknown'),
-    t('library.row.missingShort'),
-    t('library.row.present'),
-  );
+  return tableColumnValue(props.track, column.key, t('library.row.unknown'));
 }
 
 function select(event: MouseEvent | KeyboardEvent) {

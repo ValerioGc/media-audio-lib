@@ -44,12 +44,16 @@ const emit = defineEmits<{
   margin: 0;
   padding-bottom: $space_md;
   padding-left: 0;
+  overflow-x: hidden;
   list-style: none;
 
   @include scroll_area;
 
+  // The item is a grid track first: without a floor of its own it grows to the width of the
+  // longest line of its card, which pushes the grid into a sideways scroll.
   &_item {
     display: flex;
+    min-width: 0;
   }
 }
 </style>

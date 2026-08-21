@@ -146,6 +146,7 @@
       "save": "Enregistrer le nom",
       "cancel": "Annuler la modification",
       "actions": "Options de la bibliothèque",
+      "actionsHint": "Options de la bibliothèque : renommer, colonnes, vérification des fichiers, données manquantes et export",
       "menu": {
         "rename": "Renommer",
         "columns": "Colonnes",
@@ -230,7 +231,6 @@
       "genre": "Genre",
       "format": "Format",
       "path": "Chemin",
-      "missing": "État du fichier",
       "duration": "Durée",
       "actions": "Actions",
       "resize": "Redimensionner {column}"
@@ -255,8 +255,6 @@
       "unknown": "—",
       "noCover": "Pas de pochette",
       "missing": "Fichier absent du disque",
-      "missingShort": "Manquant",
-      "present": "Présent",
       "playing": "En cours de lecture",
       "actions": "Actions pour {title}",
       "remove": "Retirer {title} de la bibliothèque",

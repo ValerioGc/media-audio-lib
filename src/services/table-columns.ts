@@ -71,7 +71,7 @@ function estimateTextWidth(value: string): number {
 }
 
 function tableColumnContentValue(track: TrackView, key: TableColumnKey): string {
-  return tableColumnValue(track, key, '', 'Missing', 'Present');
+  return tableColumnValue(track, key, '');
 }
 
 export function fittedTableColumnWidths(
@@ -122,13 +122,7 @@ export function tableGridTemplate(
   return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
 }
 
-export function tableColumnValue(
-  track: TrackView,
-  key: TableColumnKey,
-  unknown: string,
-  missing: string,
-  present: string,
-): string {
+export function tableColumnValue(track: TrackView, key: TableColumnKey, unknown: string): string {
   if (key === 'cover') {
     return '';
   }
@@ -151,10 +145,6 @@ export function tableColumnValue(
 
   if (key === 'path') {
     return track.path;
-  }
-
-  if (key === 'missing') {
-    return track.missing ? missing : present;
   }
 
   return track[key] ?? unknown;

@@ -56,7 +56,6 @@ export const TABLE_COLUMN_KEYS = [
   'genre',
   'format',
   'path',
-  'missing',
   'duration',
 ] as const;
 export type TableColumnKey = (typeof TABLE_COLUMN_KEYS)[number];
@@ -82,13 +81,12 @@ export const TABLE_COLUMN_WIDTHS: Record<
   genre: { min: 110, max: 260, default: 140 },
   format: { min: 72, max: 160, default: 90 },
   path: { min: 180, max: 560, default: 300 },
-  missing: { min: 96, max: 180, default: 120 },
   duration: { min: 76, max: 140, default: 90 },
 };
 
 export const DEFAULT_TABLE_COLUMNS: TableColumnSetting[] = TABLE_COLUMN_KEYS.map((key) => ({
   key,
-  visible: !['format', 'path', 'missing'].includes(key),
+  visible: !['format', 'path'].includes(key),
   width: TABLE_COLUMN_WIDTHS[key].default,
 }));
 

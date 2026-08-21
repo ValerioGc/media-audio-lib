@@ -146,6 +146,7 @@
       "save": "Namen speichern",
       "cancel": "Änderung verwerfen",
       "actions": "Optionen der Bibliothek",
+      "actionsHint": "Bibliotheksoptionen: umbenennen, Spalten, Dateiprüfung, fehlende Daten und Export",
       "menu": {
         "rename": "Umbenennen",
         "columns": "Spalten",
@@ -230,7 +231,6 @@
       "genre": "Genre",
       "format": "Format",
       "path": "Pfad",
-      "missing": "Dateizustand",
       "duration": "Dauer",
       "actions": "Aktionen",
       "resize": "{column} in der Breite ändern"
@@ -255,8 +255,6 @@
       "unknown": "—",
       "noCover": "Kein Cover",
       "missing": "Datei nicht mehr auf der Festplatte",
-      "missingShort": "Fehlt",
-      "present": "Vorhanden",
       "playing": "Wird abgespielt",
       "actions": "Aktionen für {title}",
       "remove": "{title} aus der Bibliothek entfernen",

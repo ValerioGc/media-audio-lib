@@ -63,7 +63,8 @@ watch(
 .app_modal {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  // Over everything it can be opened from: the full player covers the window at 20.
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: center;

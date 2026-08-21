@@ -302,20 +302,27 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     font-weight: 600;
   }
 
-  // What gathers other tracks reads as a way in, not as a label.
+  // What gathers other tracks opens on a click, but is written as plain text: no
+  // underline, no link colour of its own beyond the one its line already carries.
   &_link {
     max-width: 100%;
-    padding: 0;
+    // The padding is given back as margin, so the text stays where it was written.
+    margin: 0 calc(#{$space_2xs} * -1);
+    padding: 0 $space_2xs;
     border: 0;
+    border-radius: $radius_sm;
     background: none;
     color: inherit;
     font: inherit;
     cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 0.15em;
+    transition:
+      background-color $duration_fast ease,
+      color $duration_fast ease;
 
+    // The answer to the pointer is a surface under the words, not an underline.
     &:hover {
-      color: var(--color_accent_hover);
+      background-color: var(--color_surface_hover);
+      color: var(--color_accent);
     }
 
     @include focus_ring;
@@ -330,12 +337,11 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 
   &_details {
     display: flex;
-    gap: $space_xs $space_md;
     flex-wrap: wrap;
+    gap: $space_2xs $space_sm;
     justify-content: center;
     max-width: min(34rem, 100%);
-    padding: $space_sm $space_md;
-    @include surface_panel(999px, color-mix(in srgb, var(--color_surface) 70%, transparent));
+    margin: 0;
   }
 
   &_detail {
@@ -344,10 +350,10 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     align-items: baseline;
     min-width: 0;
 
-    // A thin separator between the values, but not before the first one.
-    & + & {
-      padding-left: $space_md;
-      border-left: 1px solid var(--color_border);
+    // A pipe between the fields, and none before the first of them.
+    & + &::before {
+      color: var(--color_border_strong);
+      content: '|';
     }
 
     &_label {

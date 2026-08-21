@@ -33,7 +33,7 @@ function select(event: MouseEvent) {
 </script>
 
 <template>
-  <li
+  <div
     class="preview_card"
     :class="{
       preview_card_selected: selected,
@@ -78,13 +78,14 @@ function select(event: MouseEvent) {
         @verify="emit('verify', $event)"
       />
     </div>
-  </li>
+  </div>
 </template>
 
 <style scoped lang="scss">
 .preview_card {
   position: relative;
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: $space_sm;
   padding: $space_sm;

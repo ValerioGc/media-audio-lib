@@ -59,12 +59,12 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_body').text()).not.toContain('In riproduzione');
   });
 
-  it('is an item of the grid list, selected through a button', () => {
+  it('is selected through a button rather than a role', () => {
     const wrapper = mountCard(makeTrack({ title: 'Track' }));
 
     // A native button rather than a role on the card: it takes focus and reads its state
     // without an ARIA role, and it leaves room for the actions menu next to it.
-    expect(wrapper.element.tagName).toBe('LI');
+    expect(wrapper.element.tagName).toBe('DIV');
     expect(wrapper.attributes('role')).toBeUndefined();
 
     const button = wrapper.get('.preview_card_select');

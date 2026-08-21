@@ -245,8 +245,8 @@ onUnmounted(stopResize);
         </thead>
 
         <tbody ref="viewport" class="library_table_viewport" @scroll="onScroll">
-          <!-- Scroll padding for the rows kept out of the DOM: no content for assistive tech. -->
-          <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+          <!-- Scroll height for the rows kept out of the DOM, empty of any content. -->
+          <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row">
             <td
               class="library_table_spacer"
               :colspan="tableColumnCount"
@@ -266,7 +266,7 @@ onUnmounted(stopResize);
             @remove="emit('remove', $event)"
             @verify="emit('verify', $event)"
           />
-          <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+          <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row">
             <td
               class="library_table_spacer"
               :colspan="tableColumnCount"

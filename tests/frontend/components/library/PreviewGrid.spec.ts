@@ -33,7 +33,7 @@ describe('PreviewGrid', () => {
     // option is not allowed to contain.
     expect(wrapper.element.tagName).toBe('UL');
     expect(wrapper.attributes('role')).toBeUndefined();
-    expect(wrapper.findAll('li.preview_card')).toHaveLength(2);
+    expect(wrapper.findAll('li.preview_grid_item .preview_card')).toHaveLength(2);
     expect(wrapper.findAll('.preview_card_select[aria-pressed]')).toHaveLength(2);
   });
 

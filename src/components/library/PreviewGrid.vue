@@ -19,18 +19,18 @@ const emit = defineEmits<{
 
 <template>
   <ul class="preview_grid">
-    <PreviewCard
-      v-for="track in tracks"
-      :key="track.id"
-      :track="track"
-      :selected="selectedIds.includes(track.id)"
-      :playing="track.id === playingId"
-      @select="emit('select', $event)"
-      @play="emit('play', $event)"
-      @edit="emit('edit', $event)"
-      @remove="emit('remove', $event)"
-      @verify="emit('verify', $event)"
-    />
+    <li v-for="track in tracks" :key="track.id" class="preview_grid_item">
+      <PreviewCard
+        :track="track"
+        :selected="selectedIds.includes(track.id)"
+        :playing="track.id === playingId"
+        @select="emit('select', $event)"
+        @play="emit('play', $event)"
+        @edit="emit('edit', $event)"
+        @remove="emit('remove', $event)"
+        @verify="emit('verify', $event)"
+      />
+    </li>
   </ul>
 </template>
 
@@ -47,5 +47,9 @@ const emit = defineEmits<{
   list-style: none;
 
   @include scroll_area;
+
+  &_item {
+    display: flex;
+  }
 }
 </style>

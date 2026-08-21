@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
@@ -49,17 +50,19 @@ function select(event: MouseEvent) {
     }"
   >
     <!-- The whole card selects, but only a button can carry the click: the card holds the
-         actions menu, which a listbox option is not allowed to contain. -->
-    <button
-      class="preview_card_select"
-      type="button"
-      :aria-pressed="selected"
-      :aria-current="playing ? 'true' : undefined"
-      :aria-label="track.title"
-      :title="track.title"
-      @click="select($event)"
-      @dblclick="emit('play', track)"
-    />
+         actions menu, which a listbox option is not allowed to contain. The button covers
+         the card, so the title hangs from it to be read anywhere on the cover. -->
+    <AppTooltip class="preview_card_hover" :text="track.title" align="center">
+      <button
+        class="preview_card_select"
+        type="button"
+        :aria-pressed="selected"
+        :aria-current="playing ? 'true' : undefined"
+        :aria-label="track.title"
+        @click="select($event)"
+        @dblclick="emit('play', track)"
+      />
+    </AppTooltip>
 
     <PlayingBubble v-if="playing" />
 
@@ -110,10 +113,16 @@ function select(event: MouseEvent) {
 
   // The button covers the card so the whole surface stays clickable, and it sits under the
   // menu so the actions keep their own clicks.
-  &_select {
+  // The tooltip is the anchor of the hover, so it takes the card over and the button fills it.
+  &_hover {
     position: absolute;
     z-index: 1;
     inset: 0;
+  }
+
+  &_select {
+    width: 100%;
+    height: 100%;
     border: 0;
     border-radius: inherit;
     background: none;

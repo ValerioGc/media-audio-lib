@@ -86,8 +86,15 @@ describe('PreviewCard', () => {
 
     expect(button.attributes('aria-pressed')).toBe('false');
     expect(button.attributes('aria-label')).toBe('Track');
-    // The button covers the card, so the title has to hang from it to be read on hover.
-    expect(button.attributes('title')).toBe('Track');
+  });
+
+  it('reads the title on hover, from anywhere on the card', async () => {
+    const wrapper = mountCard(makeTrack({ title: 'Blue in Green' }));
+
+    // The button covers the card, so the tooltip hangs from it rather than from the heading.
+    await wrapper.get('.preview_card_hover').trigger('mouseenter');
+
+    expect(wrapper.get('.app_tooltip_bubble').text()).toBe('Blue in Green');
   });
 
   it('reports files missing from disk', () => {

@@ -141,7 +141,7 @@ These apply to **every** step and are part of the definition of done.
 6. **Errors**: no unjustified `unwrap()` in Rust. Errors are typed, propagated and turned into a message a user can understand.
 7. **i18n**: every string a user can see — labels, error messages, tooltips, dialog text — goes through `vue-i18n`. No hardcoded strings in components.
 8. **Comments**: code comments are written in English; documentation and the interface are in Italian.
-9. **Class names must be literal**: the CSS goes through PurgeCSS, which keeps only the class names the sources spell out. A class built from a prop — `` :class="`card_${size}`" `` — is dropped from the stylesheet without a word, and the component renders unstyled in the packaged app. Bind an object with the names written out instead.
+9. **Class names must be literal**: the CSS goes through PurgeCSS, which keeps only the class names the sources spell out. A class built from a prop — ``:class="`card_${size}`"`` — is dropped from the stylesheet without a word, and the component renders unstyled in the packaged app. Bind an object with the names written out instead.
 10. **HTML5 drag and drop is unavailable**: the window keeps Tauri's native file drop (`dragDropEnabled`, on by default), which on Windows takes the drag events away from the webview. Reordering inside the app is done with pointer events, as in the column settings dialog.
 
 ## Style guidelines
@@ -230,4 +230,4 @@ Deliberate debts rather than oversights. None of them blocks the remaining work.
 | TypeScript held at 6.x                   | `vue-tsc` 3.3.10 does not support TypeScript 7 (the `./lib/tsc` export was removed).                                                                                                                                                |
 | M4A and OGG fixtures missing             | Both formats go through the same `lofty` API as the others, but no generated file proves it: building one by hand needs a complete MP4/Ogg container.                                                                               |
 | Cover not removable on WAV               | `lofty` does not shrink the ID3 chunk inside a RIFF container. On MP3, the priority format, the full cycle works and is covered by tests.                                                                                           |
-| No watcher on the library folders        | The files are read again when the app starts and when a library is opened, off the main thread. A file edited while the library is on screen goes unnoticed until the next opening: watching the filesystem is not implemented.      |
+| No watcher on the library folders        | The files are read again when the app starts and when a library is opened, off the main thread. A file edited while the library is on screen goes unnoticed until the next opening: watching the filesystem is not implemented.     |

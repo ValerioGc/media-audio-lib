@@ -245,9 +245,10 @@ onUnmounted(stopResize);
         </thead>
 
         <tbody ref="viewport" class="library_table_viewport" @scroll="onScroll">
-          <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+          <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row" role="presentation">
             <td
               class="library_table_spacer"
+              role="presentation"
               :colspan="tableColumnCount"
               :style="{ height: `${topSpacerHeight}px` }"
             />
@@ -265,9 +266,10 @@ onUnmounted(stopResize);
             @remove="emit('remove', $event)"
             @verify="emit('verify', $event)"
           />
-          <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row" aria-hidden="true">
+          <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row" role="presentation">
             <td
               class="library_table_spacer"
+              role="presentation"
               :colspan="tableColumnCount"
               :style="{ height: `${bottomSpacerHeight}px` }"
             />

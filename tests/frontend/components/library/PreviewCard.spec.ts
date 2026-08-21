@@ -59,10 +59,13 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.preview_card_body').text()).not.toContain('In riproduzione');
   });
 
-  it('is an item of the grid list and can take focus', () => {
+  it('is a selectable option of the grid, and can take focus', () => {
     const wrapper = mountCard();
 
-    expect(wrapper.element.tagName).toBe('LI');
+    // A div: an element that already carries a document role, such as li or article,
+    // must not be handed an interactive one on top of it.
+    expect(wrapper.element.tagName).toBe('DIV');
+    expect(wrapper.attributes('role')).toBe('option');
     expect(wrapper.attributes('tabindex')).toBe('0');
   });
 

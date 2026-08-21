@@ -3,10 +3,7 @@ import type { ResolvedTheme } from '@/types/settings';
 const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
 function darkSchemeQuery(): MediaQueryList | null {
-  if (
-    typeof globalThis.window === 'undefined' ||
-    typeof globalThis.window.matchMedia !== 'function'
-  ) {
+  if (globalThis.window === undefined || typeof globalThis.window.matchMedia !== 'function') {
     return null;
   }
 

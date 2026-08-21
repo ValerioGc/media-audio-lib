@@ -33,13 +33,14 @@ function select(event: MouseEvent | KeyboardEvent) {
 </script>
 
 <template>
-  <li
+  <div
     class="preview_card"
     :class="{
       preview_card_selected: selected,
       preview_card_missing: track.missing,
       preview_card_playing: playing,
     }"
+    role="option"
     tabindex="0"
     :aria-selected="selected"
     :aria-current="playing ? 'true' : undefined"
@@ -72,7 +73,7 @@ function select(event: MouseEvent | KeyboardEvent) {
         @verify="emit('verify', $event)"
       />
     </div>
-  </li>
+  </div>
 </template>
 
 <style scoped lang="scss">

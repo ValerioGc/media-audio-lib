@@ -26,12 +26,14 @@ describe('PreviewGrid', () => {
     expect(wrapper.findAll('.preview_card')).toHaveLength(5);
   });
 
-  it('is a list whose items can be selected several at a time', () => {
+  it('is a listbox whose options can be selected several at a time', () => {
     const wrapper = mountGrid(makeTracks(2));
 
-    expect(wrapper.element.tagName).toBe('UL');
+    // `aria-multiselectable` and `aria-selected` only mean something on a listbox and its
+    // options; a plain list supports neither.
+    expect(wrapper.attributes('role')).toBe('listbox');
     expect(wrapper.attributes('aria-multiselectable')).toBe('true');
-    expect(wrapper.findAll('li.preview_card')).toHaveLength(2);
+    expect(wrapper.findAll('[role="option"]')).toHaveLength(2);
   });
 
   it('renders nothing for an empty list', () => {

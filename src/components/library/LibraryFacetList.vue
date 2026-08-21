@@ -494,6 +494,25 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     align-items: center;
     min-height: 3rem;
     padding: 0 $space_md;
+    border-bottom: 1px solid var(--color_border);
+    cursor: pointer;
+    transition: background-color $duration_fast ease;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+
+    &:hover {
+      background-color: var(--row_hover_background);
+    }
+
+    @include focus_ring;
+
+    &_playing {
+      border-color: var(--color_accent);
+      background-color: var(--row_selected_background);
+      box-shadow: inset 2px 0 0 var(--color_accent);
+    }
   }
 
   &_album &_row,
@@ -529,28 +548,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     min-height: 0;
 
     @include scroll_area;
-  }
-
-  &_row {
-    border-bottom: 1px solid var(--color_border);
-    cursor: pointer;
-    transition: background-color $duration_fast ease;
-
-    &:last-child {
-      border-bottom: 0;
-    }
-
-    &:hover {
-      background-color: var(--row_hover_background);
-    }
-
-    @include focus_ring;
-
-    &_playing {
-      border-color: var(--color_accent);
-      background-color: var(--row_selected_background);
-      box-shadow: inset 2px 0 0 var(--color_accent);
-    }
   }
 
   &_cell {

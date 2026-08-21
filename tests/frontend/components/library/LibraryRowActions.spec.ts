@@ -60,19 +60,19 @@ describe('LibraryRowActions', () => {
     expect(wrapper.find('[role="menu"]').exists()).toBe(false);
   });
 
-  it('emits edit, verify, and removal', async () => {
+  it('emits edit and removal, the only actions a row carries', async () => {
     const track = makeTrack();
     const wrapper = mountActions(track);
 
     await wrapper.get('.app_menu_trigger').trigger('click');
+    // Verifying one file at a time is gone: it runs over the whole library instead.
+    expect(wrapper.findAll('.app_menu_item')).toHaveLength(2);
+
     await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('edit')).toEqual([[track]]);
-    expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 
@@ -84,7 +84,6 @@ describe('LibraryRowActions', () => {
 
     expect(items.map((item) => item.get('.app_menu_item_label').text())).toEqual([
       'Modifica',
-      'Verifica',
       'Elimina',
     ]);
     expect(items[0]?.attributes('aria-label')).toBe('Modifica i metadati di Blue in Green');

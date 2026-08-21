@@ -13,7 +13,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   edit: [track: TrackView];
   remove: [track: TrackView];
-  verify: [track: TrackView];
 }>();
 
 const { t } = useI18n();
@@ -29,12 +28,6 @@ const items = computed<MenuItem[]>(() => [
     disabled: props.track.missing,
   },
   {
-    id: 'verify',
-    label: t('library.row.menu.verify'),
-    description: t('library.row.verify', { title: props.track.title }),
-    icon: 'verify',
-  },
-  {
     id: 'remove',
     label: t('library.row.menu.remove'),
     description: t('library.row.remove', { title: props.track.title }),
@@ -46,8 +39,6 @@ const items = computed<MenuItem[]>(() => [
 function run(id: string) {
   if (id === 'edit') {
     emit('edit', props.track);
-  } else if (id === 'verify') {
-    emit('verify', props.track);
   } else {
     emit('remove', props.track);
   }

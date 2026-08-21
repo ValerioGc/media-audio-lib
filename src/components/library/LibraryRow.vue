@@ -24,7 +24,6 @@ const emit = defineEmits<{
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
-  verify: [track: TrackView];
 }>();
 
 const { t } = useI18n();
@@ -123,7 +122,6 @@ function openActionsMenu(event: MouseEvent) {
         :track="track"
         @edit="emit('edit', $event)"
         @remove="emit('remove', $event)"
-        @verify="emit('verify', $event)"
       />
     </td>
   </tr>

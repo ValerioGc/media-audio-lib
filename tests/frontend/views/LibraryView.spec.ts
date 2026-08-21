@@ -483,7 +483,7 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
     expect(wrapper.get('dialog').text()).toContain(track.title);
     expect(remove).not.toHaveBeenCalled();
 
@@ -502,7 +502,7 @@ describe('LibraryView', () => {
     await flushPromises();
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
     await wrapper.get('.app_modal_actions button').trigger('click');
 
     expect(remove).not.toHaveBeenCalled();
@@ -536,20 +536,6 @@ describe('LibraryView', () => {
     expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(true);
   });
 
-  it('verifies the file link from the row', async () => {
-    const { wrapper, store } = await mountView();
-    useSettingsStore().viewMode = 'table';
-    const track = makeTrack();
-    store.tracks = [track];
-    const verifyTrack = vi.spyOn(store, 'verifyTrack').mockResolvedValue(track);
-    await flushPromises();
-
-    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
-
-    expect(verifyTrack).toHaveBeenCalledWith(track);
-  });
-
   it('sorts the table from the headers', async () => {
     const { wrapper, store } = await mountView();
     useSettingsStore().viewMode = 'table';
@@ -568,15 +554,10 @@ describe('LibraryView', () => {
     const track = makeTrack();
     store.tracks = [track];
     const remove = vi.spyOn(store, 'remove').mockResolvedValue();
-    const verify = vi.spyOn(store, 'verifyTrack').mockResolvedValue(track);
     await flushPromises();
 
     await wrapper.get('.preview_card .app_menu_trigger').trigger('click');
     await wrapper.findAll('.preview_card .app_menu_item')[1]?.trigger('click');
-    expect(verify).toHaveBeenCalledWith(track);
-
-    await wrapper.get('.preview_card .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.preview_card .app_menu_item')[2]?.trigger('click');
     await wrapper.get('[data-testid="confirm-remove"]').trigger('click');
     await flushPromises();
 

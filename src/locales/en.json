@@ -259,10 +259,8 @@
       "actions": "Actions for {title}",
       "remove": "Remove {title} from the library",
       "edit": "Edit the metadata of {title}",
-      "verify": "Verify link for {title}",
       "menu": {
         "edit": "Edit",
-        "verify": "Verify",
         "remove": "Delete"
       }
     },

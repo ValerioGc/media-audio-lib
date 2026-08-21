@@ -43,7 +43,6 @@ const emit = defineEmits<{
   play: [track: TrackView];
   edit: [track: TrackView];
   remove: [track: TrackView];
-  verify: [track: TrackView];
 }>();
 
 const { t } = useI18n();
@@ -280,7 +279,6 @@ onUnmounted(stopResize);
             @play="emit('play', $event)"
             @edit="emit('edit', $event)"
             @remove="emit('remove', $event)"
-            @verify="emit('verify', $event)"
           />
           <tr v-if="bottomSpacerHeight > 0" class="library_table_spacer_row">
             <td

@@ -468,7 +468,6 @@ async function confirmRemoval() {
           @play="startPlayback($event)"
           @edit="library.openEditor($event.id)"
           @remove="askRemoval"
-          @verify="library.verifyTrack($event)"
         />
         <LibraryTable
           v-else-if="activeTab === 'tracks'"
@@ -482,7 +481,6 @@ async function confirmRemoval() {
           @play="startPlayback($event)"
           @edit="library.openEditor($event.id)"
           @remove="askRemoval"
-          @verify="library.verifyTrack($event)"
         />
         <LibraryFacetList
           v-else-if="activeFacet !== null"
@@ -557,7 +555,6 @@ async function confirmRemoval() {
             @play="startFacetPlayback($event)"
             @edit="openEditor"
             @remove="askRemoval"
-            @verify="library.verifyTrack($event)"
           />
         </template>
 
@@ -588,7 +585,6 @@ async function confirmRemoval() {
               @play="startFacetPlayback($event)"
               @edit="openEditor"
               @remove="askRemoval"
-              @verify="library.verifyTrack($event)"
             />
             <!-- Artists and albums are browsed by their covers, tracks by their columns. -->
             <LibraryFacetList
@@ -613,7 +609,6 @@ async function confirmRemoval() {
             @play="startFacetPlayback($event)"
             @edit="openEditor"
             @remove="askRemoval"
-            @verify="library.verifyTrack($event)"
           />
           <LibraryTable
             v-else
@@ -628,7 +623,6 @@ async function confirmRemoval() {
             @play="startFacetPlayback($event)"
             @edit="openEditor"
             @remove="askRemoval"
-            @verify="library.verifyTrack($event)"
           />
         </template>
       </div>

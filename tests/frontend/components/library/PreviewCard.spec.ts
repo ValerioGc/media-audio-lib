@@ -116,10 +116,10 @@ describe('PreviewCard', () => {
 
     expect(
       wrapper.findAll('.app_menu_item').map((item) => item.get('.app_menu_item_label').text()),
-    ).toEqual(['Modifica', 'Verifica', 'Elimina']);
+    ).toEqual(['Modifica', 'Elimina']);
   });
 
-  it('emits edit, verify, and remove without selecting the card', async () => {
+  it('emits edit and remove without selecting the card', async () => {
     const track = makeTrack();
     const wrapper = mountCard(track);
 
@@ -127,11 +127,8 @@ describe('PreviewCard', () => {
     await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
-    await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('edit')).toEqual([[track]]);
-    expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
   });

@@ -181,7 +181,7 @@ describe('LibraryRow', () => {
     const wrapper = mountRow(track);
 
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
+    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
 
     expect(wrapper.emitted('remove')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
@@ -194,7 +194,7 @@ describe('LibraryRow', () => {
 
     expect(wrapper.find('.library_row .app_menu_trigger').attributes('aria-expanded')).toBe('true');
     expect(wrapper.findAll('.library_row .app_menu_item_label').map((item) => item.text())).toEqual(
-      ['Modifica', 'Verifica', 'Elimina'],
+      ['Modifica', 'Elimina'],
     );
     expect(wrapper.emitted('select')).toBeUndefined();
   });
@@ -207,17 +207,6 @@ describe('LibraryRow', () => {
     await wrapper.findAll('.library_row .app_menu_item')[0]?.trigger('click');
 
     expect(wrapper.emitted('edit')).toEqual([[track]]);
-    expect(wrapper.emitted('select')).toBeUndefined();
-  });
-
-  it('emits link verification', async () => {
-    const track = makeTrack();
-    const wrapper = mountRow(track);
-
-    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
-
-    expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('select')).toBeUndefined();
   });
 
@@ -242,13 +231,9 @@ describe('LibraryRow', () => {
       wrapper
         .findAll('.library_row .app_menu_item')
         .map((item) => item.get('.app_menu_item_label').text()),
-    ).toEqual(['Modifica', 'Verifica', 'Elimina']);
+    ).toEqual(['Modifica', 'Elimina']);
     expect(
       wrapper.findAll('.library_row .app_menu_item').map((item) => item.attributes('aria-label')),
-    ).toEqual([
-      'Modifica i metadati di Track',
-      'Verifica collegamento di Track',
-      'Rimuovi Track dalla libreria',
-    ]);
+    ).toEqual(['Modifica i metadati di Track', 'Rimuovi Track dalla libreria']);
   });
 });

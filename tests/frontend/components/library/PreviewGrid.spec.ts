@@ -73,7 +73,7 @@ describe('PreviewGrid', () => {
     await wrapper.get('.app_menu_trigger').trigger('click');
     await wrapper.findAll('.app_menu_item')[0]?.trigger('click');
     await wrapper.get('.app_menu_trigger').trigger('click');
-    await wrapper.findAll('.app_menu_item')[2]?.trigger('click');
+    await wrapper.findAll('.app_menu_item')[1]?.trigger('click');
 
     expect(wrapper.emitted('select')).toEqual([[{ id: track.id, additive: false, range: false }]]);
     expect(wrapper.emitted('edit')).toEqual([[track]]);

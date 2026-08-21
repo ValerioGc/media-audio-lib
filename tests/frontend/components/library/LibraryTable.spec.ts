@@ -241,7 +241,7 @@ describe('LibraryTable', () => {
     expect(reservedListHeight(wrapper, 56)).toBe(5600);
   });
 
-  it('forwards row selection, edit, verify, and removal', async () => {
+  it('forwards row selection, edit, and removal', async () => {
     const track = makeTrack();
     const wrapper = mountTable([track]);
 
@@ -250,12 +250,9 @@ describe('LibraryTable', () => {
     await wrapper.findAll('.library_row .app_menu_item')[0]?.trigger('click');
     await wrapper.get('.library_row .app_menu_trigger').trigger('click');
     await wrapper.findAll('.library_row .app_menu_item')[1]?.trigger('click');
-    await wrapper.get('.library_row .app_menu_trigger').trigger('click');
-    await wrapper.findAll('.library_row .app_menu_item')[2]?.trigger('click');
 
     expect(wrapper.emitted('select')).toEqual([[{ id: track.id, additive: false, range: false }]]);
     expect(wrapper.emitted('edit')).toEqual([[track]]);
-    expect(wrapper.emitted('verify')).toEqual([[track]]);
     expect(wrapper.emitted('remove')).toEqual([[track]]);
   });
 

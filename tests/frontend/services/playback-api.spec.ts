@@ -19,7 +19,7 @@ const scopedWindow = window as unknown as Record<string, unknown>;
 
 beforeEach(() => {
   mocks.invoke.mockResolvedValue('C:/music/track.mp3');
-  mocks.convertFileSrc.mockReturnValue('asset://localhost/C%3A%2Fmusica%2Ftrack.mp3');
+  mocks.convertFileSrc.mockReturnValue('track://localhost/C%3A%2Fmusica%2Ftrack.mp3');
 });
 
 afterEach(() => {
@@ -29,14 +29,15 @@ afterEach(() => {
 });
 
 describe('playbackUrl', () => {
-  it('chiede al backend il permesso sul file e converte il path', async () => {
+  it('resolves the track and points it at the track scheme', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
 
     const url = await playbackUrl(makeTrack({ id: 'id-1' }));
 
     expect(mocks.invoke).toHaveBeenCalledWith('prepare_playback', { id: 'id-1' });
-    expect(mocks.convertFileSrc).toHaveBeenCalledWith('C:/music/track.mp3');
-    expect(url).toBe('asset://localhost/C%3A%2Fmusica%2Ftrack.mp3');
+    // Not the asset protocol: that one answers from a list granted in advance.
+    expect(mocks.convertFileSrc).toHaveBeenCalledWith('C:/music/track.mp3', 'track');
+    expect(url).toBe('track://localhost/C%3A%2Fmusica%2Ftrack.mp3');
   });
 
   it('outside the shell it does not even try to play', async () => {

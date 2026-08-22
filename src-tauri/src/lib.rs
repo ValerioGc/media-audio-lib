@@ -8,6 +8,7 @@ pub mod error;
 pub mod hash;
 pub mod library;
 pub mod metadata;
+pub mod protocol;
 pub mod state;
 
 #[cfg(test)]
@@ -205,6 +206,22 @@ pub fn run() {
             Some(vec![MINIMIZED_ARG]),
         ))
         .manage(CloseToTray::default())
+        // Audio does not travel over Tauri's asset protocol: that one answers from a list
+        // of paths granted in advance, and a grant on it cannot be taken back. This scheme
+        // asks the library on every request instead.
+        .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, |app, request, responder| {
+            let app = app.app_handle().clone();
+
+            tauri::async_runtime::spawn_blocking(move || {
+                let allowed = protocol::is_playable_now(
+                    &app.state::<LibraryState>(),
+                    &app.state::<StartupFile>(),
+                    &protocol::requested_path(&request),
+                );
+
+                responder.respond(protocol::respond(&request, allowed));
+            });
+        })
         .setup(|app| {
             // The window is described in the configuration but built here, so it can be
             // given the guards a window created for us would not carry.

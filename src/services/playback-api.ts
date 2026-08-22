@@ -1,6 +1,6 @@
 import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 
-import { isTauriRuntime } from '@/config/app-config';
+import { isTauriRuntime, TRACK_SCHEME } from '@/config/app-config';
 import { ShellUnavailableError } from '@/services/library-api';
 import type { TrackView } from '@/types/library';
 
@@ -21,7 +21,8 @@ export async function playbackUrl(track: TrackView): Promise<string> {
       ? await invoke<string>('prepare_external_playback')
       : await invoke<string>('prepare_playback', { id: track.id });
 
-  return convertFileSrc(path);
+  // Not the asset protocol: `track:` asks the library again when the bytes are read.
+  return convertFileSrc(path, TRACK_SCHEME);
 }
 
 export async function startupAudioFile(): Promise<TrackView | null> {

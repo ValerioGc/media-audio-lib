@@ -15,6 +15,9 @@ export const RELEASES_URL = `${GITHUB_URL}/releases`;
  * and starts being scrolled. Genres are left out of this: they are few and each one says
  * something about the group.
  */
+/** The scheme the shell serves audio through. Mirrors `protocol::SCHEME`. */
+export const TRACK_SCHEME = 'track';
+
 export const MAX_LISTED_ARTISTS = 3;
 
 /** Longest name a library can be given. Mirrors `MAX_LIBRARY_NAME_LENGTH` in the shell,

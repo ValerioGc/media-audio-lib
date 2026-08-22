@@ -25,21 +25,27 @@
       }
     ],
     "security": {
-      "assetProtocol": {
-        "enable": true,
-        "scope": []
-      },
-      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; media-src 'self' asset: http://asset.localhost; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
+      "csp": "default-src 'self'; img-src 'self' data:; media-src 'self' track: http://track.localhost; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'"
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "deb", "appimage"],
+    "targets": [
+      "nsis",
+      "deb",
+      "appimage"
+    ],
     "category": "Music",
     "shortDescription": "Audio library manager",
     "fileAssociations": [
       {
-        "ext": ["mp3", "flac", "m4a", "ogg", "wav"],
+        "ext": [
+          "mp3",
+          "flac",
+          "m4a",
+          "ogg",
+          "wav"
+        ],
         "name": "Audio File",
         "description": "Audio file",
         "role": "Viewer",
@@ -57,12 +63,21 @@
     "windows": {
       "nsis": {
         "installMode": "both",
-        "languages": ["Italian", "English", "French", "Spanish", "German"]
+        "languages": [
+          "Italian",
+          "English",
+          "French",
+          "Spanish",
+          "German"
+        ]
       }
     },
     "linux": {
       "deb": {
-        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0"
+        ]
       }
     }
   }

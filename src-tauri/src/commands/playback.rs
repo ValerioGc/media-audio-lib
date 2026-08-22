@@ -2,6 +2,12 @@
 //!
 //! The asset protocol starts with an empty scope; every playable file is granted one at a
 //! time, so the webview never gets blanket access to the disk.
+//!
+//! A grant lasts as long as the app runs. Tauri can forbid a path, but a forbidden path
+//! stays forbidden and outranks every later grant, so taking one back would leave a track
+//! unplayable for the rest of the session if the user imported the same file again. The
+//! grants are therefore only ever added, and only for a file that is in the library and is
+//! audio at the moment it is asked for.
 
 use std::path::{Path, PathBuf};
 
@@ -50,11 +56,26 @@ pub fn prepare_playback<R: Runtime>(
 ) -> AppResult<String> {
     let path = state.read(|library| playable_path(library, &id))??;
 
-    app.asset_protocol_scope()
-        .allow_file(&path)
-        .map_err(|error| AppError::State(error.to_string()))?;
+    grant_access(&app, &path)?;
 
     Ok(path.to_string_lossy().into_owned())
+}
+
+/// Lets the webview read one file, once.
+///
+/// Playing the same track again asks for the same grant, and the scope keeps every pattern
+/// it is given: without this a long listening session would leave the list of allowed
+/// patterns growing behind it, and every check walks that list.
+fn grant_access<R: Runtime>(app: &AppHandle<R>, path: &Path) -> AppResult<()> {
+    let scope = app.asset_protocol_scope();
+
+    if scope.is_allowed(path) {
+        return Ok(());
+    }
+
+    scope
+        .allow_file(path)
+        .map_err(|error| AppError::State(error.to_string()))
 }
 
 /// Reads the audio file passed by the operating system when this app is opened as
@@ -82,9 +103,7 @@ pub fn prepare_external_playback<R: Runtime>(
         .ok_or_else(|| AppError::NotFound("no file was passed to the application".to_owned()))?;
     let path = playable_file_path(&path)?;
 
-    app.asset_protocol_scope()
-        .allow_file(&path)
-        .map_err(|error| AppError::State(error.to_string()))?;
+    grant_access(&app, &path)?;
 
     Ok(path.to_string_lossy().into_owned())
 }

@@ -39,6 +39,29 @@ describe('LibraryTrackListExportDialog', () => {
     expect(document.body.textContent).toContain('File mancante');
   });
 
+  it('leaves the file path out until it is asked for', async () => {
+    const { wrapper, library } = mountDialog();
+    const exportTrackList = vi.spyOn(library, 'exportTrackList').mockResolvedValue(true);
+
+    await wrapper.get('[data-testid="track-list-export-submit"]').trigger('click');
+
+    expect(exportTrackList).toHaveBeenCalledWith('csv', expect.not.arrayContaining(['path']));
+  });
+
+  it('exports the file path once it is ticked', async () => {
+    const { wrapper, library } = mountDialog();
+    const exportTrackList = vi.spyOn(library, 'exportTrackList').mockResolvedValue(true);
+    const path = wrapper
+      .findAll('label')
+      .find((label) => label.text().includes('Percorso'))
+      ?.find('input[type="checkbox"]');
+
+    await path?.setValue(true);
+    await wrapper.get('[data-testid="track-list-export-submit"]').trigger('click');
+
+    expect(exportTrackList).toHaveBeenCalledWith('csv', expect.arrayContaining(['path']));
+  });
+
   it('exports with the selected format and fields', async () => {
     const { wrapper, library } = mountDialog();
     const exportTrackList = vi.spyOn(library, 'exportTrackList').mockResolvedValue(true);

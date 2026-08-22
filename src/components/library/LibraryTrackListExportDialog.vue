@@ -25,8 +25,19 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const library = useLibraryStore();
 
+/**
+ * What a list starts out carrying.
+ *
+ * Everything except the path: a full path says `C:\Users\<name>\...`, which is the one
+ * field that describes the person rather than the music. A list is exported to be sent
+ * somewhere, so that field is asked for rather than assumed.
+ */
+const DEFAULT_FIELDS: readonly TrackExportField[] = TRACK_EXPORT_FIELDS.filter(
+  (field) => field !== 'path',
+);
+
 const format = ref<TrackExportFormat>('csv');
-const selectedFields = ref<TrackExportField[]>([...TRACK_EXPORT_FIELDS]);
+const selectedFields = ref<TrackExportField[]>([...DEFAULT_FIELDS]);
 
 const formatOptions = computed<SelectOption[]>(() =>
   TRACK_EXPORT_FORMATS.map((value) => ({
@@ -47,7 +58,7 @@ watch(
   (isOpen) => {
     if (isOpen) {
       format.value = 'csv';
-      selectedFields.value = [...TRACK_EXPORT_FIELDS];
+      selectedFields.value = [...DEFAULT_FIELDS];
     }
   },
 );

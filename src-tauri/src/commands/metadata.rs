@@ -10,7 +10,7 @@ use tauri::State;
 
 use crate::error::{AppError, AppResult};
 use crate::library::{self, Track};
-use crate::metadata::{self, Cover, CoverCache, MetadataUpdate, TrackMetadata};
+use crate::metadata::{self, Cover, CoverCache, CoverRead, MetadataUpdate, TrackMetadata};
 use crate::state::{LibraryState, StartupFile};
 
 /// Whether a path is one the app already knows: a track of the open library, or the file
@@ -83,7 +83,7 @@ pub fn get_cover(
     state: State<'_, LibraryState>,
     startup: State<'_, StartupFile>,
     path: String,
-) -> AppResult<Option<Cover>> {
+) -> AppResult<CoverRead> {
     let path = ensure_known_file(&state, &startup, Path::new(&path))?;
 
     cache.load(&path)

@@ -34,12 +34,52 @@ pub struct TrackMetadata {
     pub has_cover: bool,
 }
 
+/// The image types this app reads and writes. Anything else in a tag is left alone.
+pub const PNG_MIME: &str = "image/png";
+pub const JPEG_MIME: &str = "image/jpeg";
+
+/// How large an embedded picture may be before it is left where it is.
+///
+/// Reading one means holding it in memory, encoding it to base64 (half again as large),
+/// pushing it across to the webview and writing it to the cache. A tag can carry a picture
+/// of any size at all, and a file is not something this app gets to choose.
+pub const MAX_EMBEDDED_COVER_BYTES: usize = 16 * 1024 * 1024;
+
 /// Cover art encoded for the webview, ready to be used in a `data:` URL.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Cover {
     pub mime_type: String,
     pub data: String,
+}
+
+/// What looking for the cover of a file found.
+///
+/// A missing cover and a cover too heavy to read look the same to the interface — no
+/// picture to show — but they are not the same thing to the user, who can do something
+/// about the second. So the weight travels back with the answer.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CoverRead {
+    pub cover: Option<Cover>,
+    /// Size of the picture that was left alone, when one was.
+    pub too_large_bytes: Option<u64>,
+}
+
+impl CoverRead {
+    pub fn found(cover: Cover) -> Self {
+        Self {
+            cover: Some(cover),
+            too_large_bytes: None,
+        }
+    }
+
+    pub fn too_large(bytes: usize) -> Self {
+        Self {
+            cover: None,
+            too_large_bytes: Some(bytes as u64),
+        }
+    }
 }
 
 /// Lowercase extension without the dot, empty when the path has none.
@@ -111,7 +151,7 @@ pub fn read_metadata(path: &Path) -> AppResult<TrackMetadata> {
     })
 }
 
-pub fn read_cover(path: &Path) -> AppResult<Option<Cover>> {
+pub fn read_cover(path: &Path) -> AppResult<CoverRead> {
     let tagged_file = read_tagged_file(path)?;
 
     let picture = tagged_file
@@ -119,13 +159,42 @@ pub fn read_cover(path: &Path) -> AppResult<Option<Cover>> {
         .or_else(|| tagged_file.first_tag())
         .and_then(|tag| tag.pictures().first());
 
-    Ok(picture.map(|picture| Cover {
-        mime_type: picture.mime_type().map_or_else(
-            || "application/octet-stream".to_owned(),
-            ToString::to_string,
-        ),
-        data: base64::engine::general_purpose::STANDARD.encode(picture.data()),
+    let Some(picture) = picture else {
+        return Ok(CoverRead::default());
+    };
+
+    let bytes = picture.data();
+
+    if bytes.len() > MAX_EMBEDDED_COVER_BYTES {
+        return Ok(CoverRead::too_large(bytes.len()));
+    }
+
+    // The type written in the tag is whatever whoever made the file decided to write; the
+    // first bytes of the picture are the picture itself.
+    let Some(mime_type) = image_mime(bytes) else {
+        return Ok(CoverRead::default());
+    };
+
+    Ok(CoverRead::found(Cover {
+        mime_type: mime_type.to_owned(),
+        data: base64::engine::general_purpose::STANDARD.encode(bytes),
     }))
+}
+
+/// The image type the bytes themselves say they are, for the two types this app handles.
+pub fn image_mime(bytes: &[u8]) -> Option<&'static str> {
+    const PNG_SIGNATURE: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
+    const JPEG_SIGNATURE: [u8; 3] = [0xFF, 0xD8, 0xFF];
+
+    if bytes.starts_with(&PNG_SIGNATURE) {
+        return Some(PNG_MIME);
+    }
+
+    if bytes.starts_with(&JPEG_SIGNATURE) {
+        return Some(JPEG_MIME);
+    }
+
+    None
 }
 
 #[cfg(test)]

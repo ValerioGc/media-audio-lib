@@ -17,12 +17,14 @@ use base64::Engine as _;
 use crate::error::AppResult;
 use crate::hash::fnv1a_hex;
 use crate::library::canonical_key;
-use crate::metadata::{read_cover, Cover};
+use crate::metadata::{read_cover, Cover, CoverRead, JPEG_MIME, PNG_MIME};
 
-const PNG_MIME: &str = "image/png";
-const JPEG_MIME: &str = "image/jpeg";
 /// Marks a file already known to carry no cover, so it is not parsed again.
 const EMPTY_EXTENSION: &str = "none";
+
+/// Marks a file whose picture was found too heavy to read. The entry holds its size, so
+/// the answer given to the interface survives without opening the audio file again.
+const OVERSIZED_EXTENSION: &str = "big";
 
 /// How large the cache is allowed to get before the least recently used entries go.
 ///
@@ -125,13 +127,24 @@ impl CoverCache {
         format!("{}-{}", Self::track_prefix(path), modified_seconds(path))
     }
 
-    fn cached(&self, key: &str) -> Option<Option<Cover>> {
+    fn cached(&self, key: &str) -> Option<CoverRead> {
         let empty = self.directory.join(format!("{key}.{EMPTY_EXTENSION}"));
 
         if empty.is_file() {
             touch(&empty);
 
-            return Some(None);
+            return Some(CoverRead::default());
+        }
+
+        let oversized = self.directory.join(format!("{key}.{OVERSIZED_EXTENSION}"));
+
+        if let Ok(recorded) = std::fs::read_to_string(&oversized) {
+            touch(&oversized);
+
+            return Some(CoverRead {
+                cover: None,
+                too_large_bytes: recorded.trim().parse().ok(),
+            });
         }
 
         for extension in ["png", "jpg"] {
@@ -140,7 +153,7 @@ impl CoverCache {
             if let Ok(bytes) = std::fs::read(&candidate) {
                 touch(&candidate);
 
-                return Some(Some(Cover {
+                return Some(CoverRead::found(Cover {
                     mime_type: mime_for(extension).unwrap_or(PNG_MIME).to_owned(),
                     data: base64::engine::general_purpose::STANDARD.encode(bytes),
                 }));
@@ -167,14 +180,21 @@ impl CoverCache {
         }
     }
 
-    fn store(&self, key: &str, path: &Path, cover: Option<&Cover>) {
+    fn store(&self, key: &str, path: &Path, read: &CoverRead) {
         if std::fs::create_dir_all(&self.directory).is_err() {
             return;
         }
 
-        let stored = match cover {
-            None => std::fs::write(self.directory.join(format!("{key}.{EMPTY_EXTENSION}")), [])
-                .map(|()| 0),
+        let stored = match read.cover.as_ref() {
+            None => {
+                let (extension, contents) = match read.too_large_bytes {
+                    Some(bytes) => (OVERSIZED_EXTENSION, bytes.to_string()),
+                    None => (EMPTY_EXTENSION, String::new()),
+                };
+
+                std::fs::write(self.directory.join(format!("{key}.{extension}")), contents)
+                    .map(|()| 0)
+            }
             Some(cover) => {
                 let Some(extension) = extension_for(&cover.mime_type) else {
                     return;
@@ -272,17 +292,17 @@ impl CoverCache {
     }
 
     /// Returns the cover of `path`, reading the audio file only on a cache miss.
-    pub fn load(&self, path: &Path) -> AppResult<Option<Cover>> {
+    pub fn load(&self, path: &Path) -> AppResult<CoverRead> {
         let key = Self::entry_key(path);
 
         if let Some(hit) = self.cached(&key) {
             return Ok(hit);
         }
 
-        let cover = read_cover(path)?;
-        self.store(&key, path, cover.as_ref());
+        let read = read_cover(path)?;
+        self.store(&key, path, &read);
 
-        Ok(cover)
+        Ok(read)
     }
 
     /// Empties the cache. Used when the user asks for a clean slate.

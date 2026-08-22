@@ -299,10 +299,11 @@ impl Library {
         update_track_ids(&mut imported);
         let imported_metadata = imported.metadata.clone();
         let total = imported.tracks.len();
+        let unplayable = drop_unplayable_tracks(&mut imported);
         let (imported_tracks, duplicate_imports) = unique_tracks(imported.tracks);
         let mut report = LibraryImportReport {
             total,
-            skipped: duplicate_imports,
+            skipped: duplicate_imports + unplayable,
             missing: imported_tracks
                 .iter()
                 .filter(|track| !Path::new(&track.path).is_file())
@@ -432,7 +433,11 @@ fn fill_missing_artwork(
                     && Path::new(&track.path).is_file()
                     && value(track).is_some_and(|value| value.trim() == name)
             })
-            .find_map(|track| metadata::read_cover(Path::new(&track.path)).ok().flatten())
+            .find_map(|track| {
+                metadata::read_cover(Path::new(&track.path))
+                    .ok()
+                    .and_then(|read| read.cover)
+            })
         else {
             continue;
         };
@@ -726,6 +731,23 @@ pub fn maintain_paths(library: &mut Library) -> LibraryMaintenanceReport {
         deduplicated,
         ids_updated,
     }
+}
+
+/// Drops the entries that do not name an audio file, and says how many went.
+///
+/// A library file is made to be handed around, so what arrives in one is not this app's
+/// own writing. An entry naming something else — a document, a key, a device — would
+/// otherwise become a path the app treats as one of its own and hands to the webview to
+/// play. Only the name is judged here: a file that is merely missing is reported as
+/// missing, not thrown away.
+fn drop_unplayable_tracks(library: &mut Library) -> usize {
+    let before = library.tracks.len();
+
+    library
+        .tracks
+        .retain(|track| metadata::is_supported(Path::new(&track.path)));
+
+    before - library.tracks.len()
 }
 
 /// The folders the files of the library live in, one entry each.

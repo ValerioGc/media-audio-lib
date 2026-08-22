@@ -73,10 +73,15 @@ jobs:
       - name: Run frontend build
         run: npm run build
 
+  # ── Gate: nothing ships on top of a dependency with a known advisory ─────────
+  audit:
+    name: Audit
+    uses: ./.github/workflows/audit.yml
+
   # ── After the gate ───────────────────────────────────────────────────────────
   verify-release:
     name: Verify release
-    needs: test
+    needs: [test, audit]
     runs-on: ubuntu-latest
     permissions:
       contents: read

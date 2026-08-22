@@ -1,0 +1,56 @@
+name: Audit
+
+# Advisories are published on their own timetable, not on ours: a check that only runs
+# when a release is cut would learn about a vulnerability weeks after everybody else. So
+# this runs weekly on its own, and the release pipeline calls it as a gate.
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 22.14.0
+
+jobs:
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      # `high` rather than `moderate`: most of what is installed here is build tooling that
+      # never reaches a user, and a check nobody can keep green is a check nobody reads.
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=high
+
+      # Installed rather than run through an action: this is the job whose whole purpose is
+      # to be trustworthy, so it borrows as little as possible from elsewhere. The cache
+      # above keeps the build off the critical path after the first run.
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      # Every crate listed here is compiled into the shipped binary, so an advisory on one
+      # of them is an advisory on the app.
+      - name: Audit Rust dependencies
+        run: cargo audit --file src-tauri/Cargo.lock

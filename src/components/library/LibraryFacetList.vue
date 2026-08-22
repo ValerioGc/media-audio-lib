@@ -655,10 +655,21 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     }
   }
 
-  &_album &_row,
+  // The name is the column being read, so it takes what the others do not need. Beside it
+  // sit counts — "12 brani", "3 album" — the same handful of characters whatever the window
+  // is doing, and they were being handed a share of the free space they had nothing to put
+  // in while the name next to them was cut short.
   &_artist &_row {
     grid-template-columns:
-      minmax(10rem, 1.2fr) minmax(10rem, 1fr) minmax(7rem, 0.45fr)
+      minmax(12rem, 2.6fr) minmax(6rem, 0.4fr) minmax(6rem, 0.4fr)
+      minmax(6rem, 0.35fr);
+  }
+
+  // The album list has a real name in its second column rather than a count, so that one
+  // keeps room to be read as well.
+  &_album &_row {
+    grid-template-columns:
+      minmax(12rem, 2fr) minmax(9rem, 1fr) minmax(6rem, 0.4fr)
       minmax(6rem, 0.35fr);
   }
 

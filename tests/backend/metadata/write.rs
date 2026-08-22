@@ -273,7 +273,23 @@
             .into_cover()
             .expect("cover presente");
 
-        assert_eq!(stored.mime_type, "image/jpeg");
+        // Announced as JPEG, written and read back as what the bytes actually are.
+        assert_eq!(stored.mime_type, "image/png");
+    }
+
+    #[test]
+    fn refuses_a_cover_whose_bytes_are_not_an_image() {
+        let dir = TempDir::new("cover-not-an-image");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        let cover = Cover {
+            mime_type: "image/png".to_owned(),
+            data: base64::engine::general_purpose::STANDARD.encode(b"<html>ciao</html>"),
+        };
+
+        let error = write_cover(&path, Some(&cover)).unwrap_err();
+
+        assert!(matches!(error, AppError::Validation(_)));
+        assert_eq!(read_cover(&path).expect("riread").into_cover(), None);
     }
 
     #[test]

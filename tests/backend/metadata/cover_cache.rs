@@ -146,6 +146,30 @@
     }
 
     #[test]
+    fn remembers_a_picture_too_heavy_to_read_without_opening_the_file_again() {
+        let dir = TempDir::new("cache-oversized");
+        let cache = cache(&dir);
+        let track = wav_with_tags(dir.path(), "track.wav");
+        let mut huge = vec![0xFF, 0xD8, 0xFF];
+        huge.resize(crate::metadata::MAX_EMBEDDED_COVER_BYTES + 1, 0);
+        crate::fixtures::add_raw_picture(&track, &huge);
+
+        let first = cache.load(&track).expect("prima lettura");
+        assert_eq!(first.cover, None);
+        assert!(first.too_large_bytes.is_some());
+
+        // Only the note is kept: the picture itself never lands in the cache folder.
+        let entry = cache
+            .directory()
+            .join(format!("{}.big", CoverCache::entry_key(&track)));
+        assert!(entry.is_file());
+        assert!(cache.size_bytes() < 100);
+
+        let second = cache.load(&track).expect("seconda lettura");
+        assert_eq!(second.too_large_bytes, first.too_large_bytes);
+    }
+
+    #[test]
     fn reports_how_much_room_it_takes() {
         let dir = TempDir::new("cache-size");
         let cache = cache(&dir);

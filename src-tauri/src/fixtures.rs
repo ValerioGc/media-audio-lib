@@ -144,6 +144,22 @@ pub fn wav_with_cover(directory: &Path, name: &str) -> PathBuf {
     path
 }
 
+/// Puts arbitrary bytes into the picture of an existing file's tag.
+///
+/// The app refuses to write a picture that is not a real PNG or JPEG, and refuses one that
+/// is too heavy — but nothing stops another program from putting either in a file. This is
+/// how the tests produce a file the app has to cope with rather than one it made.
+pub fn add_raw_picture(path: &Path, bytes: &[u8]) {
+    let mut tag = tag_with_values(TagType::Id3v2);
+    tag.push_picture(
+        Picture::unchecked(bytes.to_vec())
+            .mime_type(MimeType::Png)
+            .pic_type(PictureType::CoverFront)
+            .build(),
+    );
+    save_tag(&tag, path);
+}
+
 pub fn wav_without_tags(directory: &Path, name: &str) -> PathBuf {
     write_file(directory, name, &wav_bytes())
 }

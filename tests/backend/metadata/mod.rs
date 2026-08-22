@@ -101,6 +101,44 @@
     }
 
     #[test]
+    fn a_picture_that_is_not_png_or_jpeg_is_left_alone() {
+        let dir = TempDir::new("cover-unknown-bytes");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        // Written straight into the tag, past the checks the app applies to its own writes.
+        crate::fixtures::add_raw_picture(&path, b"GIF89a not really an image");
+
+        let read = read_cover(&path).expect("read succeeded");
+
+        assert_eq!(read.cover, None);
+        assert_eq!(read.too_large_bytes, None);
+    }
+
+    #[test]
+    fn a_picture_too_heavy_to_read_is_reported_rather_than_loaded() {
+        let dir = TempDir::new("cover-oversized");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        let mut huge = vec![0xFF, 0xD8, 0xFF];
+        huge.resize(MAX_EMBEDDED_COVER_BYTES + 1, 0);
+        crate::fixtures::add_raw_picture(&path, &huge);
+
+        let read = read_cover(&path).expect("read succeeded");
+
+        assert_eq!(read.cover, None, "niente di enorme attraversa l'IPC");
+        assert_eq!(
+            read.too_large_bytes,
+            Some(MAX_EMBEDDED_COVER_BYTES as u64 + 1)
+        );
+    }
+
+    #[test]
+    fn the_type_written_in_the_tag_does_not_decide_what_the_picture_is() {
+        assert_eq!(image_mime(&[0x89, b'P', b'N', b'G', 13, 10, 26, 10]), Some(PNG_MIME));
+        assert_eq!(image_mime(&[0xFF, 0xD8, 0xFF, 0xE0]), Some(JPEG_MIME));
+        assert_eq!(image_mime(b"<html>"), None);
+        assert_eq!(image_mime(&[]), None);
+    }
+
+    #[test]
     fn returns_the_cover_encoded_as_base64() {
         let dir = TempDir::new("cover-present");
         let path = wav_with_cover(dir.path(), "track.wav");

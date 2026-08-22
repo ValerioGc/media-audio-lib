@@ -19,7 +19,9 @@ use lofty::tag::Tag;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
-use crate::metadata::{ensure_importable, read_metadata, read_tagged_file, Cover, TrackMetadata};
+use crate::metadata::{
+    ensure_importable, image_mime, read_metadata, read_tagged_file, Cover, TrackMetadata, PNG_MIME,
+};
 
 /// Marks the copy an edit is written on, and tells it apart from the file it came from.
 pub const STAGING_MARKER: &str = ".mal-tmp.";
@@ -90,7 +92,12 @@ pub fn validate_update(update: &MetadataUpdate) -> AppResult<()> {
     Ok(())
 }
 
-pub fn validate_cover(cover: &Cover) -> AppResult<Vec<u8>> {
+/// Checks the picture and gives back its bytes together with what they actually are.
+///
+/// The type the caller announces is a claim about the picture; the first bytes of the
+/// picture are the picture. They are checked against each other so nothing is written into
+/// a file under a name that does not fit it.
+pub fn validate_cover(cover: &Cover) -> AppResult<(Vec<u8>, &'static str)> {
     if !ALLOWED_COVER_MIME.contains(&cover.mime_type.as_str()) {
         return Err(AppError::Validation(format!(
             "formato immagine non ammesso: {}",
@@ -106,6 +113,12 @@ pub fn validate_cover(cover: &Cover) -> AppResult<Vec<u8>> {
         return Err(AppError::Validation("immagine vuota".to_owned()));
     }
 
+    let Some(mime_type) = image_mime(&bytes) else {
+        return Err(AppError::Validation(
+            "immagine non riconosciuta: sono ammessi solo PNG e JPEG".to_owned(),
+        ));
+    };
+
     if bytes.len() > MAX_COVER_BYTES {
         return Err(AppError::Validation(format!(
             "immagine troppo grande: massimo {} MB",
@@ -113,7 +126,7 @@ pub fn validate_cover(cover: &Cover) -> AppResult<Vec<u8>> {
         )));
     }
 
-    Ok(bytes)
+    Ok((bytes, mime_type))
 }
 
 fn ensure_writable(path: &Path) -> AppResult<()> {
@@ -292,8 +305,7 @@ fn apply_optional(tag: &mut Tag, key: ItemKey, value: Option<&str>) {
 
 /// Replaces the embedded cover art, or removes it when `cover` is `None`.
 pub fn write_cover(path: &Path, cover: Option<&Cover>) -> AppResult<TrackMetadata> {
-    let picture = cover.map(|cover| validate_cover(cover).map(|bytes| (cover, bytes)));
-    let picture = match picture {
+    let picture = match cover.map(validate_cover) {
         Some(Ok(value)) => Some(value),
         Some(Err(error)) => return Err(error),
         None => None,
@@ -304,11 +316,11 @@ pub fn write_cover(path: &Path, cover: Option<&Cover>) -> AppResult<TrackMetadat
             tag.remove_picture(0);
         }
 
-        if let Some((cover, bytes)) = picture {
-            let mime = if cover.mime_type == "image/png" {
-                MimeType::Png
-            } else {
-                MimeType::Jpeg
+        if let Some((bytes, mime_type)) = picture {
+            // What the bytes are, not what they were announced as.
+            let mime = match mime_type {
+                PNG_MIME => MimeType::Png,
+                _ => MimeType::Jpeg,
             };
 
             tag.push_picture(

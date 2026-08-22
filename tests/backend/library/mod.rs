@@ -583,6 +583,27 @@
     }
 
     #[test]
+    fn importing_drops_the_entries_that_are_not_audio_files() {
+        let mut library = Library::new();
+        let mut imported = Library::new();
+        imported.add(sample_track("brano"));
+        imported.add(Track {
+            path: "C:/Users/qualcuno/.ssh/id_rsa".to_owned(),
+            ..sample_track("intruso")
+        });
+
+        let report = library.import(imported, LibraryImportStrategy::Replace);
+
+        assert_eq!(report.total, 2, "il conteggio dice quante voci conteneva");
+        assert_eq!(report.skipped, 1);
+        assert_eq!(library.len(), 1);
+        assert!(library
+            .tracks()
+            .iter()
+            .all(|track| track.path.ends_with(".mp3")));
+    }
+
+    #[test]
     fn lists_each_folder_of_the_library_once() {
         let mut library = Library::new();
         library.add(sample_track("uno"));

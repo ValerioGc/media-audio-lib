@@ -6,7 +6,7 @@
 pub mod cover_cache;
 pub mod write;
 
-pub use cover_cache::CoverCache;
+pub use cover_cache::{CoverCache, MAX_CACHE_BYTES};
 pub use write::{write_cover, write_metadata, MetadataUpdate};
 
 use std::path::Path;

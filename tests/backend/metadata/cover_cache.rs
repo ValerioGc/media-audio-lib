@@ -122,6 +122,120 @@
         );
     }
 
+    /// Writes an entry of the given weight, last served `age_seconds` ago.
+    fn aged_entry(cache: &CoverCache, name: &str, size: usize, age_seconds: u64) {
+        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        let path = cache.directory().join(name);
+        std::fs::write(&path, vec![0_u8; size]).expect("voce scritta");
+
+        let when = SystemTime::now() - std::time::Duration::from_secs(age_seconds);
+        let file = std::fs::File::options()
+            .write(true)
+            .open(&path)
+            .expect("voce apribile");
+        file.set_times(FileTimes::new().set_modified(when))
+            .expect("data impostata");
+    }
+
+    #[test]
+    fn reports_how_much_room_it_takes() {
+        let dir = TempDir::new("cache-size");
+        let cache = cache(&dir);
+
+        assert_eq!(cache.size_bytes(), 0, "una cache mai creata non pesa nulla");
+
+        aged_entry(&cache, "a.png", 500, 0);
+        aged_entry(&cache, "b.jpg", 300, 0);
+
+        assert_eq!(cache.size_bytes(), 800);
+    }
+
+    #[test]
+    fn drops_the_covers_asked_for_longest_ago_first() {
+        let dir = TempDir::new("cache-evict");
+        let cache = cache(&dir);
+        aged_entry(&cache, "vecchia.png", 400, 90_000);
+        aged_entry(&cache, "media.png", 400, 40_000);
+        aged_entry(&cache, "recente.png", 400, 0);
+
+        // Over a limit of 1000 bytes, back down to 500.
+        let removed = cache.evict_down_to(1_000, 500);
+
+        assert_eq!(removed, 2);
+        assert!(!cache.directory().join("vecchia.png").exists());
+        assert!(!cache.directory().join("media.png").exists());
+        assert!(cache.directory().join("recente.png").exists());
+    }
+
+    #[test]
+    fn a_cache_within_its_limit_is_left_alone() {
+        let dir = TempDir::new("cache-evict-none");
+        let cache = cache(&dir);
+        aged_entry(&cache, "una.png", 400, 90_000);
+
+        assert_eq!(cache.evict_down_to(1_000, 500), 0);
+        assert!(cache.directory().join("una.png").exists());
+    }
+
+    #[test]
+    fn serving_a_cover_marks_it_as_still_wanted() {
+        let dir = TempDir::new("cache-touch");
+        let cache = cache(&dir);
+        let track = wav_with_cover(dir.path(), "track.wav");
+        cache.load(&track).expect("prima lettura");
+
+        let entry = cache
+            .directory()
+            .join(format!("{}.png", CoverCache::entry_key(&track)));
+        // Old enough that the next hit is expected to write a fresh date on it.
+        let file = std::fs::File::options()
+            .write(true)
+            .open(&entry)
+            .expect("voce apribile");
+        file.set_times(
+            FileTimes::new().set_modified(SystemTime::now() - std::time::Duration::from_secs(7_200)),
+        )
+        .expect("data impostata");
+
+        cache.load(&track).expect("seconda lettura");
+
+        let age = SystemTime::now()
+            .duration_since(
+                std::fs::metadata(&entry)
+                    .expect("voce leggibile")
+                    .modified()
+                    .expect("data leggibile"),
+            )
+            .expect("data nel passato");
+
+        assert!(age.as_secs() < 60, "la voce servita torna in cima alla fila");
+    }
+
+    #[test]
+    fn a_cover_served_a_moment_ago_is_not_rewritten() {
+        let dir = TempDir::new("cache-touch-skip");
+        let cache = cache(&dir);
+        let track = wav_with_cover(dir.path(), "track.wav");
+        cache.load(&track).expect("prima lettura");
+
+        let entry = cache
+            .directory()
+            .join(format!("{}.png", CoverCache::entry_key(&track)));
+        let before = std::fs::metadata(&entry)
+            .expect("voce leggibile")
+            .modified()
+            .expect("data leggibile");
+
+        cache.load(&track).expect("seconda lettura");
+
+        let after = std::fs::metadata(&entry)
+            .expect("voce leggibile")
+            .modified()
+            .expect("data leggibile");
+
+        assert_eq!(before, after, "scorrere la libreria non riscrive la cache");
+    }
+
     #[test]
     fn clearing_a_never_created_cache_is_not_an_error() {
         let dir = TempDir::new("cache-clear-empty");

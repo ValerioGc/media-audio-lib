@@ -178,6 +178,16 @@
     "libraries": {
       "title": "Bibliothèques",
       "description": "Chaque bibliothèque est une liste de morceaux à part. Créez-en une, ouvrez celle qu’il vous faut et choisissez celle qui s’ouvre au démarrage."
+    },
+    "coverCache": {
+      "title": "Cache des pochettes",
+      "description": "Les pochettes extraites de vos fichiers restent sur le disque pour ne pas devoir les relire à chaque démarrage. Elle se reconstruit seule : la vider ne touche pas à vos fichiers.",
+      "size": "Occupe {size}",
+      "empty": "Le cache est vide.",
+      "limit": "Au-delà de {limit}, les pochettes demandées il y a le plus longtemps sont supprimées d’elles-mêmes.",
+      "clear": "Vider le cache",
+      "clearing": "Nettoyage…",
+      "cleared": "Cache vidé."
     }
   },
   "library": {
@@ -534,7 +544,7 @@
           "Formats lus : MP3, FLAC, M4A, OGG et WAV.",
           "Un même fichier n’entre jamais deux fois : s’il est déjà là, il est compté parmi les ignorés.",
           "Un récapitulatif indique ensuite ce qui a été ajouté, ce qui était déjà présent et ce qui n’a pas pu être importé ; un import sans souci se referme seul.",
-          "Les fichiers restent où ils sont : la bibliothèque ne garde que la liste."
+          "Les fichiers restent où ils sont : l’importation ne fait que les lire, elle ne les copie pas, ne les déplace pas et ne les renomme pas. La bibliothèque garde la liste de leur emplacement."
         ]
       },
       "organize": {
@@ -654,6 +664,18 @@
           "Lecteur : laisser le lecteur ouvert après la fermeture du morceau, et régler le lecteur flottant — apparition, premier plan, disposition et effet de sa fermeture.",
           "Lecteur audio par défaut : sous Windows, ouvre les réglages du système pour associer les fichiers audio à cette application ; sous Linux, l’association appartient à l’environnement de bureau et la section affiche la commande à lancer.",
           "Le bouton « i » de la barre de titre ouvre les informations : version, site, projet sur GitHub, notes de version et versions publiées."
+        ]
+      },
+      "storage": {
+        "title": "Vos fichiers et les données de l’application",
+        "where": "partout ; le cache des pochettes se trouve dans Réglages → Bibliothèque.",
+        "steps": [
+          "L’importation lit vos fichiers là où ils sont : elle ne les copie pas, ne les déplace pas et ne les renomme pas. La bibliothèque ne garde que la liste de leur emplacement.",
+          "Les modifications des métadonnées sont écrites dans le fichier lui-même, sur place : l’écriture passe par une copie temporaire qui ne remplace l’original qu’une fois terminée, si bien qu’une interruption ne peut pas abîmer le fichier.",
+          "Retirer un morceau de la liste, ou supprimer une bibliothèque, n’efface rien du disque.",
+          "L’application garde ses propres données — réglages et bibliothèques — dans un dossier de votre profil utilisateur ; les pochettes extraites de vos fichiers restent dans un cache à part, pour ne pas devoir les relire à chaque démarrage.",
+          "Le cache se maintient sous une limite tout seul : au-delà, les pochettes demandées il y a le plus longtemps sont supprimées. Réglages → Bibliothèque indique ce qu’il occupe et le vide quand vous le souhaitez ; il se reconstruit seul et vos fichiers ne sont pas touchés.",
+          "Rien ne quitte votre ordinateur : aucune connexion internet, aucune télémétrie, aucun envoi de données."
         ]
       }
     },

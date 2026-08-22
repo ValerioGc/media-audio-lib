@@ -5,6 +5,7 @@
 
 use std::path::{Path, PathBuf};
 
+use serde::{Deserialize, Serialize};
 use tauri::State;
 
 use crate::error::{AppError, AppResult};
@@ -86,6 +87,38 @@ pub fn get_cover(
     let path = ensure_known_file(&state, &startup, Path::new(&path))?;
 
     cache.load(&path)
+}
+
+/// What the cover cache weighs, and how much it is allowed to weigh.
+///
+/// The limit travels with the size so the interface has nothing to remember: a number kept
+/// in two places is a number that ends up disagreeing with itself.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CoverCacheReport {
+    pub bytes: u64,
+    pub limit_bytes: u64,
+}
+
+fn cache_report(cache: &CoverCache) -> CoverCacheReport {
+    CoverCacheReport {
+        bytes: cache.size_bytes(),
+        limit_bytes: metadata::MAX_CACHE_BYTES,
+    }
+}
+
+/// How much room the cover cache is taking on disk.
+#[tauri::command]
+pub fn cover_cache_size(cache: State<'_, CoverCache>) -> AppResult<CoverCacheReport> {
+    Ok(cache_report(&cache))
+}
+
+/// Throws away every cached cover. The pictures are read again from the files as needed.
+#[tauri::command]
+pub fn clear_cover_cache(cache: State<'_, CoverCache>) -> AppResult<CoverCacheReport> {
+    cache.clear()?;
+
+    Ok(cache_report(&cache))
 }
 
 /// Writes title, album, year and genre to the audio file.

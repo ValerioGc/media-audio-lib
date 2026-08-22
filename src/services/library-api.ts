@@ -4,6 +4,7 @@ import { APP_NAME, isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-con
 import type {
   AddReport,
   Cover,
+  CoverCacheReport,
   LibraryInfo,
   LibraryImportReport,
   LibraryImportStrategy,
@@ -197,6 +198,20 @@ export async function getCover(path: string): Promise<Cover | null> {
   requireShell();
 
   return invoke<Cover | null>('get_cover', { path });
+}
+
+/** How much room the cached covers take on disk, and how much they are allowed. */
+export async function coverCacheSize(): Promise<CoverCacheReport> {
+  requireShell();
+
+  return invoke<CoverCacheReport>('cover_cache_size');
+}
+
+/** Throws the cached covers away and reports what is left, which is nothing. */
+export async function clearCoverCache(): Promise<CoverCacheReport> {
+  requireShell();
+
+  return invoke<CoverCacheReport>('clear_cover_cache');
 }
 
 export async function writeMetadata(id: string, update: MetadataUpdate): Promise<Track> {

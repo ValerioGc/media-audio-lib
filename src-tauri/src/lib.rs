@@ -98,12 +98,13 @@ pub fn keep_inside_the_app<'a, R: Runtime, M: Manager<R>>(
         .on_new_window(|_, _| NewWindowResponse::Deny)
 }
 
-/// Clears the staged copies an interrupted edit may have left beside the user's files.
+/// Clears what an earlier run may have left behind: the staged copies of an interrupted
+/// edit, and whatever the cover cache is holding above its limit.
 ///
 /// One folder read per folder of the library, so it runs off the main thread: the window
 /// opens while it works, and a folder that is slow to answer — a network drive, a disk
 /// waking up — delays nothing the user is looking at.
-fn sweep_abandoned_staging_files<R: Runtime>(app: &AppHandle<R>) {
+fn sweep_leftovers<R: Runtime>(app: &AppHandle<R>) {
     let app = app.clone();
 
     tauri::async_runtime::spawn_blocking(move || {
@@ -112,6 +113,7 @@ fn sweep_abandoned_staging_files<R: Runtime>(app: &AppHandle<R>) {
         };
 
         metadata::write::remove_abandoned_staging_files(directories);
+        app.state::<CoverCache>().evict_to_fit();
     });
 }
 
@@ -234,14 +236,15 @@ pub fn run() {
             app.manage(LibraryState::from_file(catalog.active_file()?));
             app.manage(catalog);
 
-            sweep_abandoned_staging_files(app.handle());
-
             app.manage(StartupFile::from_arguments(
                 std::env::args_os().skip(1).map(std::path::PathBuf::from),
             ));
 
             let cache_directory = app.path().app_cache_dir()?;
             app.manage(CoverCache::new(cache_directory.join(COVER_CACHE_DIR_NAME)));
+
+            // Last: it reads the state everything above has just been put into.
+            sweep_leftovers(app.handle());
 
             Ok(())
         })
@@ -272,6 +275,8 @@ pub fn run() {
             commands::library::verify_track_file,
             commands::library::export_track_list,
             commands::metadata::get_cover,
+            commands::metadata::cover_cache_size,
+            commands::metadata::clear_cover_cache,
             commands::metadata::write_metadata,
             commands::metadata::write_cover,
             commands::playback::prepare_playback,

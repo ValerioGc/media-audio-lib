@@ -178,6 +178,16 @@
     "libraries": {
       "title": "Libraries",
       "description": "Each library is a list of tracks of its own. Create a new one, open the one you need, and choose which opens at startup."
+    },
+    "coverCache": {
+      "title": "Cover cache",
+      "description": "Covers taken from your files are kept on disk so they need not be read again at every start. It rebuilds itself: emptying it leaves your files alone.",
+      "size": "Taking up {size}",
+      "empty": "The cache is empty.",
+      "limit": "Past {limit}, the covers asked for longest ago are dropped on their own.",
+      "clear": "Empty the cache",
+      "clearing": "Emptying…",
+      "cleared": "Cache emptied."
     }
   },
   "library": {
@@ -534,7 +544,7 @@
           "Formats read: MP3, FLAC, M4A, OGG and WAV.",
           "The same file never enters twice: one already in the library is counted among the skipped ones.",
           "A summary then says what was added, what was already there and what could not be imported; a clean import closes itself.",
-          "The files stay where they are: the library only keeps the list."
+          "The files stay where they are: importing only reads them, it does not copy, move or rename them. The library keeps the list of where they sit."
         ]
       },
       "organize": {
@@ -654,6 +664,18 @@
           "Player: leave the player open after the track is closed, and set the floating player — when it appears, whether it stays on top, its layout and what closing it does.",
           "Default audio player: on Windows it opens the system settings to associate audio files with this app; on Linux the association belongs to the desktop environment, and the section shows the command to run.",
           "The \"i\" button in the title bar opens the about window: version, website, project on GitHub, release notes and published releases."
+        ]
+      },
+      "storage": {
+        "title": "Your files and the app’s data",
+        "where": "everywhere; the cover cache is in Settings → Library.",
+        "steps": [
+          "Importing reads your files where they are: it does not copy them, move them or rename them. The library keeps only the list of where they sit.",
+          "Metadata changes are written into the file itself, in place: the write goes onto a temporary copy that replaces the original only once it is complete, so an interruption cannot ruin the file.",
+          "Taking a track out of the list, or deleting a library, deletes nothing from the disk.",
+          "The app keeps its own data — settings and libraries — in a folder of your user profile; covers taken from your files are kept in a cache of their own, so they need not be read again at every start.",
+          "The cache keeps itself under a limit: past it, the covers asked for longest ago are dropped. Settings → Library shows what it takes up and empties it whenever you like; it rebuilds itself, and your files are left alone.",
+          "Nothing leaves your computer: no internet connection, no telemetry, no data sent anywhere."
         ]
       }
     },

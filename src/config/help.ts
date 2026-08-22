@@ -19,6 +19,7 @@ export const HELP_TOPICS = [
   'transfer',
   'appearance',
   'settings',
+  'storage',
 ] as const;
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];
@@ -35,4 +36,5 @@ export const HELP_TOPIC_ICONS: Record<HelpTopic, IconName> = {
   transfer: 'export',
   appearance: 'grid',
   settings: 'settings',
+  storage: 'info',
 };

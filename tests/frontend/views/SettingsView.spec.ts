@@ -72,10 +72,12 @@ describe('SettingsView', () => {
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
       'Import / Export',
       'Librerie',
+      'Cache delle copertine',
     ]);
     expect(wrapper.find('.library_create_form').exists()).toBe(true);
     expect(wrapper.find('.import_export_panel').exists()).toBe(true);
     expect(wrapper.find('.library_list').exists()).toBe(true);
+    expect(wrapper.find('.cover_cache_panel').exists()).toBe(true);
   });
 
   it('leaves name, version and links to the about window', () => {

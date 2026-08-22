@@ -178,6 +178,16 @@
     "libraries": {
       "title": "Bibliotheken",
       "description": "Jede Bibliothek ist eine eigene Titelliste. Lege eine neue an, öffne die, die du brauchst, und wähle, welche beim Start geöffnet wird."
+    },
+    "coverCache": {
+      "title": "Cover-Cache",
+      "description": "Aus Ihren Dateien gelesene Cover bleiben auf der Festplatte, damit sie nicht bei jedem Start neu gelesen werden müssen. Er baut sich von selbst wieder auf: Leeren rührt Ihre Dateien nicht an.",
+      "size": "Belegt {size}",
+      "empty": "Der Cache ist leer.",
+      "limit": "Ab {limit} werden die am längsten nicht angefragten Cover von selbst entfernt.",
+      "clear": "Cache leeren",
+      "clearing": "Wird geleert…",
+      "cleared": "Cache geleert."
     }
   },
   "library": {
@@ -534,7 +544,7 @@
           "Gelesene Formate: MP3, FLAC, M4A, OGG und WAV.",
           "Dieselbe Datei kommt nie zweimal hinein: eine bereits vorhandene zählt zu den übersprungenen.",
           "Am Ende sagt eine Übersicht, was hinzugekommen ist, was schon da war und was nicht importiert werden konnte; ein sauberer Import schließt sich von selbst.",
-          "Die Dateien bleiben, wo sie sind: die Bibliothek führt nur die Liste."
+          "Die Dateien bleiben, wo sie sind: der Import liest sie nur, er kopiert, verschiebt und benennt sie nicht um. Die Bibliothek führt die Liste ihrer Fundorte."
         ]
       },
       "organize": {
@@ -654,6 +664,18 @@
           "Player: den Player nach dem Schließen des Titels offen lassen und den schwebenden Player einstellen — Erscheinen, Vordergrund, Anordnung und was sein Schließen bewirkt.",
           "Standard-Audioplayer: unter Windows öffnet er die Systemeinstellungen, um Audiodateien dieser App zuzuordnen; unter Linux gehört die Zuordnung der Desktop-Umgebung, und der Abschnitt zeigt den auszuführenden Befehl.",
           "Die Schaltfläche „i“ in der Titelleiste öffnet die Informationen: Version, Webseite, Projekt auf GitHub, Versionshinweise und veröffentlichte Versionen."
+        ]
+      },
+      "storage": {
+        "title": "Ihre Dateien und die Daten der App",
+        "where": "gilt überall; der Cover-Cache liegt unter Einstellungen → Bibliothek.",
+        "steps": [
+          "Der Import liest Ihre Dateien dort, wo sie liegen: er kopiert, verschiebt und benennt sie nicht um. Die Bibliothek führt nur die Liste ihrer Fundorte.",
+          "Änderungen an den Metadaten werden in die Datei selbst geschrieben, an Ort und Stelle: der Schreibvorgang läuft über eine temporäre Kopie, die das Original erst nach vollständigem Schreiben ersetzt — eine Unterbrechung kann die Datei also nicht beschädigen.",
+          "Einen Titel aus der Liste zu nehmen oder eine Bibliothek zu löschen löscht nichts von der Festplatte.",
+          "Die App bewahrt ihre eigenen Daten — Einstellungen und Bibliotheken — in einem Ordner Ihres Benutzerprofils auf; die aus Ihren Dateien gelesenen Cover bleiben in einem eigenen Cache, damit sie nicht bei jedem Start neu gelesen werden müssen.",
+          "Der Cache hält sich von selbst unter einer Grenze: darüber hinaus entfernt er die am längsten nicht angefragten Cover. Unter Einstellungen → Bibliothek sehen Sie, wie viel er belegt, und leeren ihn jederzeit; er baut sich von selbst wieder auf und Ihre Dateien bleiben unberührt.",
+          "Nichts verlässt Ihren Rechner: keine Internetverbindung, keine Telemetrie, keine Übertragung von Daten."
         ]
       }
     },

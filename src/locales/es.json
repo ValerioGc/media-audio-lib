@@ -178,6 +178,16 @@
     "libraries": {
       "title": "Bibliotecas",
       "description": "Cada biblioteca es una lista de pistas aparte. Crea una nueva, abre la que necesites y elige cuál se abre al arrancar."
+    },
+    "coverCache": {
+      "title": "Caché de portadas",
+      "description": "Las portadas extraídas de tus archivos se guardan en disco para no tener que leerlas en cada arranque. Se reconstruye sola: vaciarla no toca tus archivos.",
+      "size": "Ocupa {size}",
+      "empty": "La caché está vacía.",
+      "limit": "A partir de {limit}, las portadas pedidas hace más tiempo se eliminan solas.",
+      "clear": "Vaciar la caché",
+      "clearing": "Vaciando…",
+      "cleared": "Caché vaciada."
     }
   },
   "library": {
@@ -534,7 +544,7 @@
           "Formatos que lee: MP3, FLAC, M4A, OGG y WAV.",
           "El mismo archivo nunca entra dos veces: si ya está, se cuenta entre los omitidos.",
           "Al final un resumen dice qué se ha añadido, qué ya estaba y qué no se ha podido importar; una importación limpia se cierra sola.",
-          "Los archivos se quedan donde están: la biblioteca solo guarda la lista."
+          "Los archivos se quedan donde están: importar solo los lee, no los copia, no los mueve ni los renombra. La biblioteca guarda la lista de dónde están."
         ]
       },
       "organize": {
@@ -654,6 +664,18 @@
           "Reproductor: dejar el reproductor abierto tras cerrar la pista, y ajustar el reproductor flotante — aparición, primer plano, disposición y qué hace al cerrarse.",
           "Reproductor de audio predeterminado: en Windows abre los ajustes del sistema para asociar los archivos de audio a esta app; en Linux la asociación la gestiona el entorno de escritorio, y la sección muestra el comando que hay que ejecutar.",
           "El botón «i» de la barra de título abre la información: versión, sitio, proyecto en GitHub, notas de versión y versiones publicadas."
+        ]
+      },
+      "storage": {
+        "title": "Tus archivos y los datos de la aplicación",
+        "where": "vale en todas partes; la caché de portadas está en Ajustes → Biblioteca.",
+        "steps": [
+          "Importar lee los archivos donde están: no los copia, no los mueve ni los renombra. La biblioteca solo guarda la lista de dónde se encuentran.",
+          "Los cambios en los metadatos se escriben en el propio archivo, en su sitio: la escritura pasa por una copia temporal que sustituye al original solo cuando termina, de modo que una interrupción no puede estropear el archivo.",
+          "Quitar una canción de la lista, o eliminar una biblioteca, no borra nada del disco.",
+          "La aplicación guarda sus propios datos — ajustes y bibliotecas — en una carpeta de tu perfil de usuario; las portadas extraídas de los archivos se quedan en una caché aparte, para no tener que leerlas en cada arranque.",
+          "La caché se mantiene bajo un límite por sí sola: al pasarlo, elimina las portadas pedidas hace más tiempo. En Ajustes → Biblioteca ves cuánto ocupa y la vacías cuando quieras; se reconstruye sola y tus archivos no se tocan.",
+          "Nada sale de tu ordenador: ninguna conexión a internet, ninguna telemetría, ningún envío de datos."
         ]
       }
     },

@@ -125,6 +125,12 @@ export interface LibraryRefreshReport {
   missing: string[];
 }
 
+/** What the cover cache weighs on disk, and the weight it is kept under. */
+export interface CoverCacheReport {
+  bytes: number;
+  limitBytes: number;
+}
+
 export interface TrackListVerificationReport {
   total: number;
   missing: number;

@@ -7,8 +7,10 @@
 //! Cache failures are never fatal: on any problem the cover is read straight from the
 //! audio file, which is exactly what the cache is there to avoid, not to replace.
 
+use std::fs::FileTimes;
 use std::path::{Path, PathBuf};
-use std::time::UNIX_EPOCH;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use base64::Engine as _;
 
@@ -22,8 +24,33 @@ const JPEG_MIME: &str = "image/jpeg";
 /// Marks a file already known to carry no cover, so it is not parsed again.
 const EMPTY_EXTENSION: &str = "none";
 
+/// How large the cache is allowed to get before the least recently used entries go.
+///
+/// Room for some thousands of covers, which is more than a library of any ordinary size
+/// asks for, and small enough that the folder never becomes something the user finds by
+/// wondering where their disk went.
+pub const MAX_CACHE_BYTES: u64 = 256 * 1024 * 1024;
+
+/// How much has to be written before the size is checked again.
+///
+/// Measuring the folder means reading all of it, which is not something to do once per
+/// cover while a library is being scrolled through for the first time. Counting the bytes
+/// written and looking only every so often costs the same in the end.
+const SWEEP_AFTER_BYTES: u64 = 16 * 1024 * 1024;
+
+/// What the cache is brought down to once it goes over the limit.
+const EVICTION_TARGET_BYTES: u64 = MAX_CACHE_BYTES / 5 * 4;
+
+/// How stale an entry's timestamp has to be before serving it writes a fresher one.
+///
+/// The timestamp is what tells the eviction which entries are still in use, so it has to
+/// move — but not on every hit, or scrolling a library would rewrite the whole folder.
+const TOUCH_AFTER: u64 = 60 * 60;
+
 pub struct CoverCache {
     directory: PathBuf,
+    /// Bytes stored since the last time the size was checked.
+    written: AtomicU64,
 }
 
 fn extension_for(mime_type: &str) -> Option<&'static str> {
@@ -50,9 +77,38 @@ fn modified_seconds(path: &Path) -> u64 {
         .map_or(0, |elapsed| elapsed.as_secs())
 }
 
+/// Marks an entry as still in use, so the eviction can tell it from dead weight.
+///
+/// Last-access times are no help here — Windows stops updating them by default — so the
+/// cache keeps its own record: the modification time of the entry, which nothing but this
+/// writes. It is only rewritten once the old one has gone stale, or scrolling through a
+/// library would mean rewriting the whole folder.
+fn touch(path: &Path) {
+    let Ok(modified) = std::fs::metadata(path).and_then(|metadata| metadata.modified()) else {
+        return;
+    };
+
+    let still_fresh = SystemTime::now()
+        .duration_since(modified)
+        .is_ok_and(|age| age.as_secs() < TOUCH_AFTER);
+
+    if still_fresh {
+        return;
+    }
+
+    let Ok(file) = std::fs::File::options().write(true).open(path) else {
+        return;
+    };
+
+    let _ = file.set_times(FileTimes::new().set_modified(SystemTime::now()));
+}
+
 impl CoverCache {
     pub fn new(directory: PathBuf) -> Self {
-        Self { directory }
+        Self {
+            directory,
+            written: AtomicU64::new(0),
+        }
     }
 
     pub fn directory(&self) -> &Path {
@@ -70,11 +126,11 @@ impl CoverCache {
     }
 
     fn cached(&self, key: &str) -> Option<Option<Cover>> {
-        if self
-            .directory
-            .join(format!("{key}.{EMPTY_EXTENSION}"))
-            .is_file()
-        {
+        let empty = self.directory.join(format!("{key}.{EMPTY_EXTENSION}"));
+
+        if empty.is_file() {
+            touch(&empty);
+
             return Some(None);
         }
 
@@ -82,6 +138,8 @@ impl CoverCache {
             let candidate = self.directory.join(format!("{key}.{extension}"));
 
             if let Ok(bytes) = std::fs::read(&candidate) {
+                touch(&candidate);
+
                 return Some(Some(Cover {
                     mime_type: mime_for(extension).unwrap_or(PNG_MIME).to_owned(),
                     data: base64::engine::general_purpose::STANDARD.encode(bytes),
@@ -115,7 +173,8 @@ impl CoverCache {
         }
 
         let stored = match cover {
-            None => std::fs::write(self.directory.join(format!("{key}.{EMPTY_EXTENSION}")), []),
+            None => std::fs::write(self.directory.join(format!("{key}.{EMPTY_EXTENSION}")), [])
+                .map(|()| 0),
             Some(cover) => {
                 let Some(extension) = extension_for(&cover.mime_type) else {
                     return;
@@ -124,14 +183,92 @@ impl CoverCache {
                 else {
                     return;
                 };
+                let written = bytes.len() as u64;
 
                 std::fs::write(self.directory.join(format!("{key}.{extension}")), bytes)
+                    .map(|()| written)
             }
         };
 
-        if stored.is_ok() {
+        if let Ok(written) = stored {
             self.forget_older_entries(path, key);
+            self.evict_if_enough_was_written(written);
         }
+    }
+
+    /// Counts what was just stored and checks the size once enough has piled up.
+    fn evict_if_enough_was_written(&self, written: u64) {
+        let before = self.written.fetch_add(written, Ordering::Relaxed);
+
+        if before + written < SWEEP_AFTER_BYTES {
+            return;
+        }
+
+        self.written.store(0, Ordering::Relaxed);
+        self.evict_to_fit();
+    }
+
+    /// Every entry of the cache, with its weight and the last time it was served.
+    fn entries(&self) -> Vec<(PathBuf, u64, u64)> {
+        let Ok(entries) = std::fs::read_dir(&self.directory) else {
+            return Vec::new();
+        };
+
+        entries
+            .flatten()
+            .filter_map(|entry| {
+                let path = entry.path();
+                let metadata = entry.metadata().ok()?;
+
+                if !metadata.is_file() {
+                    return None;
+                }
+
+                Some((path.clone(), metadata.len(), modified_seconds(&path)))
+            })
+            .collect()
+    }
+
+    /// How much room the cache is taking on disk, in bytes.
+    pub fn size_bytes(&self) -> u64 {
+        self.entries().iter().map(|(_, size, _)| size).sum()
+    }
+
+    /// Drops the entries served longest ago until the cache fits again, and says how many
+    /// went.
+    ///
+    /// It clears down to below the limit rather than exactly to it, so the next cover
+    /// stored does not start the whole walk over again.
+    pub fn evict_to_fit(&self) -> usize {
+        self.evict_down_to(MAX_CACHE_BYTES, EVICTION_TARGET_BYTES)
+    }
+
+    /// The eviction itself, with the two sizes named out loud so a test can choose them.
+    fn evict_down_to(&self, limit: u64, target: u64) -> usize {
+        let mut entries = self.entries();
+        let mut total: u64 = entries.iter().map(|(_, size, _)| size).sum();
+
+        if total <= limit {
+            return 0;
+        }
+
+        // Oldest first: the covers nothing has asked for in the longest time.
+        entries.sort_by_key(|(_, _, last_used)| *last_used);
+
+        let mut removed = 0;
+
+        for (path, size, _) in entries {
+            if total <= target {
+                break;
+            }
+
+            if std::fs::remove_file(&path).is_ok() {
+                total = total.saturating_sub(size);
+                removed += 1;
+            }
+        }
+
+        removed
     }
 
     /// Returns the cover of `path`, reading the audio file only on a cache miss.
@@ -150,6 +287,8 @@ impl CoverCache {
 
     /// Empties the cache. Used when the user asks for a clean slate.
     pub fn clear(&self) -> AppResult<()> {
+        self.written.store(0, Ordering::Relaxed);
+
         if !self.directory.exists() {
             return Ok(());
         }

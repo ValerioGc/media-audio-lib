@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
 import AccentColorPicker from '@/components/settings/AccentColorPicker.vue';
 import AmbienceToggle from '@/components/settings/AmbienceToggle.vue';
+import CoverCachePanel from '@/components/settings/CoverCachePanel.vue';
 import CoverGradientToggle from '@/components/settings/CoverGradientToggle.vue';
 import DefaultPlayerPanel from '@/components/settings/DefaultPlayerPanel.vue';
 import ImportExportPanel from '@/components/settings/ImportExportPanel.vue';
@@ -52,6 +53,13 @@ const tabs = computed(() => [
           >
             <LibraryCreateForm />
             <LibraryList />
+          </SettingsSection>
+
+          <SettingsSection
+            :title="t('settings.coverCache.title')"
+            :description="t('settings.coverCache.description')"
+          >
+            <CoverCachePanel />
           </SettingsSection>
         </div>
       </template>

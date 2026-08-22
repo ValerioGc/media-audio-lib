@@ -178,6 +178,16 @@
     "libraries": {
       "title": "Librerie",
       "description": "Ogni libreria è un elenco di brani a sé. Creane una nuova, apri quella che ti serve e scegli quale aprire all’avvio."
+    },
+    "coverCache": {
+      "title": "Cache delle copertine",
+      "description": "Le copertine estratte dai file restano su disco per non doverle rileggere a ogni avvio. Si ricostruisce da sola: svuotarla non tocca i tuoi file.",
+      "size": "Spazio occupato: {size}",
+      "empty": "La cache è vuota.",
+      "limit": "Oltre {limit} le copertine chieste da più tempo vengono eliminate da sole.",
+      "clear": "Svuota la cache",
+      "clearing": "Pulizia in corso…",
+      "cleared": "Cache svuotata."
     }
   },
   "library": {
@@ -534,7 +544,7 @@
           "Formati letti: MP3, FLAC, M4A, OGG e WAV.",
           "Lo stesso file non entra due volte: se è già in libreria viene contato tra quelli saltati.",
           "Al termine compare un riepilogo con i brani aggiunti, quelli già presenti e quelli non importati; se è andato tutto bene sparisce da solo.",
-          "I file restano dove sono: la libreria tiene solo l’elenco."
+          "I file restano dove sono: importare li legge soltanto, non li copia, non li sposta e non li rinomina. La libreria tiene l’elenco di dove si trovano."
         ]
       },
       "organize": {
@@ -654,6 +664,18 @@
           "Player: lascia il player aperto dopo aver chiuso il brano, e regola il player flottante — comparsa, primo piano, orientamento e cosa fare alla sua chiusura.",
           "Player audio predefinito: su Windows apre le impostazioni di sistema per associare i file audio a questa app; su Linux l’associazione la gestisce l’ambiente desktop, e la sezione mostra il comando da eseguire.",
           "Il pulsante con la \"i\" nella barra del titolo apre le informazioni: versione, sito, progetto su GitHub, note di versione e versioni pubblicate."
+        ]
+      },
+      "storage": {
+        "title": "I tuoi file e i dati dell’app",
+        "where": "vale ovunque; la cache delle copertine sta in Impostazioni → Libreria.",
+        "steps": [
+          "Importare legge i file dove si trovano: non li copia, non li sposta e non li rinomina. La libreria tiene soltanto l’elenco di dove sono.",
+          "Le modifiche ai metadati vengono scritte nel file stesso, al suo posto: la scrittura passa da una copia temporanea che sostituisce l’originale solo quando è completa, così un’interruzione non può rovinare il file.",
+          "Togliere un brano dall’elenco, o eliminare una libreria, non cancella nulla dal disco.",
+          "L’app tiene i suoi dati — impostazioni e librerie — in una cartella del tuo profilo utente; le copertine estratte dai file restano in una cache a parte, per non doverle rileggere a ogni avvio.",
+          "La cache si tiene sotto un limite da sola: oltre quella soglia elimina le copertine chieste da più tempo. In Impostazioni → Libreria vedi quanto occupa e la svuoti quando vuoi; si ricostruisce da sola e i tuoi file non vengono toccati.",
+          "Niente esce dal computer: nessuna connessione a internet, nessuna telemetria, nessun invio di dati."
         ]
       }
     },

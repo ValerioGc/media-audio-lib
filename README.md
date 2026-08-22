@@ -159,9 +159,10 @@ Three of those deserve a word:
 
 - **The cover cache holds copies of pictures taken from your files.** Reading the artwork out
   of a large library on every start is slow, so each cover is kept as an image beside the
-  app's own data and reused while the file it came from is unchanged. It is a cache, not a
-  record of anything you did — but it does outlive the library being closed, so if a folder
-  of covers on disk is a problem for you, that is the folder to delete.
+  app's own data and reused while the file it came from is unchanged. It stays under 256 MB
+  on its own, dropping the covers asked for longest ago once it goes over, and **Settings →
+  Library** shows what it currently takes and empties it on request. It rebuilds itself from
+  your files afterwards, so nothing is lost by clearing it.
 - **Starting with the system writes outside the app's folders.** Turning that setting on adds
   an entry under `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` on
   Windows, or a `.desktop` file in `~/.config/autostart` on Linux. Turning the setting back

@@ -6,6 +6,28 @@ use std::sync::{Mutex, MutexGuard};
 use crate::error::{AppError, AppResult};
 use crate::library::Library;
 
+/// The audio file the operating system passed on the command line, if it passed one.
+///
+/// Read once, when the app starts, and kept here: the commands that act on it answer for
+/// themselves instead of trusting a path handed over by the interface.
+#[derive(Debug, Default)]
+pub struct StartupFile(Mutex<Option<PathBuf>>);
+
+impl StartupFile {
+    /// The first playable file among the arguments the app was started with.
+    pub fn from_arguments<I: IntoIterator<Item = PathBuf>>(arguments: I) -> Self {
+        let found = arguments
+            .into_iter()
+            .find(|path| path.is_file() && crate::metadata::is_supported(path));
+
+        Self(Mutex::new(found))
+    }
+
+    pub fn path(&self) -> Option<PathBuf> {
+        self.0.lock().ok().and_then(|path| path.clone())
+    }
+}
+
 /// The library in memory together with the file it belongs to: switching library swaps
 /// both at once, so a save can never land in the file of another library.
 struct Active {

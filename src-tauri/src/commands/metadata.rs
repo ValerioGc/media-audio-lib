@@ -10,7 +10,40 @@ use tauri::State;
 use crate::error::{AppError, AppResult};
 use crate::library::{self, Track};
 use crate::metadata::{self, Cover, CoverCache, MetadataUpdate, TrackMetadata};
-use crate::state::LibraryState;
+use crate::state::{LibraryState, StartupFile};
+
+/// Whether a path is one the app already knows: a track of the open library, or the file
+/// the system handed it at startup.
+///
+/// Every read of a file goes through here, so the interface cannot ask the shell to open
+/// something the user never gave it.
+fn ensure_known_file(
+    state: &LibraryState,
+    startup: &StartupFile,
+    path: &Path,
+) -> AppResult<PathBuf> {
+    let key = library::canonical_key(path);
+
+    let tracked = state.read(|library| {
+        library
+            .tracks()
+            .iter()
+            .any(|track| library::canonical_key(Path::new(&track.path)) == key)
+    })?;
+
+    let from_startup = startup
+        .path()
+        .is_some_and(|startup| library::canonical_key(&startup) == key);
+
+    if tracked || from_startup {
+        return Ok(path.to_path_buf());
+    }
+
+    Err(AppError::NotFound(format!(
+        "{} is not a file of this library",
+        path.display()
+    )))
+}
 
 fn tracked_path(state: &LibraryState, id: &str) -> AppResult<PathBuf> {
     state
@@ -39,17 +72,20 @@ pub fn edit_cover(state: &LibraryState, id: &str, cover: Option<&Cover>) -> AppR
     store_metadata(state, id, written)
 }
 
-/// Reads the tags of a single file, even before it enters the library.
-#[tauri::command]
-pub fn read_metadata(path: String) -> AppResult<TrackMetadata> {
-    metadata::read_metadata(Path::new(&path))
-}
-
 /// Returns the embedded cover art, base64 encoded, or nothing when there is none.
-/// Served from the on-disk cache when the file has not changed since the last read.
+///
+/// Served from the on-disk cache when the file has not changed since the last read, and
+/// only for a file the library already holds.
 #[tauri::command]
-pub fn get_cover(cache: State<'_, CoverCache>, path: String) -> AppResult<Option<Cover>> {
-    cache.load(Path::new(&path))
+pub fn get_cover(
+    cache: State<'_, CoverCache>,
+    state: State<'_, LibraryState>,
+    startup: State<'_, StartupFile>,
+    path: String,
+) -> AppResult<Option<Cover>> {
+    let path = ensure_known_file(&state, &startup, Path::new(&path))?;
+
+    cache.load(&path)
 }
 
 /// Writes title, album, year and genre to the audio file.

@@ -27,7 +27,7 @@ use tauri::{AppHandle, Emitter as _, Manager, Runtime, Url, WindowEvent};
 
 use crate::catalog::CatalogState;
 use crate::metadata::CoverCache;
-use crate::state::LibraryState;
+use crate::state::{LibraryState, StartupFile};
 
 pub const LIBRARY_FILE_NAME: &str = "library.json";
 pub const COVER_CACHE_DIR_NAME: &str = "covers";
@@ -217,6 +217,10 @@ pub fn run() {
             app.manage(LibraryState::from_file(catalog.active_file()?));
             app.manage(catalog);
 
+            app.manage(StartupFile::from_arguments(
+                std::env::args_os().skip(1).map(std::path::PathBuf::from),
+            ));
+
             let cache_directory = app.path().app_cache_dir()?;
             app.manage(CoverCache::new(cache_directory.join(COVER_CACHE_DIR_NAME)));
 
@@ -248,7 +252,6 @@ pub fn run() {
             commands::library::refresh_track,
             commands::library::verify_track_file,
             commands::library::export_track_list,
-            commands::metadata::read_metadata,
             commands::metadata::get_cover,
             commands::metadata::write_metadata,
             commands::metadata::write_cover,

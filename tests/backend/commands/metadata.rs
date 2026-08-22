@@ -27,13 +27,33 @@
     }
 
     #[test]
-    fn reads_metadata_from_a_path() {
-        let dir = TempDir::new("commands-metadata");
-        let path = wav_with_tags(dir.path(), "track.wav");
+    fn a_file_of_the_library_can_be_read() {
+        let dir = TempDir::new("commands-known-file");
+        let file = wav_with_tags(dir.path(), "track.wav");
+        let (state, _) = state_with_track(&dir, file.clone());
 
-        let metadata = read_metadata(path.display().to_string()).expect("read succeeded");
+        assert!(ensure_known_file(&state, &StartupFile::default(), &file).is_ok());
+    }
 
-        assert_eq!(metadata.title.as_deref(), Some("Test Title"));
+    #[test]
+    fn the_file_the_system_handed_over_can_be_read_as_well() {
+        let dir = TempDir::new("commands-startup-file");
+        let file = wav_with_tags(dir.path(), "track.wav");
+        let state = LibraryState::from_file(dir.path().join("library.json"));
+        let startup = StartupFile::from_arguments([file.clone()]);
+
+        assert!(ensure_known_file(&state, &startup, &file).is_ok());
+    }
+
+    #[test]
+    fn a_file_the_app_was_never_given_cannot_be_read() {
+        let dir = TempDir::new("commands-unknown-file");
+        let file = wav_with_tags(dir.path(), "track.wav");
+        let stranger = wav_with_tags(dir.path(), "stranger.wav");
+        let (state, _) = state_with_track(&dir, file);
+
+        // The interface cannot ask the shell to open something the user never gave it.
+        assert!(ensure_known_file(&state, &StartupFile::default(), &stranger).is_err());
     }
 
     #[test]
@@ -48,11 +68,6 @@
             cover.map(|cover| cover.mime_type),
             Some("image/png".to_owned())
         );
-    }
-
-    #[test]
-    fn reports_the_error_for_a_missing_path() {
-        assert!(read_metadata("C:/music/assente.mp3".to_owned()).is_err());
     }
 
     #[test]

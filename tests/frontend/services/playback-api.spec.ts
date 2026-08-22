@@ -46,14 +46,14 @@ describe('playbackUrl', () => {
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 
-  it('prepares standalone files by path', async () => {
+  it('asks for the startup file without naming it', async () => {
     scopedWindow.__TAURI_INTERNALS__ = {};
 
     await playbackUrl(makeTrack({ path: 'C:/music/direct.mp3', standalone: true }));
 
-    expect(mocks.invoke).toHaveBeenCalledWith('prepare_external_playback', {
-      path: 'C:/music/direct.mp3',
-    });
+    // The shell knows which file it was handed: a path from here would be a path it was
+    // never given.
+    expect(mocks.invoke).toHaveBeenCalledWith('prepare_external_playback');
   });
 
   it('loads the audio file passed when the app starts', async () => {

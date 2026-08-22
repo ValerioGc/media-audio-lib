@@ -83,12 +83,13 @@
         std::fs::write(&text, b"text").expect("test file written");
         let audio = mp3_with_tags(directory.path(), "track.mp3");
 
-        let found = first_supported_audio_path([
+        let found = crate::state::StartupFile::from_arguments([
             PathBuf::from("--flag"),
             text,
             audio.clone(),
             directory.path().join("missing.mp3"),
         ])
+        .path()
         .expect("audio path");
 
         assert_eq!(found, audio);

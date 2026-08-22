@@ -10,7 +10,7 @@ use tauri::{AppHandle, Manager as _, Runtime, State};
 use crate::error::{AppError, AppResult};
 use crate::library::{self, Library, Track, TrackView};
 use crate::metadata;
-use crate::state::LibraryState;
+use crate::state::{LibraryState, StartupFile};
 
 /// Path of a track that can actually be played, refusing entries whose file is gone.
 pub fn playable_path(library: &Library, id: &str) -> AppResult<PathBuf> {
@@ -39,15 +39,6 @@ fn standalone_track(path: &Path) -> AppResult<TrackView> {
     })
 }
 
-fn first_supported_audio_path<I>(paths: I) -> Option<PathBuf>
-where
-    I: IntoIterator<Item = PathBuf>,
-{
-    paths
-        .into_iter()
-        .find(|path| path.is_file() && metadata::is_supported(path))
-}
-
 /// Grants the webview access to one track and returns its path.
 #[tauri::command]
 pub fn prepare_playback<R: Runtime>(
@@ -67,19 +58,27 @@ pub fn prepare_playback<R: Runtime>(
 /// Reads the audio file passed by the operating system when this app is opened as
 /// the default player.
 #[tauri::command]
-pub fn startup_audio_file() -> AppResult<Option<TrackView>> {
-    let Some(path) = first_supported_audio_path(std::env::args_os().skip(1).map(PathBuf::from))
-    else {
+pub fn startup_audio_file(startup: State<'_, StartupFile>) -> AppResult<Option<TrackView>> {
+    let Some(path) = startup.path() else {
         return Ok(None);
     };
 
     standalone_track(&path).map(Some)
 }
 
-/// Grants the webview access to an audio file that is not part of the library.
+/// Grants the webview access to the file the app was opened with.
+///
+/// It takes no path: the only file outside the library the app ever plays is the one the
+/// system handed it, and that one is known here.
 #[tauri::command]
-pub fn prepare_external_playback<R: Runtime>(app: AppHandle<R>, path: String) -> AppResult<String> {
-    let path = playable_file_path(Path::new(&path))?;
+pub fn prepare_external_playback<R: Runtime>(
+    app: AppHandle<R>,
+    startup: State<'_, StartupFile>,
+) -> AppResult<String> {
+    let path = startup
+        .path()
+        .ok_or_else(|| AppError::NotFound("no file was passed to the application".to_owned()))?;
+    let path = playable_file_path(&path)?;
 
     app.asset_protocol_scope()
         .allow_file(&path)

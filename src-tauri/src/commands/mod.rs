@@ -15,7 +15,7 @@ pub use library::{
     add_tracks, export_track_list, library_info, list_tracks, refresh_library_from_disk,
     refresh_track, remove_track, rename_library, verify_track_file,
 };
-pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
+pub use metadata::{get_cover, write_cover, write_metadata};
 pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};
 pub use window::{
     close_mini_player, open_mini_player, quit_app, set_close_to_tray, set_mini_player_shape,

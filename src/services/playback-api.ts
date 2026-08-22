@@ -15,9 +15,10 @@ export async function playbackUrl(track: TrackView): Promise<string> {
     throw new ShellUnavailableError();
   }
 
+  // The file opened from the system is known to the shell: it is asked for, not named.
   const path =
     track.standalone === true
-      ? await invoke<string>('prepare_external_playback', { path: track.path })
+      ? await invoke<string>('prepare_external_playback')
       : await invoke<string>('prepare_playback', { id: track.id });
 
   return convertFileSrc(path);

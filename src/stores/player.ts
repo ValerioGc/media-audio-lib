@@ -4,7 +4,7 @@ import { computed, ref } from 'vue';
 import { createAudioEngine, type AudioEngine } from '@/services/audio-engine';
 import type { CoverAccent } from '@/services/cover-accent';
 import { ShellUnavailableError } from '@/services/library-api';
-import { playbackUrl } from '@/services/playback-api';
+import { playbackSource } from '@/services/playback-api';
 import type { TrackView } from '@/types/library';
 
 /** i18n key describing why playback stopped, so the UI stays free of hardcoded text. */
@@ -151,9 +151,10 @@ export const usePlayerStore = defineStore('player', () => {
     isLoading.value = true;
 
     try {
-      const url = await playbackUrl(track);
+      const source = await playbackSource(track);
       const audio = ensureEngine();
-      audio.load(url);
+      audio.setTrackGain(source.gainDb);
+      audio.load(source.url);
       await audio.play();
       isLoading.value = false;
     } catch (error) {

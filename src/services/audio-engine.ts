@@ -11,6 +11,8 @@ export interface AudioEngineHandlers {
 
 export interface AudioEngine {
   load: (url: string) => void;
+  /** The correction the file asks for, in decibels. `null` plays it as it is. */
+  setTrackGain: (decibels: number | null) => void;
   play: () => Promise<void>;
   pause: () => void;
   seek: (seconds: number) => void;
@@ -33,6 +35,21 @@ export function perceivedVolume(sliderPosition: number): number {
   return position ** 3;
 }
 
+/**
+ * The amplitude a correction in decibels comes to.
+ *
+ * Never above one: an element cannot play louder than its source, and a file asking to be
+ * turned up would only be clipped. Corrections that matter are the ones turning a loud
+ * master down, which is the whole point of the exercise.
+ */
+export function gainFactor(decibels: number | null): number {
+  if (decibels === null || !Number.isFinite(decibels)) {
+    return 1;
+  }
+
+  return Math.min(1, 10 ** (decibels / 20));
+}
+
 const MEDIA_ERR_DECODE = 3;
 const MEDIA_ERR_SRC_NOT_SUPPORTED = 4;
 
@@ -51,6 +68,14 @@ function kindOf(error: MediaError | null): AudioErrorKind {
 export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
   const element = new Audio();
   element.preload = 'auto';
+
+  /** Where the slider stands, and what the file asks for: the two are multiplied. */
+  let sliderPosition = 1;
+  let trackGain: number | null = null;
+
+  function applyVolume() {
+    element.volume = perceivedVolume(sliderPosition) * gainFactor(trackGain);
+  }
 
   element.addEventListener('timeupdate', () => handlers.onProgress(element.currentTime));
   element.addEventListener('durationchange', () => {
@@ -76,7 +101,12 @@ export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
       element.currentTime = seconds;
     },
     setVolume(value: number) {
-      element.volume = perceivedVolume(value);
+      sliderPosition = value;
+      applyVolume();
+    },
+    setTrackGain(decibels: number | null) {
+      trackGain = decibels;
+      applyVolume();
     },
     release() {
       element.pause();

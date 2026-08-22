@@ -32,6 +32,7 @@ beforeEach(() => {
     pause: vi.fn(),
     seek: vi.fn(),
     setVolume: vi.fn(),
+    setTrackGain: vi.fn(),
     release: vi.fn(),
   });
   mocks.dominantCoverAccent.mockResolvedValue({

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createAudioEngine,
+  gainFactor,
   perceivedVolume,
   type AudioEngineHandlers,
 } from '@/services/audio-engine';
@@ -121,6 +122,26 @@ describe('createAudioEngine', () => {
     expect(lastElement().currentTime).toBe(42);
     // Half the slider is an eighth of the amplitude, which is what half as loud is.
     expect(lastElement().volume).toBeCloseTo(0.125);
+  });
+
+  it('turns a loud master down by what its own tags ask for', () => {
+    const engine = createAudioEngine(handlers());
+
+    engine.setVolume(1);
+    engine.setTrackGain(-6);
+
+    // Six decibels down is half the amplitude, near enough.
+    expect(lastElement().volume).toBeCloseTo(0.501, 2);
+
+    engine.setTrackGain(null);
+    expect(lastElement().volume).toBe(1);
+  });
+
+  it('never turns anything up: an element cannot play louder than its source', () => {
+    expect(gainFactor(6)).toBe(1);
+    expect(gainFactor(null)).toBe(1);
+    expect(gainFactor(Number.NaN)).toBe(1);
+    expect(gainFactor(-20)).toBeCloseTo(0.1);
   });
 
   it('keeps the ends of the slider where they belong', () => {

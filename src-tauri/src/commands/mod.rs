@@ -19,7 +19,9 @@ pub use metadata::{
     clear_cover_cache, cover_cache_size, heavy_cover_bytes, write_cover, write_metadata,
     CoverCacheReport,
 };
-pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};
+pub use playback::{
+    prepare_external_playback, prepare_playback, startup_audio_file, PlaybackSource,
+};
 pub use window::{
     close_mini_player, open_mini_player, quit_app, set_close_to_tray, set_mini_player_shape,
     set_tray_menu,

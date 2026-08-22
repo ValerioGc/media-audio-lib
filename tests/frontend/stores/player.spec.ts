@@ -7,11 +7,11 @@ import type { AudioEngine, AudioEngineHandlers } from '@/services/audio-engine';
 import { ShellUnavailableError } from '@/services/library-api';
 
 const mocks = vi.hoisted(() => ({
-  playbackUrl: vi.fn(),
+  playbackSource: vi.fn(),
   createAudioEngine: vi.fn(),
 }));
 
-vi.mock('@/services/playback-api', () => ({ playbackUrl: mocks.playbackUrl }));
+vi.mock('@/services/playback-api', () => ({ playbackSource: mocks.playbackSource }));
 vi.mock('@/services/audio-engine', () => ({ createAudioEngine: mocks.createAudioEngine }));
 
 import { usePlayerStore } from '@/stores/player';
@@ -26,6 +26,7 @@ function makeEngine(): AudioEngine {
     pause: vi.fn(),
     seek: vi.fn(),
     setVolume: vi.fn(),
+    setTrackGain: vi.fn(),
     release: vi.fn(),
   };
 }
@@ -47,7 +48,7 @@ beforeEach(() => {
     handlers = given;
     return engine;
   });
-  mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
+  mocks.playbackSource.mockResolvedValue({ url: 'track://track.mp3', gainDb: null });
 });
 
 afterEach(() => {
@@ -82,8 +83,8 @@ describe('usePlayerStore', () => {
 
     await player.play(track);
 
-    expect(mocks.playbackUrl).toHaveBeenCalledWith(track);
-    expect(engine.load).toHaveBeenCalledWith('asset://track.mp3');
+    expect(mocks.playbackSource).toHaveBeenCalledWith(track);
+    expect(engine.load).toHaveBeenCalledWith('track://track.mp3');
     expect(engine.play).toHaveBeenCalledTimes(1);
     expect(player.currentTrack?.title).toBe('Track');
     expect(player.isLoading).toBe(false);
@@ -326,12 +327,12 @@ describe('usePlayerStore', () => {
     await player.play(makeTrack({ missing: true }));
 
     expect(player.errorKey).toBe('missing');
-    expect(mocks.playbackUrl).not.toHaveBeenCalled();
+    expect(mocks.playbackSource).not.toHaveBeenCalled();
     expect(mocks.createAudioEngine).not.toHaveBeenCalled();
   });
 
   it('explains that nothing plays in the browser', async () => {
-    mocks.playbackUrl.mockRejectedValue(new ShellUnavailableError());
+    mocks.playbackSource.mockRejectedValue(new ShellUnavailableError());
     const player = usePlayerStore();
 
     await player.play(makeTrack());
@@ -342,7 +343,7 @@ describe('usePlayerStore', () => {
   });
 
   it('reports a failed start', async () => {
-    mocks.playbackUrl.mockRejectedValue(new Error('permesso negato'));
+    mocks.playbackSource.mockRejectedValue(new Error('permesso negato'));
     const player = usePlayerStore();
 
     await player.play(makeTrack());

@@ -101,6 +101,25 @@
     }
 
     #[test]
+    fn reads_the_loudness_a_file_asks_to_be_played_at() {
+        let dir = TempDir::new("gain");
+        let path = wav_with_tags(dir.path(), "track.wav");
+
+        assert_eq!(
+            read_track_gain(&path).expect("lettura"),
+            None,
+            "un file che non lo dice viene suonato com'è"
+        );
+
+        assert_eq!(parse_gain_db("-7.35 dB"), Some(-7.35));
+        assert_eq!(parse_gain_db("  +2.10 dB "), Some(2.10));
+        assert_eq!(parse_gain_db("-4.2"), Some(-4.2));
+        assert_eq!(parse_gain_db("molto forte"), None);
+        // A tag asking for sixty decibels of correction is a tag nobody should believe.
+        assert_eq!(parse_gain_db("-96 dB"), None);
+    }
+
+    #[test]
     fn a_picture_that_is_not_png_or_jpeg_is_left_alone() {
         let dir = TempDir::new("cover-unknown-bytes");
         let path = wav_with_tags(dir.path(), "track.wav");

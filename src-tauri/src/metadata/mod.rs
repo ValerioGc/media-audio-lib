@@ -87,6 +87,42 @@ impl CoverRead {
     }
 }
 
+/// The loudness adjustment a file carries, in decibels, if it carries one.
+///
+/// Records made twenty years apart are mastered at wildly different levels, and a library
+/// plays them one after another. Many files already say by how much they should be turned
+/// down — ReplayGain, written by whatever ripped or tagged them — and this reads that
+/// number. Nothing is written and nothing is measured: a file that does not say gets left
+/// exactly as loud as it is.
+pub fn read_track_gain(path: &Path) -> AppResult<Option<f32>> {
+    let tagged_file = read_tagged_file(path)?;
+
+    let gain = tagged_file
+        .primary_tag()
+        .or_else(|| tagged_file.first_tag())
+        .and_then(|tag| tag.get_string(ItemKey::ReplayGainTrackGain))
+        .and_then(parse_gain_db);
+
+    Ok(gain)
+}
+
+/// Reads "-7.35 dB", and the handful of ways the same number gets written.
+fn parse_gain_db(value: &str) -> Option<f32> {
+    let cleaned = value
+        .trim()
+        .trim_end_matches("dB")
+        .trim_end_matches("DB")
+        .trim();
+    let gain: f32 = cleaned.trim().parse().ok()?;
+
+    // A file claiming to need sixty decibels of correction is a file with a broken tag.
+    if !gain.is_finite() || gain.abs() > 60.0 {
+        return None;
+    }
+
+    Some(gain)
+}
+
 /// Lowercase extension without the dot, empty when the path has none.
 pub fn extension_of(path: &Path) -> String {
     path.extension()

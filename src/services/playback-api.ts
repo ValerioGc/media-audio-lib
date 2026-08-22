@@ -4,25 +4,39 @@ import { isTauriRuntime, TRACK_SCHEME } from '@/config/app-config';
 import { ShellUnavailableError } from '@/services/library-api';
 import type { TrackView } from '@/types/library';
 
+/** Where a track is read from, and the correction its own tags ask for. */
+export interface PlaybackSource {
+  url: string;
+  gainDb: number | null;
+}
+
 /**
- * URL the webview can load for a track.
+ * What is needed to play a track.
  *
- * The backend resolves the file and checks it is playable; the `track:` scheme checks it
- * again for itself when the bytes are actually read.
+ * The backend resolves the file, checks it is playable and reads the loudness it asks for;
+ * the `track:` scheme checks the file again for itself when the bytes are actually read.
  */
-export async function playbackUrl(track: TrackView): Promise<string> {
+export async function playbackSource(track: TrackView): Promise<PlaybackSource> {
   if (!isTauriRuntime()) {
     throw new ShellUnavailableError();
   }
 
   // The file opened from the system is known to the shell: it is asked for, not named.
-  const path =
+  const source =
     track.standalone === true
-      ? await invoke<string>('prepare_external_playback')
-      : await invoke<string>('prepare_playback', { id: track.id });
+      ? await invoke<ShellPlaybackSource>('prepare_external_playback')
+      : await invoke<ShellPlaybackSource>('prepare_playback', { id: track.id });
 
-  // Not the asset protocol: `track:` asks the library again when the bytes are read.
-  return convertFileSrc(path, TRACK_SCHEME);
+  return {
+    // Not the asset protocol: `track:` asks the library again when the bytes are read.
+    url: convertFileSrc(source.path, TRACK_SCHEME),
+    gainDb: source.gainDb,
+  };
+}
+
+interface ShellPlaybackSource {
+  path: string;
+  gainDb: number | null;
 }
 
 export async function startupAudioFile(): Promise<TrackView | null> {

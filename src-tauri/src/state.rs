@@ -37,6 +37,8 @@ struct Active {
     /// Canonical key of every file of the library, built when it is first asked for and
     /// thrown away whenever the library changes.
     keys: Option<HashSet<String>>,
+    /// Whether a change is held in memory that the file does not have yet.
+    unsaved: bool,
 }
 
 impl Active {
@@ -45,6 +47,7 @@ impl Active {
             file,
             library,
             keys: None,
+            unsaved: false,
         }
     }
 
@@ -120,8 +123,39 @@ impl LibraryState {
         // is asked for rather than patched here, which no caller can forget to do.
         active.keys = None;
         active.library.save(&active.file)?;
+        active.unsaved = false;
 
         Ok(outcome)
+    }
+
+    /// Applies a change that only mirrors what the file on disk already says.
+    ///
+    /// Nothing is written: re-reading the tags of a track happens every time it is played,
+    /// and writing the whole library back each time means rewriting megabytes to record
+    /// something the file itself already knows. If the app closes before this is stored,
+    /// the next play reads it again — which is the difference between this and [`Self::update`],
+    /// where what changed came from the user and cannot be worked out a second time.
+    pub fn update_derived<T>(&self, action: impl FnOnce(&mut Library) -> T) -> AppResult<T> {
+        let mut active = self.lock()?;
+        let outcome = action(&mut active.library);
+        active.keys = None;
+        active.unsaved = true;
+
+        Ok(outcome)
+    }
+
+    /// Writes down what the derived changes have left pending, if anything.
+    pub fn flush(&self) -> AppResult<()> {
+        let mut active = self.lock()?;
+
+        if !active.unsaved {
+            return Ok(());
+        }
+
+        active.library.save(&active.file)?;
+        active.unsaved = false;
+
+        Ok(())
     }
 
     /// Loads another library file and makes it the current one.
@@ -129,6 +163,10 @@ impl LibraryState {
     /// The library left behind needs no flush: every change is already written when it
     /// happens.
     pub fn switch_to(&self, file: PathBuf) -> AppResult<()> {
+        // What the library being left behind has pending goes to its own file, not to the
+        // one about to take its place.
+        self.flush()?;
+
         let library = load_or_empty(&file);
 
         {
@@ -136,6 +174,7 @@ impl LibraryState {
             active.file = file;
             active.library = library;
             active.keys = None;
+            active.unsaved = false;
         }
 
         self.maintain_from_disk();

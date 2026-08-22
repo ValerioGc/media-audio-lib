@@ -186,13 +186,19 @@ pub fn add_tracks(state: State<'_, LibraryState>, paths: Vec<String>) -> AppResu
 
 /// Re-reads from disk what other programs may have changed, and reports what is missing.
 ///
-/// One file read per track: it runs off the main thread, so the window stays answerable
-/// while a large library is being gone through.
+/// One file read per track, on a few threads and off the main one — and, more to the point,
+/// outside the library: the reading takes the list of files and gives back what it found,
+/// and only writing it back needs the library. A window that would once sit unable to show
+/// a row for the length of the scan now waits the moment it takes to store the result.
 #[tauri::command]
 pub async fn refresh_library_from_disk(app: AppHandle) -> AppResult<LibraryRefreshReport> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<LibraryState>();
-        let refreshed = state.update(library::refresh_metadata)?;
+
+        let files = state.read(library::files_to_reread)?;
+        let read = library::read_all_metadata(&files);
+
+        let refreshed = state.update(|library| library::apply_reread(library, read))?;
         let missing = state.read(library::missing_paths)?;
 
         Ok(LibraryRefreshReport { refreshed, missing })
@@ -204,7 +210,8 @@ pub async fn refresh_library_from_disk(app: AppHandle) -> AppResult<LibraryRefre
 /// Re-reads one file, so what is shown is what the file says right now.
 #[tauri::command]
 pub fn refresh_track(state: State<'_, LibraryState>, id: String) -> AppResult<Option<TrackView>> {
-    state.update(|library| library::refresh_track(library, &id))
+    // Derived: this runs before every play, and what it finds is in the file already.
+    state.update_derived(|library| library::refresh_track(library, &id))
 }
 
 /// Removes a track from the library without touching the file on disk.

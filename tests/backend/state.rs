@@ -200,6 +200,43 @@
     }
 
     #[test]
+    fn a_derived_change_waits_for_a_reason_to_be_written() {
+        let dir = TempDir::new("state-derived");
+        let file = dir.path().join("library.json");
+        let state = LibraryState::new(file.clone(), Library::new());
+        state.update(|_| ()).expect("prima scrittura");
+
+        state
+            .update_derived(|library| library.rename("Derivata"))
+            .expect("cambiamento derivato")
+            .expect("nome valido");
+
+        assert_eq!(
+            Library::load(&file).expect("riletta").name,
+            crate::library::DEFAULT_LIBRARY_NAME,
+            "il file non è stato riscritto"
+        );
+
+        state.flush().expect("scrittura differita");
+
+        assert_eq!(Library::load(&file).expect("riletta").name, "Derivata");
+    }
+
+    #[test]
+    fn a_change_from_the_user_is_written_at_once() {
+        let dir = TempDir::new("state-durable");
+        let file = dir.path().join("library.json");
+        let state = LibraryState::new(file.clone(), Library::new());
+
+        state
+            .update(|library| library.rename("Scelta"))
+            .expect("aggiornamento")
+            .expect("nome valido");
+
+        assert_eq!(Library::load(&file).expect("riletta").name, "Scelta");
+    }
+
+    #[test]
     fn exposes_the_library_file_path() {
         let dir = TempDir::new("state-path");
         let file = dir.path().join("library.json");

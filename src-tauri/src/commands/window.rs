@@ -133,6 +133,11 @@ pub fn set_mini_player_shape<R: Runtime>(
 /// Closes the app for good, dock included: asked from the dock, which has no other way out.
 #[tauri::command]
 pub fn quit_app<R: Runtime>(app: AppHandle<R>) {
+    // What the library has pending is only ever data read back from the files, so losing it
+    // costs a re-read rather than anything of the user's — but there is no reason to lose it
+    // when we are told we are closing.
+    let _ = app.state::<crate::state::LibraryState>().flush();
+
     app.exit(0);
 }
 

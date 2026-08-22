@@ -742,20 +742,63 @@ pub fn refresh_track(library: &mut Library, id: &str) -> Option<TrackView> {
 /// Re-reads the tags of every tracked file still on disk, and reports how many entries
 /// changed. Used to fill in fields added after those entries were first saved.
 pub fn refresh_metadata(library: &mut Library) -> usize {
-    let identifiers: Vec<(String, PathBuf)> = library
+    let files = files_to_reread(library);
+
+    apply_reread(library, read_all_metadata(&files))
+}
+
+/// How many files are read at once when the library is gone through.
+///
+/// Reading a tag is mostly waiting on the disk, so a handful of threads finish a large
+/// library several times sooner than one. More than a handful only queues up on the same
+/// device.
+const REREAD_THREADS: usize = 4;
+
+/// The files of the library, paired with the entry each belongs to.
+pub fn files_to_reread(library: &Library) -> Vec<(String, PathBuf)> {
+    library
         .tracks
         .iter()
         .map(|track| (track.id.clone(), PathBuf::from(&track.path)))
-        .collect();
+        .collect()
+}
 
+/// Reads the tags of every file, on a few threads, touching no library.
+///
+/// Kept apart from the library on purpose: this is the slow half, and holding the library
+/// while it runs is what used to leave the window unable to answer for anything else.
+pub fn read_all_metadata(files: &[(String, PathBuf)]) -> Vec<(String, TrackMetadata)> {
+    let next = std::sync::atomic::AtomicUsize::new(0);
+    let read = std::sync::Mutex::new(Vec::with_capacity(files.len()));
+
+    std::thread::scope(|scope| {
+        for _ in 0..REREAD_THREADS.min(files.len().max(1)) {
+            scope.spawn(|| loop {
+                let index = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+                let Some((id, path)) = files.get(index) else {
+                    return;
+                };
+
+                if let Ok(metadata) = metadata::read_metadata(path) {
+                    if let Ok(mut read) = read.lock() {
+                        read.push((id.clone(), metadata));
+                    }
+                }
+            });
+        }
+    });
+
+    read.into_inner().unwrap_or_default()
+}
+
+/// Writes back what was read, and says how many entries it changed.
+pub fn apply_reread(library: &mut Library, read: Vec<(String, TrackMetadata)>) -> usize {
     let mut refreshed = 0;
 
-    for (id, path) in identifiers {
-        let Ok(metadata) = metadata::read_metadata(&path) else {
-            continue;
-        };
-
+    for (id, metadata) in read {
         let before = library.get(&id).cloned();
+
         if apply_metadata(library, &id, metadata).as_ref() != before.as_ref() {
             refreshed += 1;
         }

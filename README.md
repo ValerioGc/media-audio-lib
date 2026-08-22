@@ -134,11 +134,16 @@ chmod +x MediaAudioLib_x.x.x_linux_x64_portable.AppImage
 ## Privacy
 
 **Media Audio Lib collects no data, sends no telemetry and requires no internet connection,
-ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync. The
-app has no HTTP client of its own, and the window it runs in is not allowed to reach any
-address outside the app: a page from the internet cannot be loaded into it, by accident or
-otherwise. The only thing that ever leaves is a link you click yourself — the project page,
-the changelog — and that is handed to your browser to open, not fetched here.
+ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync. No
+line of this app makes a network request, and the window it runs in is not allowed to reach
+any address outside the app: a page from the internet cannot be loaded into it, by accident
+or otherwise. The only thing that ever leaves is a link you click yourself — the project
+page, the changelog — and that is handed to your browser to open, not fetched here.
+
+One thing worth stating plainly, since anyone inspecting the binary would find it: an HTTP
+library is compiled into it. It arrives as a dependency of Tauri, the framework the app is
+built on, and nothing here calls it. It is mentioned because "no network code in the
+executable" would be a stronger claim than the truth, and the truth is good enough.
 
 Your audio files are never copied anywhere. Importing reads them and remembers where they
 are; editing rewrites their tags where they already sit. Nothing is moved, and removing a

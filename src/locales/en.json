@@ -129,8 +129,9 @@
     },
     "defaultPlayer": {
       "title": "Default audio player",
-      "description": "Open system settings to associate audio files with Media Audio Lib.",
+      "description": "Associate audio files with Media Audio Lib, so a double click opens them here.",
       "message": "Windows requires a manual choice: find Media Audio Lib in default apps and assign the audio formats you want to open here.",
+      "linuxMessage": "On Linux the association belongs to your desktop environment: set it from its default applications settings, or run this command in a terminal.",
       "open": "Open settings",
       "opening": "Opening…",
       "error": "System settings cannot be opened from this session."
@@ -651,7 +652,7 @@
           "Startup and window: start the app with the system, start minimized in the system tray, and stay there on close instead of quitting.",
           "From the tray a click reopens the window, a right click offers to stop the playback or to quit.",
           "Player: leave the player open after the track is closed, and set the floating player — when it appears, whether it stays on top, its layout and what closing it does.",
-          "Default audio player: opens the Windows settings to associate audio files with this app.",
+          "Default audio player: on Windows it opens the system settings to associate audio files with this app; on Linux the association belongs to the desktop environment, and the section shows the command to run.",
           "The \"i\" button in the title bar opens the about window: version, website, project on GitHub, release notes and published releases."
         ]
       }

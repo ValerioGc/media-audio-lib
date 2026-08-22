@@ -24,6 +24,8 @@ $radius_lg: 12px;
 
 // Typography
 $font_family_base: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+/// For the few places that show a command or a path to be copied as it is written.
+$font_family_mono: 'Cascadia Mono', 'Consolas', ui-monospace, monospace;
 $font_size_base: 1rem;
 $line_height_base: 1.5;
 

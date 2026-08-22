@@ -129,8 +129,9 @@
     },
     "defaultPlayer": {
       "title": "Reproductor de audio predeterminado",
-      "description": "Abre los ajustes del sistema para asociar los archivos de audio con Media Audio Lib.",
+      "description": "Asocia los archivos de audio a Media Audio Lib, para que un doble clic los abra aquí.",
       "message": "Windows exige una elección manual: busca Media Audio Lib en las aplicaciones predeterminadas y asígnale los formatos de audio que quieras abrir aquí.",
+      "linuxMessage": "En Linux la asociación la gestiona tu entorno de escritorio: ajústala desde sus aplicaciones predeterminadas, o ejecuta este comando en un terminal.",
       "open": "Abrir los ajustes",
       "opening": "Abriendo…",
       "error": "Los ajustes del sistema no pueden abrirse desde esta sesión."
@@ -651,7 +652,7 @@
           "Inicio y ventana: arrancar la app con el sistema, empezar minimizada en la bandeja, y quedarse ahí al cerrar en vez de salir.",
           "Desde la bandeja, un clic reabre la ventana y el botón derecho ofrece detener la reproducción o salir.",
           "Reproductor: dejar el reproductor abierto tras cerrar la pista, y ajustar el reproductor flotante — aparición, primer plano, disposición y qué hace al cerrarse.",
-          "Reproductor de audio predeterminado: abre los ajustes de Windows para asociar los archivos de audio a esta app.",
+          "Reproductor de audio predeterminado: en Windows abre los ajustes del sistema para asociar los archivos de audio a esta app; en Linux la asociación la gestiona el entorno de escritorio, y la sección muestra el comando que hay que ejecutar.",
           "El botón «i» de la barra de título abre la información: versión, sitio, proyecto en GitHub, notas de versión y versiones publicadas."
         ]
       }

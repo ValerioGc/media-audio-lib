@@ -129,8 +129,9 @@
     },
     "defaultPlayer": {
       "title": "Player audio predefinito",
-      "description": "Apri le impostazioni di sistema per associare i file audio a Media Audio Lib.",
+      "description": "Associa i file audio a Media Audio Lib, così si aprono qui con un doppio clic.",
       "message": "Windows richiede una scelta manuale: cerca Media Audio Lib nelle app predefinite e assegna i formati audio che vuoi aprire qui.",
+      "linuxMessage": "Su Linux l’associazione la gestisce il tuo ambiente desktop: aprila dalle sue impostazioni delle applicazioni predefinite, oppure esegui questo comando in un terminale.",
       "open": "Apri impostazioni",
       "opening": "Apertura…",
       "error": "Non riesco ad aprire le impostazioni di sistema da questa sessione."
@@ -651,7 +652,7 @@
           "Avvio e finestra: avviare l’app con il sistema, partire ridotta nella barra di sistema e restarci alla chiusura invece di uscire.",
           "Dalla barra di sistema il clic riapre la finestra, il tasto destro offre di interrompere la riproduzione o uscire.",
           "Player: lascia il player aperto dopo aver chiuso il brano, e regola il player flottante — comparsa, primo piano, orientamento e cosa fare alla sua chiusura.",
-          "Player audio predefinito: apre le impostazioni di Windows per associare i file audio a questa app.",
+          "Player audio predefinito: su Windows apre le impostazioni di sistema per associare i file audio a questa app; su Linux l’associazione la gestisce l’ambiente desktop, e la sezione mostra il comando da eseguire.",
           "Il pulsante con la \"i\" nella barra del titolo apre le informazioni: versione, sito, progetto su GitHub, note di versione e versioni pubblicate."
         ]
       }

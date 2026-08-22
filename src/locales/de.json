@@ -129,8 +129,9 @@
     },
     "defaultPlayer": {
       "title": "Standard-Audioplayer",
-      "description": "Systemeinstellungen öffnen, um Audiodateien mit Media Audio Lib zu verknüpfen.",
+      "description": "Ordne Audiodateien Media Audio Lib zu, damit ein Doppelklick sie hier öffnet.",
       "message": "Windows verlangt eine manuelle Auswahl: Suchen Sie Media Audio Lib in den Standard-Apps und weisen Sie ihm die Audioformate zu, die hier geöffnet werden sollen.",
+      "linuxMessage": "Unter Linux gehört die Zuordnung deiner Desktop-Umgebung: stelle sie in deren Standardanwendungen ein, oder führe diesen Befehl in einem Terminal aus.",
       "open": "Einstellungen öffnen",
       "opening": "Wird geöffnet…",
       "error": "Die Systemeinstellungen lassen sich aus dieser Sitzung nicht öffnen."
@@ -651,7 +652,7 @@
           "Start und Fenster: die App mit dem System starten, minimiert im Infobereich beginnen und beim Schließen dort bleiben statt zu beenden.",
           "Aus dem Infobereich öffnet ein Klick das Fenster, die rechte Maustaste bietet an, die Wiedergabe zu beenden oder zu schließen.",
           "Player: den Player nach dem Schließen des Titels offen lassen und den schwebenden Player einstellen — Erscheinen, Vordergrund, Anordnung und was sein Schließen bewirkt.",
-          "Standard-Audioplayer: öffnet die Windows-Einstellungen, um Audiodateien dieser App zuzuordnen.",
+          "Standard-Audioplayer: unter Windows öffnet er die Systemeinstellungen, um Audiodateien dieser App zuzuordnen; unter Linux gehört die Zuordnung der Desktop-Umgebung, und der Abschnitt zeigt den auszuführenden Befehl.",
           "Die Schaltfläche „i“ in der Titelleiste öffnet die Informationen: Version, Webseite, Projekt auf GitHub, Versionshinweise und veröffentlichte Versionen."
         ]
       }

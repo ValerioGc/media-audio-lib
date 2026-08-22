@@ -129,8 +129,9 @@
     },
     "defaultPlayer": {
       "title": "Lecteur audio par défaut",
-      "description": "Ouvrez les paramètres système pour associer les fichiers audio à Media Audio Lib.",
+      "description": "Associez les fichiers audio à Media Audio Lib, pour qu’un double-clic les ouvre ici.",
       "message": "Windows demande un choix manuel : trouvez Media Audio Lib dans les applications par défaut et attribuez-lui les formats audio à ouvrir ici.",
+      "linuxMessage": "Sous Linux l’association appartient à votre environnement de bureau : réglez-la depuis ses applications par défaut, ou lancez cette commande dans un terminal.",
       "open": "Ouvrir les paramètres",
       "opening": "Ouverture…",
       "error": "Les paramètres système ne peuvent pas être ouverts depuis cette session."
@@ -651,7 +652,7 @@
           "Démarrage et fenêtre : lancer l’app avec le système, démarrer réduite dans la zone de notification, et y rester à la fermeture au lieu de quitter.",
           "Depuis la zone de notification, un clic rouvre la fenêtre, un clic droit propose d’arrêter la lecture ou de quitter.",
           "Lecteur : laisser le lecteur ouvert après la fermeture du morceau, et régler le lecteur flottant — apparition, premier plan, disposition et effet de sa fermeture.",
-          "Lecteur audio par défaut : ouvre les réglages de Windows pour associer les fichiers audio à cette application.",
+          "Lecteur audio par défaut : sous Windows, ouvre les réglages du système pour associer les fichiers audio à cette application ; sous Linux, l’association appartient à l’environnement de bureau et la section affiche la commande à lancer.",
           "Le bouton « i » de la barre de titre ouvre les informations : version, site, projet sur GitHub, notes de version et versions publiées."
         ]
       }

@@ -18,6 +18,21 @@ export interface AudioEngine {
   release: () => void;
 }
 
+/**
+ * Turns the position of the slider into the loudness the element should play at.
+ *
+ * `volume` on an audio element is amplitude, and the ear does not hear amplitude: half the
+ * amplitude is nowhere near half as loud, so a linear slider leaves everything useful
+ * crammed into its last quarter and drops off a cliff near the bottom. Cubing it is the
+ * common approximation of the curve the ear actually follows — it is what a slider that
+ * "feels right" is doing underneath.
+ */
+export function perceivedVolume(sliderPosition: number): number {
+  const position = Math.min(1, Math.max(0, sliderPosition));
+
+  return position ** 3;
+}
+
 const MEDIA_ERR_DECODE = 3;
 const MEDIA_ERR_SRC_NOT_SUPPORTED = 4;
 
@@ -61,7 +76,7 @@ export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
       element.currentTime = seconds;
     },
     setVolume(value: number) {
-      element.volume = value;
+      element.volume = perceivedVolume(value);
     },
     release() {
       element.pause();

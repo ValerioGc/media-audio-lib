@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createAudioEngine, type AudioEngineHandlers } from '@/services/audio-engine';
+import {
+  createAudioEngine,
+  perceivedVolume,
+  type AudioEngineHandlers,
+} from '@/services/audio-engine';
 
 const elements: HTMLAudioElement[] = [];
 const originalAudio = window.Audio;
@@ -108,14 +112,22 @@ describe('createAudioEngine', () => {
     expect(callbacks.onError).toHaveBeenNthCalledWith(2, 'generic');
   });
 
-  it('seeks and sets the volume', () => {
+  it('seeks, and sets a volume the ear reads the way the slider looks', () => {
     const engine = createAudioEngine(handlers());
 
     engine.seek(42);
-    engine.setVolume(0.25);
+    engine.setVolume(0.5);
 
     expect(lastElement().currentTime).toBe(42);
-    expect(lastElement().volume).toBe(0.25);
+    // Half the slider is an eighth of the amplitude, which is what half as loud is.
+    expect(lastElement().volume).toBeCloseTo(0.125);
+  });
+
+  it('keeps the ends of the slider where they belong', () => {
+    expect(perceivedVolume(0)).toBe(0);
+    expect(perceivedVolume(1)).toBe(1);
+    expect(perceivedVolume(-1)).toBe(0);
+    expect(perceivedVolume(4)).toBe(1);
   });
 
   it('releases the source when the player is closed', () => {

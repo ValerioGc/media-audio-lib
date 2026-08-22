@@ -104,11 +104,25 @@ fn field_value(track: &TrackView, field: TrackListExportField) -> String {
     }
 }
 
+/// Characters a spreadsheet reads as the start of a formula rather than as text.
+const FORMULA_STARTS: [char; 6] = ['=', '+', '-', '@', '\t', '\r'];
+
 fn csv_cell(value: &str) -> String {
+    // A title comes out of a tag written by whoever made the file, and an exported list
+    // exists to be opened somewhere else. To Excel and to LibreOffice a cell beginning with
+    // `=` is a formula rather than a word, and a formula can reach outside the document.
+    // The leading apostrophe is what tells them it is text: it shows on the rare name that
+    // really starts with one of these, which is the cheaper of the two prices.
+    let value = if value.starts_with(FORMULA_STARTS) {
+        format!("'{value}")
+    } else {
+        value.to_owned()
+    };
+
     if value.contains(',') || value.contains('"') || value.contains('\n') || value.contains('\r') {
         format!("\"{}\"", value.replace('"', "\"\""))
     } else {
-        value.to_owned()
+        value
     }
 }
 

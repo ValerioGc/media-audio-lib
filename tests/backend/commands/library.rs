@@ -117,6 +117,38 @@
     }
 
     #[test]
+    fn a_title_that_looks_like_a_formula_is_exported_as_text() {
+        let tracks = vec![TrackView {
+            track: Track {
+                id: "aaa".to_owned(),
+                path: "C:/music/track.mp3".to_owned(),
+                title: "=cmd|'/c calc'!A0".to_owned(),
+                artist: None,
+                album: None,
+                year: None,
+                genre: None,
+                duration_ms: 0,
+                format: "mp3".to_owned(),
+                has_cover: false,
+                added_at: 1,
+            },
+            missing: false,
+        }];
+
+        let contents = export_contents(
+            &tracks,
+            TrackListExportFormat::Csv,
+            &[TrackListExportField::Title],
+        );
+
+        // The apostrophe is what a spreadsheet reads as "this cell is a word".
+        assert!(
+            contents.ends_with("'=cmd|'/c calc'!A0"),
+            "contenuto inatteso: {contents}"
+        );
+    }
+
+    #[test]
     fn exports_track_list_as_txt() {
         let tracks = vec![TrackView {
             track: Track {

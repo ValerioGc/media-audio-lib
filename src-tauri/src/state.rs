@@ -1,5 +1,6 @@
 //! Shared library state, guarded by a mutex and mirrored on disk.
 
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, MutexGuard};
 
@@ -33,6 +34,34 @@ impl StartupFile {
 struct Active {
     file: PathBuf,
     library: Library,
+    /// Canonical key of every file of the library, built when it is first asked for and
+    /// thrown away whenever the library changes.
+    keys: Option<HashSet<String>>,
+}
+
+impl Active {
+    fn new(file: PathBuf, library: Library) -> Self {
+        Self {
+            file,
+            library,
+            keys: None,
+        }
+    }
+
+    /// The set of files the library holds, built once and kept until something moves.
+    ///
+    /// Building it canonicalises every path, which is a call to the filesystem each — the
+    /// reason this is not done per question. The questions come from the audio scheme and
+    /// from the cover reader, both of which ask again for every request they serve.
+    fn keys(&mut self) -> &HashSet<String> {
+        self.keys.get_or_insert_with(|| {
+            self.library
+                .tracks()
+                .iter()
+                .map(|track| crate::library::canonical_key(Path::new(&track.path)))
+                .collect()
+        })
+    }
 }
 
 pub struct LibraryState {
@@ -42,8 +71,17 @@ pub struct LibraryState {
 impl LibraryState {
     pub fn new(file: PathBuf, library: Library) -> Self {
         Self {
-            active: Mutex::new(Active { file, library }),
+            active: Mutex::new(Active::new(file, library)),
         }
+    }
+
+    /// Whether the library holds this file, by one canonicalisation instead of one per
+    /// track.
+    pub fn holds_file(&self, path: &Path) -> AppResult<bool> {
+        let key = crate::library::canonical_key(path);
+        let mut active = self.lock()?;
+
+        Ok(active.keys().contains(&key))
     }
 
     /// Loads the library from `file`, starting empty when it cannot be read.
@@ -78,6 +116,9 @@ impl LibraryState {
     pub fn update<T>(&self, action: impl FnOnce(&mut Library) -> T) -> AppResult<T> {
         let mut active = self.lock()?;
         let outcome = action(&mut active.library);
+        // Whatever just changed may have been a path: the set is built again next time it
+        // is asked for rather than patched here, which no caller can forget to do.
+        active.keys = None;
         active.library.save(&active.file)?;
 
         Ok(outcome)
@@ -94,6 +135,7 @@ impl LibraryState {
             let mut active = self.lock()?;
             active.file = file;
             active.library = library;
+            active.keys = None;
         }
 
         self.maintain_from_disk();

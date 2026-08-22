@@ -178,6 +178,28 @@
     }
 
     #[test]
+    fn answers_whether_it_holds_a_file_and_notices_when_that_changes() {
+        let dir = TempDir::new("state-holds");
+        let track = crate::fixtures::mp3_with_tags(dir.path(), "track.mp3");
+        let state = LibraryState::new(dir.path().join("library.json"), Library::new());
+
+        assert!(!state.holds_file(&track).expect("risposta"));
+
+        state
+            .update(|library| {
+                crate::library::add_paths(library, &[track.display().to_string()], 0)
+            })
+            .expect("brano aggiunto");
+
+        // The set is built on the first question and dropped by the change above, so this
+        // is the new answer and not the one from before.
+        assert!(state.holds_file(&track).expect("risposta"));
+        assert!(!state
+            .holds_file(&dir.path().join("altro.mp3"))
+            .expect("risposta"));
+    }
+
+    #[test]
     fn exposes_the_library_file_path() {
         let dir = TempDir::new("state-path");
         let file = dir.path().join("library.json");

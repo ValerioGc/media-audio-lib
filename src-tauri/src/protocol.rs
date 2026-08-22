@@ -61,21 +61,13 @@ pub fn is_playable_now(state: &LibraryState, startup: &StartupFile, path: &Path)
         return false;
     }
 
-    let key = library::canonical_key(path);
+    if state.holds_file(path).unwrap_or(false) {
+        return true;
+    }
 
-    let tracked = state
-        .read(|library| {
-            library
-                .tracks()
-                .iter()
-                .any(|track| library::canonical_key(Path::new(&track.path)) == key)
-        })
-        .unwrap_or(false);
-
-    tracked
-        || startup
-            .path()
-            .is_some_and(|startup| library::canonical_key(&startup) == key)
+    startup
+        .path()
+        .is_some_and(|startup| library::canonical_key(&startup) == library::canonical_key(path))
 }
 
 fn empty(status: StatusCode) -> Response<Vec<u8>> {

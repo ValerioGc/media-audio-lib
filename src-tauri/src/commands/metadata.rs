@@ -23,20 +23,13 @@ fn ensure_known_file(
     startup: &StartupFile,
     path: &Path,
 ) -> AppResult<PathBuf> {
-    let key = library::canonical_key(path);
+    let from_startup = || {
+        startup
+            .path()
+            .is_some_and(|startup| library::canonical_key(&startup) == library::canonical_key(path))
+    };
 
-    let tracked = state.read(|library| {
-        library
-            .tracks()
-            .iter()
-            .any(|track| library::canonical_key(Path::new(&track.path)) == key)
-    })?;
-
-    let from_startup = startup
-        .path()
-        .is_some_and(|startup| library::canonical_key(&startup) == key);
-
-    if tracked || from_startup {
+    if state.holds_file(path)? || from_startup() {
         return Ok(path.to_path_buf());
     }
 

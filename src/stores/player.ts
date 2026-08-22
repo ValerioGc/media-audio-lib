@@ -10,6 +10,14 @@ import type { TrackView } from '@/types/library';
 /** i18n key describing why playback stopped, so the UI stays free of hardcoded text. */
 export type PlayerErrorKey = 'missing' | 'unsupported' | 'shellUnavailable' | 'generic' | null;
 
+/**
+ * How long before the end the next file is opened.
+ *
+ * Long enough for a header to be read and a buffer to fill, short enough that a listener
+ * skipping through a queue does not leave a trail of half-opened files behind them.
+ */
+const PRELOAD_LEAD_SECONDS = 15;
+
 /** Past this point "previous" restarts the track instead of going back in the queue. */
 const RESTART_THRESHOLD_SECONDS = 3;
 const DEFAULT_VOLUME = 0.8;
@@ -84,6 +92,8 @@ export const usePlayerStore = defineStore('player', () => {
   const duration = ref(0);
   const volume = ref(DEFAULT_VOLUME);
   const volumeBeforeMute = ref(DEFAULT_VOLUME);
+  /** Which track the engine has already opened ahead of time, if any. */
+  const preloadedId = ref<string | null>(null);
   const isMuted = ref(false);
   const errorKey = ref<PlayerErrorKey>(null);
 
@@ -110,6 +120,10 @@ export const usePlayerStore = defineStore('player', () => {
       engine = createAudioEngine({
         onProgress: (value) => {
           position.value = value;
+
+          if (duration.value - value <= PRELOAD_LEAD_SECONDS) {
+            void preloadNext();
+          }
         },
         onDuration: (value) => {
           duration.value = value;
@@ -142,6 +156,7 @@ export const usePlayerStore = defineStore('player', () => {
     position.value = 0;
     duration.value = track.durationMs / 1000;
     errorKey.value = null;
+    preloadedId.value = null;
 
     if (track.missing) {
       fail('missing');
@@ -220,6 +235,30 @@ export const usePlayerStore = defineStore('player', () => {
     engine?.seek(0);
     isPlaying.value = false;
     position.value = 0;
+  }
+
+  /**
+   * Opens the file of the next track while the current one plays out.
+   *
+   * Once per track: the id of what has been opened is remembered, so the progress events
+   * arriving several times a second do not each start a fetch of their own.
+   */
+  async function preloadNext() {
+    const upcoming = isRepeatOneEnabled.value ? null : (queue.value[index.value + 1] ?? null);
+
+    if (upcoming === null || upcoming.missing || preloadedId.value === upcoming.id) {
+      return;
+    }
+
+    preloadedId.value = upcoming.id;
+
+    try {
+      const source = await playbackSource(upcoming);
+      engine?.preload(source.url);
+    } catch {
+      // Nothing to report: the track will simply be opened when it is its turn.
+      preloadedId.value = null;
+    }
   }
 
   async function next() {

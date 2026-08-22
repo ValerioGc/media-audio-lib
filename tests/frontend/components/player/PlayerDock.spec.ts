@@ -28,6 +28,7 @@ beforeEach(() => {
   mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
   mocks.createAudioEngine.mockReturnValue({
     load: vi.fn(),
+    preload: vi.fn(),
     play: vi.fn().mockResolvedValue(undefined),
     pause: vi.fn(),
     seek: vi.fn(),

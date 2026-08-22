@@ -1,3 +1,4 @@
+import { flushPromises } from '@vue/test-utils';
 import { setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -22,6 +23,7 @@ let handlers: AudioEngineHandlers | null = null;
 function makeEngine(): AudioEngine {
   return {
     load: vi.fn(),
+    preload: vi.fn(),
     play: vi.fn().mockResolvedValue(undefined),
     pause: vi.fn(),
     seek: vi.fn(),
@@ -100,6 +102,49 @@ describe('usePlayerStore', () => {
     engineHandlers().onDuration(184.2);
 
     expect(player.duration).toBe(184.2);
+  });
+
+  it('opens the next file while the current one is finishing', async () => {
+    const player = usePlayerStore();
+    const tracks = [makeTrack({ id: 'a' }), makeTrack({ id: 'b' })];
+    await player.playFrom(tracks, 'a');
+    mocks.playbackSource.mockResolvedValue({ url: 'track://b.mp3', gainDb: null });
+
+    engineHandlers().onDuration(100);
+    engineHandlers().onProgress(50);
+    await flushPromises();
+
+    expect(vi.mocked(engine.preload)).not.toHaveBeenCalled();
+
+    engineHandlers().onProgress(90);
+    await flushPromises();
+
+    expect(vi.mocked(engine.preload)).toHaveBeenCalledWith('track://b.mp3');
+  });
+
+  it('opens the next file once, not on every tick of the clock', async () => {
+    const player = usePlayerStore();
+    await player.playFrom([makeTrack({ id: 'a' }), makeTrack({ id: 'b' })], 'a');
+    engineHandlers().onDuration(100);
+
+    for (const second of [90, 91, 92, 93]) {
+      engineHandlers().onProgress(second);
+      await flushPromises();
+    }
+
+    expect(vi.mocked(engine.preload)).toHaveBeenCalledTimes(1);
+  });
+
+  it('has nothing to open ahead when the track repeats itself', async () => {
+    const player = usePlayerStore();
+    await player.playFrom([makeTrack({ id: 'a' }), makeTrack({ id: 'b' })], 'a');
+    player.toggleRepeatOne();
+    engineHandlers().onDuration(100);
+
+    engineHandlers().onProgress(95);
+    await flushPromises();
+
+    expect(vi.mocked(engine.preload)).not.toHaveBeenCalled();
   });
 
   it('uses the visible list as the queue', async () => {

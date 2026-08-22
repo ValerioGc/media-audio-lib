@@ -151,6 +151,44 @@ describe('createAudioEngine', () => {
     expect(perceivedVolume(4)).toBe(1);
   });
 
+  it('plays the file it opened ahead of time instead of opening it again', () => {
+    const engine = createAudioEngine(handlers());
+    const first = lastElement();
+
+    engine.preload('track://next.mp3');
+    const standby = lastElement();
+    expect(standby).not.toBe(first);
+    expect(standby.src).toBe('track://next.mp3');
+
+    engine.load('track://next.mp3');
+
+    // No new element and no second load: the one already buffered took over.
+    expect(lastElement()).toBe(standby);
+    expect(first.getAttribute('src')).toBeNull();
+  });
+
+  it('reports the events of whichever element is playing', () => {
+    const callbacks = handlers();
+    const engine = createAudioEngine(callbacks);
+
+    engine.preload('track://next.mp3');
+    engine.load('track://next.mp3');
+    lastElement().dispatchEvent(new Event('ended'));
+
+    expect(callbacks.onEnded).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens nothing twice, and nothing that is already playing', () => {
+    const engine = createAudioEngine(handlers());
+    engine.load('track://one.mp3');
+    const created = elements.length;
+
+    engine.preload('track://two.mp3');
+    engine.preload('track://two.mp3');
+
+    expect(elements.length).toBe(created + 1);
+  });
+
   it('releases the source when the player is closed', () => {
     const engine = createAudioEngine(handlers());
     engine.load('asset://track.mp3');

@@ -11,6 +11,8 @@ export interface AudioEngineHandlers {
 
 export interface AudioEngine {
   load: (url: string) => void;
+  /** Opens a file ahead of time, so playing it next starts on what is already buffered. */
+  preload: (url: string) => void;
   /** The correction the file asks for, in decibels. `null` plays it as it is. */
   setTrackGain: (decibels: number | null) => void;
   play: () => Promise<void>;
@@ -66,8 +68,18 @@ function kindOf(error: MediaError | null): AudioErrorKind {
 
 /** Wraps the audio element so the store never touches the DOM. */
 export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
-  const element = new Audio();
+  let element = new Audio();
   element.preload = 'auto';
+
+  /**
+   * The next file, opened early and waiting.
+   *
+   * Starting a track means opening the file, reading its header and filling a buffer, and
+   * that is the silence between two tracks of the same record. Having the next one already
+   * open turns the change into a swap.
+   */
+  let standby: HTMLAudioElement | null = null;
+  let standbyUrl = '';
 
   /** Where the slider stands, and what the file asks for: the two are multiplied. */
   let sliderPosition = 1;
@@ -77,19 +89,65 @@ export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
     element.volume = perceivedVolume(sliderPosition) * gainFactor(trackGain);
   }
 
-  element.addEventListener('timeupdate', () => handlers.onProgress(element.currentTime));
-  element.addEventListener('durationchange', () => {
-    handlers.onDuration(Number.isFinite(element.duration) ? element.duration : 0);
-  });
-  element.addEventListener('play', () => handlers.onPlayingChange(true));
-  element.addEventListener('pause', () => handlers.onPlayingChange(false));
-  element.addEventListener('ended', () => handlers.onEnded());
-  element.addEventListener('error', () => handlers.onError(kindOf(element.error)));
+  const listeners: [string, EventListener][] = [
+    ['timeupdate', () => handlers.onProgress(element.currentTime)],
+    [
+      'durationchange',
+      () => handlers.onDuration(Number.isFinite(element.duration) ? element.duration : 0),
+    ],
+    ['play', () => handlers.onPlayingChange(true)],
+    ['pause', () => handlers.onPlayingChange(false)],
+    ['ended', () => handlers.onEnded()],
+    ['error', () => handlers.onError(kindOf(element.error))],
+  ];
+
+  function listen(target: HTMLAudioElement) {
+    for (const [event, handler] of listeners) {
+      target.addEventListener(event, handler);
+    }
+  }
+
+  function stopListening(target: HTMLAudioElement) {
+    for (const [event, handler] of listeners) {
+      target.removeEventListener(event, handler);
+    }
+  }
+
+  listen(element);
 
   return {
     load(url: string) {
+      if (standby !== null && standbyUrl === url) {
+        // Already open and buffered: the element itself is exchanged rather than the file
+        // inside it, which is what makes the change instant.
+        stopListening(element);
+        element.pause();
+        element.removeAttribute('src');
+
+        element = standby;
+        standby = null;
+        standbyUrl = '';
+        listen(element);
+        applyVolume();
+        handlers.onDuration(Number.isFinite(element.duration) ? element.duration : 0);
+
+        return;
+      }
+
       element.src = url;
       element.load();
+    },
+    preload(url: string) {
+      if (url === '' || standbyUrl === url || element.currentSrc === url) {
+        return;
+      }
+
+      standby?.removeAttribute('src');
+      standby = new Audio();
+      standby.preload = 'auto';
+      standby.src = url;
+      standby.load();
+      standbyUrl = url;
     },
     play() {
       return element.play();
@@ -109,6 +167,9 @@ export function createAudioEngine(handlers: AudioEngineHandlers): AudioEngine {
       applyVolume();
     },
     release() {
+      standby?.removeAttribute('src');
+      standby = null;
+      standbyUrl = '';
       element.pause();
       element.removeAttribute('src');
       element.load();

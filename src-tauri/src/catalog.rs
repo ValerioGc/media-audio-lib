@@ -3,7 +3,7 @@
 //! Each library keeps living in its own file: the catalog only records where they are and
 //! which one is active, so a library file stays readable on its own.
 
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::sync::{Mutex, MutexGuard};
 
 use serde::{Deserialize, Serialize};
@@ -100,6 +100,27 @@ impl Catalog {
         Ok(())
     }
 
+    /// Drops the entries that do not point at a file of this app, and says how many went.
+    ///
+    /// Everything downstream — opening a library, exporting it, deleting its file — works
+    /// from these paths, so they are checked once here rather than at each use.
+    pub fn retain_own_files(&mut self, directory: &Path) -> usize {
+        let before = self.entries.len();
+
+        self.entries
+            .retain(|entry| is_own_library_file(directory, &entry.path()));
+
+        if self.entry(&self.active.clone()).is_none() {
+            self.active = self
+                .entries
+                .first()
+                .map(|entry| entry.id.clone())
+                .unwrap_or_default();
+        }
+
+        before - self.entries.len()
+    }
+
     /// Removes one library, keeping the catalog usable: the last one cannot be removed and
     /// the active one falls back to whatever is left.
     pub fn remove(&mut self, id: &str) -> AppResult<CatalogEntry> {
@@ -127,6 +148,29 @@ impl Catalog {
 
         Ok(removed)
     }
+}
+
+/// Whether a path is one this app would have written a library to.
+///
+/// The catalog is a file on disk like any other, and nothing stops something else from
+/// editing it. An entry naming a path outside the app's own folder would be opened on a
+/// switch and **deleted** on a delete, so a path that could not have come from here is not
+/// followed. Only the shape is judged: a library whose file is not there yet is still one
+/// of ours.
+pub fn is_own_library_file(directory: &Path, file: &Path) -> bool {
+    if file.extension().and_then(|value| value.to_str()) != Some("json") {
+        return false;
+    }
+
+    // `starts_with` compares components, but a `..` in the middle still climbs back out.
+    if file
+        .components()
+        .any(|component| component == Component::ParentDir)
+    {
+        return false;
+    }
+
+    file.starts_with(directory)
 }
 
 /// Identifier of a library, stable once written into the catalog.
@@ -179,7 +223,7 @@ impl CatalogState {
     pub fn open(directory: PathBuf, legacy_file: &Path) -> Self {
         let file = directory.join(CATALOG_FILE_NAME);
 
-        let catalog = if file.exists() {
+        let mut catalog = if file.exists() {
             Catalog::load(&file).unwrap_or_else(|error| {
                 eprintln!("catalog non caricato ({error}), se ne crea uno nuovo");
                 bootstrap(&directory, legacy_file)
@@ -187,6 +231,16 @@ impl CatalogState {
         } else {
             bootstrap(&directory, legacy_file)
         };
+
+        let dropped = catalog.retain_own_files(&directory);
+
+        if dropped > 0 {
+            eprintln!("catalog: {dropped} voci fuori dalla cartella dell'app sono state tolte");
+        }
+
+        if catalog.entries.is_empty() {
+            catalog = bootstrap(&directory, legacy_file);
+        }
 
         let state = Self::new(directory, catalog);
 

@@ -37,6 +37,58 @@
     }
 
     #[test]
+    fn an_entry_pointing_outside_the_app_folder_is_not_followed() {
+        let directory = TempDir::new("catalog-outside");
+
+        assert!(is_own_library_file(
+            directory.path(),
+            &directory.path().join("libraries").join("abc.json")
+        ));
+        // The library file of an installation that predates the catalog.
+        assert!(is_own_library_file(
+            directory.path(),
+            &directory.path().join("library.json")
+        ));
+
+        assert!(!is_own_library_file(
+            directory.path(),
+            Path::new("C:/Users/qualcuno/Documenti/segreti.json")
+        ));
+        assert!(!is_own_library_file(
+            directory.path(),
+            &directory.path().join("..").join("altrove.json")
+        ));
+        assert!(!is_own_library_file(
+            directory.path(),
+            &directory.path().join("libraries").join("appunti.txt")
+        ));
+    }
+
+    #[test]
+    fn a_tampered_catalog_loses_the_entries_that_lead_elsewhere() {
+        let directory = TempDir::new("catalog-tampered");
+        let mine = CatalogEntry {
+            id: "mia".to_owned(),
+            file: directory
+                .path()
+                .join("libraries")
+                .join("mia.json")
+                .to_string_lossy()
+                .into_owned(),
+        };
+        let mut catalog = Catalog::with_entry(entry("intrusa"));
+        catalog.add(mine.clone());
+        catalog.active = "intrusa".to_owned();
+
+        let dropped = catalog.retain_own_files(directory.path());
+
+        assert_eq!(dropped, 1);
+        assert_eq!(catalog.entries.len(), 1);
+        assert_eq!(catalog.entries[0].id, mine.id);
+        assert_eq!(catalog.active, mine.id, "l'attiva ricade su ciò che resta");
+    }
+
+    #[test]
     fn catalog_survives_saving_and_rereading() {
         let directory = TempDir::new("catalog");
         let file = directory.path().join(CATALOG_FILE_NAME);

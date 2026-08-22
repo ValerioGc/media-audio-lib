@@ -41,7 +41,7 @@ function onInput(event: Event) {
 .app_input {
   display: flex;
   flex-direction: column;
-  gap: $space_xs;
+  gap: $space_sm;
 
   &_label {
     font-size: 0.875em;

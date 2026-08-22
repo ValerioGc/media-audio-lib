@@ -18,22 +18,22 @@
   },
   "settings": {
     "title": "Paramètres",
-    "subtitle": "Réglez la langue, la lisibilité et l'apparence de l'application.",
+    "subtitle": "Langue, apparence et comportement de l’application, et les bibliothèques qu’elle tient.",
     "language": {
       "title": "Langue",
-      "description": "Langue de l'interface. Le changement est immédiat."
+      "description": "Langue de l’interface, des menus et des messages."
     },
     "startup": {
       "title": "Démarrage et fenêtre",
-      "description": "Comment l’application se comporte au démarrage et à la fermeture.",
+      "description": "Comment l’application se comporte au démarrage, à la réduction et à la fermeture.",
       "autostart": "Démarrer avec le système",
       "minimized": "Démarrer réduite dans la zone de notification",
       "closeToTray": "À la fermeture, rester dans la zone de notification",
-      "hint": "Depuis la zone de notification, un clic ouvre la fenêtre, un clic droit propose de quitter."
+      "hint": "Avec l’application dans la zone de notification, un clic sur l’icône rouvre la fenêtre et un clic droit propose d’arrêter la lecture ou de quitter."
     },
     "playerBehaviour": {
       "title": "Lecteur",
-      "description": "Ce qui reste à l’écran quand vous fermez le morceau en cours.",
+      "description": "Ce qui reste à l’écran quand un morceau est fermé, et comment se présente le lecteur flottant.",
       "keepOpen": "Laisser le lecteur ouvert, réduit, à la fermeture du morceau",
       "dock": "Afficher le lecteur flottant quand l’app passe dans la zone de notification",
       "alwaysOnTop": "Garder le lecteur flottant au-dessus des autres fenêtres",
@@ -88,7 +88,7 @@
       "description": "Couleur des contrôles, des boutons et des éléments actifs de l'interface.",
       "swatch": "Couleur {color}",
       "custom": "Personnalisée",
-      "reset": "Revenir au bleu",
+      "reset": "Par défaut",
       "hint": "La couleur est éclaircie ou assombrie automatiquement pour rester lisible sur le thème clair comme sur le sombre."
     },
     "ambience": {
@@ -158,7 +158,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Enregistrez une copie JSON de la bibliothèque ou importez un fichier produit par l'application.",
+      "description": "Enregistrez la bibliothèque dans un fichier à garder ou à emporter, et relisez-la au besoin.",
       "import": "Importer",
       "importing": "Import en cours…",
       "export": "Exporter l'active",
@@ -176,7 +176,7 @@
     },
     "libraries": {
       "title": "Bibliothèques",
-      "description": "Chaque bibliothèque a sa propre liste de morceaux. Vous pouvez en créer d'autres, les ouvrir, choisir la principale, les exporter ou les supprimer."
+      "description": "Chaque bibliothèque est une liste de morceaux à part. Créez-en une, ouvrez celle qu’il vous faut et choisissez celle qui s’ouvre au démarrage."
     }
   },
   "library": {
@@ -208,6 +208,7 @@
       "primaryShort": "Principale",
       "setPrimary": "Définir « {name} » comme bibliothèque principale",
       "export": "Exporter la bibliothèque « {name} »",
+      "exportShort": "Exporter",
       "remove": "Supprimer la bibliothèque « {name} »",
       "exported": "Bibliothèque exportée vers {path}",
       "switcher": {

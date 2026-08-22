@@ -21,9 +21,9 @@ import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
 const { t } = useI18n();
 
 const tabs = computed(() => [
-  { id: 'library', label: t('settings.tabs.library') },
   { id: 'general', label: t('settings.tabs.general') },
   { id: 'appearance', label: t('settings.tabs.appearance') },
+  { id: 'library', label: t('settings.tabs.library') },
 ]);
 </script>
 
@@ -143,7 +143,7 @@ const tabs = computed(() => [
   flex-direction: column;
   gap: $space_lg;
 
-  @include page_column;
+  @include page_column(54rem);
 
   &_header {
     display: flex;

@@ -54,7 +54,7 @@ const groupName = useId();
   border: 0;
 
   &_legend {
-    padding: 0 0 $space_xs;
+    padding: 0 0 $space_sm;
     font-size: 0.875em;
     color: var(--color_text_muted);
   }

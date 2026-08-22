@@ -154,23 +154,19 @@ async function onIntensityChange(event: Event) {
 .cover_gradient_toggle {
   display: flex;
   flex-direction: column;
-  gap: $space_sm;
+  gap: $space_md;
   align-items: flex-start;
   color: var(--color_text);
 
-  &_check,
+  &_check {
+    @include settings_check;
+  }
+
   &_slider {
     display: flex;
-    gap: $space_sm;
+    gap: $space_md;
     align-items: center;
-  }
-
-  &_check {
-    cursor: pointer;
-  }
-
-  &_slider {
-    width: min(28rem, 100%);
+    width: min(32rem, 100%);
     transition: opacity $duration_fast ease;
 
     &_disabled {
@@ -196,13 +192,9 @@ async function onIntensityChange(event: Event) {
     }
   }
 
-  input[type='checkbox'] {
-    width: 1rem;
-    height: 1rem;
-    accent-color: var(--color_accent);
-  }
-
+  // The sliders of a gradient are dragged by eye: they are given room to be dragged in.
   input[type='range'] {
+    height: 1.35rem;
     accent-color: var(--color_accent);
 
     &:disabled {

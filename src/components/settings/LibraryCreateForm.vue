@@ -38,7 +38,8 @@ async function create() {
 <style scoped lang="scss">
 .library_create_form {
   display: flex;
-  gap: $space_sm;
+  flex-wrap: wrap;
+  gap: $space_md;
   align-items: flex-end;
 }
 </style>

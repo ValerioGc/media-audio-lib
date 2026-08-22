@@ -18,22 +18,22 @@
   },
   "settings": {
     "title": "Impostazioni",
-    "subtitle": "Personalizza lingua, leggibilità e aspetto dell'applicazione.",
+    "subtitle": "Lingua, aspetto e comportamento dell’applicazione, e le librerie che tiene.",
     "language": {
       "title": "Lingua",
-      "description": "Lingua dell'interfaccia. Il cambio è immediato."
+      "description": "Lingua dell’interfaccia, dei menu e dei messaggi."
     },
     "startup": {
       "title": "Avvio e finestra",
-      "description": "Come si comporta l'applicazione quando parte e quando la chiudi.",
+      "description": "Come si comporta l’applicazione quando la avvii, quando la riduci e quando la chiudi.",
       "autostart": "Avvia all'accensione del sistema",
       "minimized": "Parti ridotta nella barra di sistema",
       "closeToTray": "Chiudendo, resta nella barra di sistema",
-      "hint": "Dalla barra di sistema il click apre la finestra, il tasto destro offre di uscire."
+      "hint": "Con l’applicazione nella barra di sistema il clic sull’icona riapre la finestra, il tasto destro offre di interrompere la riproduzione o di uscire."
     },
     "playerBehaviour": {
       "title": "Player",
-      "description": "Cosa resta sullo schermo quando chiudi il brano in riproduzione.",
+      "description": "Cosa resta sullo schermo quando chiudi un brano, e come si presenta il player flottante.",
       "keepOpen": "Lascia il player aperto, ridotto, quando chiudi il brano",
       "dock": "Mostra il player flottante quando riduci l’app nella barra di sistema",
       "alwaysOnTop": "Tieni il player flottante sempre in primo piano",
@@ -88,7 +88,7 @@
       "description": "Colore dei controlli, dei bottoni e degli elementi attivi dell'interfaccia.",
       "swatch": "Colore {color}",
       "custom": "Personalizzato",
-      "reset": "Ripristina il blu",
+      "reset": "Predefinito",
       "hint": "Il colore viene schiarito o scurito automaticamente per restare leggibile sul tema chiaro e su quello scuro."
     },
     "ambience": {
@@ -158,7 +158,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Salva una copia JSON della libreria o importa un file prodotto dall'app.",
+      "description": "Salva la libreria in un file da conservare o da portare altrove, e rileggila quando serve.",
       "import": "Importa",
       "importing": "Importazione…",
       "export": "Esporta attiva",
@@ -176,7 +176,7 @@
     },
     "libraries": {
       "title": "Librerie",
-      "description": "Ogni libreria ha il suo elenco di brani. Puoi crearne altre, aprirle, scegliere quella principale, esportarle o eliminarle."
+      "description": "Ogni libreria è un elenco di brani a sé. Creane una nuova, apri quella che ti serve e scegli quale aprire all’avvio."
     }
   },
   "library": {
@@ -208,6 +208,7 @@
       "primaryShort": "Principale",
       "setPrimary": "Imposta «{name}» come libreria principale",
       "export": "Esporta la libreria «{name}»",
+      "exportShort": "Esporta",
       "remove": "Elimina la libreria «{name}»",
       "exported": "Libreria esportata in {path}",
       "switcher": {

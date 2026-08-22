@@ -2,7 +2,6 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
-import { APP_NAME } from '@/config/app-config';
 import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -17,20 +16,18 @@ afterEach(() => {
 });
 
 describe('SettingsView', () => {
-  it('opens on the library, then general and appearance', () => {
+  it('opens on the general settings, then appearance and library', () => {
     const wrapper = mount(SettingsView, withPinia());
 
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
-      'Libreria',
       'Generale',
       'Aspetto',
+      'Libreria',
     ]);
   });
 
-  it('groups general application settings under their tab', async () => {
+  it('groups general application settings under their tab', () => {
     const wrapper = mount(SettingsView, withPinia());
-
-    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
     const titles = wrapper.findAll('.settings_section_title').map((title) => title.text());
 
@@ -40,7 +37,7 @@ describe('SettingsView', () => {
   it('groups appearance settings with application and audio player dividers', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
     expect(wrapper.findAll('.settings_view_divider').map((divider) => divider.text())).toEqual([
       'Applicazione',
@@ -58,14 +55,18 @@ describe('SettingsView', () => {
   it('does not show rename in the library tab', async () => {
     const wrapper = mount(SettingsView, withPinia());
 
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).not.toContain(
       'Nome della libreria',
     );
     expect(wrapper.find('.library_name_form').exists()).toBe(false);
   });
 
-  it('shows the library list in the library tab, which comes first', () => {
+  it('shows the library list in its own tab, the last of the three', async () => {
     const wrapper = mount(SettingsView, withPinia());
+
+    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
 
     // Creating one sits in the same section as the list it feeds.
     expect(wrapper.findAll('.settings_section_title').map((titolo) => titolo.text())).toEqual([
@@ -80,8 +81,11 @@ describe('SettingsView', () => {
   it('leaves name, version and links to the about window', () => {
     const wrapper = mount(SettingsView, withPinia());
 
-    expect(wrapper.text()).not.toContain(APP_NAME);
+    // The app names itself in the default player section; what left is the block of
+    // version and links, which the about window now owns.
+    expect(wrapper.find('.settings_app_info_name').exists()).toBe(false);
     expect(wrapper.find('[data-testid="github-link"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="website-link"]').exists()).toBe(false);
   });
 
   it('translates tabs and sections when the language changes', async () => {
@@ -93,16 +97,18 @@ describe('SettingsView', () => {
 
     expect(wrapper.get('.settings_view_title').text()).toBe('Settings');
     expect(wrapper.findAll('[role="tab"]').map((tab) => tab.text())).toEqual([
-      'Library',
       'General',
       'Appearance',
+      'Library',
     ]);
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
-      'Import / Export',
-      'Libraries',
+      'Language',
+      'Startup and window',
+      'Player',
+      'Default audio player',
     ]);
 
-    await wrapper.findAll('[role="tab"]')[2]?.trigger('click');
+    await wrapper.findAll('[role="tab"]')[1]?.trigger('click');
 
     expect(wrapper.findAll('.settings_section_title').map((title) => title.text())).toEqual([
       'Text size',

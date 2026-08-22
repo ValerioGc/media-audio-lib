@@ -184,21 +184,11 @@ async function onCloseActionChange(value: string) {
 .player_behaviour_panel {
   display: flex;
   flex-direction: column;
-  gap: $space_sm;
+  gap: $space_md;
   align-items: flex-start;
 
   &_check {
-    display: flex;
-    gap: $space_sm;
-    align-items: center;
-    color: var(--color_text);
-    cursor: pointer;
-
-    input {
-      width: 1rem;
-      height: 1rem;
-      accent-color: var(--color_accent);
-    }
+    @include settings_check;
 
     // A line that depends on the one above it reads as its detail.
     &_nested {

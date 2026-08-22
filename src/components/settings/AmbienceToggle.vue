@@ -125,17 +125,10 @@ async function onDirectionChange(value: string) {
 .ambience_toggle {
   display: flex;
   flex-direction: column;
-  gap: $space_sm;
+  gap: $space_md;
 
   &_check {
-    display: flex;
-    gap: $space_sm;
-    align-items: center;
-    cursor: pointer;
-
-    input {
-      accent-color: var(--color_accent);
-    }
+    @include settings_check;
   }
 
   &_direction {

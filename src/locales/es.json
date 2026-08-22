@@ -18,22 +18,22 @@
   },
   "settings": {
     "title": "Ajustes",
-    "subtitle": "Ajusta el idioma, la legibilidad y el aspecto de la aplicación.",
+    "subtitle": "Idioma, aspecto y comportamiento de la aplicación, y las bibliotecas que guarda.",
     "language": {
       "title": "Idioma",
-      "description": "Idioma de la interfaz. El cambio se aplica de inmediato."
+      "description": "Idioma de la interfaz, de los menús y de los mensajes."
     },
     "startup": {
       "title": "Inicio y ventana",
-      "description": "Cómo se comporta la aplicación al arrancar y al cerrarla.",
+      "description": "Cómo se comporta la aplicación al arrancar, al minimizarla y al cerrarla.",
       "autostart": "Iniciar con el sistema",
       "minimized": "Iniciar minimizada en la bandeja del sistema",
       "closeToTray": "Al cerrar, permanecer en la bandeja del sistema",
-      "hint": "Desde la bandeja, un clic abre la ventana y el botón derecho ofrece salir."
+      "hint": "Con la aplicación en la bandeja del sistema, un clic en el icono reabre la ventana y el botón derecho ofrece detener la reproducción o salir."
     },
     "playerBehaviour": {
       "title": "Reproductor",
-      "description": "Qué permanece en pantalla al cerrar la pista en reproducción.",
+      "description": "Qué permanece en pantalla al cerrar una pista, y cómo se presenta el reproductor flotante.",
       "keepOpen": "Dejar el reproductor abierto, minimizado, al cerrar la pista",
       "dock": "Mostrar el reproductor flotante cuando la app pasa a la bandeja del sistema",
       "alwaysOnTop": "Mantener el reproductor flotante sobre las demás ventanas",
@@ -88,7 +88,7 @@
       "description": "Color de los controles, los botones y los elementos activos de la interfaz.",
       "swatch": "Color {color}",
       "custom": "Personalizado",
-      "reset": "Volver al azul",
+      "reset": "Predeterminado",
       "hint": "El color se aclara u oscurece automáticamente para seguir siendo legible tanto en el tema claro como en el oscuro."
     },
     "ambience": {
@@ -158,7 +158,7 @@
     },
     "importExport": {
       "title": "Importar / Exportar",
-      "description": "Guarda una copia JSON de la biblioteca o importa un archivo creado por la aplicación.",
+      "description": "Guarda la biblioteca en un archivo para conservarla o llevarla a otro sitio, y vuelve a leerla cuando haga falta.",
       "import": "Importar",
       "importing": "Importando…",
       "export": "Exportar la activa",
@@ -176,7 +176,7 @@
     },
     "libraries": {
       "title": "Bibliotecas",
-      "description": "Cada biblioteca tiene su propia lista de pistas. Puedes crear más, abrirlas, elegir la principal, exportarlas o eliminarlas."
+      "description": "Cada biblioteca es una lista de pistas aparte. Crea una nueva, abre la que necesites y elige cuál se abre al arrancar."
     }
   },
   "library": {
@@ -208,6 +208,7 @@
       "primaryShort": "Principal",
       "setPrimary": "Definir «{name}» como biblioteca principal",
       "export": "Exportar la biblioteca «{name}»",
+      "exportShort": "Exportar",
       "remove": "Eliminar la biblioteca «{name}»",
       "exported": "Biblioteca exportada a {path}",
       "switcher": {

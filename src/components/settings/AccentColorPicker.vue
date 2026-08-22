@@ -78,6 +78,7 @@ async function onCustomInput(event: Event) {
         data-testid="accent-reset"
         @click="settings.resetAccentColor()"
       >
+        <AppIcon name="back" />
         {{ t('settings.accent.reset') }}
       </AppButton>
     </div>

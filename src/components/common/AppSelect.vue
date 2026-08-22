@@ -43,7 +43,7 @@ function onChange(event: Event) {
 .app_select {
   display: flex;
   flex-direction: column;
-  gap: $space_xs;
+  gap: $space_sm;
 
   &_label {
     font-size: 0.875em;

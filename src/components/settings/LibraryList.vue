@@ -84,7 +84,7 @@ async function startRename() {
     <div class="library_list_commands">
       <AppButton :disabled="selected === null" data-testid="export-library" @click="exportSelected">
         <AppIcon name="export" />
-        {{ t('library.name.menu.export') }}
+        {{ t('library.catalog.exportShort') }}
       </AppButton>
       <AppButton :disabled="selected === null" data-testid="rename-library" @click="startRename">
         <AppIcon name="edit" />
@@ -178,12 +178,14 @@ async function startRename() {
   &_commands {
     display: flex;
     flex-wrap: wrap;
-    gap: $space_xs;
+    gap: $space_sm;
   }
 
+  // The name and what is done to it are two things: they are given room to be two.
   &_rename {
     display: flex;
-    gap: $space_sm;
+    flex-wrap: wrap;
+    gap: $space_md;
     align-items: flex-end;
     padding: $space_md;
     @include surface_panel($radius_md, var(--color_surface_alt));

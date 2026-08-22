@@ -70,17 +70,7 @@ async function onCloseToTrayChange(event: Event) {
   gap: $space_sm;
 
   &_check {
-    display: flex;
-    gap: $space_sm;
-    align-items: center;
-    color: var(--color_text);
-    cursor: pointer;
-
-    input {
-      width: 1rem;
-      height: 1rem;
-      accent-color: var(--color_accent);
-    }
+    @include settings_check;
 
     // The second line depends on the first: it reads as a detail of it, not as a peer.
     &_nested {

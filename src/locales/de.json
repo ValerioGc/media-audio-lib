@@ -18,22 +18,22 @@
   },
   "settings": {
     "title": "Einstellungen",
-    "subtitle": "Sprache, Lesbarkeit und Erscheinungsbild der Anwendung anpassen.",
+    "subtitle": "Sprache, Aussehen und Verhalten der Anwendung, und die Bibliotheken, die sie führt.",
     "language": {
       "title": "Sprache",
-      "description": "Sprache der Oberfläche. Die Änderung wirkt sofort."
+      "description": "Sprache der Oberfläche, der Menüs und der Meldungen."
     },
     "startup": {
       "title": "Start und Fenster",
-      "description": "Wie sich die Anwendung beim Start und beim Schließen verhält.",
+      "description": "Wie sich die Anwendung beim Start, beim Minimieren und beim Schließen verhält.",
       "autostart": "Mit dem System starten",
       "minimized": "Minimiert im Infobereich starten",
       "closeToTray": "Beim Schließen im Infobereich bleiben",
-      "hint": "Im Infobereich öffnet ein Klick das Fenster, die rechte Maustaste bietet das Beenden an."
+      "hint": "Liegt die Anwendung im Infobereich, öffnet ein Klick auf das Symbol das Fenster wieder, die rechte Maustaste bietet an, die Wiedergabe zu beenden oder zu schließen."
     },
     "playerBehaviour": {
       "title": "Player",
-      "description": "Was auf dem Bildschirm bleibt, wenn der laufende Titel geschlossen wird.",
+      "description": "Was auf dem Bildschirm bleibt, wenn ein Titel geschlossen wird, und wie sich der schwebende Player zeigt.",
       "keepOpen": "Player beim Schließen des Titels geöffnet und minimiert lassen",
       "dock": "Den schwebenden Player zeigen, wenn die App in den Infobereich geht",
       "alwaysOnTop": "Den schwebenden Player über anderen Fenstern halten",
@@ -88,7 +88,7 @@
       "description": "Farbe der Bedienelemente, Schaltflächen und aktiven Elemente der Oberfläche.",
       "swatch": "Farbe {color}",
       "custom": "Benutzerdefiniert",
-      "reset": "Zurück zu Blau",
+      "reset": "Standard",
       "hint": "Die Farbe wird automatisch aufgehellt oder abgedunkelt, damit sie im hellen wie im dunklen Design lesbar bleibt."
     },
     "ambience": {
@@ -158,7 +158,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Eine JSON-Kopie der Bibliothek speichern oder eine von der Anwendung erzeugte Datei importieren.",
+      "description": "Sichere die Bibliothek in einer Datei zum Aufbewahren oder Mitnehmen, und lies sie wieder ein, wenn du sie brauchst.",
       "import": "Importieren",
       "importing": "Wird importiert…",
       "export": "Aktive exportieren",
@@ -176,7 +176,7 @@
     },
     "libraries": {
       "title": "Bibliotheken",
-      "description": "Jede Bibliothek hat ihre eigene Titelliste. Sie können weitere anlegen, sie öffnen, die primäre wählen, exportieren oder löschen."
+      "description": "Jede Bibliothek ist eine eigene Titelliste. Lege eine neue an, öffne die, die du brauchst, und wähle, welche beim Start geöffnet wird."
     }
   },
   "library": {
@@ -208,6 +208,7 @@
       "primaryShort": "Primär",
       "setPrimary": "„{name}“ als primäre Bibliothek festlegen",
       "export": "Bibliothek „{name}“ exportieren",
+      "exportShort": "Exportieren",
       "remove": "Bibliothek „{name}“ löschen",
       "exported": "Bibliothek nach {path} exportiert",
       "switcher": {

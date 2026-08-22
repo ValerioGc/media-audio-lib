@@ -30,22 +30,12 @@
   },
   "bundle": {
     "active": true,
-    "targets": [
-      "nsis",
-      "deb",
-      "appimage"
-    ],
+    "targets": ["nsis", "deb", "appimage"],
     "category": "Music",
     "shortDescription": "Audio library manager",
     "fileAssociations": [
       {
-        "ext": [
-          "mp3",
-          "flac",
-          "m4a",
-          "ogg",
-          "wav"
-        ],
+        "ext": ["mp3", "flac", "m4a", "ogg", "wav"],
         "name": "Audio File",
         "description": "Audio file",
         "role": "Viewer",
@@ -63,21 +53,12 @@
     "windows": {
       "nsis": {
         "installMode": "both",
-        "languages": [
-          "Italian",
-          "English",
-          "French",
-          "Spanish",
-          "German"
-        ]
+        "languages": ["Italian", "English", "French", "Spanish", "German"]
       }
     },
     "linux": {
       "deb": {
-        "depends": [
-          "libwebkit2gtk-4.1-0",
-          "libgtk-3-0"
-        ]
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
       }
     }
   }

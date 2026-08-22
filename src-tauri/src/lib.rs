@@ -76,7 +76,7 @@ impl CloseToTray {
 /// The pages of the app are served by the shell, over `tauri:` in a bundle and over the
 /// local dev server while developing. Nothing else is a page of this app.
 pub fn is_app_page(url: &Url) -> bool {
-    if matches!(url.scheme(), "tauri" | "asset") {
+    if matches!(url.scheme(), "tauri" | protocol::SCHEME) {
         return true;
     }
 

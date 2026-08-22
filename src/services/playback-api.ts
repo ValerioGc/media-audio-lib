@@ -7,8 +7,8 @@ import type { TrackView } from '@/types/library';
 /**
  * URL the webview can load for a track.
  *
- * The backend checks the file is still there and grants the asset protocol access to it,
- * one file at a time.
+ * The backend resolves the file and checks it is playable; the `track:` scheme checks it
+ * again for itself when the bytes are actually read.
  */
 export async function playbackUrl(track: TrackView): Promise<string> {
   if (!isTauriRuntime()) {

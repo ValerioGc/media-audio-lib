@@ -153,7 +153,10 @@ pub fn respond(request: &Request<Vec<u8>>, allowed: bool) -> Response<Vec<u8>> {
         Some(Ok((start, end))) => match read_at(&mut file, start, end) {
             Ok(body) => response
                 .status(StatusCode::PARTIAL_CONTENT)
-                .header(header::CONTENT_RANGE, format!("bytes {start}-{end}/{length}"))
+                .header(
+                    header::CONTENT_RANGE,
+                    format!("bytes {start}-{end}/{length}"),
+                )
                 .header(header::CONTENT_LENGTH, body.len())
                 .body(body)
                 .unwrap_or_else(|_| empty(StatusCode::INTERNAL_SERVER_ERROR)),

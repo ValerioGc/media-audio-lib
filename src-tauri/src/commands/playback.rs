@@ -16,9 +16,9 @@ use crate::state::{LibraryState, StartupFile};
 
 /// Path of a track that can actually be played, refusing entries whose file is gone.
 ///
-/// Granting the asset protocol a file is the one thing that hands the webview the raw
-/// bytes of something on disk, so what is granted has to be an audio file this app knows —
-/// being listed in the library is not on its own enough.
+/// The `track:` scheme is the one thing that hands the webview the raw bytes of something
+/// on disk, so what it is pointed at has to be an audio file this app knows — being listed
+/// in the library is not on its own enough.
 pub fn playable_path(library: &Library, id: &str) -> AppResult<PathBuf> {
     let path = library::path_of(library, id).ok_or_else(|| AppError::NotFound(id.to_owned()))?;
 

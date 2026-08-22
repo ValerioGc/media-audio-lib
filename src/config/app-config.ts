@@ -18,6 +18,9 @@ export const RELEASES_URL = `${GITHUB_URL}/releases`;
 /** The scheme the shell serves audio through. Mirrors `protocol::SCHEME`. */
 export const TRACK_SCHEME = 'track';
 
+/** The scheme the shell serves cover art through. Mirrors `protocol::COVER_SCHEME`. */
+export const COVER_SCHEME = 'cover';
+
 export const MAX_LISTED_ARTISTS = 3;
 
 /** Longest name a library can be given. Mirrors `MAX_LIBRARY_NAME_LENGTH` in the shell,

@@ -26,7 +26,7 @@ describe('LibraryCoverCell', () => {
   it('shows the cover loaded from the store', async () => {
     const options = withPinia();
     const store = useLibraryStore();
-    vi.spyOn(store, 'loadCover').mockResolvedValue('data:image/png;base64,AAA');
+    vi.spyOn(store, 'coverUrl').mockReturnValue('cover://localhost/track.mp3?v=0');
 
     const wrapper = mount(LibraryCoverCell, {
       ...options,
@@ -34,22 +34,21 @@ describe('LibraryCoverCell', () => {
     });
     await flushPromises();
 
-    expect(wrapper.get('img').attributes('src')).toBe('data:image/png;base64,AAA');
+    expect(wrapper.get('img').attributes('src')).toBe('cover://localhost/track.mp3?v=0');
   });
 
-  it('reloads the cover when the track changes', async () => {
+  it('asks for the address again when the track changes', async () => {
     const options = withPinia();
     const store = useLibraryStore();
-    const loadCover = vi.spyOn(store, 'loadCover').mockResolvedValue(null);
+    const coverUrl = vi.spyOn(store, 'coverUrl').mockReturnValue('cover://localhost/a.mp3?v=0');
 
     const wrapper = mount(LibraryCoverCell, {
       ...options,
-      props: { track: makeTrack() },
+      props: { track: makeTrack({ id: 'one' }) },
     });
-    await flushPromises();
-    await wrapper.setProps({ track: makeTrack() });
-    await flushPromises();
+    coverUrl.mockReturnValue('cover://localhost/b.mp3?v=0');
+    await wrapper.setProps({ track: makeTrack({ id: 'two' }) });
 
-    expect(loadCover).toHaveBeenCalledTimes(2);
+    expect(wrapper.get('img').attributes('src')).toBe('cover://localhost/b.mp3?v=0');
   });
 });

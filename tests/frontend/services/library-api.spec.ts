@@ -2,11 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   invoke: vi.fn(),
+  convertFileSrc: vi.fn(),
   open: vi.fn(),
   save: vi.fn(),
 }));
 
-vi.mock('@tauri-apps/api/core', () => ({ invoke: mocks.invoke }));
+vi.mock('@tauri-apps/api/core', () => ({
+  invoke: mocks.invoke,
+  convertFileSrc: mocks.convertFileSrc,
+}));
 vi.mock('@tauri-apps/plugin-dialog', () => ({ open: mocks.open, save: mocks.save }));
 
 import {
@@ -20,8 +24,8 @@ import {
   pickExportFile,
   pickImportFile,
   switchLibrary,
-  coverDataUrl,
-  getCover,
+  coverUrl,
+  heavyCoverBytes,
   libraryInfo,
   listTracks,
   pickAudioFiles,
@@ -88,7 +92,7 @@ describe('commands requiring the shell', () => {
     await expect(removeTrack('id')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(renameLibrary('Archive')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(verifyTrackFile('id')).rejects.toBeInstanceOf(ShellUnavailableError);
-    await expect(getCover('a.mp3')).rejects.toBeInstanceOf(ShellUnavailableError);
+    await expect(heavyCoverBytes('a.mp3')).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(pickAudioFiles()).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(writeMetadata('id', update)).rejects.toBeInstanceOf(ShellUnavailableError);
     await expect(writeCover('id', null)).rejects.toBeInstanceOf(ShellUnavailableError);
@@ -156,13 +160,13 @@ describe('commands requiring the shell', () => {
     expect(mocks.invoke).toHaveBeenCalledWith('verify_track_file', { id: 'abc' });
   });
 
-  it('requests the cover by path', async () => {
+  it('asks only why a cover is missing, never for the picture itself', async () => {
     withShell();
-    mocks.invoke.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
+    mocks.invoke.mockResolvedValue(20_000_000);
 
-    await expect(getCover('C:/music/track.mp3')).resolves.toEqual({
-      mimeType: 'image/png',
-      data: 'AAA',
+    await expect(heavyCoverBytes('C:/music/track.mp3')).resolves.toBe(20_000_000);
+    expect(mocks.invoke).toHaveBeenCalledWith('heavy_cover_bytes', {
+      path: 'C:/music/track.mp3',
     });
   });
 });
@@ -200,11 +204,19 @@ describe('pickAudioFiles', () => {
   });
 });
 
-describe('coverDataUrl', () => {
-  it('builds a data URL usable in an img tag', () => {
-    expect(coverDataUrl({ mimeType: 'image/png', data: 'AAAA' })).toBe(
-      'data:image/png;base64,AAAA',
+describe('coverUrl', () => {
+  it('addresses the cover through the shell, with the version that busts the cache', () => {
+    withShell();
+    mocks.convertFileSrc.mockReturnValue('cover://localhost/C%3A%2Fmusic%2Ftrack.mp3');
+
+    expect(coverUrl('C:/music/track.mp3', 3)).toBe(
+      'cover://localhost/C%3A%2Fmusic%2Ftrack.mp3?v=3',
     );
+    expect(mocks.convertFileSrc).toHaveBeenCalledWith('C:/music/track.mp3', 'cover');
+  });
+
+  it('has nothing to address outside the shell', () => {
+    expect(coverUrl('C:/music/track.mp3', 0)).toBe('');
   });
 });
 

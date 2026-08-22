@@ -127,14 +127,14 @@ describe('PlayerDock', () => {
     const options = withPinia();
     const player = usePlayerStore();
     const library = useLibraryStore();
-    vi.spyOn(library, 'loadCover').mockResolvedValue('data:image/png;base64,AAA');
+    vi.spyOn(library, 'coverUrl').mockReturnValue('cover://localhost/track.mp3?v=0');
     await player.play(makeTrack({ hasCover: true }));
 
     const wrapper = mountDock(options);
     await flushPromises();
 
     // The shape and the origin travel with the intensity, as they do for the app background.
-    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('data:image/png;base64,AAA', {
+    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('cover://localhost/track.mp3?v=0', {
       intensity: 100,
       style: 'orbs',
       direction: 'topLeft',

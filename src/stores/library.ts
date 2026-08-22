@@ -93,9 +93,20 @@ export const useLibraryStore = defineStore('library', () => {
   const isSaving = ref(false);
   const lastReport = ref<AddReport | null>(null);
   const errorKey = ref<LibraryErrorKey>(null);
-  const covers = ref(new Map<string, string>());
-  /** Tracks whose embedded picture was left unread for its weight, by track id. */
-  const heavyCovers = ref(new Map<string, number>());
+  /**
+   * How many times the cover of a track has been rewritten, by track id.
+   *
+   * The address of a cover does not change when its picture does, and the webview caches by
+   * address: without this an edit would leave the old image on screen.
+   */
+  const coverVersions = ref(new Map<string, number>());
+
+  /** Makes the address of a cover a new one, so what is on screen is read again. */
+  function bumpCover(id: string) {
+    const versions = new Map(coverVersions.value);
+    versions.set(id, (versions.get(id) ?? 0) + 1);
+    coverVersions.value = versions;
+  }
 
   const tracksMatchingMissingInfo = computed(() =>
     tracks.value.filter((track) => hasMissingInfo(track, missingInfoFilter.value)),
@@ -222,8 +233,9 @@ export const useLibraryStore = defineStore('library', () => {
       }
 
       tracks.value = tracks.value.map((track) => (track.id === id ? refreshed : track));
-      // The cover may have changed with the tags: the cached one is dropped rather than shown.
-      covers.value.delete(id);
+      // The cover may have changed with the tags: a new address makes the webview fetch it
+      // again rather than show what it already has.
+      bumpCover(id);
 
       return refreshed;
     } catch (error) {
@@ -322,7 +334,6 @@ export const useLibraryStore = defineStore('library', () => {
       selectedIds.value = [];
       editingId.value = null;
       lastReport.value = null;
-      covers.value = new Map();
       await load();
       await loadLibraries();
 
@@ -342,7 +353,6 @@ export const useLibraryStore = defineStore('library', () => {
       libraries.value = await api.deleteLibrary(id);
 
       if (wasActive) {
-        covers.value = new Map();
         selectedIds.value = [];
         editingId.value = null;
         await load();
@@ -486,47 +496,33 @@ export const useLibraryStore = defineStore('library', () => {
     try {
       await api.removeTrack(id);
       tracks.value = tracks.value.filter((track) => track.id !== id);
-      covers.value.delete(id);
       selectedIds.value = selectedIds.value.filter((selected) => selected !== id);
     } catch (error) {
       fail(error);
     }
   }
 
-  /** Loads a cover once per track; the result is kept in memory for the session. */
-  async function loadCover(track: TrackView): Promise<string | null> {
+  /**
+   * Where to fetch the cover of a track, or null when there is nothing to fetch.
+   *
+   * No call and no waiting: the address is enough, and everything after it — fetching,
+   * decoding, caching, dropping what is off screen — is the webview's own business.
+   */
+  function coverUrl(track: TrackView): string | null {
     if (!track.hasCover || track.missing) {
       return null;
     }
 
-    const cached = covers.value.get(track.id);
-    if (cached !== undefined) {
-      return cached;
-    }
+    return api.coverUrl(track.path, coverVersions.value.get(track.id) ?? 0);
+  }
 
+  /** Asks why a cover is not showing. Called where the answer is worth a round trip. */
+  async function heavyCoverBytes(track: TrackView): Promise<number | null> {
     try {
-      const read = await api.getCover(track.path);
-
-      if (read.tooLargeBytes !== null) {
-        heavyCovers.value = new Map(heavyCovers.value).set(track.id, read.tooLargeBytes);
-      }
-
-      if (read.cover === null) {
-        return null;
-      }
-
-      const dataUrl = api.coverDataUrl(read.cover);
-      covers.value = new Map(covers.value).set(track.id, dataUrl);
-
-      return dataUrl;
+      return await api.heavyCoverBytes(track.path);
     } catch {
       return null;
     }
-  }
-
-  /** The weight of a cover left unread for being too heavy, or null when there is none. */
-  function heavyCoverBytes(trackId: string): number | null {
-    return heavyCovers.value.get(trackId) ?? null;
   }
 
   /** Replaces a track after an edit, keeping the on-disk state already known. */
@@ -535,9 +531,7 @@ export const useLibraryStore = defineStore('library', () => {
       track.id === updated.id ? { ...updated, missing: track.missing } : track,
     );
 
-    const covers_ = new Map(covers.value);
-    covers_.delete(updated.id);
-    covers.value = covers_;
+    bumpCover(updated.id);
   }
 
   function replaceTrackView(updated: TrackView) {
@@ -695,7 +689,6 @@ export const useLibraryStore = defineStore('library', () => {
     lastVerification,
     lastReport,
     errorKey,
-    covers,
     visibleTracks,
     tracksMatchingMissingInfo,
     editingTrack,
@@ -736,7 +729,7 @@ export const useLibraryStore = defineStore('library', () => {
     refreshTrack,
     dismissRefresh,
     verifyAllTracks,
-    loadCover,
+    coverUrl,
     heavyCoverBytes,
     saveMetadata,
     saveCover,

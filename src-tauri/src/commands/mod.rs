@@ -16,7 +16,8 @@ pub use library::{
     refresh_track, remove_track, rename_library, verify_track_file,
 };
 pub use metadata::{
-    clear_cover_cache, cover_cache_size, get_cover, write_cover, write_metadata, CoverCacheReport,
+    clear_cover_cache, cover_cache_size, heavy_cover_bytes, write_cover, write_metadata,
+    CoverCacheReport,
 };
 pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};
 pub use window::{

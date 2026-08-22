@@ -23,6 +23,10 @@ use crate::state::{LibraryState, StartupFile};
 /// `http://track.localhost/<path>` on Windows; `convertFileSrc` writes the right one.
 pub const SCHEME: &str = "track";
 
+/// The pictures travel the same way as the audio: as files the webview fetches and caches
+/// for itself, rather than as base64 pushed across the bridge and held in memory.
+pub const COVER_SCHEME: &str = "cover";
+
 /// Most a single response carries, so a seek in a long file does not pull all of it into
 /// memory. The webview asks for the next piece when it wants it.
 const MAX_RANGE_BYTES: u64 = 1024 * 1024;
@@ -35,6 +39,8 @@ fn content_type(path: &Path) -> &'static str {
         "m4a" => "audio/mp4",
         "ogg" => "audio/ogg",
         "wav" => "audio/wav",
+        "png" => "image/png",
+        "jpg" => "image/jpeg",
         _ => "application/octet-stream",
     }
 }
@@ -122,9 +128,22 @@ pub fn respond(request: &Request<Vec<u8>>, allowed: bool) -> Response<Vec<u8>> {
         return empty(StatusCode::FORBIDDEN);
     }
 
-    let path = requested_path(request);
+    serve(request, &requested_path(request))
+}
 
-    let Ok(mut file) = File::open(&path) else {
+/// Answers a request for a cover with the file the cache is holding, if it holds one.
+///
+/// A file with no cover, or with one this app will not read, is a plain 404: the interface
+/// shows its placeholder and asks nothing further.
+pub fn respond_cover(request: &Request<Vec<u8>>, entry: Option<PathBuf>) -> Response<Vec<u8>> {
+    match entry {
+        Some(path) => serve(request, &path),
+        None => empty(StatusCode::NOT_FOUND),
+    }
+}
+
+fn serve(request: &Request<Vec<u8>>, path: &Path) -> Response<Vec<u8>> {
+    let Ok(mut file) = File::open(path) else {
         return empty(StatusCode::NOT_FOUND);
     };
 
@@ -133,7 +152,7 @@ pub fn respond(request: &Request<Vec<u8>>, allowed: bool) -> Response<Vec<u8>> {
     };
 
     let response = Response::builder()
-        .header(header::CONTENT_TYPE, content_type(&path))
+        .header(header::CONTENT_TYPE, content_type(path))
         .header(header::ACCEPT_RANGES, "bytes");
 
     match single_range(request, length) {

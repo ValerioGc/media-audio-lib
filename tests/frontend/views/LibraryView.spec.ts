@@ -551,7 +551,7 @@ describe('LibraryView', () => {
     useSettingsStore().viewMode = 'table';
     const track = makeTrack();
     store.tracks = [track];
-    vi.spyOn(store, 'loadCover').mockResolvedValue(null);
+    vi.spyOn(store, 'coverUrl').mockReturnValue(null);
     await flushPromises();
 
     expect(wrapper.find('[data-testid="metadata-editor"]').exists()).toBe(false);

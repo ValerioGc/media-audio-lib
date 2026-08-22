@@ -45,7 +45,7 @@ watch(
       return;
     }
 
-    const source = await library.loadCover(track);
+    const source = library.coverUrl(track);
 
     if (request !== accentRequest || source === null) {
       return;

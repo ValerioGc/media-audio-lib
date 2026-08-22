@@ -10,7 +10,7 @@ use tauri::State;
 
 use crate::error::{AppError, AppResult};
 use crate::library::{self, Track};
-use crate::metadata::{self, Cover, CoverCache, CoverRead, MetadataUpdate, TrackMetadata};
+use crate::metadata::{self, Cover, CoverCache, MetadataUpdate, TrackMetadata};
 use crate::state::{LibraryState, StartupFile};
 
 /// Whether a path is one the app already knows: a track of the open library, or the file
@@ -66,20 +66,24 @@ pub fn edit_cover(state: &LibraryState, id: &str, cover: Option<&Cover>) -> AppR
     store_metadata(state, id, written)
 }
 
-/// Returns the embedded cover art, base64 encoded, or nothing when there is none.
+/// The weight of a cover that was left unread for being too heavy, if that is the case.
 ///
-/// Served from the on-disk cache when the file has not changed since the last read, and
-/// only for a file the library already holds.
+/// The pictures themselves are fetched from the `cover:` scheme, so nothing here carries an
+/// image: this answers the one question a URL cannot, and only where it is asked — the
+/// editor, opened on one track at a time.
 #[tauri::command]
-pub fn get_cover(
+pub fn heavy_cover_bytes(
     cache: State<'_, CoverCache>,
     state: State<'_, LibraryState>,
     startup: State<'_, StartupFile>,
     path: String,
-) -> AppResult<CoverRead> {
+) -> AppResult<Option<u64>> {
     let path = ensure_known_file(&state, &startup, Path::new(&path))?;
 
-    cache.load(&path)
+    Ok(match cache.entry(&path)? {
+        metadata::CoverEntry::TooLarge(bytes) => Some(bytes),
+        metadata::CoverEntry::Image(_) | metadata::CoverEntry::Missing => None,
+    })
 }
 
 /// What the cover cache weighs, and how much it is allowed to weigh.

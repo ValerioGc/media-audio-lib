@@ -1,11 +1,10 @@
-import { invoke } from '@tauri-apps/api/core';
+import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 
-import { APP_NAME, isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-config';
+import { APP_NAME, COVER_SCHEME, isTauriRuntime, SUPPORTED_EXTENSIONS } from '@/config/app-config';
 import type {
   AddReport,
   Cover,
   CoverCacheReport,
-  CoverRead,
   LibraryInfo,
   LibraryImportReport,
   LibraryImportStrategy,
@@ -195,10 +194,26 @@ export async function verifyTrackFile(id: string): Promise<TrackView> {
   return invoke<TrackView>('verify_track_file', { id });
 }
 
-export async function getCover(path: string): Promise<CoverRead> {
+/**
+ * Where the cover of a file can be fetched from.
+ *
+ * No round trip: the address is built here and the webview fetches, decodes and caches the
+ * picture by itself, the way it does with any image. `version` changes when the cover is
+ * edited, which is the only thing that makes the same address hold something else.
+ */
+export function coverUrl(path: string, version: number): string {
+  if (!isTauriRuntime()) {
+    return '';
+  }
+
+  return `${convertFileSrc(path, COVER_SCHEME)}?v=${version}`;
+}
+
+/** The weight of a cover left unread for being too heavy, when that is what happened. */
+export async function heavyCoverBytes(path: string): Promise<number | null> {
   requireShell();
 
-  return invoke<CoverRead>('get_cover', { path });
+  return invoke<number | null>('heavy_cover_bytes', { path });
 }
 
 /** How much room the cached covers take on disk, and how much they are allowed. */
@@ -256,8 +271,4 @@ export async function pickFolders(): Promise<string[]> {
   }
 
   return Array.isArray(selection) ? selection : [selection];
-}
-
-export function coverDataUrl(cover: Cover): string {
-  return `data:${cover.mimeType};base64,${cover.data}`;
 }

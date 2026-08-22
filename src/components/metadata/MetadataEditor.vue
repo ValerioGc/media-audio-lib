@@ -45,12 +45,17 @@ function fromTrack(track: TrackView): DraftMetadata {
   };
 }
 
+const heavyCoverBytes = ref<number | null>(null);
+
 watch(
   () => props.track,
   async (track) => {
     draft.value = fromTrack(track);
     pendingCover.value = undefined;
-    coverPreview.value = await library.loadCover(track);
+    coverPreview.value = library.coverUrl(track);
+    heavyCoverBytes.value = null;
+    // One track at a time, and only here: the grid shows a placeholder and asks nothing.
+    heavyCoverBytes.value = await library.heavyCoverBytes(track);
   },
   { immediate: true },
 );
@@ -66,7 +71,7 @@ const heavyCover = computed(() => {
     return null;
   }
 
-  const bytes = library.heavyCoverBytes(props.track.id);
+  const bytes = heavyCoverBytes.value;
 
   return bytes === null ? null : formatBytes(bytes, locale.value);
 });

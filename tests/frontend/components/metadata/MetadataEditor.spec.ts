@@ -16,7 +16,8 @@ beforeEach(() => {
 async function mountEditor(track: TrackView = makeTrack()) {
   const options = withPinia();
   const store = useLibraryStore();
-  vi.spyOn(store, 'loadCover').mockResolvedValue(null);
+  vi.spyOn(store, 'coverUrl').mockReturnValue(null);
+  vi.spyOn(store, 'heavyCoverBytes').mockResolvedValue(null);
   const saveMetadata = vi.spyOn(store, 'saveMetadata').mockResolvedValue(track);
   const saveCover = vi.spyOn(store, 'saveCover').mockResolvedValue(track);
 
@@ -35,8 +36,8 @@ describe('MetadataEditor', () => {
     const track = makeTrack({ hasCover: true });
     const options = withPinia();
     const store = useLibraryStore();
-    vi.spyOn(store, 'loadCover').mockResolvedValue(null);
-    vi.spyOn(store, 'heavyCoverBytes').mockReturnValue(20_000_000);
+    vi.spyOn(store, 'coverUrl').mockReturnValue(null);
+    vi.spyOn(store, 'heavyCoverBytes').mockResolvedValue(20_000_000);
 
     const wrapper = mount(MetadataEditor, { ...options, props: { track } });
     await flushPromises();
@@ -166,7 +167,8 @@ describe('MetadataEditor', () => {
     const track = makeTrack({ hasCover: true });
     const options = withPinia();
     const store = useLibraryStore();
-    vi.spyOn(store, 'loadCover').mockResolvedValue('data:image/png;base64,AAA');
+    vi.spyOn(store, 'coverUrl').mockReturnValue('cover://localhost/track.mp3?v=0');
+    vi.spyOn(store, 'heavyCoverBytes').mockResolvedValue(null);
     vi.spyOn(store, 'saveMetadata').mockResolvedValue(track);
     const saveCover = vi.spyOn(store, 'saveCover').mockResolvedValue(track);
 

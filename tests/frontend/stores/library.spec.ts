@@ -33,7 +33,8 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
     verifyTrackFile: vi.fn(),
-    getCover: vi.fn(),
+    coverUrl: vi.fn(),
+    heavyCoverBytes: vi.fn(),
     pickAudioFiles: vi.fn(),
     writeMetadata: vi.fn(),
     writeCover: vi.fn(),
@@ -58,7 +59,8 @@ const refreshTrack = vi.mocked(api.refreshTrack);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
 const verifyTrackFile = vi.mocked(api.verifyTrackFile);
-const getCover = vi.mocked(api.getCover);
+const coverUrl = vi.mocked(api.coverUrl);
+const heavyCoverBytes = vi.mocked(api.heavyCoverBytes);
 const pickAudioFiles = vi.mocked(api.pickAudioFiles);
 const writeMetadata = vi.mocked(api.writeMetadata);
 const writeCover = vi.mocked(api.writeCover);
@@ -76,7 +78,8 @@ beforeEach(() => {
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
   verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
-  getCover.mockResolvedValue({ cover: null, tooLargeBytes: null });
+  heavyCoverBytes.mockResolvedValue(null);
+  coverUrl.mockReturnValue('cover://localhost/track.mp3?v=0');
   pickAudioFiles.mockResolvedValue([]);
   listLibraries.mockResolvedValue([]);
   importLibrary.mockResolvedValue({ added: 0, updated: 0, skipped: 0, missing: [], total: 0 });
@@ -449,18 +452,15 @@ describe('metadata editing', () => {
     const track = makeTrack({ hasCover: true });
     listTracks.mockResolvedValue([track]);
     await store.load();
-    getCover.mockResolvedValue({
-      cover: { mimeType: 'image/png', data: 'AAA' },
-      tooLargeBytes: null,
-    });
-    await store.loadCover(track);
-    expect(store.covers.get(track.id)).toBeDefined();
+    coverUrl.mockImplementation((path, version) => `cover://localhost/${path}?v=${version}`);
+    const before = store.coverUrl(track);
 
     const { missing: _missing, ...saved } = track;
     writeCover.mockResolvedValue(saved);
     await store.saveCover(track.id, { mimeType: 'image/png', data: 'BBB' });
 
-    expect(store.covers.get(track.id)).toBeUndefined();
+    // Same file, so the same address: only the version tells the webview to fetch again.
+    expect(store.coverUrl(track)).not.toBe(before);
   });
 
   it('reports the write error without changing the list', async () => {
@@ -518,62 +518,41 @@ describe('metadata editing', () => {
 });
 
 describe('covers', () => {
-  it('does not request the cover if the track has none', async () => {
+  it('has no address for a track that carries no picture', () => {
     const store = useLibraryStore();
 
-    await expect(store.loadCover(makeTrack({ hasCover: false }))).resolves.toBeNull();
-    expect(getCover).not.toHaveBeenCalled();
+    expect(store.coverUrl(makeTrack({ hasCover: false }))).toBeNull();
+    expect(coverUrl).not.toHaveBeenCalled();
   });
 
-  it('does not request the cover for a missing file', async () => {
+  it('has no address for a file that is not there', () => {
     const store = useLibraryStore();
 
-    await expect(store.loadCover(makeTrack({ hasCover: true, missing: true }))).resolves.toBeNull();
-    expect(getCover).not.toHaveBeenCalled();
+    expect(store.coverUrl(makeTrack({ hasCover: true, missing: true }))).toBeNull();
+    expect(coverUrl).not.toHaveBeenCalled();
   });
 
-  it('downloads the cover only once per track', async () => {
+  it('addresses the picture without calling the shell', () => {
+    const store = useLibraryStore();
+    coverUrl.mockReturnValue('cover://localhost/track.mp3?v=0');
+
+    const track = makeTrack({ hasCover: true });
+
+    expect(store.coverUrl(track)).toBe('cover://localhost/track.mp3?v=0');
+    expect(coverUrl).toHaveBeenCalledWith(track.path, 0);
+  });
+
+  it('asks the shell why a picture is missing, and survives no answer', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ hasCover: true });
-    getCover.mockResolvedValue({
-      cover: { mimeType: 'image/png', data: 'AAA' },
-      tooLargeBytes: null,
-    });
+    heavyCoverBytes.mockResolvedValue(20_000_000);
 
-    const first = await store.loadCover(track);
-    const second = await store.loadCover(track);
+    await expect(store.heavyCoverBytes(track)).resolves.toBe(20_000_000);
 
-    expect(first).toBe('data:image/png;base64,AAA');
-    expect(second).toBe(first);
-    expect(getCover).toHaveBeenCalledTimes(1);
-  });
+    heavyCoverBytes.mockRejectedValue(new Error('boom'));
 
-  it('stays without an image if reading fails', async () => {
-    const store = useLibraryStore();
-    getCover.mockRejectedValue(new Error('boom'));
-
-    await expect(store.loadCover(makeTrack({ hasCover: true }))).resolves.toBeNull();
+    await expect(store.heavyCoverBytes(track)).resolves.toBeNull();
     expect(store.errorKey).toBeNull();
-  });
-
-  it('handles a track without embedded artwork', async () => {
-    const store = useLibraryStore();
-    getCover.mockResolvedValue({ cover: null, tooLargeBytes: null });
-
-    const track = makeTrack({ hasCover: true });
-
-    await expect(store.loadCover(track)).resolves.toBeNull();
-    expect(store.heavyCoverBytes(track.id)).toBeNull();
-  });
-
-  it('remembers the weight of a picture too heavy to read', async () => {
-    const store = useLibraryStore();
-    getCover.mockResolvedValue({ cover: null, tooLargeBytes: 20_000_000 });
-    const track = makeTrack({ hasCover: true });
-
-    await expect(store.loadCover(track)).resolves.toBeNull();
-
-    expect(store.heavyCoverBytes(track.id)).toBe(20_000_000);
   });
 });
 
@@ -663,7 +642,6 @@ describe('useLibraryStore - multiple libraries', () => {
     expect(store.tracks).toHaveLength(1);
     expect(store.selectedId).toBeNull();
     expect(store.editingId).toBeNull();
-    expect(store.covers.size).toBe(0);
   });
 
   it('does not reopen the already open library', async () => {

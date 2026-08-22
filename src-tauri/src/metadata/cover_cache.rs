@@ -49,6 +49,17 @@ const EVICTION_TARGET_BYTES: u64 = MAX_CACHE_BYTES / 5 * 4;
 /// move — but not on every hit, or scrolling a library would rewrite the whole folder.
 const TOUCH_AFTER: u64 = 60 * 60;
 
+/// What the cache holds for one file.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CoverEntry {
+    /// The picture, as a file on disk that can be served as it is.
+    Image(PathBuf),
+    /// The file carries no cover, or one in a format this app does not read.
+    Missing,
+    /// The picture was left where it is, being too heavy to read.
+    TooLarge(u64),
+}
+
 pub struct CoverCache {
     directory: PathBuf,
     /// Bytes stored since the last time the size was checked.
@@ -294,6 +305,58 @@ impl CoverCache {
         }
 
         removed
+    }
+
+    /// What the cache holds for `path`, without reading any of it.
+    ///
+    /// Only names are looked at, so answering costs a handful of `stat` calls whatever the
+    /// picture weighs.
+    fn stored_entry(&self, key: &str) -> Option<CoverEntry> {
+        let empty = self.directory.join(format!("{key}.{EMPTY_EXTENSION}"));
+
+        if empty.is_file() {
+            touch(&empty);
+
+            return Some(CoverEntry::Missing);
+        }
+
+        let oversized = self.directory.join(format!("{key}.{OVERSIZED_EXTENSION}"));
+
+        if let Ok(recorded) = std::fs::read_to_string(&oversized) {
+            touch(&oversized);
+
+            return Some(CoverEntry::TooLarge(recorded.trim().parse().unwrap_or(0)));
+        }
+
+        for extension in ["png", "jpg"] {
+            let candidate = self.directory.join(format!("{key}.{extension}"));
+
+            if candidate.is_file() {
+                touch(&candidate);
+
+                return Some(CoverEntry::Image(candidate));
+            }
+        }
+
+        None
+    }
+
+    /// The cover of `path` as a file, extracted from the audio only when the cache is
+    /// empty of it.
+    ///
+    /// This is what serves the pictures: nothing is decoded, encoded or copied into memory
+    /// on the way, the webview is simply pointed at a file it can read.
+    pub fn entry(&self, path: &Path) -> AppResult<CoverEntry> {
+        let key = Self::entry_key(path);
+
+        if let Some(entry) = self.stored_entry(&key) {
+            return Ok(entry);
+        }
+
+        let read = read_cover(path)?;
+        self.store(&key, path, &read);
+
+        Ok(self.stored_entry(&key).unwrap_or(CoverEntry::Missing))
     }
 
     /// Returns the cover of `path`, reading the audio file only on a cache miss.

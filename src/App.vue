@@ -54,7 +54,7 @@ async function publishToDock() {
   await publishPlayerState({
     title: track.title,
     artist: track.artist,
-    cover: await library.loadCover(track),
+    cover: library.coverUrl(track),
     isPlaying: player.isPlaying,
     hasNext: player.hasNext,
     hasPrevious: player.hasPrevious,

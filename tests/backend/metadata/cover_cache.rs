@@ -191,6 +191,56 @@
     }
 
     #[test]
+    fn hands_out_the_file_it_keeps_rather_than_its_content() {
+        let dir = TempDir::new("cache-entry");
+        let cache = cache(&dir);
+        let track = wav_with_cover(dir.path(), "track.wav");
+
+        let entry = cache.entry(&track).expect("voce");
+
+        let CoverEntry::Image(picture) = entry else {
+            panic!("attesa un'immagine, trovato {entry:?}");
+        };
+        assert_eq!(
+            std::fs::read(&picture).expect("immagine leggibile"),
+            base64::engine::general_purpose::STANDARD
+                .decode(crate::fixtures::png_cover_base64())
+                .expect("base64 valido"),
+            "i byte serviti sono quelli della copertina, senza ricodifiche"
+        );
+
+        // The second time nothing is opened but the cache itself.
+        assert!(matches!(
+            cache.entry(&track).expect("voce"),
+            CoverEntry::Image(_)
+        ));
+    }
+
+    #[test]
+    fn says_when_there_is_no_picture_to_hand_out() {
+        let dir = TempDir::new("cache-entry-none");
+        let cache = cache(&dir);
+        let without = wav_with_tags(dir.path(), "track.wav");
+
+        assert_eq!(cache.entry(&without).expect("voce"), CoverEntry::Missing);
+
+        let heavy = wav_with_tags(dir.path(), "heavy.wav");
+        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        std::fs::write(
+            cache
+                .directory()
+                .join(format!("{}.big", CoverCache::entry_key(&heavy))),
+            b"20000000",
+        )
+        .expect("nota scritta");
+
+        assert_eq!(
+            cache.entry(&heavy).expect("voce"),
+            CoverEntry::TooLarge(20_000_000)
+        );
+    }
+
+    #[test]
     fn reports_how_much_room_it_takes() {
         let dir = TempDir::new("cache-size");
         let cache = cache(&dir);

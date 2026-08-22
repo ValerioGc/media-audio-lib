@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
@@ -14,7 +14,7 @@ const props = withDefaults(
      * prop would never reach the stylesheet, which is purged against what the sources say.
      */
     size?: 'thumb' | 'card' | 'fill';
-    /** Skips the visibility check, for lists that already render only what is on screen. */
+    /** Loads the picture at once rather than when it comes into view. */
     eager?: boolean;
   }>(),
   { size: 'thumb', eager: false },
@@ -23,60 +23,26 @@ const props = withDefaults(
 const { t } = useI18n();
 const library = useLibraryStore();
 
-const root = ref<HTMLElement | null>(null);
-const source = ref<string | null>(null);
-const isVisible = ref(false);
-let observer: IntersectionObserver | null = null;
+/**
+ * The address of the picture, which is all this component needs.
+ *
+ * There is no fetching to orchestrate here any more, and no observer: the picture is an
+ * ordinary image at an ordinary address, so the browser fetches it, decodes it off the main
+ * thread, keeps it while it is useful and drops it when it is not — and `loading="lazy"`
+ * makes it wait until the row is close to the screen.
+ */
+const source = computed(() => library.coverUrl(props.track));
 
-function stopObserving() {
-  observer?.disconnect();
-  observer = null;
-}
+/** A file whose picture the shell will not serve: too heavy, or a format it does not read. */
+const failed = ref(false);
 
-async function loadCover() {
-  source.value = await library.loadCover(props.track);
-}
-
-function reveal() {
-  isVisible.value = true;
-  stopObserving();
-  // Reached from an observer callback too: `loadCover` reports a failure as a null cover
-  // instead of rejecting, so there is no result left to hand back.
-  loadCover();
-}
-
-onMounted(() => {
-  // Without an observer (older webviews, jsdom) the image is simply loaded right away.
-  if (props.eager || typeof IntersectionObserver === 'undefined' || root.value === null) {
-    reveal();
-    return;
-  }
-
-  observer = new IntersectionObserver((entries) => {
-    if (entries.some((entry) => entry.isIntersecting)) {
-      reveal();
-    }
-  });
-  observer.observe(root.value);
+watch(source, () => {
+  failed.value = false;
 });
-
-onBeforeUnmount(stopObserving);
-
-watch(
-  () => props.track,
-  () => {
-    source.value = null;
-
-    if (isVisible.value) {
-      loadCover();
-    }
-  },
-);
 </script>
 
 <template>
   <div
-    ref="root"
     class="cover_image"
     :class="{
       cover_image_thumb: size === 'thumb',
@@ -85,10 +51,13 @@ watch(
     }"
   >
     <img
-      v-if="source !== null"
+      v-if="source !== null && !failed"
       class="cover_image_picture"
       :src="source"
       :alt="t('library.columns.cover')"
+      :loading="eager ? 'eager' : 'lazy'"
+      decoding="async"
+      @error="failed = true"
     />
     <AppIcon v-else class="cover_image_fallback" name="note" :label="t('library.row.noCover')" />
   </div>

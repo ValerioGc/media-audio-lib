@@ -99,6 +99,14 @@ pub fn keep_inside_the_app<'a, R: Runtime, M: Manager<R>>(
         .on_new_window(|_, _| NewWindowResponse::Deny)
 }
 
+/// The picture of a cache entry, when the entry is a picture at all.
+fn file_of(entry: metadata::CoverEntry) -> Option<std::path::PathBuf> {
+    match entry {
+        metadata::CoverEntry::Image(path) => Some(path),
+        metadata::CoverEntry::Missing | metadata::CoverEntry::TooLarge(_) => None,
+    }
+}
+
 /// Clears what an earlier run may have left behind: the staged copies of an interrupted
 /// edit, and whatever the cover cache is holding above its limit.
 ///
@@ -222,6 +230,31 @@ pub fn run() {
                 responder.respond(protocol::respond(&request, allowed));
             });
         })
+        // The covers travel the same way, and are checked the same way: the picture of a
+        // file the library no longer holds is not served either.
+        .register_asynchronous_uri_scheme_protocol(
+            protocol::COVER_SCHEME,
+            |app, request, responder| {
+                let app = app.app_handle().clone();
+
+                tauri::async_runtime::spawn_blocking(move || {
+                    let path = protocol::requested_path(&request);
+                    let allowed = protocol::is_playable_now(
+                        &app.state::<LibraryState>(),
+                        &app.state::<StartupFile>(),
+                        &path,
+                    );
+
+                    let entry = if allowed {
+                        app.state::<CoverCache>().entry(&path).ok()
+                    } else {
+                        None
+                    };
+
+                    responder.respond(protocol::respond_cover(&request, entry.and_then(file_of)));
+                });
+            },
+        )
         .setup(|app| {
             // The window is described in the configuration but built here, so it can be
             // given the guards a window created for us would not carry.
@@ -291,7 +324,7 @@ pub fn run() {
             commands::library::refresh_track,
             commands::library::verify_track_file,
             commands::library::export_track_list,
-            commands::metadata::get_cover,
+            commands::metadata::heavy_cover_bytes,
             commands::metadata::cover_cache_size,
             commands::metadata::clear_cover_cache,
             commands::metadata::write_metadata,

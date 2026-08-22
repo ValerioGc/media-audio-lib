@@ -1,10 +1,12 @@
-import { mount } from '@vue/test-utils';
+import { mount, type DOMWrapper } from '@vue/test-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { nextTick } from 'vue';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
 import { makeTrack, makeTracks } from '@tests/support/tracks';
 import { useSettingsStore } from '@/stores/settings';
 import { DEFAULT_SORT, type SortState, type TrackView } from '@/types/library';
+import { TABLE_COLUMN_WIDTHS, type TableColumnKey } from '@/types/settings';
 
 import LibraryColumnSettingsDialog from '@/components/library/LibraryColumnSettingsDialog.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
@@ -144,8 +146,7 @@ describe('LibraryTable', () => {
       props: {
         tracks: [
           makeTrack({
-            title:
-              'A very long track title that should make the title column wider than the default',
+            artist: 'An extremely long artist name that no default column width would hold',
           }),
         ],
         sort: DEFAULT_SORT,
@@ -156,19 +157,91 @@ describe('LibraryTable', () => {
 
     await wrapper.get('[data-testid="table-fit-columns"]').trigger('click');
 
-    expect(settings.tableColumns.find((column) => column.key === 'title')?.width).toBeGreaterThan(
-      260,
+    // Not the title: that column stretches into what is left, so it has no width to fit.
+    expect(settings.tableColumns.find((column) => column.key === 'artist')?.width).toBeGreaterThan(
+      TABLE_COLUMN_WIDTHS.artist.default,
     );
   });
 
-  it('shows resize handles only on resizable data columns', () => {
+  /**
+   * Drags one handle by `by` pixels and lets go.
+   *
+   * Dispatched rather than triggered: the helper of the test utils assigns `clientX` onto
+   * the event afterwards, and on a `MouseEvent` that property is read-only.
+   */
+  async function drag(handle: DOMWrapper<Element>, by: number) {
+    handle.element.dispatchEvent(new MouseEvent('pointerdown', { clientX: 100, bubbles: true }));
+    document.dispatchEvent(new MouseEvent('pointermove', { clientX: 100 + by }));
+    document.dispatchEvent(new MouseEvent('pointerup'));
+    await nextTick();
+  }
+
+  function widthOf(settings: ReturnType<typeof useSettingsStore>, key: TableColumnKey) {
+    return settings.tableColumns.find((column) => column.key === key)?.width;
+  }
+
+  it('widens a column when its right edge is dragged right', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const before = widthOf(settings, 'album') ?? 0;
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedIds: [], playingId: null },
+    });
+    const albumEdge = wrapper
+      .findAll('.library_table_resize')
+      .find((handle) => handle.attributes('title') === 'Ridimensiona Album');
+
+    await drag(albumEdge!, 40);
+
+    expect(widthOf(settings, 'album')).toBe(before + 40);
+  });
+
+  /**
+   * The left edge of a column is the right edge of the one before it. Dragging it right has
+   * to make the column narrower, so that the line follows the pointer either way.
+   */
+  it('narrows a column when its left edge is dragged right', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const before = widthOf(settings, 'artist') ?? 0;
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedIds: [], playingId: null },
+    });
+    // The first of the two: the one sitting in the heading of the title, which stretches.
+    const artistLeftEdge = wrapper
+      .findAll('.library_table_resize')
+      .filter((handle) => handle.attributes('title') === 'Ridimensiona Autore')[0];
+
+    await drag(artistLeftEdge!, 30);
+
+    expect(widthOf(settings, 'artist')).toBe(before - 30);
+  });
+
+  it('puts a handle on every edge that can move, and on no other', () => {
     const wrapper = mountTable([makeTrack()]);
     const headings = wrapper.findAll('.library_table_heading');
-    const yearHeading = headings.find((heading) => heading.text().includes('Anno'));
     const durationHeading = headings.find((heading) => heading.text().includes('Durata'));
+    const resized = wrapper
+      .findAll('.library_table_resize')
+      .map((handle) => handle.attributes('title'));
 
-    expect(wrapper.findAll('.library_table_resize')).toHaveLength(5);
-    expect(yearHeading?.find('.library_table_resize').exists()).toBe(false);
+    // Columns in order: cover, title, artist, album, year, genre, duration. The title
+    // stretches and the last two are fixed, so those three have no width to drag — but the
+    // edge they share with a column that does still moves that one.
+    expect(resized).toEqual([
+      'Ridimensiona Copertina',
+      'Ridimensiona Autore',
+      'Ridimensiona Autore',
+      'Ridimensiona Album',
+      'Ridimensiona Genere',
+      'Ridimensiona Genere',
+    ]);
+    expect(resized).not.toContain('Ridimensiona Nome');
+    expect(resized).not.toContain('Ridimensiona Anno');
+    expect(resized).not.toContain('Ridimensiona Durata');
+    // The last edge of all leans on the actions column, which never moves.
     expect(durationHeading?.find('.library_table_resize').exists()).toBe(false);
     expect(wrapper.find('.library_table_heading_actions .library_table_resize').exists()).toBe(
       false,

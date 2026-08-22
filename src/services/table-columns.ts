@@ -13,6 +13,9 @@ const FIXED_TABLE_COLUMN_WIDTHS: Partial<Record<TableColumnKey, string>> = {
   year: '4.5rem',
   duration: '5.25rem',
 };
+
+/** The column that takes whatever the others leave, so the table always fits its box. */
+const FLEXIBLE_TABLE_COLUMN: TableColumnKey = 'title';
 const CONTENT_CELL_PADDING_PX = 32;
 const AVERAGE_CHARACTER_WIDTH_PX = 8;
 const SAMPLE_LIMIT = 500;
@@ -55,8 +58,16 @@ export function visibleTableColumns(columns: readonly TableColumnSetting[]): Tab
   return columns.filter((column) => column.visible);
 }
 
+/**
+ * Whether dragging can change the width of a column.
+ *
+ * Two kinds cannot. The fixed ones are a set number of characters — a year, a duration —
+ * and nothing is gained by making them wider. The title is the one that stretches into
+ * whatever the others leave: it has no width of its own, so a handle on it would move a
+ * number the table never reads.
+ */
 export function isResizableTableColumn(key: TableColumnKey): boolean {
-  return FIXED_TABLE_COLUMN_WIDTHS[key] === undefined;
+  return FIXED_TABLE_COLUMN_WIDTHS[key] === undefined && key !== FLEXIBLE_TABLE_COLUMN;
 }
 
 function clampColumnWidth(key: TableColumnKey, width: number): number {
@@ -115,7 +126,7 @@ function tableColumnTrack(column: TableColumnSetting): string {
     return fixedWidth;
   }
 
-  if (column.key === 'title') {
+  if (column.key === FLEXIBLE_TABLE_COLUMN) {
     return `minmax(${MIN_TITLE_WIDTH}, 1fr)`;
   }
 

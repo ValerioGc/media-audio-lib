@@ -5,6 +5,7 @@ import { resetI18n, withPinia } from '@tests/support/mount';
 import { makeTrack } from '@tests/support/tracks';
 import { useLibraryStore } from '@/stores/library';
 import { useSettingsStore } from '@/stores/settings';
+import { TABLE_COLUMN_WIDTHS } from '@/types/settings';
 
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
 
@@ -173,7 +174,7 @@ describe('LibraryTitle', () => {
     const settings = useSettingsStore();
     library.tracks = [
       makeTrack({
-        title: 'A very long title used to fit the column width from the settings dialog',
+        artist: 'A very long artist name used to fit the column width from the settings dialog',
       }),
     ];
 
@@ -195,8 +196,10 @@ describe('LibraryTitle', () => {
     expect(wrapper.get('dialog').text()).not.toContain('Stato file');
 
     await wrapper.get('[data-testid="column-fit"]').trigger('click');
-    expect(settings.tableColumns.find((column) => column.key === 'title')?.width).toBeGreaterThan(
-      260,
+    // Not the title: that one stretches into what the others leave, so it has no width to
+    // fit and none to drag either.
+    expect(settings.tableColumns.find((column) => column.key === 'artist')?.width).toBeGreaterThan(
+      TABLE_COLUMN_WIDTHS.artist.default,
     );
 
     await wrapper.get('[data-testid="column-visible-format"]').setValue(true);

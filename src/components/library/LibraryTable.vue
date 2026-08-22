@@ -53,6 +53,7 @@ const rowHeight = ref(0);
 const isColumnSettingsOpen = ref(false);
 const resizing = ref<{
   key: TableColumnKey;
+  direction: 1 | -1;
   startX: number;
   startWidth: number;
 } | null>(null);
@@ -121,6 +122,34 @@ const columns = computed(() =>
   })),
 );
 
+/**
+ * The handle standing on the right edge of each column, where one is any use.
+ *
+ * A boundary lies between two columns and the pointer cannot say which of them it means,
+ * so the rule is fixed: it moves the column on its left, the way a spreadsheet does. When
+ * that side cannot move — the title stretches, a year and a duration are fixed — it moves
+ * the column on the right instead, which means growing as the pointer goes left. Where
+ * neither side can move there is no handle at all: a separator that answers to nothing is
+ * an invitation to a drag that does nothing.
+ */
+const headings = computed(() =>
+  columns.value.map((column, index) => {
+    if (column.resizable) {
+      return { column, handle: { key: column.key, label: column.label, direction: 1 as const } };
+    }
+
+    const next = columns.value[index + 1];
+
+    if (next?.resizable === true) {
+      return { column, handle: { key: next.key, label: next.label, direction: -1 as const } };
+    }
+
+    return { column, handle: null };
+  }),
+);
+
+type ResizeHandle = NonNullable<(typeof headings.value)[number]['handle']>;
+
 const visibleTracks = computed(() => props.tracks.slice(range.value.start, range.value.end));
 const topSpacerHeight = computed(() => range.value.offsetTop);
 const bottomSpacerHeight = computed(() =>
@@ -177,14 +206,25 @@ function resizeColumn(event: PointerEvent) {
 
   settings.setTableColumnWidth(
     resize.key,
-    resize.startWidth + Math.round(event.clientX - resize.startX),
+    resize.startWidth + resize.direction * Math.round(event.clientX - resize.startX),
   );
 }
 
-function startResize(event: PointerEvent, key: TableColumnKey, width: number) {
+function startResize(event: PointerEvent, handle: ResizeHandle) {
+  const width = columns.value.find((column) => column.key === handle.key)?.width;
+
+  if (width === undefined) {
+    return;
+  }
+
   event.preventDefault();
   event.stopPropagation();
-  resizing.value = { key, startX: event.clientX, startWidth: width };
+  resizing.value = {
+    key: handle.key,
+    direction: handle.direction,
+    startX: event.clientX,
+    startWidth: width,
+  };
   document.addEventListener('pointermove', resizeColumn);
   document.addEventListener('pointerup', stopResize);
 }
@@ -206,10 +246,9 @@ onUnmounted(stopResize);
         <thead class="library_table_head">
           <tr class="library_table_head_row">
             <th
-              v-for="column in columns"
+              v-for="{ column, handle } in headings"
               :key="column.key"
               class="library_table_heading"
-              :class="{ library_table_heading_resizing: resizing?.key === column.key }"
               scope="col"
               :aria-sort="column.sortable ? ariaSort(column.key) : undefined"
             >
@@ -228,14 +267,17 @@ onUnmounted(stopResize);
                   :name="sort.direction === 'asc' ? 'sortAsc' : 'sortDesc'"
                 />
               </button>
-              <span v-else :title="column.label">{{ column.label }}</span>
+              <span v-else class="library_table_label" :title="column.label">{{
+                column.label
+              }}</span>
               <hr
-                v-if="column.resizable"
+                v-if="handle !== null"
                 class="library_table_resize"
-                :aria-label="t('library.columns.resize', { column: column.label })"
-                :title="t('library.columns.resize', { column: column.label })"
+                :class="{ library_table_resize_active: resizing?.key === handle.key }"
+                :aria-label="t('library.columns.resize', { column: handle.label })"
+                :title="t('library.columns.resize', { column: handle.label })"
                 aria-orientation="vertical"
-                @pointerdown="startResize($event, column.key, column.width)"
+                @pointerdown="startResize($event, handle)"
               />
             </th>
             <th
@@ -361,11 +403,12 @@ onUnmounted(stopResize);
     padding: $space_sm $space_md;
   }
 
+  // Not clipped. The grab handle straddles the edge of the heading, so hiding what falls
+  // outside would leave only its inner half to aim at — which is what made the resize feel
+  // broken. The label inside trims itself instead.
   &_heading {
     position: relative;
     padding: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
     text-align: left;
     white-space: nowrap;
 
@@ -382,12 +425,12 @@ onUnmounted(stopResize);
       background-color: var(--table_head_background);
       overflow: visible;
     }
+  }
 
-    &_resizing .library_table_resize::before,
-    &_resizing .library_table_resize::after {
-      opacity: 1;
-      background-color: var(--color_accent);
-    }
+  &_label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &_sort {
@@ -460,7 +503,9 @@ onUnmounted(stopResize);
     &:hover::before,
     &:hover::after,
     &:focus-visible::before,
-    &:focus-visible::after {
+    &:focus-visible::after,
+    &_active::before,
+    &_active::after {
       opacity: 1;
       background-color: var(--color_accent);
     }

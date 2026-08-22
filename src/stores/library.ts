@@ -165,7 +165,9 @@ export const useLibraryStore = defineStore('library', () => {
 
     // Opening the library does not wait for the disk: the list is on screen first, and what
     // changed outside the app arrives as soon as the files have been gone through.
-    void refreshFromDisk();
+    refreshFromDisk().catch((error: unknown) => {
+      console.error('Library refresh failed', error);
+    });
   }
 
   /**

@@ -119,7 +119,9 @@ async function initializeApp() {
   await writeTrayMenu();
   stopTrayListener = await onTrayStopPlayback(() => player.stop());
   miniCommandListener = await onMiniCommand((command) => {
-    void runDockCommand(command);
+    runDockCommand(command).catch((error: unknown) => {
+      console.error('The dock asked for something that failed', error);
+    });
   });
 
   // The system may have started the app out of sight: the window comes back unless the
@@ -155,7 +157,9 @@ watch(
     () => settings.miniPlayerGradient,
   ],
   () => {
-    void publishToDock();
+    publishToDock().catch((error: unknown) => {
+      console.error('Telling the dock what is playing failed', error);
+    });
   },
 );
 

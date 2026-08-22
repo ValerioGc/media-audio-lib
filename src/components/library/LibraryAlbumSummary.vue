@@ -169,12 +169,9 @@ const hasVariousArtists = computed(() => props.artists.length > MAX_LISTED_ARTIS
   &_count {
     overflow: hidden;
     color: var(--color_text_muted);
+    font-size: 0.875em;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  &_count {
-    font-size: 0.875em;
   }
 }
 

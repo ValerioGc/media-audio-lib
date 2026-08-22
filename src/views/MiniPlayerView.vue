@@ -44,7 +44,9 @@ onMounted(async () => {
 
   // Wherever it is left is where it comes back: the position is written down as it moves.
   unlistenMoved = await onWindowMoved((position) => {
-    void settings.setMiniPlayerPosition(position);
+    settings.setMiniPlayerPosition(position).catch((error: unknown) => {
+      console.error('Writing down the dock position failed', error);
+    });
   });
 });
 

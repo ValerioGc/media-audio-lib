@@ -9,7 +9,7 @@ export interface DuplicateGroup {
 }
 
 function normalize(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/gu, ' ');
+  return value.trim().toLowerCase().replaceAll(/\s+/gu, ' ');
 }
 
 /** The file name alone, without its folders and without its extension. */

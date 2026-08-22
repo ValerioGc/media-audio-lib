@@ -527,7 +527,6 @@ async function confirmRemoval() {
           :sort="library.sort"
           :selected-ids="library.selectedIds"
           :playing-id="player.currentTrack?.id ?? null"
-          allow-horizontal-scroll
           @sort="library.toggleSort($event)"
           @select="selectFromTracks($event, library.visibleTracks)"
           @play="startPlayback($event)"

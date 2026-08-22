@@ -32,9 +32,8 @@ const props = withDefaults(
     playingId: string | null;
     columnKeys?: readonly TableColumnKey[] | undefined;
     showColumnSettings?: boolean;
-    allowHorizontalScroll?: boolean;
   }>(),
-  { columnKeys: undefined, showColumnSettings: true, allowHorizontalScroll: false },
+  { columnKeys: undefined, showColumnSettings: true },
 );
 
 const emit = defineEmits<{
@@ -133,8 +132,7 @@ const bottomSpacerHeight = computed(() =>
 const tableColumnCount = computed(() => columns.value.length + 1);
 
 const gridStyle = computed(() => ({
-  '--library_grid_columns_fit': tableGridTemplate(columns.value, 'fit'),
-  '--library_grid_columns_scroll': tableGridTemplate(columns.value, 'scroll'),
+  '--library_grid_columns': tableGridTemplate(columns.value),
   '--library_row_height': `${rowHeight.value}px`,
   '--library_cover_size': `${coverColumnWidth.value}px`,
 }));
@@ -202,12 +200,8 @@ onUnmounted(stopResize);
 </script>
 
 <template>
-  <div
-    class="library_table"
-    :class="{ library_table_horizontal: allowHorizontalScroll }"
-    :style="gridStyle"
-  >
-    <div class="library_table_scroller">
+  <div class="library_table" :style="gridStyle">
+    <div ref="viewport" class="library_table_scroller" @scroll="onScroll">
       <table class="library_table_grid" :aria-rowcount="tracks.length">
         <thead class="library_table_head">
           <tr class="library_table_head_row">
@@ -275,7 +269,7 @@ onUnmounted(stopResize);
           </tr>
         </thead>
 
-        <tbody ref="viewport" class="library_table_viewport" @scroll="onScroll">
+        <tbody class="library_table_viewport">
           <!-- Scroll height for the rows kept out of the DOM, empty of any content. -->
           <tr v-if="topSpacerHeight > 0" class="library_table_spacer_row">
             <td
@@ -316,8 +310,6 @@ onUnmounted(stopResize);
 
 <style scoped lang="scss">
 .library_table {
-  --library_grid_columns: var(--library_grid_columns_fit);
-
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -325,21 +317,17 @@ onUnmounted(stopResize);
   overflow: hidden;
   @include glass_surface($radius_lg);
 
-  &_horizontal {
-    --library_grid_columns: var(--library_grid_columns_scroll);
-  }
-
+  // One scrolling box for the head and the rows: reserving the scrollbar gutter twice is
+  // what used to leave the headings a scrollbar out of line with their columns, and what
+  // put a sideways bar under a table that fitted.
   &_scroller {
     display: flex;
     flex: 1;
     flex-direction: column;
     min-height: 0;
     overflow-x: hidden;
-    overflow-y: hidden;
-  }
 
-  &_horizontal &_scroller {
-    overflow-x: auto;
+    @include scroll_area;
   }
 
   &_grid {
@@ -353,6 +341,9 @@ onUnmounted(stopResize);
 
   &_head {
     display: block;
+    position: sticky;
+    top: 0;
+    z-index: 3;
     border-bottom: 1px solid var(--color_border_strong);
     background-color: var(--table_head_background);
     color: var(--color_text_muted);
@@ -365,10 +356,6 @@ onUnmounted(stopResize);
     gap: $space_sm;
     align-items: center;
     padding: $space_sm $space_md;
-
-    // The body reserves the scrollbar gutter: without the same room here the columns of
-    // the header no longer line up with the ones of the rows.
-    padding-right: calc(#{$space_md} + #{$scrollbar_size});
   }
 
   &_heading {
@@ -504,11 +491,7 @@ onUnmounted(stopResize);
 
   &_viewport {
     display: block;
-    flex: 1;
     min-height: 0;
-    overflow-x: hidden;
-
-    @include scroll_area;
   }
 
   &_spacer {
@@ -517,13 +500,11 @@ onUnmounted(stopResize);
   }
 }
 
+// A window too narrow for the columns it was asked to show: the grid keeps its widths and
+// the table is scrolled sideways rather than squeezing everything out of shape.
 @media (max-width: 760px) {
-  .library_table {
-    --library_grid_columns: var(--library_grid_columns_scroll);
-
-    &_scroller {
-      overflow-x: auto;
-    }
+  .library_table_scroller {
+    overflow-x: auto;
   }
 }
 </style>

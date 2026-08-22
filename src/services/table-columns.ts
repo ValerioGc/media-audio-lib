@@ -17,8 +17,6 @@ const CONTENT_CELL_PADDING_PX = 32;
 const AVERAGE_CHARACTER_WIDTH_PX = 8;
 const SAMPLE_LIMIT = 500;
 
-export type TableGridMode = 'fit' | 'scroll';
-
 export interface TableColumnView extends TableColumnSetting {
   label: string;
   sortable: boolean;
@@ -99,31 +97,33 @@ export function fittedTableColumnWidths(
   );
 }
 
-function tableColumnTrack(column: TableColumnSetting, mode: TableGridMode): string {
+/** The narrowest the title is allowed to get while it absorbs the free space. */
+const MIN_TITLE_WIDTH = '6rem';
+
+/**
+ * The track of one column.
+ *
+ * Every column but the title keeps exactly the width it was given, so resizing one leaves
+ * the others where they were — the fixed ones included. The title takes whatever is left,
+ * which is what keeps the whole grid the width of the table: no sideways scroll, and the
+ * actions never move from the right edge.
+ */
+function tableColumnTrack(column: TableColumnSetting): string {
   const fixedWidth = FIXED_TABLE_COLUMN_WIDTHS[column.key];
 
   if (fixedWidth !== undefined) {
     return fixedWidth;
   }
 
-  // The cover is a square as tall as its row: a share of the free space would only pad it
-  // with emptiness, so it keeps the width it was given and the text takes the rest.
-  if (column.key === 'cover') {
-    return `${column.width}px`;
+  if (column.key === 'title') {
+    return `minmax(${MIN_TITLE_WIDTH}, 1fr)`;
   }
 
-  if (mode === 'fit') {
-    return `minmax(0, ${column.width}fr)`;
-  }
-
-  return `minmax(${column.width}px, ${column.width}fr)`;
+  return `${column.width}px`;
 }
 
-export function tableGridTemplate(
-  columns: readonly TableColumnSetting[],
-  mode: TableGridMode = 'scroll',
-): string {
-  const dataColumns = visibleTableColumns(columns).map((column) => tableColumnTrack(column, mode));
+export function tableGridTemplate(columns: readonly TableColumnSetting[]): string {
+  const dataColumns = visibleTableColumns(columns).map(tableColumnTrack);
 
   return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
 }

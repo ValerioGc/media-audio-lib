@@ -93,7 +93,10 @@ describe('LibraryTable', () => {
 
     expect(headings).toContain('Formato');
     expect(headings).not.toContain('Autore');
-    expect(wrapper.attributes('style')).toContain('320px');
+    // The title takes the room the other columns leave, so its width is not a track of
+    // its own: what the settings hold is read on the columns beside it.
+    expect(wrapper.attributes('style')).toContain('minmax(6rem, 1fr)');
+    expect(wrapper.attributes('style')).toContain('90px');
     expect(wrapper.text()).toContain('FLAC');
   });
 
@@ -175,21 +178,15 @@ describe('LibraryTable', () => {
     expect(wrapper.attributes('style')).not.toContain('minmax(0, 1fr) 2rem');
   });
 
-  it('enables horizontal scrolling only when requested', () => {
-    const defaultTable = mountTable([makeTrack()]);
-    const homepageTable = mount(LibraryTable, {
-      ...withPinia(),
-      props: {
-        tracks: [makeTrack()],
-        sort: DEFAULT_SORT,
-        selectedIds: [],
-        playingId: null,
-        allowHorizontalScroll: true,
-      },
-    });
+  it('keeps the head and the rows in one scrolling box, so they cannot drift apart', () => {
+    const wrapper = mountTable([makeTrack()]);
 
-    expect(defaultTable.classes()).not.toContain('library_table_horizontal');
-    expect(homepageTable.classes()).toContain('library_table_horizontal');
+    // The head rides inside the scroller as a sticky row: reserving the scrollbar gutter
+    // twice is what used to leave the headings out of line and a sideways bar under a
+    // table that fitted.
+    expect(wrapper.get('.library_table_scroller').element).toBe(
+      wrapper.get('.library_table_head').element.parentElement?.parentElement,
+    );
   });
 
   it('uses the saved column order', async () => {
@@ -328,5 +325,29 @@ describe('LibraryTable', () => {
     expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
 
     document.documentElement.style.removeProperty('font-size');
+  });
+
+  it('leaves every other column alone when one is resized', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(LibraryTable, {
+      ...options,
+      props: { tracks: [makeTrack()], sort: DEFAULT_SORT, selectedIds: [], playingId: null },
+    });
+
+    const before = wrapper.attributes('style') ?? '';
+    expect(before).toContain('4.5rem');
+
+    await settings.setTableColumnWidth('album', 260);
+    await wrapper.vm.$nextTick();
+
+    const after = wrapper.attributes('style') ?? '';
+
+    // Only the column that was dragged changes: the fixed ones keep their measure, the
+    // actions keep theirs, and the title absorbs the difference.
+    expect(after).toContain('260px');
+    expect(after).toContain('4.5rem');
+    expect(after).toContain('5.25rem 5.25rem');
+    expect(after).toContain('minmax(6rem, 1fr)');
   });
 });

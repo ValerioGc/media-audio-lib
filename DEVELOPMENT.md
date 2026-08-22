@@ -113,9 +113,14 @@ the dock is a remote control rather than a second player. The two talk over Taur
 `mini://command`. Anything the dock changes in the settings is read back from the same store
 file, which is also how it follows the theme.
 
-Both windows need to be listed in `src-tauri/capabilities/default.json`: a window missing
-from `windows` has no permissions at all, so it can neither invoke a command nor listen to an
-event.
+Each window has a capability file of its own — `default.json` for `main`, `mini-player.json`
+for the dock — and a window missing from every `windows` list has no permissions at all, so
+it can neither invoke a command nor listen to an event. The dock is given only what it uses.
+
+Both windows are built in Rust rather than by the shell (`"create": false` on the window in
+`tauri.conf.json`), so each can be handed the two guards in `keep_inside_the_app`: a webview
+that leaves the pages of the app would run beside its commands, so it is not allowed to
+navigate anywhere else, nor to open a window for a page it was asked to.
 
 ## Development rules
 

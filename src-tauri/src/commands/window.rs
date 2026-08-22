@@ -3,8 +3,8 @@
 use tauri::{AppHandle, Manager as _, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 
 use crate::{
-    tray_menu, CloseToTray, MINI_SCREEN_MARGIN, MINI_SIZE, MINI_SIZE_EXPANDED, MINI_SIZE_VERTICAL,
-    MINI_SIZE_VERTICAL_EXPANDED, MINI_WINDOW,
+    keep_inside_the_app, tray_menu, CloseToTray, MINI_SCREEN_MARGIN, MINI_SIZE, MINI_SIZE_EXPANDED,
+    MINI_SIZE_VERTICAL, MINI_SIZE_VERTICAL_EXPANDED, MINI_WINDOW,
 };
 
 /// How much room the dock takes, for the layout and the level it is in.
@@ -66,11 +66,11 @@ pub async fn open_mini_player<R: Runtime>(
 
     let (width, height) = mini_size(vertical, expanded);
 
-    let built = WebviewWindowBuilder::new(
+    let built = keep_inside_the_app(WebviewWindowBuilder::new(
         &app,
         MINI_WINDOW,
         WebviewUrl::App("index.html?view=mini".into()),
-    )
+    ))
     .title("Media Audio Lib")
     .inner_size(width, height)
     .resizable(false)

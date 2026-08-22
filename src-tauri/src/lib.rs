@@ -13,13 +13,17 @@ pub mod state;
 #[cfg(test)]
 pub mod fixtures;
 
+#[cfg(test)]
+include!("../../tests/backend/navigation.rs");
+
 pub use error::{AppError, AppResult};
 
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Emitter as _, Manager as _, Runtime, WindowEvent};
+use tauri::webview::{NewWindowResponse, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter as _, Manager, Runtime, Url, WindowEvent};
 
 use crate::catalog::CatalogState;
 use crate::metadata::CoverCache;
@@ -64,6 +68,34 @@ impl CloseToTray {
     pub fn is_enabled(&self) -> bool {
         self.0.load(Ordering::Relaxed)
     }
+}
+
+/// Whether an address belongs to the app itself.
+///
+/// The pages of the app are served by the shell, over `tauri:` in a bundle and over the
+/// local dev server while developing. Nothing else is a page of this app.
+pub fn is_app_page(url: &Url) -> bool {
+    if matches!(url.scheme(), "tauri" | "asset") {
+        return true;
+    }
+
+    matches!(
+        url.host_str(),
+        Some("tauri.localhost" | "localhost" | "127.0.0.1")
+    )
+}
+
+/// Shuts the two doors a webview has to the outside.
+///
+/// A remote page loaded in here would run beside the commands of the app, so the webview
+/// is not allowed to go anywhere but its own pages, and is not allowed to open a window
+/// for a page it was asked to.
+pub fn keep_inside_the_app<'a, R: Runtime, M: Manager<R>>(
+    builder: WebviewWindowBuilder<'a, R, M>,
+) -> WebviewWindowBuilder<'a, R, M> {
+    builder
+        .on_navigation(is_app_page)
+        .on_new_window(|_, _| NewWindowResponse::Deny)
 }
 
 /// Brings the window back from the tray, wherever it was left.
@@ -155,6 +187,21 @@ pub fn run() {
         ))
         .manage(CloseToTray::default())
         .setup(|app| {
+            // The window is described in the configuration but built here, so it can be
+            // given the guards a window created for us would not carry.
+            let main_config = app
+                .config()
+                .app
+                .windows
+                .iter()
+                .find(|window| window.label == MAIN_WINDOW)
+                .cloned();
+
+            if let Some(config) = main_config {
+                keep_inside_the_app(WebviewWindowBuilder::from_config(app.handle(), &config)?)
+                    .build()?;
+            }
+
             build_tray(app.handle())?;
 
             // Started by the system with the window out of sight: it waits in the tray.

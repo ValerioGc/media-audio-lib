@@ -458,6 +458,7 @@
       "label": "Cover",
       "choose": "Choose image…",
       "remove": "Remove cover",
+      "tooLarge": "The cover inside this file weighs {size}, too much to be shown. The file has not been touched: choosing a new image replaces it.",
       "batch": {
         "title": "Update the album cover?",
         "message": "The album \"{album}\" has {count} other tracks. Use this cover for them too?",

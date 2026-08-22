@@ -458,6 +458,7 @@
       "label": "Pochette",
       "choose": "Choisir une image…",
       "remove": "Retirer la pochette",
+      "tooLarge": "La pochette contenue dans ce fichier pèse {size}, trop pour être affichée. Le fichier n’a pas été touché : choisir une nouvelle image la remplace.",
       "batch": {
         "title": "Mettre à jour la pochette de l'album ?",
         "message": "L'album « {album} » compte {count} autres morceaux. Utiliser cette pochette pour eux aussi ?",

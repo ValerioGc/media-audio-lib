@@ -458,6 +458,7 @@
       "label": "Carátula",
       "choose": "Elegir imagen…",
       "remove": "Quitar la carátula",
+      "tooLarge": "La portada de este archivo pesa {size}, demasiado para mostrarla. El archivo no se ha tocado: al elegir una imagen nueva la sustituyes.",
       "batch": {
         "title": "¿Actualizar la carátula del álbum?",
         "message": "El álbum «{album}» tiene otras {count} pistas. ¿Usar esta carátula también para ellas?",

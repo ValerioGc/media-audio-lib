@@ -7,6 +7,7 @@ import AppModal from '@/components/common/AppModal.vue';
 import CoverPicker from '@/components/metadata/CoverPicker.vue';
 import GenreSelect from '@/components/metadata/GenreSelect.vue';
 import MetadataField from '@/components/metadata/MetadataField.vue';
+import { formatBytes } from '@/services/file-size';
 import {
   draftErrors,
   isDraftValid,
@@ -20,7 +21,7 @@ const props = defineProps<{ track: TrackView }>();
 
 const emit = defineEmits<{ close: [] }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const library = useLibraryStore();
 
 const draft = ref<DraftMetadata>(fromTrack(props.track));
@@ -53,6 +54,22 @@ watch(
   },
   { immediate: true },
 );
+
+/**
+ * The weight of a cover the shell refused to read, once the picker has nothing to show.
+ *
+ * Without this the editor would show an empty frame for a file that does have a cover,
+ * and the user would have no way of telling why.
+ */
+const heavyCover = computed(() => {
+  if (pendingCover.value !== undefined) {
+    return null;
+  }
+
+  const bytes = library.heavyCoverBytes(props.track.id);
+
+  return bytes === null ? null : formatBytes(bytes, locale.value);
+});
 
 const errors = computed(() => draftErrors(draft.value));
 const canSave = computed(
@@ -192,6 +209,10 @@ async function save() {
         :genres="library.genreSuggestions"
       />
       <CoverPicker :current="coverPreview" @select="onCoverSelected" @remove="onCoverRemoved" />
+
+      <p v-if="heavyCover !== null" class="metadata_editor_warning" data-testid="cover-too-large">
+        {{ t('metadata.cover.tooLarge', { size: heavyCover }) }}
+      </p>
     </form>
 
     <template #actions>
@@ -251,6 +272,13 @@ async function save() {
 
   &_batch_message {
     color: var(--color_text);
+  }
+
+  &_warning {
+    padding: $space_sm $space_md;
+    @include surface_panel($radius_md, var(--color_surface_alt));
+    color: var(--color_text_muted);
+    font-size: 0.875em;
   }
 }
 </style>

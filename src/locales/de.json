@@ -458,6 +458,7 @@
       "label": "Cover",
       "choose": "Bild wählen…",
       "remove": "Cover entfernen",
+      "tooLarge": "Das Cover in dieser Datei wiegt {size} und ist zu groß, um angezeigt zu werden. Die Datei wurde nicht angerührt: mit einem neuen Bild ersetzen Sie es.",
       "batch": {
         "title": "Cover des Albums aktualisieren?",
         "message": "Das Album „{album}“ hat {count} weitere Titel. Dieses Cover auch für sie verwenden?",

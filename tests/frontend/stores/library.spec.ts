@@ -76,7 +76,7 @@ beforeEach(() => {
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
   verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
-  getCover.mockResolvedValue(null);
+  getCover.mockResolvedValue({ cover: null, tooLargeBytes: null });
   pickAudioFiles.mockResolvedValue([]);
   listLibraries.mockResolvedValue([]);
   importLibrary.mockResolvedValue({ added: 0, updated: 0, skipped: 0, missing: [], total: 0 });
@@ -449,7 +449,10 @@ describe('metadata editing', () => {
     const track = makeTrack({ hasCover: true });
     listTracks.mockResolvedValue([track]);
     await store.load();
-    getCover.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
+    getCover.mockResolvedValue({
+      cover: { mimeType: 'image/png', data: 'AAA' },
+      tooLargeBytes: null,
+    });
     await store.loadCover(track);
     expect(store.covers.get(track.id)).toBeDefined();
 
@@ -532,7 +535,10 @@ describe('covers', () => {
   it('downloads the cover only once per track', async () => {
     const store = useLibraryStore();
     const track = makeTrack({ hasCover: true });
-    getCover.mockResolvedValue({ mimeType: 'image/png', data: 'AAA' });
+    getCover.mockResolvedValue({
+      cover: { mimeType: 'image/png', data: 'AAA' },
+      tooLargeBytes: null,
+    });
 
     const first = await store.loadCover(track);
     const second = await store.loadCover(track);
@@ -552,9 +558,22 @@ describe('covers', () => {
 
   it('handles a track without embedded artwork', async () => {
     const store = useLibraryStore();
-    getCover.mockResolvedValue(null);
+    getCover.mockResolvedValue({ cover: null, tooLargeBytes: null });
 
-    await expect(store.loadCover(makeTrack({ hasCover: true }))).resolves.toBeNull();
+    const track = makeTrack({ hasCover: true });
+
+    await expect(store.loadCover(track)).resolves.toBeNull();
+    expect(store.heavyCoverBytes(track.id)).toBeNull();
+  });
+
+  it('remembers the weight of a picture too heavy to read', async () => {
+    const store = useLibraryStore();
+    getCover.mockResolvedValue({ cover: null, tooLargeBytes: 20_000_000 });
+    const track = makeTrack({ hasCover: true });
+
+    await expect(store.loadCover(track)).resolves.toBeNull();
+
+    expect(store.heavyCoverBytes(track.id)).toBe(20_000_000);
   });
 });
 

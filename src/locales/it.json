@@ -458,6 +458,7 @@
       "label": "Copertina",
       "choose": "Scegli immagine…",
       "remove": "Rimuovi copertina",
+      "tooLarge": "La copertina di questo file pesa {size} ed è troppo grande per essere mostrata. Il file non è stato toccato: scegliendo una nuova immagine la sostituisci.",
       "batch": {
         "title": "Aggiornare la copertina dell'album?",
         "message": "L'album \"{album}\" ha altri {count} brani. Vuoi usare questa copertina anche per loro?",

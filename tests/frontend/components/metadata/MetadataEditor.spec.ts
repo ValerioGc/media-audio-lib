@@ -31,6 +31,25 @@ function fieldAt(wrapper: Awaited<ReturnType<typeof mountEditor>>['wrapper'], in
 }
 
 describe('MetadataEditor', () => {
+  it('says why the cover of a file is not shown when it is too heavy', async () => {
+    const track = makeTrack({ hasCover: true });
+    const options = withPinia();
+    const store = useLibraryStore();
+    vi.spyOn(store, 'loadCover').mockResolvedValue(null);
+    vi.spyOn(store, 'heavyCoverBytes').mockReturnValue(20_000_000);
+
+    const wrapper = mount(MetadataEditor, { ...options, props: { track } });
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="cover-too-large"]').text()).toContain('19,1 MB');
+  });
+
+  it('says nothing about the weight when the file simply has no cover', async () => {
+    const { wrapper } = await mountEditor(makeTrack({ hasCover: false }));
+
+    expect(wrapper.find('[data-testid="cover-too-large"]').exists()).toBe(false);
+  });
+
   it('prefills fields with track values', async () => {
     const track = makeTrack({
       title: 'Track',

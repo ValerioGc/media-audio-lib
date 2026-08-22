@@ -94,6 +94,9 @@ async function onIntensityChange(event: Event) {
       />
     </template>
 
+    <!-- What the gradient is, above; how strong it is, below. -->
+    <hr class="cover_gradient_toggle_separator" />
+
     <label
       class="cover_gradient_toggle_slider"
       :class="{ cover_gradient_toggle_slider_disabled: isDisabled }"
@@ -160,6 +163,13 @@ async function onIntensityChange(event: Event) {
 
   &_check {
     @include settings_check;
+  }
+
+  &_separator {
+    width: 100%;
+    margin: $space_sm 0;
+    border: 0;
+    border-top: 1px solid var(--color_border);
   }
 
   &_slider {

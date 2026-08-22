@@ -38,10 +38,14 @@ async function create() {
 </template>
 
 <style scoped lang="scss">
+// Creating a library and working on the ones already there are two different jobs in one
+// section: the line is what says where one ends.
 .library_create_form {
   display: flex;
   flex-wrap: wrap;
   gap: $space_md;
   align-items: flex-end;
+  padding-bottom: $space_lg;
+  border-bottom: 1px solid var(--color_border);
 }
 </style>

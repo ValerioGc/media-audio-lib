@@ -25,7 +25,7 @@
     },
     "startup": {
       "title": "Start und Fenster",
-      "description": "Wie sich die Anwendung beim Start, beim Minimieren und beim Schließen verhält.",
+      "description": "Allgemeine Einstellungen zum Start der Anwendung und zum Verhalten des Fensters.",
       "autostart": "Mit dem System starten",
       "minimized": "Minimiert im Infobereich starten",
       "closeToTray": "Beim Schließen im Infobereich bleiben",
@@ -33,7 +33,7 @@
     },
     "playerBehaviour": {
       "title": "Player",
-      "description": "Was auf dem Bildschirm bleibt, wenn ein Titel geschlossen wird, und wie sich der schwebende Player zeigt.",
+      "description": "Einstellungen für den Player und den schwebenden Player.",
       "keepOpen": "Player beim Schließen des Titels geöffnet und minimiert lassen",
       "dock": "Den schwebenden Player zeigen, wenn die App in den Infobereich geht",
       "alwaysOnTop": "Den schwebenden Player über anderen Fenstern halten",
@@ -118,7 +118,7 @@
       "hint": "Die zweite Farbe des Hintergrunds leitet sich aus der Akzentfarbe ab und ändert sich mit ihr. Die beiden Optionen sind voneinander unabhängig."
     },
     "coverGradient": {
-      "title": "Hintergrund aus dem Cover",
+      "title": "Hintergrundfarbe aus dem Cover",
       "description": "Verwendet die vorherrschende Farbe des Covers für den Hintergrund des Players und die laufende Zeile.",
       "toggle": "Verlauf aus dem Cover aktivieren",
       "style": "Form des Verlaufs",
@@ -159,7 +159,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Sichere die Bibliothek in einer Datei zum Aufbewahren oder Mitnehmen, und lies sie wieder ein, wenn du sie brauchst.",
+      "description": "Einstellungen zum Importieren und Exportieren der Musikbibliothek.",
       "import": "Importieren",
       "importing": "Wird importiert…",
       "export": "Aktive exportieren",
@@ -177,14 +177,14 @@
     },
     "libraries": {
       "title": "Bibliotheken",
-      "description": "Jede Bibliothek ist eine eigene Titelliste. Lege eine neue an, öffne die, die du brauchst, und wähle, welche beim Start geöffnet wird."
+      "description": "Einstellungen zur Verwaltung der Musikbibliotheken."
     },
     "coverCache": {
       "title": "Cover-Cache",
-      "description": "Aus Ihren Dateien gelesene Cover bleiben auf der Festplatte, damit sie nicht bei jedem Start neu gelesen werden müssen. Er baut sich von selbst wieder auf: Leeren rührt Ihre Dateien nicht an.",
-      "size": "Belegt {size}",
-      "empty": "Der Cache ist leer.",
-      "limit": "Ab {limit} werden die am längsten nicht angefragten Cover von selbst entfernt.",
+      "description": "Cover werden auf der Festplatte behalten, damit sie nicht bei jedem Start neu aus Ihren Dateien gelesen werden müssen. Sie können ihn jederzeit leeren: er baut sich von selbst wieder auf und Ihre Dateien bleiben unberührt.",
+      "size": "Belegt derzeit {size} auf der Festplatte.",
+      "empty": "Der Cache ist leer: er belegt keinen Speicher.",
+      "limit": "Über {limit} hinaus werden die am längsten nicht angefragten Cover automatisch entfernt.",
       "clear": "Cache leeren",
       "clearing": "Wird geleert…",
       "cleared": "Cache geleert."
@@ -651,7 +651,7 @@
           "Thema: hell, dunkel oder das des Systems.",
           "Akzentfarbe: die Farbe der Bedienelemente, der Auswahl und des Verlaufshintergrunds.",
           "Hintergrund und Glaseffekt: schaltet den aus dem Akzent gebauten Verlauf ein, wählt Form und Ursprung und macht die Flächen durchscheinend. Er lässt sich auch auf die Detailfenster übertragen.",
-          "Hintergrund aus dem Cover: der Player nimmt die Farbe des Covers; Transparenz, Intensität, Unschärfe, Form und Ursprung sind einstellbar.",
+          "Hintergrundfarbe aus dem Cover: der Player nimmt die Farbe des Covers; Transparenz, Intensität, Unschärfe, Form und Ursprung sind einstellbar.",
           "Jede Wahl gilt sofort und wird für das nächste Mal gemerkt."
         ]
       },

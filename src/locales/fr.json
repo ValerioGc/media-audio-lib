@@ -25,7 +25,7 @@
     },
     "startup": {
       "title": "Démarrage et fenêtre",
-      "description": "Comment l’application se comporte au démarrage, à la réduction et à la fermeture.",
+      "description": "Réglages généraux du démarrage de l’application et du comportement de la fenêtre.",
       "autostart": "Démarrer avec le système",
       "minimized": "Démarrer réduite dans la zone de notification",
       "closeToTray": "À la fermeture, rester dans la zone de notification",
@@ -33,7 +33,7 @@
     },
     "playerBehaviour": {
       "title": "Lecteur",
-      "description": "Ce qui reste à l’écran quand un morceau est fermé, et comment se présente le lecteur flottant.",
+      "description": "Réglages du lecteur et du lecteur flottant.",
       "keepOpen": "Laisser le lecteur ouvert, réduit, à la fermeture du morceau",
       "dock": "Afficher le lecteur flottant quand l’app passe dans la zone de notification",
       "alwaysOnTop": "Garder le lecteur flottant au-dessus des autres fenêtres",
@@ -118,7 +118,7 @@
       "hint": "La seconde couleur de l'arrière-plan dérive de la couleur d'accentuation et change donc avec elle. Les deux options sont indépendantes."
     },
     "coverGradient": {
-      "title": "Arrière-plan depuis la pochette",
+      "title": "Couleur de fond d’après la pochette",
       "description": "Utilise la couleur dominante de la pochette pour l'arrière-plan du lecteur et la ligne en cours de lecture.",
       "toggle": "Activer le dégradé depuis la pochette",
       "style": "Forme du dégradé",
@@ -159,7 +159,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Enregistrez la bibliothèque dans un fichier à garder ou à emporter, et relisez-la au besoin.",
+      "description": "Réglages relatifs à l’importation et à l’exportation de la bibliothèque musicale.",
       "import": "Importer",
       "importing": "Import en cours…",
       "export": "Exporter l'active",
@@ -177,14 +177,14 @@
     },
     "libraries": {
       "title": "Bibliothèques",
-      "description": "Chaque bibliothèque est une liste de morceaux à part. Créez-en une, ouvrez celle qu’il vous faut et choisissez celle qui s’ouvre au démarrage."
+      "description": "Réglages relatifs à la gestion des bibliothèques musicales."
     },
     "coverCache": {
       "title": "Cache des pochettes",
-      "description": "Les pochettes extraites de vos fichiers restent sur le disque pour ne pas devoir les relire à chaque démarrage. Elle se reconstruit seule : la vider ne touche pas à vos fichiers.",
-      "size": "Occupe {size}",
-      "empty": "Le cache est vide.",
-      "limit": "Au-delà de {limit}, les pochettes demandées il y a le plus longtemps sont supprimées d’elles-mêmes.",
+      "description": "Les pochettes sont conservées sur le disque, pour ne pas devoir les relire dans vos fichiers à chaque démarrage. Vous pouvez le vider quand vous voulez : il se reconstruit seul et vos fichiers ne sont pas touchés.",
+      "size": "Occupe actuellement {size} sur le disque.",
+      "empty": "Le cache est vide : il n’occupe aucun espace.",
+      "limit": "Au-delà de {limit}, les pochettes demandées il y a le plus longtemps sont supprimées automatiquement.",
       "clear": "Vider le cache",
       "clearing": "Nettoyage…",
       "cleared": "Cache vidé."
@@ -651,7 +651,7 @@
           "Thème : clair, sombre, ou celui du système.",
           "Couleur d’accent : la couleur des commandes, de la sélection et du fond dégradé.",
           "Fond et effet verre : active le dégradé construit sur l’accent, choisit sa forme et son origine, et rend les surfaces translucides. Il peut aussi être porté sur les fenêtres de détail.",
-          "Fond depuis la pochette : le lecteur prend la couleur de la pochette du morceau ; transparence, intensité, flou, forme et origine sont réglables.",
+          "Couleur de fond d’après la pochette : le lecteur prend la couleur de la pochette du morceau ; transparence, intensité, flou, forme et origine sont réglables.",
           "Chaque choix s’applique aussitôt et est retenu pour la fois suivante."
         ]
       },

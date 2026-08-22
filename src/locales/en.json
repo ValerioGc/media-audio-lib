@@ -25,7 +25,7 @@
     },
     "startup": {
       "title": "Startup and window",
-      "description": "How the application behaves when you start it, when you minimize it and when you close it.",
+      "description": "General settings for how the application starts and how its window behaves.",
       "autostart": "Start when the system starts",
       "minimized": "Start minimized to the system tray",
       "closeToTray": "On close, stay in the system tray",
@@ -33,7 +33,7 @@
     },
     "playerBehaviour": {
       "title": "Player",
-      "description": "What stays on screen when a track is closed, and how the floating player shows itself.",
+      "description": "Settings for the player and the floating player.",
       "keepOpen": "Leave the player open, minimized, when the track is closed",
       "dock": "Show the floating player when the app goes to the system tray",
       "alwaysOnTop": "Keep the floating player above other windows",
@@ -118,7 +118,7 @@
       "hint": "The second colour of the background comes from the accent, so it changes with it. The two options are independent."
     },
     "coverGradient": {
-      "title": "Cover background",
+      "title": "Background colour from the cover",
       "description": "Use the dominant cover color for the player background and the playing row.",
       "toggle": "Enable cover gradient",
       "style": "Gradient shape",
@@ -159,7 +159,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Save the library to a file to keep or to carry elsewhere, and read it back when you need it.",
+      "description": "Settings for importing and exporting the music library.",
       "import": "Import",
       "importing": "Importing…",
       "export": "Export active",
@@ -177,14 +177,14 @@
     },
     "libraries": {
       "title": "Libraries",
-      "description": "Each library is a list of tracks of its own. Create a new one, open the one you need, and choose which opens at startup."
+      "description": "Settings for managing your music libraries."
     },
     "coverCache": {
       "title": "Cover cache",
-      "description": "Covers taken from your files are kept on disk so they need not be read again at every start. It rebuilds itself: emptying it leaves your files alone.",
-      "size": "Taking up {size}",
-      "empty": "The cache is empty.",
-      "limit": "Past {limit}, the covers asked for longest ago are dropped on their own.",
+      "description": "Cover art is kept on disk, so it does not have to be read out of your files at every start. You can empty it whenever you like: it rebuilds itself and your files are left alone.",
+      "size": "Currently taking {size} on disk.",
+      "empty": "The cache is empty: it takes no space.",
+      "limit": "Past {limit}, the covers asked for longest ago are removed automatically.",
       "clear": "Empty the cache",
       "clearing": "Emptying…",
       "cleared": "Cache emptied."
@@ -651,7 +651,7 @@
           "Theme: light, dark, or the one of the system.",
           "Accent colour: the colour of the controls, of the selection and of the gradient background.",
           "Background and glass: turns on the gradient built from the accent, picks its shape and its origin, and makes the surfaces translucent. It can be carried onto the detail windows too.",
-          "Cover background: the player takes its colour from the cover of the track; transparency, intensity, blur, shape and origin are all adjustable.",
+          "Background colour from the cover: the player takes its colour from the cover of the track; transparency, intensity, blur, shape and origin are all adjustable.",
           "Every choice applies at once and is remembered for the next time."
         ]
       },

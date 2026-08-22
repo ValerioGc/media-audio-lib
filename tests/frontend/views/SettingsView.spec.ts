@@ -48,7 +48,7 @@ describe('SettingsView', () => {
       'Tema',
       'Colore accent',
       'Sfondo ed effetto vetro',
-      'Sfondo da copertina',
+      'Colore sfondo da copertina',
     ]);
   });
 
@@ -117,7 +117,7 @@ describe('SettingsView', () => {
       'Theme',
       'Accent colour',
       'Background and glass',
-      'Cover background',
+      'Background colour from the cover',
     ]);
   });
 

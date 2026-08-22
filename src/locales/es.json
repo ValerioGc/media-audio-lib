@@ -25,7 +25,7 @@
     },
     "startup": {
       "title": "Inicio y ventana",
-      "description": "Cómo se comporta la aplicación al arrancar, al minimizarla y al cerrarla.",
+      "description": "Ajustes generales de inicio de la aplicación y de comportamiento de la ventana.",
       "autostart": "Iniciar con el sistema",
       "minimized": "Iniciar minimizada en la bandeja del sistema",
       "closeToTray": "Al cerrar, permanecer en la bandeja del sistema",
@@ -33,7 +33,7 @@
     },
     "playerBehaviour": {
       "title": "Reproductor",
-      "description": "Qué permanece en pantalla al cerrar una pista, y cómo se presenta el reproductor flotante.",
+      "description": "Ajustes del reproductor y del reproductor flotante.",
       "keepOpen": "Dejar el reproductor abierto, minimizado, al cerrar la pista",
       "dock": "Mostrar el reproductor flotante cuando la app pasa a la bandeja del sistema",
       "alwaysOnTop": "Mantener el reproductor flotante sobre las demás ventanas",
@@ -118,7 +118,7 @@
       "hint": "El segundo color del fondo deriva del acento, así que cambia con él. Las dos opciones son independientes."
     },
     "coverGradient": {
-      "title": "Fondo desde la carátula",
+      "title": "Color de fondo desde la carátula",
       "description": "Usa el color dominante de la carátula para el fondo del reproductor y la fila en reproducción.",
       "toggle": "Activar el degradado desde la carátula",
       "style": "Forma del degradado",
@@ -159,7 +159,7 @@
     },
     "importExport": {
       "title": "Importar / Exportar",
-      "description": "Guarda la biblioteca en un archivo para conservarla o llevarla a otro sitio, y vuelve a leerla cuando haga falta.",
+      "description": "Ajustes de importación y exportación de la biblioteca musical.",
       "import": "Importar",
       "importing": "Importando…",
       "export": "Exportar la activa",
@@ -177,14 +177,14 @@
     },
     "libraries": {
       "title": "Bibliotecas",
-      "description": "Cada biblioteca es una lista de pistas aparte. Crea una nueva, abre la que necesites y elige cuál se abre al arrancar."
+      "description": "Ajustes de gestión de las bibliotecas musicales."
     },
     "coverCache": {
       "title": "Caché de portadas",
-      "description": "Las portadas extraídas de tus archivos se guardan en disco para no tener que leerlas en cada arranque. Se reconstruye sola: vaciarla no toca tus archivos.",
-      "size": "Ocupa {size}",
-      "empty": "La caché está vacía.",
-      "limit": "A partir de {limit}, las portadas pedidas hace más tiempo se eliminan solas.",
+      "description": "Las portadas se guardan en el disco, para no tener que leerlas de tus archivos en cada arranque. Puedes vaciarla cuando quieras: se reconstruye sola y tus archivos no se tocan.",
+      "size": "Ahora mismo ocupa {size} en el disco.",
+      "empty": "La caché está vacía: no ocupa espacio.",
+      "limit": "Al superar {limit}, las portadas pedidas hace más tiempo se eliminan automáticamente.",
       "clear": "Vaciar la caché",
       "clearing": "Vaciando…",
       "cleared": "Caché vaciada."
@@ -651,7 +651,7 @@
           "Tema: claro, oscuro o el del sistema.",
           "Color de acento: el color de los mandos, de la selección y del fondo degradado.",
           "Fondo y efecto cristal: activa el degradado construido sobre el acento, elige su forma y su origen, y vuelve translúcidas las superficies. También puede llevarse a las ventanas de detalle.",
-          "Fondo desde la carátula: el reproductor toma el color de la carátula; transparencia, intensidad, desenfoque, forma y origen son ajustables.",
+          "Color de fondo desde la carátula: el reproductor toma el color de la carátula; transparencia, intensidad, desenfoque, forma y origen son ajustables.",
           "Cada elección se aplica al momento y se recuerda para la próxima vez."
         ]
       },

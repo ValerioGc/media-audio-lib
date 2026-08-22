@@ -25,7 +25,7 @@
     },
     "startup": {
       "title": "Avvio e finestra",
-      "description": "Come si comporta l’applicazione quando la avvii, quando la riduci e quando la chiudi.",
+      "description": "Impostazioni generali di avvio dell’applicazione e di comportamento della finestra.",
       "autostart": "Avvia all'accensione del sistema",
       "minimized": "Parti ridotta nella barra di sistema",
       "closeToTray": "Chiudendo, resta nella barra di sistema",
@@ -33,7 +33,7 @@
     },
     "playerBehaviour": {
       "title": "Player",
-      "description": "Cosa resta sullo schermo quando chiudi un brano, e come si presenta il player flottante.",
+      "description": "Impostazioni relative al player e al player flottante.",
       "keepOpen": "Lascia il player aperto, ridotto, quando chiudi il brano",
       "dock": "Mostra il player flottante quando riduci l’app nella barra di sistema",
       "alwaysOnTop": "Tieni il player flottante sempre in primo piano",
@@ -118,7 +118,7 @@
       "hint": "Il secondo colore dello sfondo deriva dall'accent, quindi cambia insieme a quello. Le due opzioni sono indipendenti."
     },
     "coverGradient": {
-      "title": "Sfondo da copertina",
+      "title": "Colore sfondo da copertina",
       "description": "Usa il colore dominante della copertina per lo sfondo del player e della riga in riproduzione.",
       "toggle": "Abilita gradiente dalla copertina",
       "style": "Forma del gradiente",
@@ -159,7 +159,7 @@
     },
     "importExport": {
       "title": "Import / Export",
-      "description": "Salva la libreria in un file da conservare o da portare altrove, e rileggila quando serve.",
+      "description": "Impostazioni relative all’importazione e all’esportazione della libreria musicale.",
       "import": "Importa",
       "importing": "Importazione…",
       "export": "Esporta attiva",
@@ -177,14 +177,14 @@
     },
     "libraries": {
       "title": "Librerie",
-      "description": "Ogni libreria è un elenco di brani a sé. Creane una nuova, apri quella che ti serve e scegli quale aprire all’avvio."
+      "description": "Impostazioni relative alla gestione delle librerie musicali."
     },
     "coverCache": {
       "title": "Cache delle copertine",
-      "description": "Le copertine estratte dai file restano su disco per non doverle rileggere a ogni avvio. Si ricostruisce da sola: svuotarla non tocca i tuoi file.",
-      "size": "Spazio occupato: {size}",
-      "empty": "La cache è vuota.",
-      "limit": "Oltre {limit} le copertine chieste da più tempo vengono eliminate da sole.",
+      "description": "Le copertine dei brani vengono conservate su disco, per non doverle rileggere dai file a ogni avvio. Puoi svuotarla quando vuoi: si ricostruisce da sola e i tuoi file non vengono toccati.",
+      "size": "Al momento occupa {size} sul disco.",
+      "empty": "La cache è vuota: non occupa spazio.",
+      "limit": "Quando supera {limit}, le copertine chieste da più tempo vengono rimosse automaticamente.",
       "clear": "Svuota la cache",
       "clearing": "Pulizia in corso…",
       "cleared": "Cache svuotata."
@@ -651,7 +651,7 @@
           "Tema: chiaro, scuro o come il sistema.",
           "Colore accent: il colore dei comandi, delle selezioni e dello sfondo sfumato.",
           "Sfondo ed effetto vetro: attiva la sfumatura costruita sul colore accent, ne sceglie la forma e l’origine, e rende traslucide le superfici. Può essere portato anche sulle finestre di dettaglio.",
-          "Sfondo da copertina: il player prende il colore dalla copertina del brano; trasparenza, intensità, sfocatura, forma e origine sono regolabili.",
+          "Colore sfondo da copertina: il player prende il colore dalla copertina del brano; trasparenza, intensità, sfocatura, forma e origine sono regolabili.",
           "Ogni scelta si applica subito e viene ricordata alla prossima apertura."
         ]
       },

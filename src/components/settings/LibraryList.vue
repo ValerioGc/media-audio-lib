@@ -175,10 +175,13 @@ async function startRename() {
   flex-direction: column;
   gap: $space_md;
 
+  // What is done to a library, above the line; the libraries themselves, below it.
   &_commands {
     display: flex;
     flex-wrap: wrap;
     gap: $space_sm;
+    padding-bottom: $space_lg;
+    border-bottom: 1px solid var(--color_border);
   }
 
   // The name and what is done to it are two things: they are given room to be two.

@@ -1,6 +1,7 @@
 // Generates the GitHub Pages files for the project, based on the site content in docs/site-content.json.
 // This script is run as part of the build process, and can also be run manually to regenerate the pages.
 
+const { createHash } = require('node:crypto');
 const { mkdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { dirname, join } = require('node:path');
 
@@ -32,6 +33,49 @@ const defaultLocale = site.defaultLocale;
 if (!siteLocales.includes(defaultLocale))
   throw new Error(`Default locale "${defaultLocale}" is not present in docs/site-content.json.`);
 
+// Replaced, once a page is rendered, with a policy naming that page's own scripts.
+const CSP_PLACEHOLDER = '<!--csp-->';
+
+/**
+ * The content security policy of a generated page.
+ *
+ * The site is static and takes no input, so this is a second line rather than the first
+ * one — but it is a page anybody can land on, and it costs a tag. The scripts are inline
+ * and stay inline: each one is named by the hash of its own text, so a script that is not
+ * one of ours does not run even if it finds its way into the markup.
+ *
+ * `frame-ancestors` is left out on purpose: a browser ignores it in a meta tag, and a
+ * directive that does nothing is worse than no directive at all. GitHub Pages serves no
+ * headers of ours, so that one is out of reach.
+ */
+function contentSecurityPolicy(html) {
+  const hashes = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map(([, body]) => createHash('sha256').update(body, 'utf8').digest('base64'))
+    .map((hash) => `'sha256-${hash}'`)
+    .join(' ');
+
+  return [
+    "default-src 'self'",
+    `script-src ${hashes}`.trim(),
+    "style-src 'self'",
+    "img-src 'self' data:",
+    // The download button asks GitHub which release is the latest one.
+    'connect-src https://api.github.com',
+    "base-uri 'self'",
+    "form-action 'none'",
+    "object-src 'none'",
+  ].join('; ');
+}
+
+/** Puts the policy of a page into the page, once its scripts are known. */
+function withContentSecurityPolicy(html) {
+  if (!html.includes(CSP_PLACEHOLDER)) return html;
+
+  const meta = `<meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy(html)}">`;
+
+  return html.replace(CSP_PLACEHOLDER, meta);
+}
+
 const generatedFiles = new Map();
 const logoSvg = readFileSync(logoPath, 'utf8');
 
@@ -49,7 +93,8 @@ for (const locale of siteLocales) {
 
 const changed = [];
 
-for (const [filePath, html] of generatedFiles.entries()) {
+for (const [filePath, rendered] of generatedFiles.entries()) {
+  const html = filePath.endsWith('.html') ? withContentSecurityPolicy(rendered) : rendered;
   let current;
 
   try {
@@ -112,6 +157,7 @@ function renderRootPage() {
 <html lang="${defaultLocale}">
   <head>
     <meta charset="utf-8">
+    <!--csp-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${escapeHtml(defaultPage.pageTitle)}</title>
     <meta name="description" content="${escapeHtml(defaultPage.metaDescription)}">
@@ -193,6 +239,7 @@ function renderLocalePage(locale) {
 <html lang="${locale}">
   <head>
     <meta charset="utf-8">
+    <!--csp-->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${escapeHtml(page.pageTitle)}</title>
     <meta name="description" content="${escapeHtml(page.metaDescription)}">

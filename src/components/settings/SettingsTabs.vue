@@ -80,8 +80,10 @@ function onKeydown(event: KeyboardEvent, index: number) {
 <style scoped lang="scss">
 .settings_tabs {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: $space_lg;
+  min-height: 0;
 
   &_list {
     display: flex;
@@ -92,6 +94,17 @@ function onKeydown(event: KeyboardEvent, index: number) {
     border: 1px solid var(--color_border);
     border-radius: $radius_lg;
     background-color: var(--color_surface_alt);
+  }
+
+  // The sections are what scrolls: the tabs above them stay where they were pressed.
+  &_panel {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    padding-right: $space_2xs;
+
+    @include scroll_area;
   }
 
   &_tab {

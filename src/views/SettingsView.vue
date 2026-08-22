@@ -140,8 +140,10 @@ const tabs = computed(() => [
 <style scoped lang="scss">
 .settings_view {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: $space_lg;
+  min-height: 0;
 
   @include page_column(54rem);
 

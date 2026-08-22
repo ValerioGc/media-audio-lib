@@ -790,9 +790,12 @@ async function confirmRemoval() {
 
   &_group_modal {
     display: flex;
+    flex: 1;
     flex-direction: column;
     gap: $space_md;
-    min-height: min(32rem, 70vh);
+    // It fills the dialog and shrinks with it: the list inside is what scrolls, whatever
+    // the pointer is doing — a wheel, a gesture, or the scrollbar itself.
+    min-height: 0;
 
     // The album header is a block of its own height: the back button and the view switch
     // stay on its first line instead of floating in the middle of it.

@@ -111,7 +111,12 @@ watch(
     font-weight: 600;
   }
 
+  // A column rather than a block: content that scrolls on its own — a list, a table — gets
+  // a bounded height to do it in, instead of pushing the whole dialog to scroll.
   &_body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     min-height: 0;
     color: var(--color_text_muted);
 

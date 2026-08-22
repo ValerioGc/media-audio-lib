@@ -173,10 +173,8 @@ onBeforeUnmount(() => {
     <!-- The window is undecorated: this bar is both the system titlebar and the header. -->
     <TitleBar />
 
-    <main
-      class="app_shell_content"
-      :class="{ app_shell_content_locked: navigation.isLibrary || navigation.isPlayer }"
-    >
+    <!-- The frame stands still and each view scrolls the region that owns its content. -->
+    <main class="app_shell_content">
       <SettingsView v-if="navigation.isSettings" />
       <HelpView v-else-if="navigation.isHelp" />
       <div v-else-if="navigation.isPlayer" class="app_shell_player_only" />
@@ -198,19 +196,14 @@ onBeforeUnmount(() => {
   // the region that owns its content.
   overflow: hidden;
 
+  // The frame is fixed: the library scrolls its list, the settings and the guide scroll
+  // their own content, and nothing ever moves the page under the titlebar.
   &_content {
     display: flex;
     flex: 1;
     flex-direction: column;
     min-height: 0;
     padding: $page_gutter;
-
-    @include scroll_area;
-  }
-
-  // The library fills the frame and scrolls the list or the grid from the inside, so the
-  // toolbar, the sections and the player stay where they are.
-  &_content_locked {
     overflow: hidden;
   }
 

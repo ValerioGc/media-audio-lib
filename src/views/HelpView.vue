@@ -51,8 +51,10 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 <style scoped lang="scss">
 .help_view {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: $space_lg;
+  min-height: 0;
 
   @include page_column(64rem);
 
@@ -72,24 +74,35 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     color: var(--color_text_muted);
   }
 
-  // The guide reads on the left, the index stands on the right and says where else to go.
+  // The guide reads on the left and takes the scroll; the index stands still on the right
+  // and says where else to go.
   &_body {
     display: grid;
+    flex: 1;
     grid-template-columns: minmax(0, 1fr) 15rem;
     gap: $space_lg;
-    align-items: start;
+    // Both columns are given the height of the row, so each can scroll inside its own.
+    align-items: stretch;
+    min-height: 0;
   }
 
   &_topic {
     min-width: 0;
+    max-height: 100%;
+
+    @include scroll_area;
   }
 
   &_index {
     display: flex;
     flex-direction: column;
     gap: $space_sm;
+    align-self: start;
+    max-height: 100%;
     padding: $space_md;
     @include glass_surface($radius_lg);
+
+    @include scroll_area;
   }
 
   &_index_title {

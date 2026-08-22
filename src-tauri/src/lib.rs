@@ -98,6 +98,23 @@ pub fn keep_inside_the_app<'a, R: Runtime, M: Manager<R>>(
         .on_new_window(|_, _| NewWindowResponse::Deny)
 }
 
+/// Clears the staged copies an interrupted edit may have left beside the user's files.
+///
+/// One folder read per folder of the library, so it runs off the main thread: the window
+/// opens while it works, and a folder that is slow to answer — a network drive, a disk
+/// waking up — delays nothing the user is looking at.
+fn sweep_abandoned_staging_files<R: Runtime>(app: &AppHandle<R>) {
+    let app = app.clone();
+
+    tauri::async_runtime::spawn_blocking(move || {
+        let Ok(directories) = app.state::<LibraryState>().read(library::track_directories) else {
+            return;
+        };
+
+        metadata::write::remove_abandoned_staging_files(directories);
+    });
+}
+
 /// Brings the window back from the tray, wherever it was left.
 pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
     // The dock stands in for the window: with the window back, it has nothing left to do.
@@ -216,6 +233,8 @@ pub fn run() {
             );
             app.manage(LibraryState::from_file(catalog.active_file()?));
             app.manage(catalog);
+
+            sweep_abandoned_staging_files(app.handle());
 
             app.manage(StartupFile::from_arguments(
                 std::env::args_os().skip(1).map(std::path::PathBuf::from),

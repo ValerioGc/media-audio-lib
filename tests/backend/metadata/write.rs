@@ -101,6 +101,55 @@
     }
 
     #[test]
+    fn a_staged_copy_is_told_apart_from_the_file_it_came_from() {
+        let dir = TempDir::new("staging-recognised");
+        let path = wav_with_tags(dir.path(), "track.wav");
+
+        assert!(is_staging_file(&staging_path(&path)));
+        assert!(!is_staging_file(&path));
+    }
+
+    #[test]
+    fn a_staged_copy_left_behind_is_swept_away() {
+        let dir = TempDir::new("staging-swept");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        let abandoned = staging_path(&path);
+        std::fs::copy(&path, &abandoned).expect("copia scritta");
+
+        // No waiting for the hour to pass: the age the sweep goes by is given here.
+        let removed = remove_staging_files_older_than([dir.path().to_path_buf()], Duration::ZERO);
+
+        assert_eq!(removed, 1);
+        assert!(!abandoned.exists());
+        assert!(path.exists(), "il file originale non va toccato");
+    }
+
+    #[test]
+    fn a_staged_copy_still_being_written_is_left_alone() {
+        let dir = TempDir::new("staging-kept");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        let in_progress = staging_path(&path);
+        std::fs::copy(&path, &in_progress).expect("copia scritta");
+
+        let removed = remove_abandoned_staging_files([dir.path().to_path_buf()]);
+
+        assert_eq!(removed, 0);
+        assert!(in_progress.exists());
+    }
+
+    #[test]
+    fn a_folder_named_twice_is_swept_once() {
+        let dir = TempDir::new("staging-twice");
+        let path = wav_with_tags(dir.path(), "track.wav");
+        std::fs::copy(&path, staging_path(&path)).expect("copia scritta");
+
+        let folder = dir.path().to_path_buf();
+        let removed = remove_staging_files_older_than([folder.clone(), folder], Duration::ZERO);
+
+        assert_eq!(removed, 1);
+    }
+
+    #[test]
     fn rejects_an_empty_title_without_touching_the_file() {
         let dir = TempDir::new("write-empty-title");
         let path = wav_with_tags(dir.path(), "track.wav");

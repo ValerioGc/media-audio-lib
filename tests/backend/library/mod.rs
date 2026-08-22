@@ -567,6 +567,39 @@
     }
 
     #[test]
+    fn walking_a_folder_skips_the_copies_an_edit_left_behind() {
+        let dir = TempDir::new("library-import-staging");
+        wav_with_tags(dir.path(), "track.wav");
+        let path = dir.path().join("track.wav");
+        // A staged copy keeps the extension of its original, so only the name tells them
+        // apart: without that, importing the folder would find the same song twice.
+        std::fs::copy(&path, dir.path().join("track.mal-tmp.wav")).expect("copia scritta");
+        let mut library = Library::new();
+
+        let report = add_paths(&mut library, &[dir.path().display().to_string()], 0);
+
+        assert_eq!(report.added.len(), 1);
+        assert_eq!(library.len(), 1);
+    }
+
+    #[test]
+    fn lists_each_folder_of_the_library_once() {
+        let mut library = Library::new();
+        library.add(sample_track("uno"));
+        library.add(sample_track("due"));
+        library.add(Track {
+            path: "C:/altro/tre.mp3".to_owned(),
+            ..sample_track("tre")
+        });
+
+        let directories = track_directories(&library);
+
+        assert_eq!(directories.len(), 2);
+        assert!(directories.contains(&PathBuf::from("C:/music")));
+        assert!(directories.contains(&PathBuf::from("C:/altro")));
+    }
+
+    #[test]
     fn uses_the_file_name_when_title_is_missing() {
         let dir = TempDir::new("library-fallback");
         let path = wav_without_tags(dir.path(), "senza-tag.wav");

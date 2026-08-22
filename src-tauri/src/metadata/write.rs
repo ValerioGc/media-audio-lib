@@ -7,8 +7,9 @@
 //! The ID3 chunk inside the RIFF container is not shrunk by `lofty`, so the old picture
 //! survives. MP3 — the priority format — handles the full cycle correctly.
 
+use std::collections::HashSet;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use base64::Engine as _;
 use lofty::config::WriteOptions;
@@ -19,6 +20,15 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
 use crate::metadata::{ensure_importable, read_metadata, read_tagged_file, Cover, TrackMetadata};
+
+/// Marks the copy an edit is written on, and tells it apart from the file it came from.
+pub const STAGING_MARKER: &str = ".mal-tmp.";
+
+/// How long a staged copy is left alone before it counts as abandoned.
+///
+/// An edit takes a moment; anything older than this was left behind by a crash, a power
+/// cut or a process killed halfway, and nobody is coming back for it.
+pub const STAGING_MAX_AGE: Duration = Duration::from_secs(60 * 60);
 
 pub const MAX_COVER_BYTES: usize = 5 * 1024 * 1024;
 pub const ALLOWED_COVER_MIME: [&str; 2] = ["image/png", "image/jpeg"];
@@ -127,7 +137,76 @@ fn staging_path(path: &Path) -> PathBuf {
         .and_then(|value| value.to_str())
         .unwrap_or("file");
 
-    path.with_file_name(format!("{stem}.mal-tmp.{extension}"))
+    path.with_file_name(format!("{stem}{STAGING_MARKER}{extension}"))
+}
+
+/// Whether a path is one of the copies this module writes edits on.
+///
+/// A staged copy keeps the extension of the file it came from, so without this it would
+/// look like an ordinary audio file to an import walking the same folder.
+pub fn is_staging_file(path: &Path) -> bool {
+    path.file_name()
+        .and_then(|name| name.to_str())
+        .is_some_and(|name| name.contains(STAGING_MARKER))
+}
+
+/// Whether a file was touched more recently than `max_age`, so something may still be
+/// writing it.
+///
+/// A file whose age cannot be read, or that claims to come from the future, counts as
+/// recent: deleting on a clock we cannot make sense of is the worse mistake.
+fn is_recent(path: &Path, max_age: Duration) -> bool {
+    let Ok(modified) = std::fs::metadata(path).and_then(|metadata| metadata.modified()) else {
+        return true;
+    };
+
+    match SystemTime::now().duration_since(modified) {
+        Ok(age) => age < max_age,
+        Err(_) => true,
+    }
+}
+
+/// Deletes the staged copies left behind in the given folders, and says how many went.
+///
+/// An edit removes its own copy when it fails, but it cannot remove it when the process
+/// does not live long enough to try. Sweeping at startup keeps those from piling up beside
+/// the user's files. Only what is old enough is touched, so an edit running right now is
+/// never pulled out from under itself.
+pub fn remove_abandoned_staging_files<I: IntoIterator<Item = PathBuf>>(directories: I) -> usize {
+    remove_staging_files_older_than(directories, STAGING_MAX_AGE)
+}
+
+/// The sweep itself, with the age it goes by named out loud so a test can choose it.
+fn remove_staging_files_older_than<I: IntoIterator<Item = PathBuf>>(
+    directories: I,
+    max_age: Duration,
+) -> usize {
+    let mut visited: HashSet<PathBuf> = HashSet::new();
+    let mut removed = 0;
+
+    for directory in directories {
+        if !visited.insert(directory.clone()) {
+            continue;
+        }
+
+        let Ok(entries) = std::fs::read_dir(&directory) else {
+            continue;
+        };
+
+        for entry in entries.flatten() {
+            let path = entry.path();
+
+            if !is_staging_file(&path) || !path.is_file() || is_recent(&path, max_age) {
+                continue;
+            }
+
+            if std::fs::remove_file(&path).is_ok() {
+                removed += 1;
+            }
+        }
+    }
+
+    removed
 }
 
 /// Applies `edit` to a staged copy and swaps it in only on success.

@@ -564,7 +564,7 @@ fn collect_audio_files(directory: &Path, depth: usize, into: &mut Vec<PathBuf>) 
 
         if path.is_dir() {
             collect_audio_files(&path, depth + 1, into);
-        } else if metadata::is_supported(&path) {
+        } else if metadata::is_supported(&path) && !metadata::write::is_staging_file(&path) {
             found.push(path);
         }
     }
@@ -726,6 +726,26 @@ pub fn maintain_paths(library: &mut Library) -> LibraryMaintenanceReport {
         deduplicated,
         ids_updated,
     }
+}
+
+/// The folders the files of the library live in, one entry each.
+///
+/// An edit stages its copy beside the file it edits, so these are the only folders where
+/// this app can have left something of its own behind.
+pub fn track_directories(library: &Library) -> Vec<PathBuf> {
+    let mut directories: Vec<PathBuf> = Vec::new();
+
+    for track in &library.tracks {
+        if let Some(directory) = Path::new(&track.path).parent() {
+            let directory = directory.to_path_buf();
+
+            if !directories.contains(&directory) {
+                directories.push(directory);
+            }
+        }
+    }
+
+    directories
 }
 
 /// Files of the library that are no longer where they were imported from.

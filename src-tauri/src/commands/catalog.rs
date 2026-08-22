@@ -134,7 +134,9 @@ pub fn export(
     destination: &str,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
-        return Err(AppError::Validation("missing destination path".to_owned()));
+        return Err(AppError::Validation(
+            "percorso di destinazione mancante".to_owned(),
+        ));
     }
 
     let source = catalog.file_of(id)?;
@@ -162,7 +164,9 @@ pub fn import(
     strategy: LibraryImportStrategy,
 ) -> AppResult<LibraryImportReport> {
     if source.trim().is_empty() {
-        return Err(AppError::Validation("missing import path".to_owned()));
+        return Err(AppError::Validation(
+            "percorso di importazione mancante".to_owned(),
+        ));
     }
 
     let mut imported = Library::load(&PathBuf::from(source))?;

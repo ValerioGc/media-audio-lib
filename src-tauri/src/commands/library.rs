@@ -222,7 +222,9 @@ pub fn export_track_list(
     fields: Vec<TrackListExportField>,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
-        return Err(AppError::Validation("missing destination path".to_owned()));
+        return Err(AppError::Validation(
+            "percorso di destinazione mancante".to_owned(),
+        ));
     }
 
     if fields.is_empty() {

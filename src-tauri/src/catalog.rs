@@ -82,7 +82,7 @@ impl Catalog {
 
     pub fn active_entry(&self) -> AppResult<&CatalogEntry> {
         self.entry(&self.active)
-            .ok_or_else(|| AppError::State(format!("unknown active library: {}", self.active)))
+            .ok_or_else(|| AppError::State(format!("libreria attiva sconosciuta: {}", self.active)))
     }
 
     pub fn add(&mut self, entry: CatalogEntry) {
@@ -126,7 +126,7 @@ impl Catalog {
     pub fn remove(&mut self, id: &str) -> AppResult<CatalogEntry> {
         if self.entries.len() <= 1 {
             return Err(AppError::Validation(
-                "the last library cannot be deleted".to_owned(),
+                "l'ultima libreria non può essere eliminata".to_owned(),
             ));
         }
 

@@ -71,7 +71,9 @@ fn blank_to_none(value: Option<&String>) -> Option<&str> {
 
 pub fn validate_update(update: &MetadataUpdate) -> AppResult<()> {
     if update.title.trim().is_empty() {
-        return Err(AppError::Validation("title cannot be empty".to_owned()));
+        return Err(AppError::Validation(
+            "il titolo non può essere vuoto".to_owned(),
+        ));
     }
 
     if update.title.chars().count() > MAX_TITLE_LENGTH {

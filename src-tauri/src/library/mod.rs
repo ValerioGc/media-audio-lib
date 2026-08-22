@@ -211,8 +211,9 @@ impl Library {
     }
 
     pub fn rename(&mut self, name: &str) -> AppResult<String> {
-        let name = clean_library_name(name)
-            .ok_or_else(|| AppError::Validation("library name cannot be empty".to_owned()))?;
+        let name = clean_library_name(name).ok_or_else(|| {
+            AppError::Validation("il nome della libreria non può essere vuoto".to_owned())
+        })?;
 
         if name.chars().count() > MAX_LIBRARY_NAME_LENGTH {
             return Err(AppError::Validation(format!(

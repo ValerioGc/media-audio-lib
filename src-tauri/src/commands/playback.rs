@@ -98,9 +98,9 @@ pub fn prepare_external_playback<R: Runtime>(
     app: AppHandle<R>,
     startup: State<'_, StartupFile>,
 ) -> AppResult<String> {
-    let path = startup
-        .path()
-        .ok_or_else(|| AppError::NotFound("no file was passed to the application".to_owned()))?;
+    let path = startup.path().ok_or_else(|| {
+        AppError::NotFound("nessun file è stato passato all'applicazione".to_owned())
+    })?;
     let path = playable_file_path(&path)?;
 
     grant_access(&app, &path)?;

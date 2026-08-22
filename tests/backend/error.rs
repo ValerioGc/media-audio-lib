@@ -4,7 +4,7 @@
     fn not_found_has_a_readable_message() {
         let error = AppError::NotFound("C:/music/track.mp3".to_owned());
 
-        assert_eq!(error.to_string(), "file not found: C:/music/track.mp3");
+        assert_eq!(error.to_string(), "file non trovato: C:/music/track.mp3");
     }
 
     #[test]
@@ -25,7 +25,7 @@
     fn state_has_a_readable_message() {
         let error = AppError::State("poisoned lock".to_owned());
 
-        assert_eq!(error.to_string(), "library unavailable: poisoned lock");
+        assert_eq!(error.to_string(), "libreria non disponibile: poisoned lock");
     }
 
     #[test]
@@ -51,5 +51,5 @@
 
         let json = serde_json::to_string(&error).expect("serializzazione riuscita");
 
-        assert_eq!(json, "\"file not found: track.mp3\"");
+        assert_eq!(json, "\"file non trovato: track.mp3\"");
     }

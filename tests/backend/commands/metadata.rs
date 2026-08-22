@@ -65,7 +65,7 @@
         let cover = cache.load(&path).expect("read succeeded");
 
         assert_eq!(
-            cover.map(|cover| cover.mime_type),
+            cover.into_cover().map(|cover| cover.mime_type),
             Some("image/png".to_owned())
         );
     }

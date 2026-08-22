@@ -97,7 +97,7 @@
         let dir = TempDir::new("cover-missing");
         let path = wav_with_tags(dir.path(), "track.wav");
 
-        assert_eq!(read_cover(&path).expect("read succeeded"), None);
+        assert_eq!(read_cover(&path).expect("read succeeded").into_cover(), None);
     }
 
     #[test]
@@ -108,6 +108,7 @@
         let metadata = read_metadata(&path).expect("metadata read");
         let cover = read_cover(&path)
             .expect("read succeeded")
+            .into_cover()
             .expect("cover presente");
 
         assert!(metadata.has_cover);

@@ -33,7 +33,7 @@
                 .expect("removal succeeded")
                 .has_cover
         );
-        assert_eq!(read_cover(&path).expect("riread"), None);
+        assert_eq!(read_cover(&path).expect("riread").into_cover(), None);
     }
 
     #[test]
@@ -248,7 +248,10 @@
         };
 
         let written = write_cover(&path, Some(&cover)).expect("scrittura riuscita");
-        let stored = read_cover(&path).expect("riread").expect("cover presente");
+        let stored = read_cover(&path)
+            .expect("riread")
+            .into_cover()
+            .expect("cover presente");
 
         assert!(written.has_cover);
         assert_eq!(stored.mime_type, "image/png");
@@ -265,7 +268,10 @@
         };
 
         write_cover(&path, Some(&cover)).expect("scrittura riuscita");
-        let stored = read_cover(&path).expect("riread").expect("cover presente");
+        let stored = read_cover(&path)
+            .expect("riread")
+            .into_cover()
+            .expect("cover presente");
 
         assert_eq!(stored.mime_type, "image/jpeg");
     }
@@ -278,7 +284,7 @@
         let written = write_cover(&path, None).expect("removal succeeded");
 
         assert!(!written.has_cover);
-        assert_eq!(read_cover(&path).expect("riread"), None);
+        assert_eq!(read_cover(&path).expect("riread").into_cover(), None);
     }
 
     #[test]
@@ -338,5 +344,5 @@
         };
 
         assert!(write_cover(&path, Some(&cover)).is_err());
-        assert!(read_cover(&path).expect("riread").is_some());
+        assert!(read_cover(&path).expect("riread").cover.is_some());
     }

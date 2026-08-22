@@ -11,7 +11,11 @@
         let cache = cache(&dir);
         let track = wav_with_cover(dir.path(), "track.wav");
 
-        let cover = cache.load(&track).expect("read").expect("cover");
+        let cover = cache
+            .load(&track)
+            .expect("read")
+            .into_cover()
+            .expect("cover");
 
         assert_eq!(cover.mime_type, "image/png");
         assert!(cache
@@ -37,7 +41,11 @@
         )
         .expect("entry written");
 
-        let cover = cache.load(&track).expect("read").expect("cover");
+        let cover = cache
+            .load(&track)
+            .expect("read")
+            .into_cover()
+            .expect("cover");
         let bytes = base64::engine::general_purpose::STANDARD
             .decode(&cover.data)
             .expect("base64 valido");
@@ -51,12 +59,12 @@
         let cache = cache(&dir);
         let track = wav_with_tags(dir.path(), "track.wav");
 
-        assert_eq!(cache.load(&track).expect("read"), None);
+        assert_eq!(cache.load(&track).expect("read").into_cover(), None);
         assert!(cache
             .directory()
             .join(format!("{}.none", CoverCache::entry_key(&track)))
             .is_file());
-        assert_eq!(cache.load(&track).expect("second read"), None);
+        assert_eq!(cache.load(&track).expect("second read").into_cover(), None);
     }
 
     #[test]
@@ -82,7 +90,7 @@
         let new_key = CoverCache::entry_key(&track);
         assert_ne!(old_key, new_key);
 
-        assert!(cache.load(&track).expect("second read").is_some());
+        assert!(cache.load(&track).expect("second read").cover.is_some());
         assert!(!cache.directory().join(format!("{old_key}.none")).exists());
     }
 
@@ -95,7 +103,7 @@
         std::fs::write(&path_occupato, b"non sono una cartella").expect("file written");
         let cache = CoverCache::new(path_occupato);
 
-        assert!(cache.load(&track).expect("read succeeded").is_some());
+        assert!(cache.load(&track).expect("read succeeded").cover.is_some());
     }
 
     #[test]

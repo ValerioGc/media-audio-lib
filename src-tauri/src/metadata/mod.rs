@@ -74,6 +74,11 @@ impl CoverRead {
         }
     }
 
+    /// The picture that was found, when one was small enough and readable.
+    pub fn into_cover(self) -> Option<Cover> {
+        self.cover
+    }
+
     pub fn too_large(bytes: usize) -> Self {
         Self {
             cover: None,

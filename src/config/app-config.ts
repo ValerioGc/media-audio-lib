@@ -17,6 +17,10 @@ export const RELEASES_URL = `${GITHUB_URL}/releases`;
  */
 export const MAX_LISTED_ARTISTS = 3;
 
+/** Longest name a library can be given. Mirrors `MAX_LIBRARY_NAME_LENGTH` in the shell,
+ * which is the one that decides: this only keeps the field from taking more. */
+export const MAX_LIBRARY_NAME_LENGTH = 120;
+
 /** Audio formats handled by the library. Tag reading lands in phase 3. */
 export const SUPPORTED_EXTENSIONS = ['mp3', 'flac', 'm4a', 'ogg', 'wav'] as const;
 

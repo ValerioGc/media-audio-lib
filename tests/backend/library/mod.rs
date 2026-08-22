@@ -604,6 +604,42 @@
     }
 
     #[test]
+    fn refuses_a_name_longer_than_a_name() {
+        let mut library = Library::new();
+        let long = "a".repeat(MAX_LIBRARY_NAME_LENGTH + 1);
+
+        assert!(library.rename(&long).is_err());
+        assert!(library.rename(&"a".repeat(MAX_LIBRARY_NAME_LENGTH)).is_ok());
+    }
+
+    #[test]
+    fn a_name_that_arrives_too_long_from_disk_is_shortened_rather_than_refused() {
+        let dir = TempDir::new("library-long-name");
+        let path = dir.path().join("library.json");
+        let mut library = Library::new();
+        library.name = "b".repeat(MAX_LIBRARY_NAME_LENGTH * 3);
+        library.save(&path).expect("libreria salvata");
+
+        let reloaded = Library::load(&path).expect("libreria riletta");
+
+        assert_eq!(reloaded.name.chars().count(), MAX_LIBRARY_NAME_LENGTH);
+    }
+
+    #[test]
+    fn refuses_a_library_file_too_large_to_read() {
+        let dir = TempDir::new("library-huge");
+        let path = dir.path().join("library.json");
+        Library::new().save(&path).expect("libreria salvata");
+
+        // The weight it refuses is an argument, so no gigantic fixture is needed.
+        assert!(ensure_readable_size(&path, MAX_LIBRARY_FILE_BYTES).is_ok());
+        assert!(matches!(
+            ensure_readable_size(&path, 4).unwrap_err(),
+            AppError::Validation(_)
+        ));
+    }
+
+    #[test]
     fn lists_each_folder_of_the_library_once() {
         let mut library = Library::new();
         library.add(sample_track("uno"));

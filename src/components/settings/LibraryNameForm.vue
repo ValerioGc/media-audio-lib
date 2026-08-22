@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
+import { MAX_LIBRARY_NAME_LENGTH } from '@/config/app-config';
 import { useLibraryStore } from '@/stores/library';
 
 const { t } = useI18n();
@@ -48,6 +49,7 @@ async function submit() {
       v-model="name"
       :label="t('settings.libraryName.label')"
       :placeholder="t('settings.libraryName.placeholder')"
+      :max-length="MAX_LIBRARY_NAME_LENGTH"
     />
 
     <div class="library_name_form_footer">

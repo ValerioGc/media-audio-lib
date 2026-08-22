@@ -160,6 +160,8 @@ impl Library {
             return Ok((Self::new(), SCHEMA_VERSION));
         }
 
+        ensure_readable_size(path, MAX_LIBRARY_FILE_BYTES)?;
+
         let contents = std::fs::read_to_string(path)?;
         let library: Self = serde_json::from_str(&contents)?;
 
@@ -174,7 +176,11 @@ impl Library {
 
         let mut loaded = Self {
             version: SCHEMA_VERSION,
-            name: clean_library_name(&library.name).unwrap_or_else(default_library_name),
+            // Repaired rather than refused: a name that arrives too long on disk is not a
+            // reason to leave the user unable to open their own library.
+            name: clean_library_name(&library.name)
+                .map(|name| shorten_library_name(&name))
+                .unwrap_or_else(default_library_name),
             metadata: library.metadata,
             tracks: library.tracks,
         };
@@ -207,6 +213,12 @@ impl Library {
     pub fn rename(&mut self, name: &str) -> AppResult<String> {
         let name = clean_library_name(name)
             .ok_or_else(|| AppError::Validation("library name cannot be empty".to_owned()))?;
+
+        if name.chars().count() > MAX_LIBRARY_NAME_LENGTH {
+            return Err(AppError::Validation(format!(
+                "il nome della libreria supera i {MAX_LIBRARY_NAME_LENGTH} caratteri"
+            )));
+        }
 
         self.name = name.clone();
 
@@ -455,6 +467,38 @@ fn fill_missing_artwork(
 
 fn default_library_name() -> String {
     DEFAULT_LIBRARY_NAME.to_owned()
+}
+
+/// How large a library file may be before it is refused.
+///
+/// A library carries the artwork of its artists and genres inside it, so it is legitimately
+/// larger than a plain list — but it is read whole into memory, and the file it is read
+/// from is one the user picked in a dialog. Room for a collection nobody has, and a wall
+/// before an unrelated file empties the machine's memory.
+pub const MAX_LIBRARY_FILE_BYTES: u64 = 256 * 1024 * 1024;
+
+/// How long the name of a library may be.
+///
+/// It is shown in the title bar, in the switcher and in the settings: past this it stops
+/// being a name and starts being a layout problem.
+pub const MAX_LIBRARY_NAME_LENGTH: usize = 120;
+
+/// Refuses a file larger than `max_bytes`, before anything reads it into memory.
+fn ensure_readable_size(path: &Path, max_bytes: u64) -> AppResult<()> {
+    let size = std::fs::metadata(path)?.len();
+
+    if size > max_bytes {
+        return Err(AppError::Validation(format!(
+            "file di libreria troppo grande: massimo {} MB",
+            MAX_LIBRARY_FILE_BYTES / (1024 * 1024)
+        )));
+    }
+
+    Ok(())
+}
+
+fn shorten_library_name(name: &str) -> String {
+    name.chars().take(MAX_LIBRARY_NAME_LENGTH).collect()
 }
 
 fn clean_library_name(name: &str) -> Option<String> {

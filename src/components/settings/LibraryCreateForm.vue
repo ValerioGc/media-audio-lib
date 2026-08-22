@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
+import { MAX_LIBRARY_NAME_LENGTH } from '@/config/app-config';
 import { useLibraryStore } from '@/stores/library';
 
 const { t } = useI18n();
@@ -28,6 +29,7 @@ async function create() {
       v-model="name"
       :label="t('library.catalog.create.label')"
       :placeholder="t('library.catalog.create.placeholder')"
+      :max-length="MAX_LIBRARY_NAME_LENGTH"
     />
     <AppButton type="submit" variant="primary" data-testid="create-library">
       {{ t('library.catalog.create.submit') }}

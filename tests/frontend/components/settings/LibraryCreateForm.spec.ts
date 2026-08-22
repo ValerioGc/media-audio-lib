@@ -19,6 +19,12 @@ function mountForm() {
 }
 
 describe('LibraryCreateForm', () => {
+  it('stops the field before the name gets absurd', () => {
+    const wrapper = mount(LibraryCreateForm, withPinia());
+
+    expect(wrapper.get('input').attributes('maxlength')).toBe('120');
+  });
+
   it('creates a library and clears the field', async () => {
     const { wrapper, library } = mountForm();
     const createLibrary = vi.spyOn(library, 'createLibrary').mockResolvedValue(true);

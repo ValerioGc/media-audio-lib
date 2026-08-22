@@ -8,8 +8,9 @@ withDefaults(
     placeholder?: string;
     type?: 'text' | 'search' | 'number';
     hideLabel?: boolean;
+    maxLength?: number | undefined;
   }>(),
-  { placeholder: '', type: 'text', hideLabel: false },
+  { placeholder: '', type: 'text', hideLabel: false, maxLength: undefined },
 );
 
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
@@ -32,6 +33,7 @@ function onInput(event: Event) {
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      :maxlength="maxLength"
       @input="onInput"
     />
   </div>

@@ -94,6 +94,8 @@ export const useLibraryStore = defineStore('library', () => {
   const lastReport = ref<AddReport | null>(null);
   const errorKey = ref<LibraryErrorKey>(null);
   const covers = ref(new Map<string, string>());
+  /** Tracks whose embedded picture was left unread for its weight, by track id. */
+  const heavyCovers = ref(new Map<string, number>());
 
   const tracksMatchingMissingInfo = computed(() =>
     tracks.value.filter((track) => hasMissingInfo(track, missingInfoFilter.value)),
@@ -503,18 +505,28 @@ export const useLibraryStore = defineStore('library', () => {
     }
 
     try {
-      const cover = await api.getCover(track.path);
-      if (cover === null) {
+      const read = await api.getCover(track.path);
+
+      if (read.tooLargeBytes !== null) {
+        heavyCovers.value = new Map(heavyCovers.value).set(track.id, read.tooLargeBytes);
+      }
+
+      if (read.cover === null) {
         return null;
       }
 
-      const dataUrl = api.coverDataUrl(cover);
+      const dataUrl = api.coverDataUrl(read.cover);
       covers.value = new Map(covers.value).set(track.id, dataUrl);
 
       return dataUrl;
     } catch {
       return null;
     }
+  }
+
+  /** The weight of a cover left unread for being too heavy, or null when there is none. */
+  function heavyCoverBytes(trackId: string): number | null {
+    return heavyCovers.value.get(trackId) ?? null;
   }
 
   /** Replaces a track after an edit, keeping the on-disk state already known. */
@@ -725,6 +737,7 @@ export const useLibraryStore = defineStore('library', () => {
     dismissRefresh,
     verifyAllTracks,
     loadCover,
+    heavyCoverBytes,
     saveMetadata,
     saveCover,
     openEditor,

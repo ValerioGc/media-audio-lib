@@ -146,27 +146,48 @@
     }
 
     #[test]
-    fn remembers_a_picture_too_heavy_to_read_without_opening_the_file_again() {
+    fn a_picture_too_heavy_to_read_is_answered_from_the_cache() {
         let dir = TempDir::new("cache-oversized");
         let cache = cache(&dir);
+        // A file with no cover at all: if the answer came from the file rather than from
+        // the note beside it, it would say "no cover" instead of "too heavy".
         let track = wav_with_tags(dir.path(), "track.wav");
-        let mut huge = vec![0xFF, 0xD8, 0xFF];
-        huge.resize(crate::metadata::MAX_EMBEDDED_COVER_BYTES + 1, 0);
-        crate::fixtures::add_raw_picture(&track, &huge);
+        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        std::fs::write(
+            cache
+                .directory()
+                .join(format!("{}.big", CoverCache::entry_key(&track))),
+            b"20000000",
+        )
+        .expect("nota scritta");
 
-        let first = cache.load(&track).expect("prima lettura");
-        assert_eq!(first.cover, None);
-        assert!(first.too_large_bytes.is_some());
+        let read = cache.load(&track).expect("lettura");
 
-        // Only the note is kept: the picture itself never lands in the cache folder.
-        let entry = cache
+        assert_eq!(read.cover, None);
+        assert_eq!(read.too_large_bytes, Some(20_000_000));
+    }
+
+    #[test]
+    fn a_heavy_picture_leaves_a_note_instead_of_an_image() {
+        let dir = TempDir::new("cache-oversized-store");
+        let cache = cache(&dir);
+        let track = wav_with_cover(dir.path(), "track.wav");
+
+        cache.store_read(
+            &CoverCache::entry_key(&track),
+            &track,
+            &crate::metadata::CoverRead::too_large(20_000_000),
+        );
+
+        assert!(cache
             .directory()
-            .join(format!("{}.big", CoverCache::entry_key(&track)));
-        assert!(entry.is_file());
-        assert!(cache.size_bytes() < 100);
-
-        let second = cache.load(&track).expect("seconda lettura");
-        assert_eq!(second.too_large_bytes, first.too_large_bytes);
+            .join(format!("{}.big", CoverCache::entry_key(&track)))
+            .is_file());
+        assert!(cache.size_bytes() < 100, "l'immagine non viene conservata");
+        assert_eq!(
+            cache.load(&track).expect("lettura").too_large_bytes,
+            Some(20_000_000)
+        );
     }
 
     #[test]

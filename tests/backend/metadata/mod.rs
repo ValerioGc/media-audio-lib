@@ -116,18 +116,15 @@
     #[test]
     fn a_picture_too_heavy_to_read_is_reported_rather_than_loaded() {
         let dir = TempDir::new("cover-oversized");
-        let path = wav_with_tags(dir.path(), "track.wav");
-        let mut huge = vec![0xFF, 0xD8, 0xFF];
-        huge.resize(MAX_EMBEDDED_COVER_BYTES + 1, 0);
-        crate::fixtures::add_raw_picture(&path, &huge);
+        let path = wav_with_cover(dir.path(), "track.wav");
+        let weight = std::fs::metadata(&path).expect("file leggibile").len();
 
-        let read = read_cover(&path).expect("read succeeded");
+        // No need for a sixteen megabyte fixture: the weight refused is an argument.
+        let read = read_cover_within(&path, 8).expect("read succeeded");
 
         assert_eq!(read.cover, None, "niente di enorme attraversa l'IPC");
-        assert_eq!(
-            read.too_large_bytes,
-            Some(MAX_EMBEDDED_COVER_BYTES as u64 + 1)
-        );
+        assert!(read.too_large_bytes.is_some_and(|bytes| bytes > 8));
+        assert!(read.too_large_bytes.is_some_and(|bytes| bytes < weight));
     }
 
     #[test]

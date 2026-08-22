@@ -157,6 +157,11 @@ pub fn read_metadata(path: &Path) -> AppResult<TrackMetadata> {
 }
 
 pub fn read_cover(path: &Path) -> AppResult<CoverRead> {
+    read_cover_within(path, MAX_EMBEDDED_COVER_BYTES)
+}
+
+/// The reading itself, with the weight it refuses given as an argument.
+fn read_cover_within(path: &Path, max_bytes: usize) -> AppResult<CoverRead> {
     let tagged_file = read_tagged_file(path)?;
 
     let picture = tagged_file
@@ -170,7 +175,7 @@ pub fn read_cover(path: &Path) -> AppResult<CoverRead> {
 
     let bytes = picture.data();
 
-    if bytes.len() > MAX_EMBEDDED_COVER_BYTES {
+    if bytes.len() > max_bytes {
         return Ok(CoverRead::too_large(bytes.len()));
     }
 

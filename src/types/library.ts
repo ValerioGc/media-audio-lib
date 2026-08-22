@@ -125,6 +125,17 @@ export interface LibraryRefreshReport {
   missing: string[];
 }
 
+/**
+ * What looking for the cover of a file found.
+ *
+ * A file with no cover and a file whose cover is too heavy to read both come back without
+ * a picture, but only the second is worth telling the user about.
+ */
+export interface CoverRead {
+  cover: Cover | null;
+  tooLargeBytes: number | null;
+}
+
 /** What the cover cache weighs on disk, and the weight it is kept under. */
 export interface CoverCacheReport {
   bytes: number;

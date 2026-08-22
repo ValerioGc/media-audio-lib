@@ -60,7 +60,10 @@ export default defineConfig({
 
   build: {
     target: 'esnext',
-    sourcemap: true,
+    // The only consumer of a build is the installer, and a shipped source map carries the
+    // whole source and the absolute paths of the machine that built it. The dev server
+    // serves its own maps regardless of this.
+    sourcemap: false,
   },
 
   test: {

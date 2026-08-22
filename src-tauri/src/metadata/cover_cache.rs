@@ -180,6 +180,11 @@ impl CoverCache {
         }
     }
 
+    #[cfg(test)]
+    fn store_read(&self, key: &str, path: &Path, read: &CoverRead) {
+        self.store(key, path, read);
+    }
+
     fn store(&self, key: &str, path: &Path, read: &CoverRead) {
         if std::fs::create_dir_all(&self.directory).is_err() {
             return;

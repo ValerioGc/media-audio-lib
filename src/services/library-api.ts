@@ -5,6 +5,7 @@ import type {
   AddReport,
   Cover,
   CoverCacheReport,
+  CoverRead,
   LibraryInfo,
   LibraryImportReport,
   LibraryImportStrategy,
@@ -194,10 +195,10 @@ export async function verifyTrackFile(id: string): Promise<TrackView> {
   return invoke<TrackView>('verify_track_file', { id });
 }
 
-export async function getCover(path: string): Promise<Cover | null> {
+export async function getCover(path: string): Promise<CoverRead> {
   requireShell();
 
-  return invoke<Cover | null>('get_cover', { path });
+  return invoke<CoverRead>('get_cover', { path });
 }
 
 /** How much room the cached covers take on disk, and how much they are allowed. */

@@ -31,7 +31,10 @@ tauri-plugin-autostart = "2.5.1"
 [profile.release]
 codegen-units = 1
 lto = true
-opt-level = "s"
+# Speed rather than size. What this app spends its time on is parsing tags and moving bytes
+# off the disk, both of which the optimiser helps with; the megabytes it costs an installer
+# nobody downloads twice are the cheaper side of the trade.
+opt-level = 3
 panic = "abort"
 strip = true
 

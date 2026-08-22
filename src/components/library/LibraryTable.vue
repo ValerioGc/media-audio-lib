@@ -330,12 +330,15 @@ onUnmounted(stopResize);
     @include scroll_area;
   }
 
+  // `flex: 1` would mean `flex-basis: 0`, which makes this box as tall as the scroller
+  // rather than as tall as its rows — and a sticky head only sticks inside its own box, so
+  // it would scroll away after one screenful. Growing from `auto` keeps both: the head
+  // stays for the whole list, and a short list still fills the panel.
   &_grid {
     display: flex;
-    flex: 1;
+    flex: 1 0 auto;
     flex-direction: column;
     min-width: 100%;
-    min-height: 0;
     border-collapse: collapse;
   }
 

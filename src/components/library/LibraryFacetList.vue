@@ -614,14 +614,18 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 }
 
+// One scrolling box holding the head and the rows, as in the track table: the head is
+// sticky inside it, so it stays without the two ever drifting apart.
 .library_facet_list {
   display: flex;
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
   border: 1px solid var(--color_border);
   border-radius: $radius_md;
+
+  @include scroll_area;
 
   &_row {
     display: grid;
@@ -666,6 +670,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_head {
     display: block;
+    flex: 0 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 2;
     border-bottom: 1px solid var(--color_border);
     background-color: var(--table_head_background);
   }
@@ -720,11 +728,10 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     @include focus_ring;
   }
 
+  // Never compressed to fit the box: the rows are what the box scrolls through.
   &_body {
     display: block;
-    min-height: 0;
-
-    @include scroll_area;
+    flex: 0 0 auto;
   }
 
   &_cell {

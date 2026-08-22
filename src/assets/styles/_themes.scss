@@ -41,7 +41,8 @@
   // through instead of stamping an opaque band across the list.
   --row_hover_background: color-mix(in srgb, var(--color_surface_hover) 55%, transparent);
   --row_selected_background: color-mix(in srgb, var(--color_accent_soft) 72%, transparent);
-  --table_head_background: color-mix(in srgb, var(--color_surface_alt) 60%, transparent);
+  // Not this one. The head of a list stays put while the rows pass underneath it, so
+  // anything see-through here means two lines of text in the same place.
 }
 
 :root[data-theme='dark'] {

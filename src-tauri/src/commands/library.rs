@@ -187,6 +187,12 @@ pub async fn refresh_library_from_disk(app: AppHandle) -> AppResult<LibraryRefre
     .map_err(|error| AppError::State(error.to_string()))?
 }
 
+/// Re-reads one file, so what is shown is what the file says right now.
+#[tauri::command]
+pub fn refresh_track(state: State<'_, LibraryState>, id: String) -> AppResult<Option<TrackView>> {
+    state.update(|library| library::refresh_track(library, &id))
+}
+
 /// Removes a track from the library without touching the file on disk.
 #[tauri::command]
 pub fn remove_track(state: State<'_, LibraryState>, id: String) -> AppResult<bool> {

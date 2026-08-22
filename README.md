@@ -140,14 +140,6 @@ The only things stored are your preferences and the library files, kept locally.
 files are never copied anywhere: the app reads them and rewrites their tags where they
 already are.
 
-## Current limitations
-
-- On **WAV**, a cover added by the app cannot be removed again: the container does not let
-  the tag chunk shrink. On MP3, the priority format, the full cycle works.
-- A file edited by another program while the library is open is noticed only at the next
-  opening: the check runs when the app starts and when a library is opened, not while it
-  sits on screen.
-
 ## Contributing or building from source
 
 All technical information — stack, project structure, development commands, testing and the

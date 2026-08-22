@@ -656,6 +656,27 @@
     }
 
     #[test]
+    fn reading_one_track_again_brings_in_what_the_file_now_says() {
+        let dir = TempDir::new("library-refresh-track");
+        let file = crate::fixtures::wav_with_tags(dir.path(), "track.wav");
+        let mut library = Library::new();
+        let id = track_id(&file);
+        library.add(Track {
+            id: id.clone(),
+            path: file.display().to_string(),
+            title: "What the library last heard".to_owned(),
+            ..sample_track("aaa")
+        });
+
+        let view = refresh_track(&mut library, &id).expect("the track is tracked");
+
+        assert_eq!(view.track.title, "Test Title");
+        assert!(!view.missing);
+        assert_eq!(library.get(&id).expect("present").title, "Test Title");
+        assert!(refresh_track(&mut library, "unknown").is_none());
+    }
+
+    #[test]
     fn exposes_the_path_of_a_tracked_track() {
         let mut library = Library::new();
         library.add(sample_track("aaa"));

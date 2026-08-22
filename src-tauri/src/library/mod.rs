@@ -675,6 +675,20 @@ pub fn apply_metadata(library: &mut Library, id: &str, metadata: TrackMetadata) 
     Some(updated)
 }
 
+/// Re-reads the tags of one tracked file and returns the entry as it now stands.
+///
+/// Cheap enough for the moments that need the truth of the file rather than the last thing
+/// the library heard about it: opening the editor, and starting the playback.
+pub fn refresh_track(library: &mut Library, id: &str) -> Option<TrackView> {
+    let path = path_of(library, id)?;
+
+    if let Ok(metadata) = metadata::read_metadata(&path) {
+        apply_metadata(library, id, metadata);
+    }
+
+    view_of(library, id)
+}
+
 /// Re-reads the tags of every tracked file still on disk, and reports how many entries
 /// changed. Used to fill in fields added after those entries were first saved.
 pub fn refresh_metadata(library: &mut Library) -> usize {

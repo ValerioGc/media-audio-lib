@@ -203,6 +203,32 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  /**
+   * Brings one entry up to date with its file, and hands it back.
+   *
+   * Called before playing a track and before editing it: another program may have written
+   * to that file since the library last looked, and both moments need the truth of it.
+   */
+  async function refreshTrack(id: string): Promise<TrackView | null> {
+    try {
+      const refreshed = await api.refreshTrack(id);
+
+      if (refreshed === null) {
+        return null;
+      }
+
+      tracks.value = tracks.value.map((track) => (track.id === id ? refreshed : track));
+      // The cover may have changed with the tags: the cached one is dropped rather than shown.
+      covers.value.delete(id);
+
+      return refreshed;
+    } catch (error) {
+      console.error('Track refresh failed', error);
+
+      return tracks.value.find((track) => track.id === id) ?? null;
+    }
+  }
+
   function dismissRefresh() {
     lastRefresh.value = null;
   }
@@ -580,9 +606,12 @@ export const useLibraryStore = defineStore('library', () => {
     });
   }
 
-  function openEditor(id: string) {
-    editingId.value = id;
+  async function openEditor(id: string) {
     errorKey.value = null;
+    // Another program may have written to the file since: the editor starts from the truth
+    // of it, so an edit cannot quietly undo what was done outside.
+    await refreshTrack(id);
+    editingId.value = id;
   }
 
   function closeEditor() {
@@ -690,6 +719,7 @@ export const useLibraryStore = defineStore('library', () => {
     remove,
     verifyTrack,
     refreshFromDisk,
+    refreshTrack,
     dismissRefresh,
     verifyAllTracks,
     loadCover,

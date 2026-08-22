@@ -29,6 +29,7 @@ vi.mock('@/services/library-api', async (importOriginal) => {
     pickImportFile: vi.fn(),
     listTracks: vi.fn(),
     refreshLibraryFromDisk: vi.fn(),
+    refreshTrack: vi.fn(),
     addTracks: vi.fn(),
     removeTrack: vi.fn(),
     verifyTrackFile: vi.fn(),
@@ -53,6 +54,7 @@ const pickTrackListExportFile = vi.mocked(api.pickTrackListExportFile);
 const pickImportFile = vi.mocked(api.pickImportFile);
 const listTracks = vi.mocked(api.listTracks);
 const refreshLibraryFromDisk = vi.mocked(api.refreshLibraryFromDisk);
+const refreshTrack = vi.mocked(api.refreshTrack);
 const addTracks = vi.mocked(api.addTracks);
 const removeTrack = vi.mocked(api.removeTrack);
 const verifyTrackFile = vi.mocked(api.verifyTrackFile);
@@ -70,6 +72,7 @@ beforeEach(() => {
   renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
   listTracks.mockResolvedValue([]);
   refreshLibraryFromDisk.mockResolvedValue({ refreshed: 0, missing: [] });
+  refreshTrack.mockResolvedValue(null);
   addTracks.mockResolvedValue(emptyReport);
   removeTrack.mockResolvedValue(true);
   verifyTrackFile.mockImplementation(async (id: string) => makeTrack({ id }));
@@ -478,19 +481,36 @@ describe('metadata editing', () => {
     expect(store.isSaving).toBe(false);
   });
 
-  it('opens and closes the editor on the selected track', async () => {
+  it('opens and closes the editor on the selected track, reading its file first', async () => {
     const store = useLibraryStore();
-    const track = makeTrack();
+    const track = makeTrack({ title: 'Stale' });
     listTracks.mockResolvedValue([track]);
     await store.load();
+    refreshTrack.mockResolvedValue({ ...track, title: 'Edited outside' });
 
     expect(store.editingTrack).toBeNull();
 
-    store.openEditor(track.id);
+    await store.openEditor(track.id);
+
+    // Another program may have written to the file: the editor starts from what it says now.
+    expect(refreshTrack).toHaveBeenCalledWith(track.id);
     expect(store.editingTrack?.id).toBe(track.id);
+    expect(store.editingTrack?.title).toBe('Edited outside');
 
     store.closeEditor();
     expect(store.editingTrack).toBeNull();
+  });
+
+  it('keeps the entry it has when a file cannot be read again', async () => {
+    const store = useLibraryStore();
+    const track = makeTrack({ title: 'Known' });
+    listTracks.mockResolvedValue([track]);
+    await store.load();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    refreshTrack.mockRejectedValue(new Error('file busy'));
+
+    expect(await store.refreshTrack(track.id)).toEqual(track);
+    expect(store.tracks[0]?.title).toBe('Known');
   });
 });
 
@@ -615,7 +635,7 @@ describe('useLibraryStore - multiple libraries', () => {
     const store = useLibraryStore();
     await store.loadLibraries();
     store.select('id-1');
-    store.openEditor('id-1');
+    await store.openEditor('id-1');
 
     await expect(store.switchLibrary('lib-2')).resolves.toBe(true);
 

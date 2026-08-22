@@ -13,7 +13,7 @@ pub use catalog::{
 };
 pub use library::{
     add_tracks, export_track_list, library_info, list_tracks, refresh_library_from_disk,
-    remove_track, rename_library, verify_track_file,
+    refresh_track, remove_track, rename_library, verify_track_file,
 };
 pub use metadata::{get_cover, read_metadata, write_cover, write_metadata};
 pub use playback::{prepare_external_playback, prepare_playback, startup_audio_file};

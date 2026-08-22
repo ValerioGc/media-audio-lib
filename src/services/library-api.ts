@@ -175,6 +175,18 @@ export async function refreshLibraryFromDisk(): Promise<LibraryRefreshReport> {
   return invoke<LibraryRefreshReport>('refresh_library_from_disk');
 }
 
+/**
+ * Re-reads one file and returns it as it now stands, or null when it is no longer tracked.
+ *
+ * One file read: it is meant for the moments that need the file itself rather than what
+ * the library last heard about it.
+ */
+export async function refreshTrack(id: string): Promise<TrackView | null> {
+  requireShell();
+
+  return invoke<TrackView | null>('refresh_track', { id });
+}
+
 export async function verifyTrackFile(id: string): Promise<TrackView> {
   requireShell();
 

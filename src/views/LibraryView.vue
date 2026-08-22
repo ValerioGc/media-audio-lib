@@ -253,11 +253,14 @@ watch(
 );
 
 /** The visible list becomes the queue, so previous and next follow what is on screen. */
+/** The file is read again first: what plays is what is on the disk right now. */
 async function startPlayback(track: TrackView) {
+  await library.refreshTrack(track.id);
   await player.playFrom(library.visibleTracks, track.id);
 }
 
 async function startFacetPlayback(track: TrackView) {
+  await library.refreshTrack(track.id);
   await player.playFrom(selectedFacetTracks.value, track.id);
 }
 

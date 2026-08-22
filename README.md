@@ -134,11 +134,46 @@ chmod +x MediaAudioLib_x.x.x_linux_x64_portable.AppImage
 ## Privacy
 
 **Media Audio Lib collects no data, sends no telemetry and requires no internet connection,
-ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync.
+ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync. The
+app has no HTTP client of its own, and the window it runs in is not allowed to reach any
+address outside the app: a page from the internet cannot be loaded into it, by accident or
+otherwise. The only thing that ever leaves is a link you click yourself — the project page,
+the changelog — and that is handed to your browser to open, not fetched here.
 
-The only things stored are your preferences and the library files, kept locally. Your audio
-files are never copied anywhere: the app reads them and rewrites their tags where they
-already are.
+Your audio files are never copied anywhere. Importing reads them and remembers where they
+are; editing rewrites their tags where they already sit. Nothing is moved, and removing a
+track from the library leaves the file untouched on disk.
+
+### What is written, and where
+
+Everything below is local to your machine, and removing these folders returns the app to a
+fresh install. `com.mediaaudiolib.app` is the folder name in each case.
+
+| What                                                                                                                            | Windows                                          | Linux                                   |
+| ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------- |
+| Preferences (`settings.json`), the library (`library.json`) and the other libraries you create (`libraries.json`, `libraries/`) | `%APPDATA%\com.mediaaudiolib.app`                | `~/.local/share/com.mediaaudiolib.app`  |
+| Cover art cache                                                                                                                 | `%LOCALAPPDATA%\com.mediaaudiolib.app\covers`    | `~/.cache/com.mediaaudiolib.app/covers` |
+| The webview's own profile, kept by the system component that draws the interface                                                | `%LOCALAPPDATA%\com.mediaaudiolib.app\EBWebView` | `~/.local/share/com.mediaaudiolib.app`  |
+
+Three of those deserve a word:
+
+- **The cover cache holds copies of pictures taken from your files.** Reading the artwork out
+  of a large library on every start is slow, so each cover is kept as an image beside the
+  app's own data and reused while the file it came from is unchanged. It is a cache, not a
+  record of anything you did — but it does outlive the library being closed, so if a folder
+  of covers on disk is a problem for you, that is the folder to delete.
+- **Starting with the system writes outside the app's folders.** Turning that setting on adds
+  an entry under `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run` on
+  Windows, or a `.desktop` file in `~/.config/autostart` on Linux. Turning the setting back
+  off removes it again.
+- **The webview profile is not the app's doing.** The interface is drawn by the system's web
+  component — WebView2 on Windows, WebKitGTK on Linux — and that component keeps a profile
+  folder of its own the way a browser would. It holds nothing but what the interface itself
+  put there, since no outside page can be loaded into it.
+
+Nothing else is written. No registry keys beyond that one, no files scattered in your music
+folders — an interrupted edit can leave a `.mal-tmp.` copy beside the file it was editing,
+and the app clears those away by itself the next time it starts.
 
 ## Contributing or building from source
 

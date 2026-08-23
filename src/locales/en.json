@@ -207,6 +207,13 @@
         "confirm": "Empty it"
       },
       "failed": "The cache could not be emptied."
+    },
+    "banners": {
+      "title": "Library messages",
+      "description": "The summaries that appear at the top of the library — imports, checks, exports — close themselves after the chosen time. A bar under the message shows how long is left.",
+      "duration": "How long messages stay",
+      "seconds": "{count} seconds",
+      "manual": "Until they are closed"
     }
   },
   "library": {

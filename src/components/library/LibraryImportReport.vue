@@ -4,16 +4,18 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
+import { useSettingsStore } from '@/stores/settings';
 import type { AddReport } from '@/types/library';
 
 const props = defineProps<{ report: AddReport }>();
 
 const emit = defineEmits<{ dismiss: [] }>();
 
-/** How long a clean import stays on screen before dismissing itself. */
-const AUTO_DISMISS_MS = 6000;
-
 const { t } = useI18n();
+const settings = useSettingsStore();
+
+/** How long a clean import stays on screen, the same setting the other banners follow. */
+const autoDismissMs = computed(() => settings.bannerDuration * 1000);
 
 /** An import that lost files stays until the user has read it and closed it. */
 const hasFailures = computed(() => props.report.failed.length > 0);
@@ -35,8 +37,8 @@ watch(
     stopTimer();
     runId.value += 1;
 
-    if (!hasFailures.value) {
-      timeoutId.value = setTimeout(() => emit('dismiss'), AUTO_DISMISS_MS);
+    if (!hasFailures.value && autoDismissMs.value > 0) {
+      timeoutId.value = setTimeout(() => emit('dismiss'), autoDismissMs.value);
     }
   },
   { immediate: true },
@@ -91,11 +93,11 @@ const lines = computed(() =>
 
     <!-- Visible countdown: the bar drains over the time left before the banner goes. -->
     <div
-      v-if="!hasFailures"
+      v-if="!hasFailures && autoDismissMs > 0"
       :key="runId"
       class="library_report_countdown"
       data-testid="report-countdown"
-      :style="{ animationDuration: `${AUTO_DISMISS_MS}ms` }"
+      :style="{ animationDuration: `${autoDismissMs}ms` }"
       aria-hidden="true"
     />
   </section>

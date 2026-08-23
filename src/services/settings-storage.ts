@@ -2,6 +2,7 @@ import { isTauriRuntime } from '@/config/app-config';
 import { normalizeAccentColor } from '@/services/accent';
 import { isMandatoryTableColumn, normalizeTableColumnOrder } from '@/services/table-columns';
 import {
+  BANNER_DURATIONS,
   DEFAULT_SETTINGS,
   DEFAULT_TABLE_COLUMNS,
   LOCALES,
@@ -24,6 +25,7 @@ import {
   PREVIEW_SIZE_PAGES,
   VIEW_MODES,
   type AppSettings,
+  type BannerDuration,
   type PreviewSizes,
   type TableColumnKey,
   type TableColumnSetting,
@@ -225,6 +227,9 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       source.tableColumnDividers,
       DEFAULT_SETTINGS.tableColumnDividers,
     ),
+    bannerDuration: BANNER_DURATIONS.includes(source.bannerDuration as BannerDuration)
+      ? (source.bannerDuration as BannerDuration)
+      : DEFAULT_SETTINGS.bannerDuration,
   };
 }
 

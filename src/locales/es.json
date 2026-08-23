@@ -207,6 +207,13 @@
         "confirm": "Vaciar"
       },
       "failed": "No se ha podido vaciar la caché."
+    },
+    "banners": {
+      "title": "Mensajes de la biblioteca",
+      "description": "Los resúmenes que aparecen en la parte superior de la biblioteca — importaciones, comprobaciones, exportaciones — se cierran solos tras el tiempo elegido. Una barra bajo el mensaje muestra cuánto queda.",
+      "duration": "Duración de los mensajes",
+      "seconds": "{count} segundos",
+      "manual": "Hasta cerrarlos"
     }
   },
   "library": {

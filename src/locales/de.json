@@ -207,6 +207,13 @@
         "confirm": "Leeren"
       },
       "failed": "Der Cache konnte nicht geleert werden."
+    },
+    "banners": {
+      "title": "Meldungen der Bibliothek",
+      "description": "Die Zusammenfassungen oben in der Bibliothek — Importe, Prüfungen, Exporte — schließen sich nach der gewählten Zeit von selbst. Ein Balken unter der Meldung zeigt die verbleibende Zeit.",
+      "duration": "Anzeigedauer der Meldungen",
+      "seconds": "{count} Sekunden",
+      "manual": "Bis sie geschlossen werden"
     }
   },
   "library": {

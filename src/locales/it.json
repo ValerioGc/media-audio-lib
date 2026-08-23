@@ -207,6 +207,13 @@
         "confirm": "Svuota"
       },
       "failed": "Non è stato possibile svuotare la cache."
+    },
+    "banners": {
+      "title": "Messaggi della libreria",
+      "description": "I riepiloghi che compaiono in cima alla libreria — importazioni, verifiche, esportazioni — si chiudono da soli dopo il tempo scelto. Una barra sotto il messaggio mostra quanto manca.",
+      "duration": "Durata dei messaggi",
+      "seconds": "{count} secondi",
+      "manual": "Finché non li chiudo"
     }
   },
   "library": {

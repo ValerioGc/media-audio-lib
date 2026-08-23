@@ -332,6 +332,21 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
+  it('remembers how long the library banners stay on screen', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    expect(store.bannerDuration).toBe(5);
+
+    await store.setBannerDuration(0);
+
+    expect(store.bannerDuration).toBe(0);
+    expect(storage.saved.at(-1)?.bannerDuration).toBe(0);
+
+    store.dispose();
+  });
+
   it('restores the view saved in a previous session', async () => {
     const store = useSettingsStore();
 

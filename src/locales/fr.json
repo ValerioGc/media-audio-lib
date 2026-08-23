@@ -207,6 +207,13 @@
         "confirm": "Vider"
       },
       "failed": "Le cache n’a pas pu être vidé."
+    },
+    "banners": {
+      "title": "Messages de la bibliothèque",
+      "description": "Les récapitulatifs affichés en haut de la bibliothèque — imports, vérifications, exports — se ferment d’eux-mêmes après la durée choisie. Une barre sous le message indique le temps restant.",
+      "duration": "Durée des messages",
+      "seconds": "{count} secondes",
+      "manual": "Jusqu’à leur fermeture"
     }
   },
   "library": {

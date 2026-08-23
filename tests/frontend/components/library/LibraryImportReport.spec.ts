@@ -1,9 +1,8 @@
 import { mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { resetI18n } from '@tests/support/mount';
+import { resetI18n, withPinia } from '@tests/support/mount';
 import { makeTrack } from '@tests/support/tracks';
-import { i18n } from '@/i18n';
 import type { AddReport } from '@/types/library';
 
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
@@ -14,7 +13,7 @@ beforeEach(() => {
 
 function mountReport(report: Partial<AddReport>) {
   return mount(LibraryImportReport, {
-    global: { plugins: [i18n] },
+    ...withPinia(),
     props: { report: { added: [], duplicates: [], failed: [], ...report } },
   });
 }

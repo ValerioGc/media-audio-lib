@@ -137,6 +137,15 @@ export const DEFAULT_TABLE_COLUMNS: TableColumnSetting[] = TABLE_COLUMN_KEYS.map
   width: TABLE_COLUMN_WIDTHS[key].default,
 }));
 
+/**
+ * How long a banner of the library stays on screen, in seconds.
+ *
+ * Zero means it stays until it is closed by hand: what a banner reports is worth reading,
+ * and a reader who wants to take their time should not have to race the clock.
+ */
+export const BANNER_DURATIONS = [0, 3, 5, 8, 15] as const;
+export type BannerDuration = (typeof BANNER_DURATIONS)[number];
+
 export const MAX_PLAYER_BLUR = 28;
 export const MIN_COVER_GRADIENT_INTENSITY = 40;
 export const MAX_COVER_GRADIENT_INTENSITY = 200;
@@ -176,6 +185,7 @@ export interface AppSettings {
   miniPlayerPosition: DockPosition | null;
   tableColumns: TableColumnSetting[];
   tableColumnDividers: boolean;
+  bannerDuration: BannerDuration;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -213,4 +223,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   miniPlayerPosition: null,
   tableColumns: DEFAULT_TABLE_COLUMNS,
   tableColumnDividers: false,
+  bannerDuration: 5,
 };

@@ -33,6 +33,7 @@ import {
   type AmbientDirection,
   type AmbientStyle,
   type AppSettings,
+  type BannerDuration,
   type DockCloseAction,
   type DockLevel,
   type DockOrientation,
@@ -87,6 +88,7 @@ export const useSettingsStore = defineStore('settings', () => {
     DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
   );
   const tableColumnDividers = ref(DEFAULT_SETTINGS.tableColumnDividers);
+  const bannerDuration = ref<BannerDuration>(DEFAULT_SETTINGS.bannerDuration);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -132,6 +134,7 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerPosition: miniPlayerPosition.value,
     tableColumns: tableColumns.value,
     tableColumnDividers: tableColumnDividers.value,
+    bannerDuration: bannerDuration.value,
   }));
 
   function apply() {
@@ -220,6 +223,7 @@ export const useSettingsStore = defineStore('settings', () => {
     await applyCloseToTray(closeToTray.value);
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
     tableColumnDividers.value = restored.tableColumnDividers;
+    bannerDuration.value = restored.bannerDuration;
 
     apply();
     isReady.value = true;
@@ -510,6 +514,11 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setBannerDuration(next: BannerDuration) {
+    bannerDuration.value = next;
+    await persist();
+  }
+
   async function setTableColumnDividers(next: boolean) {
     tableColumnDividers.value = next;
     await persist();
@@ -561,6 +570,7 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerPosition,
     tableColumns,
     tableColumnDividers,
+    bannerDuration,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -603,6 +613,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setTableColumnWidth,
     setTableColumnWidths,
     setTableColumnDividers,
+    setBannerDuration,
     moveTableColumn,
     nudgeTableColumn,
     resetTableColumns,

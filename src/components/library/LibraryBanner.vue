@@ -6,11 +6,12 @@
  * One shape for all of them, told apart by tone alone. The symbol and the message sit
  * together on the left, where reading starts, and the way to close it is at the right.
  */
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import type { IconName } from '@/config/icons';
+import { useSettingsStore } from '@/stores/settings';
 
 const props = withDefaults(
   defineProps<{
@@ -30,6 +31,30 @@ const props = withDefaults(
 const emit = defineEmits<{ dismiss: [] }>();
 
 const { t } = useI18n();
+const settings = useSettingsStore();
+
+/**
+ * A banner goes on its own after a while, and the bar under it shows how long is left.
+ *
+ * Only one that can be closed at all: a banner reporting a state stays as long as the state
+ * does. The length is a setting, and zero there means it waits to be closed by hand.
+ */
+const autoDismissMs = computed(() => (props.dismissible ? settings.bannerDuration * 1000 : 0));
+
+const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
+
+onMounted(() => {
+  if (autoDismissMs.value > 0) {
+    timeoutId.value = setTimeout(() => emit('dismiss'), autoDismissMs.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (timeoutId.value !== null) {
+    clearTimeout(timeoutId.value);
+    timeoutId.value = null;
+  }
+});
 
 const TONE_ICONS: Record<'info' | 'warning' | 'danger', IconName> = {
   info: 'info',
@@ -66,6 +91,15 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
     >
       <AppIcon name="close" />
     </button>
+
+    <!-- The time left, drained along the foot of the banner. -->
+    <div
+      v-if="autoDismissMs > 0"
+      class="library_banner_countdown"
+      data-testid="library-banner-countdown"
+      :style="{ animationDuration: `${autoDismissMs}ms` }"
+      aria-hidden="true"
+    />
   </div>
 </template>
 
@@ -130,11 +164,29 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
     @include focus_ring;
   }
 
+  &_countdown {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background-color: currentcolor;
+    opacity: 0.55;
+    transform-origin: left center;
+    animation-name: library_banner_drain;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
   &_info {
     border-left-color: var(--color_accent);
 
     .library_banner_icon {
       background-color: var(--color_accent_soft);
+      color: var(--color_accent);
+    }
+
+    .library_banner_countdown {
       color: var(--color_accent);
     }
   }
@@ -148,6 +200,10 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       background-color: var(--color_warning);
       color: var(--color_on_warning);
     }
+
+    .library_banner_countdown {
+      color: var(--color_warning);
+    }
   }
 
   &_danger {
@@ -159,6 +215,26 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       background-color: var(--color_danger);
       color: var(--color_on_danger);
     }
+
+    .library_banner_countdown {
+      color: var(--color_danger);
+    }
+  }
+}
+
+@keyframes library_banner_drain {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .library_banner_countdown {
+    animation: none;
   }
 }
 </style>

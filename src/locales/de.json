@@ -544,6 +544,7 @@
     "title": "Anleitung",
     "subtitle": "Alles, was die Anwendung kann, Punkt für Punkt: wo jede Funktion zu finden ist und wie sie benutzt wird.",
     "where": "Wo:",
+    "position": "Thema {index} von {total}",
     "topics": {
       "start": {
         "title": "Erste Schritte",

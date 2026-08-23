@@ -544,6 +544,7 @@
     "title": "Guía",
     "subtitle": "Todo lo que la aplicación sabe hacer, punto por punto: dónde encontrar cada función y cómo usarla.",
     "where": "Dónde:",
+    "position": "Tema {index} de {total}",
     "topics": {
       "start": {
         "title": "Primeros pasos",

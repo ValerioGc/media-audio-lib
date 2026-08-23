@@ -544,6 +544,7 @@
     "title": "Guide",
     "subtitle": "Everything the application can do, point by point: where to find each feature and how to use it.",
     "where": "Where:",
+    "position": "Topic {index} of {total}",
     "topics": {
       "start": {
         "title": "First steps",

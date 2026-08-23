@@ -23,13 +23,13 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     </header>
 
     <div class="help_view_body">
-      <HelpTopicCard class="help_view_topic" :topic="openTopic" />
+      <HelpTopicCard class="help_view_topic" :topic="openTopic" @open="openTopic = $event" />
 
       <nav class="help_view_index" :aria-label="t('help.index')">
         <p class="help_view_index_title">{{ t('help.index') }}</p>
 
         <ul class="help_view_index_list">
-          <li v-for="topic in HELP_TOPICS" :key="topic">
+          <li v-for="(topic, index) in HELP_TOPICS" :key="topic">
             <button
               class="help_view_index_entry"
               :class="{ help_view_index_entry_active: topic === openTopic }"
@@ -38,8 +38,9 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
               :data-testid="`help-index-${topic}`"
               @click="openTopic = topic"
             >
+              <span class="help_view_index_number" aria-hidden="true">{{ index + 1 }}</span>
               <AppIcon :name="HELP_TOPIC_ICONS[topic]" />
-              <span>{{ t(`help.topics.${topic}.title`) }}</span>
+              <span class="help_view_index_name">{{ t(`help.topics.${topic}.title`) }}</span>
             </button>
           </li>
         </ul>
@@ -128,6 +129,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     width: 100%;
     padding: $space_xs $space_sm;
     border: 0;
+    border-left: 2px solid transparent;
     border-radius: $radius_sm;
     background: none;
     color: var(--color_text_muted);
@@ -137,6 +139,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     cursor: pointer;
     transition:
       background-color $duration_fast ease,
+      border-color $duration_fast ease,
       color $duration_fast ease;
 
     &:hover {
@@ -146,11 +149,28 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 
     @include focus_ring;
 
+    // The open topic is marked on the rail as well as filled: the index is read down its
+    // left edge, and a colour alone is easy to lose among fourteen lines.
     &_active {
+      border-left-color: var(--color_accent);
       background-color: var(--color_accent_soft);
       color: var(--color_accent);
       font-weight: 600;
     }
+  }
+
+  &_index_number {
+    flex-shrink: 0;
+    width: 1.25rem;
+    font-size: 0.75em;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  &_index_name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 

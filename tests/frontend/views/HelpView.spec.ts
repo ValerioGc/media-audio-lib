@@ -79,6 +79,21 @@ describe('HelpView', () => {
     expect(wrapper.get('.help_topic_where').text()).toContain('Where:');
   });
 
+  it('walks the guide from one topic to the next', async () => {
+    const wrapper = mountHelp();
+
+    // The first topic has nothing before it, so only the way forward is offered.
+    expect(wrapper.find('[data-testid="help-previous-topic"]').exists()).toBe(false);
+
+    await wrapper.get('[data-testid="help-next-topic"]').trigger('click');
+
+    expect(wrapper.get('.help_topic').attributes('data-topic')).toBe(HELP_TOPICS[1]);
+
+    await wrapper.get('[data-testid="help-previous-topic"]').trigger('click');
+
+    expect(wrapper.get('.help_topic').attributes('data-topic')).toBe(HELP_TOPICS[0]);
+  });
+
   it('returns to the library', async () => {
     const wrapper = mountHelp();
     const navigation = useNavigationStore();

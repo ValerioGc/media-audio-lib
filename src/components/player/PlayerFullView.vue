@@ -110,7 +110,12 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
       <span class="player_full_label">{{ t('player.nowPlaying') }}</span>
 
       <AppTooltip :text="t('player.close')">
-        <AppButton variant="ghost" :aria-label="t('player.close')" @click="emit('close')">
+        <AppButton
+          variant="ghost"
+          :aria-label="t('player.close')"
+          data-testid="player-full-close"
+          @click="emit('close')"
+        >
           <AppIcon name="close" />
         </AppButton>
       </AppTooltip>

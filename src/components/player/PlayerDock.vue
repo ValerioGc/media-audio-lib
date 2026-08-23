@@ -67,7 +67,10 @@ function openLibraryFromPlayer() {
 
 function closePlayer() {
   // The bar can outlive the track it was opened for: the queue stays, the sound stops.
-  if (settings.keepPlayerOpen) {
+  //
+  // Only from the full view, though. Asked from the bar there is nothing smaller left to
+  // fall back to, and answering with a collapse it is already in reads as no answer at all.
+  if (settings.keepPlayerOpen && player.isExpanded) {
     player.stop();
     player.collapse();
   } else {

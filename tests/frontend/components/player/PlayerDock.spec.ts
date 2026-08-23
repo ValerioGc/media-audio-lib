@@ -103,22 +103,32 @@ describe('PlayerDock', () => {
     expect(wrapper.find('.player_bar').exists()).toBe(true);
   });
 
-  it('leaves the bar on screen when the track is closed, if asked to', async () => {
+  it('leaves the bar on screen when the full view is closed, if asked to', async () => {
     const options = withPinia();
     const player = usePlayerStore();
     const settings = useSettingsStore();
     settings.keepPlayerOpen = true;
     await player.play(makeTrack({ title: 'Track' }));
+    player.expand();
 
     const wrapper = mountDock(options);
-    await wrapper.get('[data-testid="player-close"]').trigger('click');
+    await wrapper.get('[data-testid="player-full-close"]').trigger('click');
 
     // The sound stops, the bar stays: the queue is still there to start again from.
     expect(player.isPlaying).toBe(false);
     expect(player.currentTrack?.title).toBe('Track');
     expect(wrapper.find('.player_bar').exists()).toBe(true);
+  });
 
-    settings.keepPlayerOpen = false;
+  it('closes for good when the bar itself is closed', async () => {
+    const options = withPinia();
+    const player = usePlayerStore();
+    const settings = useSettingsStore();
+    // Nothing smaller than the bar to fall back to, so the setting has no say here.
+    settings.keepPlayerOpen = true;
+    await player.play(makeTrack({ title: 'Track' }));
+
+    const wrapper = mountDock(options);
     await wrapper.get('[data-testid="player-close"]').trigger('click');
 
     expect(player.currentTrack).toBeNull();

@@ -542,9 +542,22 @@
   },
   "help": {
     "title": "Guide",
-    "subtitle": "Comment utiliser Media Audio Lib : où se trouve chaque fonction et comment s'en servir.",
+    "subtitle": "Tout ce que l’application sait faire, point par point : où trouver chaque fonction et comment l’utiliser.",
     "where": "Où :",
     "topics": {
+      "start": {
+        "title": "Premiers pas",
+        "where": "concerne la première ouverture de l’application.",
+        "steps": [
+          "La bibliothèque est vide au départ : la première étape consiste à indiquer où se trouve la musique.",
+          "Utilisez « Ajouter un dossier » pour importer en une fois un dossier entier et ses sous-dossiers.",
+          "À la fin de l’import, un récapitulatif indique combien de morceaux sont entrés, combien étaient déjà là et lesquels n’ont pas pu être lus.",
+          "Les onglets Morceaux, Artistes, Albums et Genres présentent la même bibliothèque regroupée de quatre façons.",
+          "Double-cliquez sur un morceau pour l’écouter : la liste affichée devient la file de lecture.",
+          "Tout le reste — colonnes, apparence, comportement du lecteur — se règle dans les réglages, derrière l’engrenage de la barre de titre."
+        ],
+        "tip": "Si une bibliothèque a déjà été exportée depuis une autre installation, importez-la depuis Réglages → Bibliothèque plutôt que de repartir des dossiers."
+      },
       "import": {
         "title": "Ajouter des morceaux et des dossiers",
         "where": "barre du haut de la Bibliothèque, ou en déposant sur la fenêtre.",
@@ -555,7 +568,8 @@
           "Un même fichier n’entre jamais deux fois : s’il est déjà là, il est compté parmi les ignorés.",
           "Un récapitulatif indique ensuite ce qui a été ajouté, ce qui était déjà présent et ce qui n’a pas pu être importé ; un import sans souci se referme seul.",
           "Les fichiers restent où ils sont : l’importation ne fait que les lire, elle ne les copie pas, ne les déplace pas et ne les renomme pas. La bibliothèque garde la liste de leur emplacement."
-        ]
+        ],
+        "tip": "Les fichiers restent où ils sont : déplacez un dossier après l’import et ses morceaux sont signalés manquants jusqu’à un nouvel import depuis le nouvel emplacement."
       },
       "organize": {
         "title": "Chercher, filtrer et trier",
@@ -567,7 +581,8 @@
           "Les morceaux sans cette donnée restent toujours en bas, dans les deux sens.",
           "« Données manquantes », dans le menu de la bibliothèque, ne laisse que les morceaux sans pochette, artiste, album, année ou genre.",
           "Le compteur à côté des onglets dit combien d’éléments contient l’onglet ouvert."
-        ]
+        ],
+        "tip": "Le tri, la recherche et les filtres ne touchent jamais aux fichiers : ils ne changent que l’affichage de la liste."
       },
       "views": {
         "title": "Vues, onglets et liens",
@@ -579,7 +594,8 @@
           "De là vous pouvez descendre encore : d’un album vers son artiste, d’un artiste vers ses albums, d’un genre vers ses artistes.",
           "Le bouton en haut à gauche de cette fenêtre revient en arrière et nomme l’endroit où il mène.",
           "Les colonnes affichées et leur ordre se règlent depuis « Colonnes », dans le menu de la bibliothèque."
-        ]
+        ],
+        "tip": "La vue, la taille des vignettes et la disposition des colonnes sont mémorisées séparément pour chaque onglet."
       },
       "metadata": {
         "title": "Modifier les métadonnées",
@@ -591,7 +607,8 @@
           "Appuyez sur « Enregistrer » : les modifications sont écrites dans les tags du fichier, pas seulement dans la bibliothèque.",
           "Laisser un champ vide retire la donnée du fichier.",
           "En sélectionnant plusieurs morceaux avec Ctrl ou Maj, « Modifier la sélection » écrit la même valeur sur tous."
-        ]
+        ],
+        "tip": "Avant une modification sur de nombreux morceaux, essayez-en un seul : l’écriture a lieu dans les fichiers et ne s’annule pas."
       },
       "files": {
         "title": "Agir sur les fichiers",
@@ -603,7 +620,8 @@
           "De là vous pouvez retirer la copie en trop : elle quitte la bibliothèque, le fichier reste sur le disque.",
           "« Supprimer », dans le menu de la ligne, retire le morceau de la liste sans rien effacer du disque.",
           "Un morceau dont le fichier a disparu ne peut être ni modifié ni lu, mais reste listé jusqu’à ce que vous le retiriez."
-        ]
+        ],
+        "tip": "Un fichier signalé manquant qui existe encore a presque toujours été déplacé : réimportez-le depuis son nouvel emplacement et supprimez l’ancienne entrée."
       },
       "player": {
         "title": "Écouter la musique",
@@ -615,7 +633,8 @@
           "La flèche en haut à droite du lecteur ouvre la vue plein écran, la croix arrête la lecture.",
           "En plein écran, l’artiste, l’album et le genre sont des liens : ils ouvrent les morceaux liés, d’où un autre peut être lancé.",
           "Les réglages permettent de laisser le lecteur à l’écran, réduit, même après la fermeture du morceau."
-        ]
+        ],
+        "tip": "Stop revient au début sans vider la file : le morceau repart depuis le début."
       },
       "dock": {
         "title": "Lecteur flottant",
@@ -627,7 +646,21 @@
           "Son menu le fait passer de l’horizontale à la verticale et décide s’il reste au premier plan.",
           "Le bouton d’agrandissement ramène l’application à l’écran et ferme le lecteur flottant.",
           "À sa fermeture, il demande s’il faut quitter l’application ou la laisser dans la zone de notification : la réponse peut être retenue."
-        ]
+        ],
+        "tip": "La position du lecteur flottant est mémorisée : il revient là où il avait été laissé."
+      },
+      "shortcuts": {
+        "title": "Raccourcis et gestes",
+        "where": "la liste des morceaux, le lecteur et les fenêtres de détail.",
+        "steps": [
+          "Double-clic sur une ligne ou une carte : la lecture démarre.",
+          "Clic droit sur une ligne : ouvre le même menu que les trois points.",
+          "Ctrl + clic ajoute un morceau à la sélection, Maj + clic prend toute la plage.",
+          "Échap ferme la fenêtre ouverte et, depuis la vue plein écran du lecteur, revient à la bibliothèque.",
+          "Déposer des fichiers ou des dossiers sur la fenêtre les importe sans passer par les boutons.",
+          "Faire glisser le bord entre deux en-têtes change la largeur d’une colonne ; la commande à côté de l’engrenage les ajuste au contenu."
+        ],
+        "tip": "Le champ de recherche porte à la fois sur le titre, l’artiste, l’album, le genre et le chemin : un seul mot suffit souvent."
       },
       "libraries": {
         "title": "Plusieurs bibliothèques",
@@ -639,7 +672,8 @@
           "Sélectionnez une bibliothèque dans la liste pour activer les commandes au-dessus : exporter, renommer et définir comme principale.",
           "La bibliothèque principale est celle qui s’ouvre au démarrage ; « Ouvrir » et « Supprimer » restent sur la ligne de chacune.",
           "Supprimer une bibliothèque n’enlève que sa liste : les fichiers audio ne sont pas touchés."
-        ]
+        ],
+        "tip": "La bibliothèque principale est celle qui s’ouvre au démarrage : choisissez celle que vous utilisez le plus."
       },
       "transfer": {
         "title": "Importer et exporter",
@@ -650,7 +684,8 @@
           "Un récapitulatif dit ensuite combien de morceaux sont entrés, combien ont été mis à jour, combien ignorés et quels fichiers restent introuvables.",
           "« Exporter la liste » enregistre plutôt un fichier texte ou CSV avec les champs choisis : à lire ailleurs.",
           "Une liste exportée ne contient aucun audio : elle renvoie toujours à l’endroit où les fichiers se trouvent sur le disque."
-        ]
+        ],
+        "tip": "Pour transporter la bibliothèque sur un autre ordinateur, exportez le fichier et importez-le là-bas : les chemins doivent mener aux mêmes fichiers audio."
       },
       "appearance": {
         "title": "Apparence",
@@ -662,7 +697,8 @@
           "Fond et effet verre : active le dégradé construit sur l’accent, choisit sa forme et son origine, et rend les surfaces translucides. Il peut aussi être porté sur les fenêtres de détail.",
           "Couleur de fond d’après la pochette : le lecteur prend la couleur de la pochette du morceau ; transparence, intensité, flou, forme et origine sont réglables.",
           "Chaque choix s’applique aussitôt et est retenu pour la fois suivante."
-        ]
+        ],
+        "tip": "Si l’interface paraît lourde sur une machine lente, désactivez l’effet verre et le fond dégradé."
       },
       "settings": {
         "title": "Démarrage, fenêtre et général",
@@ -674,7 +710,8 @@
           "Lecteur : laisser le lecteur ouvert après la fermeture du morceau, et régler le lecteur flottant — apparition, premier plan, disposition et effet de sa fermeture.",
           "Lecteur audio par défaut : sous Windows, ouvre les réglages du système pour associer les fichiers audio à cette application ; sous Linux, l’association appartient à l’environnement de bureau et la section affiche la commande à lancer.",
           "Le bouton « i » de la barre de titre ouvre les informations : version, site, projet sur GitHub, notes de version et versions publiées."
-        ]
+        ],
+        "tip": "Démarrer avec le système et démarrer réduit vont de pair : avec les deux, l’application attend déjà dans la zone de notification."
       },
       "storage": {
         "title": "Vos fichiers et les données de l’application",
@@ -686,10 +723,12 @@
           "L’application garde ses propres données — réglages et bibliothèques — dans un dossier de votre profil utilisateur ; les pochettes extraites de vos fichiers restent dans un cache à part, pour ne pas devoir les relire à chaque démarrage.",
           "Le cache se maintient sous une limite tout seul : au-delà, les pochettes demandées il y a le plus longtemps sont supprimées. Réglages → Bibliothèque indique ce qu’il occupe et le vide quand vous le souhaitez ; il se reconstruit seul et vos fichiers ne sont pas touchés.",
           "Rien ne quitte votre ordinateur : aucune connexion internet, aucune télémétrie, aucun envoi de données."
-        ]
+        ],
+        "tip": "Vider le cache des pochettes ne perd rien : elles sont relues dans les fichiers dès qu’elles resservent."
       }
     },
-    "index": "Sommaire"
+    "index": "Sommaire",
+    "tip": "Astuce"
   },
   "tray": {
     "show": "Ouvrir Media Audio Lib",

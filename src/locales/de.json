@@ -542,9 +542,22 @@
   },
   "help": {
     "title": "Anleitung",
-    "subtitle": "So verwenden Sie Media Audio Lib: wo jede Funktion zu finden ist und wie sie bedient wird.",
+    "subtitle": "Alles, was die Anwendung kann, Punkt für Punkt: wo jede Funktion zu finden ist und wie sie benutzt wird.",
     "where": "Wo:",
     "topics": {
+      "start": {
+        "title": "Erste Schritte",
+        "where": "gilt beim ersten Öffnen der Anwendung.",
+        "steps": [
+          "Die Bibliothek ist zu Beginn leer: Der erste Schritt ist, der Anwendung zu sagen, wo die Musik liegt.",
+          "Mit „Ordner hinzufügen“ wird ein ganzer Ordner samt Unterordnern auf einmal übernommen.",
+          "Am Ende des Imports nennt eine Zusammenfassung, wie viele Titel hinzugekommen sind, wie viele bereits vorhanden waren und welche nicht gelesen werden konnten.",
+          "Die Reiter Titel, Interpreten, Alben und Genres zeigen dieselbe Bibliothek in vier Gruppierungen.",
+          "Ein Doppelklick auf einen Titel startet die Wiedergabe: Die angezeigte Liste wird zur Warteschlange.",
+          "Alles Weitere — Spalten, Aussehen, Verhalten des Players — wird in den Einstellungen hinter dem Zahnrad der Titelleiste gesetzt."
+        ],
+        "tip": "Wenn bereits eine Bibliothek aus einer anderen Installation exportiert wurde, importieren Sie sie über Einstellungen → Bibliothek, statt wieder bei den Ordnern zu beginnen."
+      },
       "import": {
         "title": "Titel und Ordner hinzufügen",
         "where": "obere Leiste der Bibliothek, oder per Ablegen auf dem Fenster.",
@@ -555,7 +568,8 @@
           "Dieselbe Datei kommt nie zweimal hinein: eine bereits vorhandene zählt zu den übersprungenen.",
           "Am Ende sagt eine Übersicht, was hinzugekommen ist, was schon da war und was nicht importiert werden konnte; ein sauberer Import schließt sich von selbst.",
           "Die Dateien bleiben, wo sie sind: der Import liest sie nur, er kopiert, verschiebt und benennt sie nicht um. Die Bibliothek führt die Liste ihrer Fundorte."
-        ]
+        ],
+        "tip": "Die Dateien bleiben, wo sie sind: Wird ein Ordner nach dem Import verschoben, gelten seine Titel als fehlend, bis sie vom neuen Ort erneut importiert werden."
       },
       "organize": {
         "title": "Suchen, filtern und sortieren",
@@ -567,7 +581,8 @@
           "Titel ohne diese Angabe stehen in beiden Richtungen immer unten.",
           "„Fehlende Daten“ im Bibliotheksmenü lässt nur Titel ohne Cover, Interpret, Album, Jahr oder Genre stehen.",
           "Die Zählung neben den Reitern sagt, wie viele Einträge der offene Reiter hält."
-        ]
+        ],
+        "tip": "Sortierung, Suche und Filter rühren die Dateien nicht an: Sie ändern nur die Darstellung der Liste."
       },
       "views": {
         "title": "Ansichten, Reiter und Verbindungen",
@@ -579,7 +594,8 @@
           "Von dort geht es weiter hinab: vom Album zum Interpreten, vom Interpreten zu seinen Alben, vom Genre zu seinen Interpreten.",
           "Die Schaltfläche oben links in diesem Fenster führt zurück und nennt, wohin.",
           "Welche Spalten die Liste zeigt und in welcher Reihenfolge, stellt „Spalten“ im Bibliotheksmenü ein."
-        ]
+        ],
+        "tip": "Ansicht, Größe der Vorschaukarten und Anordnung der Spalten werden für jeden Reiter getrennt gemerkt."
       },
       "metadata": {
         "title": "Metadaten bearbeiten",
@@ -591,7 +607,8 @@
           "Mit „Speichern“ werden die Änderungen in die Tags der Datei geschrieben, nicht nur in die Bibliothek.",
           "Ein leer gelassenes Feld entfernt die Angabe aus der Datei.",
           "Mehrere Titel mit Strg oder Umschalt gewählt, erscheint „Auswahl bearbeiten“: es schreibt denselben Wert auf alle."
-        ]
+        ],
+        "tip": "Vor einer Änderung an vielen Titeln lohnt ein einzelner Versuch: Geschrieben wird in die Dateien, und das lässt sich nicht rückgängig machen."
       },
       "files": {
         "title": "Mit den Dateien arbeiten",
@@ -603,7 +620,8 @@
           "Von dort entfernst du die überzählige Kopie: sie verlässt die Bibliothek, die Datei bleibt auf der Festplatte.",
           "„Löschen“ im Zeilenmenü nimmt den Titel aus der Liste, ohne etwas von der Festplatte zu entfernen.",
           "Ein Titel, dessen Datei fehlt, lässt sich weder bearbeiten noch abspielen, bleibt aber gelistet, bis du ihn entfernst."
-        ]
+        ],
+        "tip": "Eine als fehlend gemeldete Datei, die es noch gibt, wurde fast immer verschoben: vom neuen Ort erneut importieren und den alten Eintrag entfernen."
       },
       "player": {
         "title": "Musik hören",
@@ -615,7 +633,8 @@
           "Der Pfeil oben rechts öffnet die Vollbildansicht, das Kreuz beendet die Wiedergabe.",
           "Im Vollbild sind Interpret, Album und Genre Verweise: sie öffnen die verbundenen Titel, von wo ein anderer gestartet werden kann.",
           "In den Einstellungen kann der Player auch nach dem Schließen des Titels verkleinert stehen bleiben."
-        ]
+        ],
+        "tip": "Stopp setzt zurück, ohne die Warteschlange zu leeren: Der Titel beginnt wieder von vorn."
       },
       "dock": {
         "title": "Schwebender Player",
@@ -627,7 +646,21 @@
           "Sein Menü stellt ihn waagerecht oder senkrecht und entscheidet, ob er im Vordergrund bleibt.",
           "Die Schaltfläche zum Vergrößern holt die Anwendung zurück und schließt den schwebenden Player.",
           "Beim Schließen wird gefragt, ob die Anwendung beendet oder im Infobereich gelassen wird: die Antwort lässt sich merken."
-        ]
+        ],
+        "tip": "Die Position des schwebenden Players wird gemerkt: Er kehrt dorthin zurück, wo er zuletzt stand."
+      },
+      "shortcuts": {
+        "title": "Kürzel und Gesten",
+        "where": "die Titelliste, der Player und die Detailfenster.",
+        "steps": [
+          "Doppelklick auf eine Zeile oder eine Karte: Die Wiedergabe beginnt.",
+          "Rechtsklick auf eine Zeile: öffnet dasselbe Menü wie die drei Punkte.",
+          "Strg + Klick nimmt einen Titel zusätzlich in die Auswahl, Umschalt + Klick den ganzen Bereich.",
+          "Esc schließt das offene Fenster und führt aus der Vollbildansicht des Players zurück zur Bibliothek.",
+          "Dateien oder Ordner auf das Fenster zu ziehen importiert sie ohne den Umweg über die Schaltflächen.",
+          "Das Ziehen der Kante zwischen zwei Überschriften ändert die Breite einer Spalte; der Befehl neben dem Zahnrad passt sie an ihren Inhalt an."
+        ],
+        "tip": "Das Suchfeld greift auf Titel, Interpret, Album, Genre und Pfad zugleich: Ein Wort genügt meist, um die Liste einzugrenzen."
       },
       "libraries": {
         "title": "Mehrere Bibliotheken",
@@ -639,7 +672,8 @@
           "Wähle eine Bibliothek in der Liste, um die Befehle darüber scharf zu stellen: exportieren, umbenennen und als Haupt setzen.",
           "Die Hauptbibliothek ist die, die beim Start geöffnet wird; „Öffnen“ und „Löschen“ bleiben in der Zeile jeder einzelnen.",
           "Eine Bibliothek zu löschen entfernt nur ihre Liste: die Audiodateien bleiben unberührt."
-        ]
+        ],
+        "tip": "Die Hauptbibliothek wird beim Start geöffnet: Wählen Sie dafür die am häufigsten genutzte."
       },
       "transfer": {
         "title": "Importieren und exportieren",
@@ -650,7 +684,8 @@
           "Danach sagt eine Übersicht, wie viele Titel hinzukamen, aktualisiert oder übersprungen wurden und welche Dateien fehlen.",
           "„Liste exportieren“ speichert dagegen eine Text- oder CSV-Datei mit den gewählten Feldern: zum Lesen anderswo.",
           "Eine exportierte Liste enthält kein Audio: sie verweist immer nur darauf, wo die Dateien liegen."
-        ]
+        ],
+        "tip": "Um die Bibliothek auf einen anderen Rechner zu bringen, die Datei exportieren und dort importieren: Die Pfade müssen weiterhin zu denselben Audiodateien führen."
       },
       "appearance": {
         "title": "Aussehen",
@@ -662,7 +697,8 @@
           "Hintergrund und Glaseffekt: schaltet den aus dem Akzent gebauten Verlauf ein, wählt Form und Ursprung und macht die Flächen durchscheinend. Er lässt sich auch auf die Detailfenster übertragen.",
           "Hintergrundfarbe aus dem Cover: der Player nimmt die Farbe des Covers; Transparenz, Intensität, Unschärfe, Form und Ursprung sind einstellbar.",
           "Jede Wahl gilt sofort und wird für das nächste Mal gemerkt."
-        ]
+        ],
+        "tip": "Wirkt die Oberfläche auf einem langsamen Rechner träge, schalten Sie Glaseffekt und Verlaufshintergrund ab."
       },
       "settings": {
         "title": "Start, Fenster und Allgemeines",
@@ -674,7 +710,8 @@
           "Player: den Player nach dem Schließen des Titels offen lassen und den schwebenden Player einstellen — Erscheinen, Vordergrund, Anordnung und was sein Schließen bewirkt.",
           "Standard-Audioplayer: unter Windows öffnet er die Systemeinstellungen, um Audiodateien dieser App zuzuordnen; unter Linux gehört die Zuordnung der Desktop-Umgebung, und der Abschnitt zeigt den auszuführenden Befehl.",
           "Die Schaltfläche „i“ in der Titelleiste öffnet die Informationen: Version, Webseite, Projekt auf GitHub, Versionshinweise und veröffentlichte Versionen."
-        ]
+        ],
+        "tip": "Mit dem System starten und minimiert starten gehören zusammen: Mit beiden wartet die App bereits im Infobereich."
       },
       "storage": {
         "title": "Ihre Dateien und die Daten der App",
@@ -686,10 +723,12 @@
           "Die App bewahrt ihre eigenen Daten — Einstellungen und Bibliotheken — in einem Ordner Ihres Benutzerprofils auf; die aus Ihren Dateien gelesenen Cover bleiben in einem eigenen Cache, damit sie nicht bei jedem Start neu gelesen werden müssen.",
           "Der Cache hält sich von selbst unter einer Grenze: darüber hinaus entfernt er die am längsten nicht angefragten Cover. Unter Einstellungen → Bibliothek sehen Sie, wie viel er belegt, und leeren ihn jederzeit; er baut sich von selbst wieder auf und Ihre Dateien bleiben unberührt.",
           "Nichts verlässt Ihren Rechner: keine Internetverbindung, keine Telemetrie, keine Übertragung von Daten."
-        ]
+        ],
+        "tip": "Das Leeren des Cover-Caches verliert nichts: Die Bilder werden bei Bedarf erneut aus den Dateien gelesen."
       }
     },
-    "index": "Inhalt"
+    "index": "Inhalt",
+    "tip": "Tipp"
   },
   "tray": {
     "show": "Media Audio Lib öffnen",

@@ -49,14 +49,16 @@ describe('HelpView', () => {
       expect(card.get('.help_topic_title').text().length).toBeGreaterThan(0);
       expect(card.get('.help_topic_where').text()).toContain('Dove:');
       expect(card.findAll('.help_topic_steps li').length).toBeGreaterThan(0);
+      expect(card.get('.help_topic_tip').text()).toContain('Suggerimento');
     }
   });
 
-  it('lists steps in the order written in translations', () => {
+  it('lists steps in the order written in translations', async () => {
     const wrapper = mountHelp();
-    const firstTopic = wrapper.get('.help_topic[data-topic="import"]');
+    await wrapper.get('[data-testid="help-index-import"]').trigger('click');
+    const topic = wrapper.get('.help_topic[data-topic="import"]');
 
-    const steps = firstTopic.findAll('.help_topic_steps li').map((step) => step.text());
+    const steps = topic.findAll('.help_topic_steps li').map((step) => step.text());
 
     expect(steps[0]).toContain('Aggiungi brani');
     expect(steps.some((step) => step.includes('Aggiungi cartella'))).toBe(true);
@@ -65,6 +67,7 @@ describe('HelpView', () => {
 
   it('translates the whole guide when the language changes', async () => {
     const wrapper = mountHelp();
+    await wrapper.get('[data-testid="help-index-import"]').trigger('click');
 
     setI18nLocale('en');
     await wrapper.vm.$nextTick();

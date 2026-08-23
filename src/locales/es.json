@@ -542,9 +542,22 @@
   },
   "help": {
     "title": "Guía",
-    "subtitle": "Cómo usar Media Audio Lib: dónde está cada función y cómo utilizarla.",
+    "subtitle": "Todo lo que la aplicación sabe hacer, punto por punto: dónde encontrar cada función y cómo usarla.",
     "where": "Dónde:",
     "topics": {
+      "start": {
+        "title": "Primeros pasos",
+        "where": "se aplica la primera vez que se abre la aplicación.",
+        "steps": [
+          "La biblioteca empieza vacía: el primer paso es indicar dónde está la música.",
+          "Usa «Añadir carpeta» para incorporar de una vez una carpeta entera y sus subcarpetas.",
+          "Al terminar la importación, un resumen indica cuántas pistas entraron, cuántas ya estaban y cuáles no se pudieron leer.",
+          "Las pestañas Pistas, Artistas, Álbumes y Géneros muestran la misma biblioteca agrupada de cuatro maneras.",
+          "Haz doble clic en una pista para escucharla: la lista en pantalla se convierte en la cola de reproducción.",
+          "Todo lo demás — columnas, aspecto, comportamiento del reproductor — se ajusta en los ajustes, tras el engranaje de la barra de título."
+        ],
+        "tip": "Si ya exportaste una biblioteca desde otra instalación, impórtala desde Ajustes → Biblioteca en lugar de empezar de nuevo por las carpetas."
+      },
       "import": {
         "title": "Añadir pistas y carpetas",
         "where": "barra superior de la Biblioteca, o soltando sobre la ventana.",
@@ -555,7 +568,8 @@
           "El mismo archivo nunca entra dos veces: si ya está, se cuenta entre los omitidos.",
           "Al final un resumen dice qué se ha añadido, qué ya estaba y qué no se ha podido importar; una importación limpia se cierra sola.",
           "Los archivos se quedan donde están: importar solo los lee, no los copia, no los mueve ni los renombra. La biblioteca guarda la lista de dónde están."
-        ]
+        ],
+        "tip": "Los archivos se quedan donde están: si mueves una carpeta tras importarla, sus pistas figuran como ausentes hasta importarlas desde la nueva ubicación."
       },
       "organize": {
         "title": "Buscar, filtrar y ordenar",
@@ -567,7 +581,8 @@
           "Las pistas sin ese dato quedan siempre al final, en ambos sentidos.",
           "«Datos faltantes», en el menú de la biblioteca, deja en pantalla solo las pistas sin carátula, artista, álbum, año o género.",
           "El recuento junto a las pestañas dice cuántos elementos tiene la pestaña abierta."
-        ]
+        ],
+        "tip": "La ordenación, la búsqueda y los filtros no tocan los archivos: solo cambian cómo se muestra la lista."
       },
       "views": {
         "title": "Vistas, pestañas y enlaces",
@@ -579,7 +594,8 @@
           "Desde ahí puedes bajar más: del álbum a su artista, del artista a sus álbumes, del género a sus artistas.",
           "El botón arriba a la izquierda de esa ventana vuelve atrás y dice adónde lleva.",
           "Qué columnas muestra la lista, y en qué orden, se ajusta en «Columnas», en el menú de la biblioteca."
-        ]
+        ],
+        "tip": "La vista, el tamaño de las miniaturas y la disposición de las columnas se recuerdan por separado en cada pestaña."
       },
       "metadata": {
         "title": "Editar los metadatos",
@@ -591,7 +607,8 @@
           "Pulsa «Guardar»: los cambios se escriben en las etiquetas del archivo, no solo en la biblioteca.",
           "Dejar un campo vacío elimina ese dato del archivo.",
           "Al seleccionar varias pistas con Ctrl o Mayús aparece «Editar seleccionadas»: escribe el mismo valor en todas."
-        ]
+        ],
+        "tip": "Antes de editar muchas pistas a la vez, prueba con una: el cambio se escribe en los archivos y no se deshace."
       },
       "files": {
         "title": "Trabajar con los archivos",
@@ -603,7 +620,8 @@
           "Desde ahí puedes quitar la copia sobrante: sale de la biblioteca, el archivo permanece en el disco.",
           "«Eliminar», en el menú de la fila, saca la pista de la lista sin borrar nada del disco.",
           "Una pista cuyo archivo ya no existe no se puede editar ni reproducir, pero sigue en la lista hasta que la quites."
-        ]
+        ],
+        "tip": "Un archivo marcado como ausente que aún existe casi siempre se ha movido: vuelve a importarlo desde su nueva ubicación y quita la entrada antigua."
       },
       "player": {
         "title": "Escuchar la música",
@@ -615,7 +633,8 @@
           "La flecha arriba a la derecha del reproductor abre la vista a pantalla completa, la X cierra la reproducción.",
           "En pantalla completa, artista, álbum y género son enlaces: abren las pistas conectadas, y desde ahí se puede lanzar otra.",
           "Los ajustes permiten dejar el reproductor en pantalla, minimizado, incluso tras cerrar la pista."
-        ]
+        ],
+        "tip": "Detener rebobina sin vaciar la cola: la pista vuelve a empezar desde el principio."
       },
       "dock": {
         "title": "Reproductor flotante",
@@ -627,7 +646,21 @@
           "Su menú lo cambia entre horizontal y vertical y decide si se mantiene en primer plano.",
           "El botón de expandir devuelve la aplicación a la pantalla y cierra el reproductor flotante.",
           "Al cerrarlo se pregunta si salir de la aplicación o dejarla en la bandeja: la respuesta se puede recordar."
-        ]
+        ],
+        "tip": "La posición del reproductor flotante se recuerda: vuelve donde se dejó."
+      },
+      "shortcuts": {
+        "title": "Atajos y gestos",
+        "where": "la lista de pistas, el reproductor y las ventanas de detalle.",
+        "steps": [
+          "Doble clic en una fila o en una tarjeta: comienza la reproducción.",
+          "Clic derecho en una fila: abre el mismo menú que los tres puntos.",
+          "Ctrl + clic añade una pista a la selección, Mayús + clic toma todo el intervalo.",
+          "Esc cierra la ventana abierta y, desde la vista a pantalla completa del reproductor, vuelve a la biblioteca.",
+          "Soltar archivos o carpetas sobre la ventana los importa sin pasar por los botones.",
+          "Arrastrar el borde entre dos encabezados cambia el ancho de una columna; el comando junto al engranaje las ajusta al contenido."
+        ],
+        "tip": "El campo de búsqueda actúa a la vez sobre título, artista, álbum, género y ruta: suele bastar una palabra."
       },
       "libraries": {
         "title": "Varias bibliotecas",
@@ -639,7 +672,8 @@
           "Selecciona una biblioteca de la lista para activar los mandos de arriba: exportar, renombrar y marcar como principal.",
           "La biblioteca principal es la que se abre al arrancar; «Abrir» y «Eliminar» siguen en la fila de cada una.",
           "Eliminar una biblioteca quita solo su lista: los archivos de audio no se tocan."
-        ]
+        ],
+        "tip": "La biblioteca principal es la que se abre al iniciar: apúntala a la que más se usa."
       },
       "transfer": {
         "title": "Importar y exportar",
@@ -650,7 +684,8 @@
           "Al final un resumen dice cuántas pistas entraron, cuántas se actualizaron, cuántas se omitieron y qué archivos no se encontraron.",
           "«Exportar lista» guarda en cambio un archivo de texto o CSV con los campos que elijas: para leerlo en otro sitio.",
           "Una lista exportada no contiene audio: siempre remite a dónde están los archivos en el disco."
-        ]
+        ],
+        "tip": "Para llevar la biblioteca a otro equipo, exporta el archivo e impórtalo allí: las rutas deben seguir llevando a los mismos archivos de audio."
       },
       "appearance": {
         "title": "Aspecto",
@@ -662,7 +697,8 @@
           "Fondo y efecto cristal: activa el degradado construido sobre el acento, elige su forma y su origen, y vuelve translúcidas las superficies. También puede llevarse a las ventanas de detalle.",
           "Color de fondo desde la carátula: el reproductor toma el color de la carátula; transparencia, intensidad, desenfoque, forma y origen son ajustables.",
           "Cada elección se aplica al momento y se recuerda para la próxima vez."
-        ]
+        ],
+        "tip": "Si la interfaz resulta pesada en un equipo lento, desactiva el efecto cristal y el fondo degradado."
       },
       "settings": {
         "title": "Inicio, ventana y generales",
@@ -674,7 +710,8 @@
           "Reproductor: dejar el reproductor abierto tras cerrar la pista, y ajustar el reproductor flotante — aparición, primer plano, disposición y qué hace al cerrarse.",
           "Reproductor de audio predeterminado: en Windows abre los ajustes del sistema para asociar los archivos de audio a esta app; en Linux la asociación la gestiona el entorno de escritorio, y la sección muestra el comando que hay que ejecutar.",
           "El botón «i» de la barra de título abre la información: versión, sitio, proyecto en GitHub, notas de versión y versiones publicadas."
-        ]
+        ],
+        "tip": "Iniciar con el sistema e iniciar minimizado van juntos: con ambos, la aplicación ya espera en la bandeja del sistema."
       },
       "storage": {
         "title": "Tus archivos y los datos de la aplicación",
@@ -686,10 +723,12 @@
           "La aplicación guarda sus propios datos — ajustes y bibliotecas — en una carpeta de tu perfil de usuario; las portadas extraídas de los archivos se quedan en una caché aparte, para no tener que leerlas en cada arranque.",
           "La caché se mantiene bajo un límite por sí sola: al pasarlo, elimina las portadas pedidas hace más tiempo. En Ajustes → Biblioteca ves cuánto ocupa y la vacías cuando quieras; se reconstruye sola y tus archivos no se tocan.",
           "Nada sale de tu ordenador: ninguna conexión a internet, ninguna telemetría, ningún envío de datos."
-        ]
+        ],
+        "tip": "Vaciar la caché de carátulas no pierde nada: se releen de los archivos cuando vuelven a hacer falta."
       }
     },
-    "index": "Índice"
+    "index": "Índice",
+    "tip": "Consejo"
   },
   "tray": {
     "show": "Abrir Media Audio Lib",

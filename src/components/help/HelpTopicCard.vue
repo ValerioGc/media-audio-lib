@@ -34,6 +34,11 @@ const steps = computed(() =>
     <ol class="help_topic_steps">
       <li v-for="(step, index) in steps" :key="index">{{ step }}</li>
     </ol>
+
+    <p class="help_topic_tip">
+      <span class="help_topic_label">{{ t('help.tip') }}</span>
+      {{ t(`help.topics.${topic}.tip`) }}
+    </p>
   </article>
 </template>
 
@@ -83,6 +88,15 @@ const steps = computed(() =>
     gap: $space_xs;
     margin: 0;
     padding-left: $space_lg;
+  }
+
+  // The one thing worth knowing that is not a step: set apart so it is not read as one.
+  &_tip {
+    padding: $space_sm $space_md;
+    border-left: 3px solid var(--color_accent);
+    border-radius: $radius_sm;
+    background-color: var(--color_accent_soft);
+    font-size: 0.9375em;
   }
 }
 </style>

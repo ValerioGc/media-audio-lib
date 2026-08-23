@@ -35,6 +35,48 @@ fn corner_position<R: Runtime>(
     ))
 }
 
+/// Where the dock has to stand once it is `width` by `height`, to keep the edge it is on.
+///
+/// Resizing a window holds its top left corner still, so a dock resting in the bottom right
+/// corner walks away from that corner every time it changes level. The side it is nearest
+/// on each axis is the one it is taken to be resting against, and the gap to that side is
+/// what is kept: a dock in the middle of the screen keeps its top left corner as before.
+fn anchored_position<R: Runtime>(
+    window: &tauri::WebviewWindow<R>,
+    width: f64,
+    height: f64,
+) -> Option<tauri::LogicalPosition<f64>> {
+    let monitor = window.current_monitor().ok().flatten()?;
+    let scale = monitor.scale_factor();
+    let area = monitor.size().to_logical::<f64>(scale);
+    let origin = monitor.position().to_logical::<f64>(scale);
+    let position = window.outer_position().ok()?.to_logical::<f64>(scale);
+    let size = window.outer_size().ok()?.to_logical::<f64>(scale);
+
+    let left_gap = position.x - origin.x;
+    let right_gap = (origin.x + area.width) - (position.x + size.width);
+    let top_gap = position.y - origin.y;
+    let bottom_gap = (origin.y + area.height) - (position.y + size.height);
+
+    let x = if right_gap < left_gap {
+        origin.x + area.width - right_gap - width
+    } else {
+        position.x
+    };
+    let y = if bottom_gap < top_gap {
+        origin.y + area.height - bottom_gap - height
+    } else {
+        position.y
+    };
+
+    // A monitor smaller than the dock would leave the two bounds crossed, and `clamp` panics
+    // on that: the lower bound wins, which is the top left corner of the screen.
+    Some(tauri::LogicalPosition::new(
+        x.min(origin.x + area.width - width).max(origin.x),
+        y.min(origin.y + area.height - height).max(origin.y),
+    ))
+}
+
 /// Whether closing the window hides the app in the tray instead of quitting it.
 ///
 /// The setting lives in the frontend store, but the window is also closed by the system,
@@ -125,9 +167,18 @@ pub fn set_mini_player_shape<R: Runtime>(
     let (width, height) = mini_size(vertical, expanded);
     let _ = window.set_always_on_top(always_on_top);
 
-    window
+    // Read before the resize, applied after it: the new position depends on where the dock
+    // was standing, and the resize is what would have moved it.
+    let anchored = anchored_position(&window, width, height);
+    let resized = window
         .set_size(tauri::LogicalSize::new(width, height))
-        .is_ok()
+        .is_ok();
+
+    if let Some(position) = anchored {
+        let _ = window.set_position(position);
+    }
+
+    resized
 }
 
 /// Closes the app for good, dock included: asked from the dock, which has no other way out.

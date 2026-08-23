@@ -58,4 +58,21 @@ describe('LibraryDuplicatesDialog', () => {
     expect(remove).toHaveBeenCalledWith('b');
     expect(wrapper.get('.library_duplicates_description').text()).toContain('resta sul disco');
   });
+
+  it('marks a copy whose file is already gone', async () => {
+    const { wrapper } = mountDialog([
+      makeTrack({ id: 'a', title: 'Song', artist: 'Artist', path: 'C:/one.mp3' }),
+      makeTrack({ id: 'b', title: 'Song', artist: 'Artist', path: 'C:/two.mp3', missing: true }),
+    ]);
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.find('[data-testid="duplicate-missing-a"]').exists()).toBe(false);
+
+    const marked = wrapper.get('[data-testid="duplicate-missing-b"]');
+
+    expect(marked.attributes('aria-label')).toBe('File non più presente su disco');
+    expect(wrapper.get('[data-testid="duplicate-b"]').classes()).toContain(
+      'library_duplicates_file_missing',
+    );
+  });
 });

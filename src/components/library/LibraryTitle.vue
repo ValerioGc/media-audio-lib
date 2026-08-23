@@ -145,6 +145,18 @@ function cancel() {
   isEditing.value = false;
 }
 
+/**
+ * Closes one of the windows that report on the files, and reads the library again.
+ *
+ * Both are opened to act on what is on disk — deleting a copy too many, filling in what a
+ * track is missing — and the list behind them says nothing of what was done. Reading it
+ * again is what puts the tracks whose file has gone back in step with the disk.
+ */
+async function closeAndReload(close: () => void) {
+  close();
+  await library.load();
+}
+
 /** Keeps the field open when the name is refused, so the text is not lost. */
 async function submit() {
   if (await library.renameLibrary(draft.value)) {
@@ -224,9 +236,15 @@ async function submit() {
       @close="isColumnSettingsOpen = false"
     />
 
-    <LibraryMissingInfoDialog :open="isMissingInfoOpen" @close="isMissingInfoOpen = false" />
+    <LibraryMissingInfoDialog
+      :open="isMissingInfoOpen"
+      @close="closeAndReload(() => (isMissingInfoOpen = false))"
+    />
 
-    <LibraryDuplicatesDialog :open="isDuplicatesOpen" @close="isDuplicatesOpen = false" />
+    <LibraryDuplicatesDialog
+      :open="isDuplicatesOpen"
+      @close="closeAndReload(() => (isDuplicatesOpen = false))"
+    />
 
     <LibraryTrackListExportDialog
       :open="isTrackListExportOpen"

@@ -50,9 +50,21 @@ async function remove(track: TrackView) {
               v-for="track in group.tracks"
               :key="track.id"
               class="library_duplicates_file"
+              :class="{ library_duplicates_file_missing: track.missing }"
               :data-testid="`duplicate-${track.id}`"
             >
-              <span class="library_duplicates_path" :title="track.path">{{ track.path }}</span>
+              <span class="library_duplicates_path" :title="track.path">
+                <!-- A copy whose file has already gone is still a copy of the group, and
+                     still worth taking out of the library: it is marked, not hidden. -->
+                <AppIcon
+                  v-if="track.missing"
+                  class="library_duplicates_missing"
+                  name="warning"
+                  :label="t('library.row.missing')"
+                  :data-testid="`duplicate-missing-${track.id}`"
+                />
+                <span class="library_duplicates_text" :title="track.path">{{ track.path }}</span>
+              </span>
               <span class="library_duplicates_meta">
                 {{ track.album ?? t('library.row.unknown') }}
                 <span aria-hidden="true"> · </span>
@@ -163,12 +175,28 @@ async function remove(track: TrackView) {
   }
 
   &_path {
+    display: flex;
+    gap: $space_xs;
+    align-items: center;
+    min-width: 0;
+    font-size: 0.875em;
+  }
+
+  &_text {
     @include selectable_text;
 
     overflow: hidden;
-    font-size: 0.875em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &_missing {
+    flex-shrink: 0;
+    color: var(--color_danger);
+  }
+
+  &_file_missing {
+    color: var(--color_text_muted);
   }
 
   &_meta {

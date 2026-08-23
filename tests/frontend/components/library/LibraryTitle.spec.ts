@@ -256,6 +256,27 @@ describe('LibraryTitle', () => {
     expect(library.missingInfoFilter).toBe('artist');
   });
 
+  it('reads the library again when a window that acts on the files is closed', async () => {
+    const { wrapper, library } = mountTitle();
+    library.tracks = [makeTrack()];
+    const load = vi.spyOn(library, 'load').mockResolvedValue();
+    await wrapper.vm.$nextTick();
+
+    // The duplicates window: copies are deleted from disk while it is open.
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[3]?.trigger('click');
+    await wrapper.get('dialog .app_button_primary').trigger('click');
+
+    expect(load).toHaveBeenCalledTimes(1);
+
+    // And the missing data one, for the same reason.
+    await wrapper.get('.app_menu_trigger').trigger('click');
+    await wrapper.findAll('.app_menu_item')[4]?.trigger('click');
+    await wrapper.get('dialog .app_button_primary').trigger('click');
+
+    expect(load).toHaveBeenCalledTimes(2);
+  });
+
   it('exports the open library', async () => {
     const { wrapper, library } = mountTitle();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);

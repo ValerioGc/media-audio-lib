@@ -294,6 +294,8 @@
       "description": "Elige las columnas visibles y arrástralas para reordenarlas. Carátula y Nombre van siempre delante; Duración es obligatoria.",
       "open": "Ajustes de columnas",
       "fit": "Ajustar las columnas",
+      "dividers": "Mostrar las líneas verticales entre columnas",
+      "dividersHint": "Separa las columnas de la lista con una línea fina.",
       "width": "Ancho",
       "moveUp": "Subir {column}",
       "moveDown": "Bajar {column}",

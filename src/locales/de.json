@@ -294,6 +294,8 @@
       "description": "Wählen Sie die sichtbaren Spalten und ziehen Sie sie, um die Reihenfolge zu ändern. Cover und Name bleiben immer vorn; Dauer bleibt verpflichtend.",
       "open": "Spalteneinstellungen",
       "fit": "Spalten anpassen",
+      "dividers": "Senkrechte Linien zwischen den Spalten anzeigen",
+      "dividersHint": "Trennt die Spalten der Liste durch eine dünne Linie.",
       "width": "Breite",
       "moveUp": "{column} nach oben verschieben",
       "moveDown": "{column} nach unten verschieben",

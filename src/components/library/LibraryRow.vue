@@ -169,6 +169,7 @@ function openActionsMenu(event: MouseEvent) {
   // the text of a cell starts where the text of the one before it ends.
   &_cell {
     padding: 0 0 0 $space_sm;
+    border-right: var(--library_column_divider, none);
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
@@ -240,6 +241,7 @@ function openActionsMenu(event: MouseEvent) {
     gap: $space_xs;
     grid-column: -1;
     padding-left: 0;
+    border-right: 0;
     position: sticky;
     right: 0;
     z-index: 1;

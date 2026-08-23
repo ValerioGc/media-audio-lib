@@ -312,6 +312,26 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
+  it('remembers whether the columns are separated by a rule', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    expect(store.tableColumnDividers).toBe(false);
+
+    await store.setTableColumnDividers(true);
+
+    expect(store.tableColumnDividers).toBe(true);
+    expect(storage.saved.at(-1)?.tableColumnDividers).toBe(true);
+
+    // The rule is part of the layout of the list, so it returns with the rest of it.
+    await store.resetTableColumns();
+
+    expect(store.tableColumnDividers).toBe(false);
+
+    store.dispose();
+  });
+
   it('restores the view saved in a previous session', async () => {
     const store = useSettingsStore();
 

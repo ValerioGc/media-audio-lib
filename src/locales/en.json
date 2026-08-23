@@ -294,6 +294,8 @@
       "description": "Choose visible columns and drag them to reorder them. Cover and Name always stay first; Duration stays required.",
       "open": "Column settings",
       "fit": "Fit columns",
+      "dividers": "Show vertical rules between columns",
+      "dividersHint": "Separates the columns of the list with a thin rule.",
       "width": "Width",
       "moveUp": "Move {column} up",
       "moveDown": "Move {column} down",

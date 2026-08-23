@@ -294,6 +294,8 @@
       "description": "Choisissez les colonnes visibles et faites-les glisser pour les réordonner. Pochette et Nom restent toujours en tête ; Durée reste obligatoire.",
       "open": "Réglages des colonnes",
       "fit": "Ajuster les colonnes",
+      "dividers": "Afficher les filets verticaux entre les colonnes",
+      "dividersHint": "Sépare les colonnes de la liste par un filet fin.",
       "width": "Largeur",
       "moveUp": "Déplacer {column} vers le haut",
       "moveDown": "Déplacer {column} vers le bas",

@@ -294,6 +294,8 @@
       "description": "Scegli le colonne visibili e trascinale per riordinarle. Copertina e Nome restano sempre in testa; Durata resta obbligatoria.",
       "open": "Impostazioni colonne",
       "fit": "Adatta colonne",
+      "dividers": "Mostra i bordi verticali tra le colonne",
+      "dividersHint": "Separa le colonne dell'elenco con una linea sottile.",
       "width": "Larghezza",
       "moveUp": "Sposta {column} su",
       "moveDown": "Sposta {column} giù",

@@ -73,6 +73,10 @@ async function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
   }
 }
 
+async function setDividers(event: Event) {
+  await settings.setTableColumnDividers((event.target as HTMLInputElement).checked);
+}
+
 async function fitColumnsToContent() {
   await settings.setTableColumnWidths(
     fittedTableColumnWidths(settings.tableColumns, library.visibleTracks, columnLabels.value),
@@ -132,15 +136,30 @@ async function endReorder() {
         {{ t('library.columnSettings.description') }}
       </p>
 
-      <button
-        class="library_column_settings_fit"
-        type="button"
-        data-testid="column-fit"
-        @click="fitColumnsToContent"
-      >
-        <AppIcon name="maximize" />
-        <span>{{ t('library.columnSettings.fit') }}</span>
-      </button>
+      <div class="library_column_settings_tools">
+        <button
+          class="library_column_settings_fit"
+          type="button"
+          data-testid="column-fit"
+          @click="fitColumnsToContent"
+        >
+          <AppIcon name="maximize" />
+          <span>{{ t('library.columnSettings.fit') }}</span>
+        </button>
+
+        <label class="library_column_settings_option">
+          <input
+            type="checkbox"
+            :checked="settings.tableColumnDividers"
+            data-testid="column-dividers"
+            @change="setDividers"
+          />
+          <span class="library_column_settings_option_text">
+            <span>{{ t('library.columnSettings.dividers') }}</span>
+            <small>{{ t('library.columnSettings.dividersHint') }}</small>
+          </span>
+        </label>
+      </div>
 
       <ul class="library_column_settings_list">
         <li
@@ -237,6 +256,29 @@ async function endReorder() {
 
   &_description {
     color: var(--color_text_muted);
+  }
+
+  &_tools {
+    display: flex;
+    flex-direction: column;
+    gap: $space_sm;
+    align-items: flex-start;
+  }
+
+  &_option {
+    @include settings_check;
+
+    align-items: flex-start;
+
+    &_text {
+      display: flex;
+      flex-direction: column;
+
+      small {
+        color: var(--color_text_muted);
+        font-size: 0.8125em;
+      }
+    }
   }
 
   &_fit {

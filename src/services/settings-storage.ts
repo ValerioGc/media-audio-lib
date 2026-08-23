@@ -221,6 +221,10 @@ export function sanitizeSettings(raw: unknown): AppSettings {
       DEFAULT_SETTINGS.coverGradientDirection,
     ),
     tableColumns: sanitizeTableColumns(source.tableColumns),
+    tableColumnDividers: pickBoolean(
+      source.tableColumnDividers,
+      DEFAULT_SETTINGS.tableColumnDividers,
+    ),
   };
 }
 

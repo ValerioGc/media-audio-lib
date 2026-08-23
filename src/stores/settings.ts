@@ -86,6 +86,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const tableColumns = ref<TableColumnSetting[]>(
     DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column })),
   );
+  const tableColumnDividers = ref(DEFAULT_SETTINGS.tableColumnDividers);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -130,6 +131,7 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerGradient: miniPlayerGradient.value,
     miniPlayerPosition: miniPlayerPosition.value,
     tableColumns: tableColumns.value,
+    tableColumnDividers: tableColumnDividers.value,
   }));
 
   function apply() {
@@ -217,6 +219,7 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerPosition.value = restored.miniPlayerPosition;
     await applyCloseToTray(closeToTray.value);
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
+    tableColumnDividers.value = restored.tableColumnDividers;
 
     apply();
     isReady.value = true;
@@ -507,8 +510,14 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  async function setTableColumnDividers(next: boolean) {
+    tableColumnDividers.value = next;
+    await persist();
+  }
+
   async function resetTableColumns() {
     tableColumns.value = DEFAULT_SETTINGS.tableColumns.map((column) => ({ ...column }));
+    tableColumnDividers.value = DEFAULT_SETTINGS.tableColumnDividers;
     await persist();
   }
 
@@ -551,6 +560,7 @@ export const useSettingsStore = defineStore('settings', () => {
     miniPlayerGradient,
     miniPlayerPosition,
     tableColumns,
+    tableColumnDividers,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -592,6 +602,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setTableColumnVisible,
     setTableColumnWidth,
     setTableColumnWidths,
+    setTableColumnDividers,
     moveTableColumn,
     nudgeTableColumn,
     resetTableColumns,

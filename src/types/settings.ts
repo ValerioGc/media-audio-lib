@@ -175,6 +175,7 @@ export interface AppSettings {
   miniPlayerGradient: boolean;
   miniPlayerPosition: DockPosition | null;
   tableColumns: TableColumnSetting[];
+  tableColumnDividers: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -211,4 +212,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   miniPlayerGradient: true,
   miniPlayerPosition: null,
   tableColumns: DEFAULT_TABLE_COLUMNS,
+  tableColumnDividers: false,
 };

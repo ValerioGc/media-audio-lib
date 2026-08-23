@@ -164,10 +164,15 @@ const bottomSpacerHeight = computed(() =>
 );
 const tableColumnCount = computed(() => columns.value.length + 1);
 
+// The rule between two columns is opt-in, and it is a custom property rather than a class
+// so the rows — a component of their own — read it without being told about the setting.
 const gridStyle = computed(() => ({
   '--library_grid_columns': tableGridTemplate(columns.value, props.columnKeys !== undefined),
   '--library_row_height': `${rowHeight.value}px`,
   '--library_cover_size': `${coverColumnWidth.value}px`,
+  '--library_column_divider': settings.tableColumnDividers
+    ? '1px solid var(--color_border)'
+    : 'none',
 }));
 
 const columnLabels = computed<Record<TableColumnKey, string>>(
@@ -419,6 +424,7 @@ onUnmounted(stopResize);
   &_heading {
     position: relative;
     padding: 0;
+    border-right: var(--library_column_divider, none);
     text-align: left;
     white-space: nowrap;
 
@@ -427,6 +433,7 @@ onUnmounted(stopResize);
       grid-column: -1;
       position: sticky;
       right: 0;
+      border-right: 0;
       z-index: 2;
       width: 5.25rem;
       gap: $space_xs;

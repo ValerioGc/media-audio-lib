@@ -441,15 +441,13 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
   }
 }
 
-// One shape for all of them: a square cover as wide as the card, the writing under it, and
-// the same padding on every side. No floor and no height of its own — a number written here
-// is a guess at one card width, and there are three of those and three kinds of card.
 .library_facet_card {
   display: flex;
   position: relative;
   align-self: stretch;
   flex-direction: column;
   gap: $space_md;
+  min-height: 10rem;
   padding: $space_md;
   @include glass_surface($radius_md);
   color: var(--color_text);
@@ -466,10 +464,34 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   @include focus_ring;
 
+  // No floor of its own: the cover is a square of the width the card was given, and the
+  // card is as tall as that square and its writing. A number here would be a guess at one
+  // width, and there are three of them now.
+  &_album {
+    padding: $space_md;
+  }
+
   &_playing {
     border-color: var(--color_accent);
     background-color: var(--row_selected_background);
     box-shadow: inset 0 0 0 1px var(--color_accent);
+  }
+
+  // No floor: it was twenty rem, which left a band of empty card under the writing of every
+  // artist whatever the writing said.
+  //
+  // The body keeps its `flex` all the same. A row gives every card the height of its tallest,
+  // and a body that may shrink is a body that gets squeezed under that height and spills its
+  // last line out of the card.
+  &_artist {
+    .library_facet_card_cover_mosaic {
+      height: clamp(8rem, 14vw, 10.5rem);
+      aspect-ratio: auto;
+    }
+
+    .library_facet_card_body {
+      flex: 1 0 auto;
+    }
   }
 
   &_cover {
@@ -505,7 +527,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   &_genre {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 6rem minmax(0, 1fr);
     grid-column: auto;
     flex-direction: initial;
     gap: $space_md;
@@ -513,11 +535,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     min-height: 0;
     padding: $space_2xs $space_md;
 
-    // A square as tall as the row, so widening the cards enlarges these covers too rather
-    // than leaving them adrift in a taller card.
     .library_facet_card_cover {
-      width: auto;
-      height: 100%;
+      width: 6rem;
+      height: 6rem;
       aspect-ratio: 1;
     }
 

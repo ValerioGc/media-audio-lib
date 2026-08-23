@@ -18,10 +18,12 @@ import LibraryGroupCarousel, {
 } from '@/components/library/LibraryGroupCarousel.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import LibraryImportReport from '@/components/library/LibraryImportReport.vue';
+import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import LibraryTable from '@/components/library/LibraryTable.vue';
 import LibraryTabs from '@/components/library/LibraryTabs.vue';
 import LibraryTitle from '@/components/library/LibraryTitle.vue';
 import LibraryToolbar from '@/components/library/LibraryToolbar.vue';
+import PreviewSizeToggle from '@/components/library/PreviewSizeToggle.vue';
 import type { PreviewCardMeta } from '@/components/library/PreviewCard.vue';
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import BulkMetadataEditor from '@/components/metadata/BulkMetadataEditor.vue';
@@ -280,6 +282,43 @@ function sortFacets(column: string) {
 const showsSortControl = computed(
   () => displayedViewMode.value === 'preview' && activeTab.value !== 'genres',
 );
+
+/**
+ * What the window of a genre is listing, and how.
+ *
+ * A window is not the page: it shows the artists or the albums of one genre, and the order
+ * chosen in it is its own. The size of the cards is not — that belongs to the artists and to
+ * the albums wherever they are shown, so the control here moves the same setting the page
+ * uses.
+ */
+const genreModalField = computed<FacetField>(() =>
+  genreModalList.value === 'artists' ? 'artist' : 'album',
+);
+
+const genreModalSort = ref<FacetSort>({ ...DEFAULT_FACET_SORT });
+
+watch(genreModalList, () => {
+  genreModalSort.value = { ...DEFAULT_FACET_SORT };
+});
+
+const genreModalSortOptions = computed(() =>
+  facetSortColumns(genreModalField.value).map((column) => ({
+    value: column.key,
+    label: t(column.sortLabelKey ?? column.labelKey),
+  })),
+);
+
+function sortGenreModal(column: string) {
+  const wanted = column as FacetSort['column'];
+
+  genreModalSort.value =
+    genreModalSort.value.column === wanted
+      ? {
+          column: wanted,
+          direction: genreModalSort.value.direction === 'asc' ? 'desc' : 'asc',
+        }
+      : { column: wanted, direction: 'asc' };
+}
 
 /** The page whose card size the toolbar is asking about, when cards are on screen. */
 const previewSizePage = computed<PreviewSizePage | undefined>(() =>
@@ -702,14 +741,26 @@ async function confirmRemoval() {
               @remove="askRemoval"
             />
             <!-- Artists and albums are browsed by their covers, tracks by their columns. -->
-            <LibraryFacetList
-              v-else
-              :tracks="selectedFacetTracks"
-              :field="genreModalList === 'artists' ? 'artist' : 'album'"
-              view-mode="preview"
-              :playing-track="player.currentTrack"
-              @open="openFacet"
-            />
+            <template v-else>
+              <div class="library_view_group_modal_controls">
+                <LibrarySortSelect
+                  :column="genreModalSort.column"
+                  :direction="genreModalSort.direction"
+                  :options="genreModalSortOptions"
+                  @select="sortGenreModal"
+                />
+                <PreviewSizeToggle :page="genreModalList" />
+              </div>
+
+              <LibraryFacetList
+                v-model:sort="genreModalSort"
+                :tracks="selectedFacetTracks"
+                :field="genreModalField"
+                view-mode="preview"
+                :playing-track="player.currentTrack"
+                @open="openFacet"
+              />
+            </template>
           </div>
         </template>
 
@@ -876,7 +927,18 @@ async function confirmRemoval() {
       display: flex;
       flex: 1;
       flex-direction: column;
+      gap: $space_sm;
       min-height: 0;
+    }
+
+    // Above the cards they act on, at the end of the row: the same place the page keeps
+    // its own, so a window is read the way the page behind it is.
+    &_controls {
+      display: flex;
+      gap: $space_sm;
+      align-items: center;
+      justify-content: flex-end;
+      flex-shrink: 0;
     }
 
     &_back {

@@ -25,7 +25,8 @@ import {
 } from '@/types/library';
 
 /** i18n key describing the last failure, so the UI stays free of hardcoded text. */
-export type LibraryErrorKey = 'shellUnavailable' | 'generic' | 'invalidLibraryName' | null;
+export type LibraryErrorKey =
+  'shellUnavailable' | 'generic' | 'invalidLibraryName' | 'duplicateLibraryName' | null;
 
 function errorKeyOf(error: unknown): Exclude<LibraryErrorKey, null> {
   return error instanceof ShellUnavailableError ? 'shellUnavailable' : 'generic';
@@ -249,11 +250,31 @@ export const useLibraryStore = defineStore('library', () => {
     lastRefresh.value = null;
   }
 
+  /**
+   * Whether another library already answers to this name.
+   *
+   * Case and the spaces around it are not what tells two libraries apart, so neither are
+   * they here: "Jazz" and "jazz " in the same list are a mistake waiting to be made.
+   */
+  function isNameTaken(name: string, except: string | null): boolean {
+    const wanted = name.trim().toLowerCase();
+
+    return libraries.value.some(
+      (library) => library.id !== except && library.name.trim().toLowerCase() === wanted,
+    );
+  }
+
   async function renameLibrary(name: string): Promise<boolean> {
     const cleaned = name.trim();
 
     if (cleaned.length === 0) {
       errorKey.value = 'invalidLibraryName';
+      return false;
+    }
+
+    // Keeping its own name is not a clash: only the other libraries are in the way.
+    if (isNameTaken(cleaned, activeLibraryId.value)) {
+      errorKey.value = 'duplicateLibraryName';
       return false;
     }
 
@@ -305,6 +326,13 @@ export const useLibraryStore = defineStore('library', () => {
 
     if (cleaned.length === 0) {
       errorKey.value = 'invalidLibraryName';
+      return false;
+    }
+
+    // The shell refuses this too, and has the last word — but it already knows the answer
+    // here, and a name typed by hand deserves to be told at once rather than after a trip.
+    if (isNameTaken(cleaned, null)) {
+      errorKey.value = 'duplicateLibraryName';
       return false;
     }
 

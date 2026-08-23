@@ -388,7 +388,8 @@
     "errors": {
       "shellUnavailable": "This feature is only available in the desktop application.",
       "generic": "The operation failed. Please try again.",
-      "invalidLibraryName": "The library name cannot be empty."
+      "invalidLibraryName": "The library name cannot be empty.",
+      "duplicateLibraryName": "A library with this name already exists."
     },
     "view": {
       "label": "View",

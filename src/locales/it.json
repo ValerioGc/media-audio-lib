@@ -388,7 +388,8 @@
     "errors": {
       "shellUnavailable": "Questa funzione è disponibile solo nell'applicazione desktop.",
       "generic": "Operazione non riuscita. Riprova.",
-      "invalidLibraryName": "Il nome della libreria non può essere vuoto."
+      "invalidLibraryName": "Il nome della libreria non può essere vuoto.",
+      "duplicateLibraryName": "Esiste già una libreria con questo nome."
     },
     "view": {
       "label": "Vista",

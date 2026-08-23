@@ -6,9 +6,9 @@ use tauri::{AppHandle, Manager as _, State};
 
 use serde::{Deserialize, Serialize};
 
+use crate::catalog::CatalogState;
 use crate::error::{AppError, AppResult};
 use crate::library::{self, AddReport, LibraryMetadata, TrackView};
-use crate::catalog::CatalogState;
 use crate::state::LibraryState;
 
 /// What a refresh found: how many entries changed, and which files are no longer there.

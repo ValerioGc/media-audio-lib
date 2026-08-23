@@ -388,7 +388,8 @@
     "errors": {
       "shellUnavailable": "Cette fonction n'est disponible que dans l'application de bureau.",
       "generic": "L'opération a échoué. Veuillez réessayer.",
-      "invalidLibraryName": "Le nom de la bibliothèque ne peut pas être vide."
+      "invalidLibraryName": "Le nom de la bibliothèque ne peut pas être vide.",
+      "duplicateLibraryName": "Une bibliothèque portant ce nom existe déjà."
     },
     "view": {
       "label": "Vue",

@@ -388,7 +388,8 @@
     "errors": {
       "shellUnavailable": "Esta función solo está disponible en la aplicación de escritorio.",
       "generic": "La operación ha fallado. Inténtalo de nuevo.",
-      "invalidLibraryName": "El nombre de la biblioteca no puede estar vacío."
+      "invalidLibraryName": "El nombre de la biblioteca no puede estar vacío.",
+      "duplicateLibraryName": "Ya existe una biblioteca con este nombre."
     },
     "view": {
       "label": "Vista",

@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
@@ -37,6 +37,33 @@ describe('LibraryCreateForm', () => {
 
     await wrapper.get('input').setValue('Soundtracks');
     expect(button.attributes('disabled')).toBeUndefined();
+  });
+
+  it('refuses a name another library already answers to', async () => {
+    const { wrapper, library } = mountForm();
+    library.libraries = [{ id: 'lib-1', name: 'Jazz', trackCount: 0, active: true }];
+
+    // Neither the case nor the spaces make it a different library.
+    await wrapper.get('input').setValue('  jazz ');
+    await wrapper.get('form').trigger('submit');
+    await flushPromises();
+
+    expect(wrapper.get('[role="alert"]').text()).toBe('Esiste già una libreria con questo nome.');
+    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('  jazz ');
+  });
+
+  it('takes the complaint back as soon as the name is changed', async () => {
+    const { wrapper, library } = mountForm();
+    library.libraries = [{ id: 'lib-1', name: 'Jazz', trackCount: 0, active: true }];
+
+    await wrapper.get('input').setValue('Jazz');
+    await wrapper.get('form').trigger('submit');
+    await flushPromises();
+    expect(wrapper.find('[role="alert"]').exists()).toBe(true);
+
+    await wrapper.get('input').setValue('Jazz manouche');
+
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false);
   });
 
   it('creates a library and clears the field', async () => {

@@ -14,8 +14,8 @@ const name = ref(library.libraryName);
 const isUnchanged = computed(() => name.value.trim() === library.libraryName);
 const canSubmit = computed(() => !library.isRenaming && !isUnchanged.value);
 const errorMessage = computed(() => {
-  if (library.errorKey === 'invalidLibraryName') {
-    return t('library.errors.invalidLibraryName');
+  if (library.errorKey === 'invalidLibraryName' || library.errorKey === 'duplicateLibraryName') {
+    return t(`library.errors.${library.errorKey}`);
   }
 
   if (library.errorKey === 'shellUnavailable' || library.errorKey === 'generic') {

@@ -38,7 +38,7 @@
     fn creates_a_library_without_opening_it() {
         let setup = setup();
 
-        let created = create(&setup.catalog, "  Jazz  ").expect("library created");
+        let created = create(&setup.catalog, &setup.state, "  Jazz  ").expect("library created");
         let libraries = summaries(&setup.catalog, &setup.state).expect("list");
 
         assert_eq!(created.name, "Jazz");
@@ -49,24 +49,52 @@
     }
 
     #[test]
-    fn two_libraries_with_the_same_name_stay_distinct() {
+    fn a_name_another_library_answers_to_is_refused() {
         let setup = setup();
+        create(&setup.catalog, &setup.state, "Jazz").expect("prima libreria");
 
-        let first = create(&setup.catalog, "Jazz").expect("first library");
-        let second = create(&setup.catalog, "Jazz").expect("second library");
+        let error = create(&setup.catalog, &setup.state, "Jazz").expect_err("nome già preso");
 
-        assert_ne!(first.id, second.id);
+        assert!(matches!(error, AppError::Validation(_)));
         assert_eq!(
             summaries(&setup.catalog, &setup.state).expect("list").len(),
-            3
+            2,
+            "la seconda non è stata creata"
         );
+    }
+
+    /// Neither case nor the spaces around a name make two libraries different ones.
+    #[test]
+    fn the_same_name_written_differently_is_still_the_same_name() {
+        let setup = setup();
+        create(&setup.catalog, &setup.state, "Jazz").expect("prima libreria");
+
+        assert!(create(&setup.catalog, &setup.state, "  jazz  ").is_err());
+        assert!(create(&setup.catalog, &setup.state, "JAZZ").is_err());
+        assert!(create(&setup.catalog, &setup.state, "Jazz manouche").is_ok());
+    }
+
+    #[test]
+    fn a_library_can_be_renamed_to_what_it_is_already_called() {
+        let setup = setup();
+        let active = setup
+            .catalog
+            .read(|catalog| catalog.active.clone())
+            .expect("attiva");
+        let name = summaries(&setup.catalog, &setup.state).expect("list")[0]
+            .name
+            .clone();
+
+        // Itself is not another library: the name it already has is free for it.
+        assert!(ensure_name_is_free(&setup.catalog, &setup.state, &name, Some(&active)).is_ok());
+        assert!(ensure_name_is_free(&setup.catalog, &setup.state, &name, None).is_err());
     }
 
     #[test]
     fn rejects_a_library_without_a_name() {
         let setup = setup();
 
-        let error = create(&setup.catalog, "   ").expect_err("empty name");
+        let error = create(&setup.catalog, &setup.state, "   ").expect_err("empty name");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
@@ -74,7 +102,7 @@
     #[test]
     fn opens_the_chosen_library() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("library created");
+        let created = create(&setup.catalog, &setup.state, "Jazz").expect("library created");
 
         let info = switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
 
@@ -93,7 +121,7 @@
             .update(|library| library.rename("Main"))
             .expect("state updated")
             .expect("valid name");
-        let created = create(&setup.catalog, "Jazz").expect("library created");
+        let created = create(&setup.catalog, &setup.state, "Jazz").expect("library created");
 
         switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
 
@@ -107,7 +135,7 @@
     #[test]
     fn deleting_the_open_library_opens_another_one() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("library created");
+        let created = create(&setup.catalog, &setup.state, "Jazz").expect("library created");
         switch(&setup.catalog, &setup.state, &created.id).expect("library opened");
         let file = setup.catalog.file_of(&created.id).expect("file");
 
@@ -200,7 +228,7 @@
     #[test]
     fn exports_a_closed_library_from_its_file() {
         let setup = setup();
-        let created = create(&setup.catalog, "Jazz").expect("library created");
+        let created = create(&setup.catalog, &setup.state, "Jazz").expect("library created");
         let destination = setup._directory.path().join("jazz.json");
 
         export(

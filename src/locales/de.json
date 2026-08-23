@@ -388,7 +388,8 @@
     "errors": {
       "shellUnavailable": "Diese Funktion steht nur in der Desktop-Anwendung zur Verfügung.",
       "generic": "Der Vorgang ist fehlgeschlagen. Bitte erneut versuchen.",
-      "invalidLibraryName": "Der Name der Bibliothek darf nicht leer sein."
+      "invalidLibraryName": "Der Name der Bibliothek darf nicht leer sein.",
+      "duplicateLibraryName": "Eine Bibliothek mit diesem Namen gibt es bereits."
     },
     "view": {
       "label": "Ansicht",

@@ -44,7 +44,12 @@ describe('LibraryCounts', () => {
     const wrapper = mount(LibraryCounts, options);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('.library_counts_flag').text()).toBe('1 file non trovato');
+    const flag = wrapper.get('[data-testid="missing-count"]');
+
+    // Filled in the warning colour: a figure that asks to be acted on, not one more count.
+    expect(flag.text()).toContain('1 file non trovato');
+    expect(flag.classes()).toContain('library_counts_flag_warning');
+    expect(flag.get('.app_icon').classes()).toContain('app_icon_warning');
   });
 
   it('counts what the open tab is about, and nothing else', async () => {
@@ -85,6 +90,6 @@ describe('LibraryCounts', () => {
     const wrapper = mount(LibraryCounts, options);
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('[data-testid="missing-info-active"]').text()).toBe('Mancanti: Autore');
+    expect(wrapper.get('[data-testid="missing-info-active"]').text()).toContain('Mancanti: Autore');
   });
 });

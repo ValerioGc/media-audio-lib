@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import AppIcon from '@/components/common/AppIcon.vue';
 import { useLibraryStore } from '@/stores/library';
 import type { LibraryContentTab } from '@/types/library';
 
@@ -38,15 +39,23 @@ const counts = computed(() => {
       count.label
     }}</span>
 
-    <span v-if="library.missingCount > 0" class="library_counts_flag">
+    <!-- Files that are gone are not one more figure among the counts: the pill is filled
+         in the warning colour so it is picked out of the line rather than read along it. -->
+    <span
+      v-if="library.missingCount > 0"
+      class="library_counts_flag library_counts_flag_warning"
+      data-testid="missing-count"
+    >
+      <AppIcon name="warning" />
       {{ t('library.toolbar.missing', { count: library.missingCount }, library.missingCount) }}
     </span>
 
     <span
       v-if="library.missingInfoFilter !== 'all'"
-      class="library_counts_flag"
+      class="library_counts_flag library_counts_flag_filter"
       data-testid="missing-info-active"
     >
+      <AppIcon name="search" />
       {{
         t('library.toolbar.missingInfo.active', {
           filter: t(`library.toolbar.missingInfo.options.${library.missingInfoFilter}`),
@@ -67,9 +76,25 @@ const counts = computed(() => {
   font-size: 0.875em;
 
   &_flag {
-    padding: 0 $space_sm;
+    display: inline-flex;
+    gap: $space_xs;
+    align-items: center;
+    padding: 0.1rem $space_sm;
     border: 1px solid var(--color_border_strong);
-    border-radius: $radius_sm;
+    border-radius: 999px;
+
+    &_warning {
+      border-color: var(--color_warning);
+      background-color: var(--color_warning_soft);
+      color: var(--color_warning);
+      font-weight: 600;
+    }
+
+    &_filter {
+      border-color: var(--color_accent);
+      background-color: var(--color_accent_soft);
+      color: var(--color_accent);
+    }
   }
 }
 </style>

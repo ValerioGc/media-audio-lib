@@ -69,6 +69,18 @@ async function publishToDock() {
   });
 }
 
+/**
+ * What the tray means by stopping the playback.
+ *
+ * Not the stop of the transport, which rewinds and waits: the menu is read from outside the
+ * app, where there is nothing to see waiting. The queue is let go and the dock goes with
+ * it, which is also what puts the entry back to being unavailable.
+ */
+async function stopFromTray() {
+  player.close();
+  await closeMiniPlayer();
+}
+
 async function runDockCommand({ action, value }: MiniPlayerCommand) {
   if (action === 'toggle') {
     await player.toggle();
@@ -117,7 +129,11 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
 async function initializeApp() {
   await settings.initialize();
   await writeTrayMenu();
-  stopTrayListener = await onTrayStopPlayback(() => player.stop());
+  stopTrayListener = await onTrayStopPlayback(() => {
+    stopFromTray().catch((error: unknown) => {
+      console.error('Stopping the playback from the tray failed', error);
+    });
+  });
   miniCommandListener = await onMiniCommand((command) => {
     runDockCommand(command).catch((error: unknown) => {
       console.error('The dock asked for something that failed', error);

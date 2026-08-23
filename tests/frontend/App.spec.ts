@@ -12,6 +12,8 @@ const mocks = vi.hoisted(() => ({
   startupAudioFile: vi.fn(),
   playbackUrl: vi.fn(),
   createAudioEngine: vi.fn(),
+  onTrayStopPlayback: vi.fn(),
+  closeMiniPlayer: vi.fn(),
 }));
 
 vi.mock('@/services/playback-api', () => ({
@@ -23,12 +25,24 @@ vi.mock('@/services/audio-engine', () => ({
   createAudioEngine: mocks.createAudioEngine,
 }));
 
+vi.mock('@/services/shell-integration', () => ({
+  applyTrayMenu: vi.fn().mockResolvedValue(true),
+  onTrayStopPlayback: mocks.onTrayStopPlayback,
+  closeMiniPlayer: mocks.closeMiniPlayer,
+  applyCloseToTray: vi.fn().mockResolvedValue(true),
+  applyMiniPlayerShape: vi.fn().mockResolvedValue(true),
+  openMiniPlayer: vi.fn().mockResolvedValue(true),
+  setAutostart: vi.fn().mockResolvedValue(true),
+}));
+
 import App from '@/App.vue';
 
 beforeEach(() => {
   resetI18n();
   vi.clearAllMocks();
   mocks.startupAudioFile.mockResolvedValue(null);
+  mocks.onTrayStopPlayback.mockResolvedValue(null);
+  mocks.closeMiniPlayer.mockResolvedValue(true);
   mocks.playbackUrl.mockResolvedValue('asset://track.mp3');
   mocks.createAudioEngine.mockReturnValue({
     load: vi.fn(),
@@ -122,6 +136,27 @@ describe('App', () => {
 
     expect(useNavigationStore().view).toBe('library');
     expect(wrapper.find('.library_view').exists()).toBe(true);
+  });
+
+  it('lets go of the queue and the dock when the tray asks the playback to stop', async () => {
+    const wrapper = await mountApp();
+    const player = usePlayerStore();
+    await player.play(makeTrack({ title: 'Track' }));
+    await flushPromises();
+
+    expect(wrapper.find('.player_bar').exists()).toBe(true);
+
+    // The tray hands the app a callback: this is the one it would have called.
+    const stopFromTray = mocks.onTrayStopPlayback.mock.calls[0]?.[0] as () => void;
+    stopFromTray();
+    await flushPromises();
+
+    // Stopping from outside means being done with it: nothing left to stop, nothing on
+    // screen, and the dock closed with it.
+    expect(player.isActive).toBe(false);
+    expect(player.isPlaying).toBe(false);
+    expect(wrapper.find('.player_bar').exists()).toBe(false);
+    expect(mocks.closeMiniPlayer).toHaveBeenCalled();
   });
 
   it('releases the system theme listener on unmount', async () => {

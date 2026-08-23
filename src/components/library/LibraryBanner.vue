@@ -63,12 +63,20 @@ const TONE_ICONS: Record<'info' | 'warning' | 'danger', IconName> = {
 };
 
 const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
+
+// The tone is spelled out one class at a time rather than built from the prop: the build
+// keeps only the class names the sources write down, and one assembled at runtime would be
+// stripped from the stylesheet without a word.
 </script>
 
 <template>
   <div
     class="library_banner"
-    :class="`library_banner_${tone}`"
+    :class="{
+      library_banner_info: tone === 'info',
+      library_banner_warning: tone === 'warning',
+      library_banner_danger: tone === 'danger',
+    }"
     :role="alert ? 'alert' : 'status'"
     data-testid="library-banner"
   >

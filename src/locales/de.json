@@ -287,7 +287,9 @@
       "description": "Filtert die Bibliothek nach den Angaben, die noch zu ergänzen sind. Wählen Sie Alle, um zur normalen Ansicht zurückzukehren.",
       "label": "Angabe",
       "result": "keine Titel gefunden | 1 Titel gefunden | {count} Titel gefunden",
-      "close": "Schließen"
+      "close": "Schließen",
+      "filtered": "Gefilterte Ansicht: Aufgeführt sind nur die Titel ohne {filter}.",
+      "reset": "Filter entfernen"
     },
     "defaultPlayerBanner": {
       "title": "Sie können Media Audio Lib als Standardplayer verwenden",

@@ -287,7 +287,9 @@
       "description": "Filtra la libreria in base all'informazione da completare. Scegli Tutti per tornare alla vista normale.",
       "label": "Informazione",
       "result": "nessun brano trovato | 1 brano trovato | {count} brani trovati",
-      "close": "Chiudi"
+      "close": "Chiudi",
+      "filtered": "Vista filtrata: sono elencati solo i brani senza {filter}.",
+      "reset": "Rimuovi il filtro"
     },
     "defaultPlayerBanner": {
       "title": "Puoi usare Media Audio Lib come player predefinito",

@@ -287,7 +287,9 @@
       "description": "Filtra la biblioteca por la información que aún falta por completar. Elige Todo para volver a la vista normal.",
       "label": "Información",
       "result": "ninguna pista encontrada | 1 pista encontrada | {count} pistas encontradas",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "filtered": "Vista filtrada: solo se listan las pistas sin {filter}.",
+      "reset": "Quitar el filtro"
     },
     "defaultPlayerBanner": {
       "title": "Puedes usar Media Audio Lib como reproductor predeterminado",

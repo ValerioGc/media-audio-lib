@@ -563,6 +563,35 @@ async function confirmRemoval() {
       }}
     </LibraryBanner>
 
+    <!-- The filter outlives the window it was set in, and a shorter list looks like a
+         smaller library rather than like a filtered one: the banner says which it is, and
+         carries the way out of it. -->
+    <LibraryBanner
+      v-if="library.missingInfoFilter !== 'all'"
+      tone="warning"
+      icon="search"
+      :dismissible="false"
+      data-testid="missing-info-banner"
+    >
+      {{
+        t('library.missingInfo.filtered', {
+          filter: t(
+            `library.toolbar.missingInfo.options.${library.missingInfoFilter}`,
+          ).toLowerCase(),
+        })
+      }}
+
+      <template #action>
+        <AppButton
+          variant="ghost"
+          data-testid="missing-info-reset"
+          @click="library.setMissingInfoFilter('all')"
+        >
+          {{ t('library.missingInfo.reset') }}
+        </AppButton>
+      </template>
+    </LibraryBanner>
+
     <LibraryBanner
       v-if="unplayableTitle !== null"
       tone="warning"

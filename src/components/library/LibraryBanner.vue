@@ -18,8 +18,13 @@ const props = withDefaults(
     icon?: IconName | null;
     /** A banner that reports a problem is announced; a note is not. */
     alert?: boolean;
+    /**
+     * Off for a banner that reports a state rather than an event: closing it would say the
+     * state had ended, when all that happened is that the banner went.
+     */
+    dismissible?: boolean;
   }>(),
-  { tone: 'info', icon: null, alert: false },
+  { tone: 'info', icon: null, alert: false, dismissible: true },
 );
 
 const emit = defineEmits<{ dismiss: [] }>();
@@ -48,7 +53,10 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
 
     <p class="library_banner_message"><slot /></p>
 
+    <slot name="action" />
+
     <button
+      v-if="dismissible"
       class="library_banner_dismiss"
       type="button"
       :aria-label="t('library.report.dismiss')"

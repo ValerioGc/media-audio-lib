@@ -287,7 +287,9 @@
       "description": "Filter the library by the information that still needs to be completed. Choose All to return to the normal view.",
       "label": "Information",
       "result": "no tracks found | 1 track found | {count} tracks found",
-      "close": "Close"
+      "close": "Close",
+      "filtered": "The view is filtered: only the tracks without {filter} are listed.",
+      "reset": "Remove the filter"
     },
     "defaultPlayerBanner": {
       "title": "You can use Media Audio Lib as your default player",

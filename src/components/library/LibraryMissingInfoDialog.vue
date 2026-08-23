@@ -59,7 +59,16 @@ const missingInfoFilter = computed({
     </div>
 
     <template #actions>
-      <AppButton @click="emit('close')">{{ t('library.missingInfo.close') }}</AppButton>
+      <AppButton
+        :disabled="library.missingInfoFilter === 'all'"
+        data-testid="missing-info-dialog-reset"
+        @click="library.setMissingInfoFilter('all')"
+      >
+        {{ t('library.missingInfo.reset') }}
+      </AppButton>
+      <AppButton variant="primary" @click="emit('close')">
+        {{ t('library.missingInfo.close') }}
+      </AppButton>
     </template>
   </AppModal>
 </template>

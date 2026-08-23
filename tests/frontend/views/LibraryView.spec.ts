@@ -667,6 +667,27 @@ describe('LibraryView', () => {
     expect(wrapper.find('[data-testid="bulk-metadata-editor"]').exists()).toBe(true);
   });
 
+  it('says the view is filtered, and offers the way out of it', async () => {
+    const { wrapper, store } = await mountView();
+
+    expect(wrapper.find('[data-testid="missing-info-banner"]').exists()).toBe(false);
+
+    store.setMissingInfoFilter('cover');
+    await flushPromises();
+
+    const banner = wrapper.get('[data-testid="missing-info-banner"]');
+
+    expect(banner.text()).toContain('Vista filtrata');
+    expect(banner.text()).toContain('copertina');
+    // A state, not an event: the banner has no close of its own.
+    expect(banner.find('[data-testid="library-banner-dismiss"]').exists()).toBe(false);
+
+    await banner.get('[data-testid="missing-info-reset"]').trigger('click');
+
+    expect(store.missingInfoFilter).toBe('all');
+    expect(wrapper.find('[data-testid="missing-info-banner"]').exists()).toBe(false);
+  });
+
   it('does not open the player on a track whose file is gone', async () => {
     const { wrapper, store } = await mountView();
     useSettingsStore().viewMode = 'table';

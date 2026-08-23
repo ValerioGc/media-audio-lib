@@ -463,6 +463,9 @@
         "album": "Senza album",
         "genre": "Senza genere"
       }
+    },
+    "playback": {
+      "unavailable": "«{title}» non può essere riprodotto: il file non risulta disponibile nel percorso registrato."
     }
   },
   "metadata": {

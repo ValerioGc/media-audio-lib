@@ -463,6 +463,9 @@
         "album": "Sin álbum",
         "genre": "Sin género"
       }
+    },
+    "playback": {
+      "unavailable": "«{title}» no se puede reproducir: el archivo no está disponible en la ruta registrada."
     }
   },
   "metadata": {

@@ -345,14 +345,41 @@ watch(
 
 /** The visible list becomes the queue, so previous and next follow what is on screen. */
 /** The file is read again first: what plays is what is on the disk right now. */
+/** The track whose file was not there when it was asked for, named on a banner. */
+const unplayableTitle = ref<string | null>(null);
+
+/**
+ * Whether the track can still be played, checked against the disk rather than against what
+ * the list happens to be showing.
+ *
+ * A file can leave between one refresh and the next, so the answer is taken from the copy
+ * that comes back from the check. Opening the player on a file that is gone means a bar
+ * carrying an error and nothing to play, which is worse than not opening it at all.
+ */
+async function isPlayable(track: TrackView): Promise<boolean> {
+  const refreshed = (await library.refreshTrack(track.id)) ?? track;
+
+  if (refreshed.missing) {
+    unplayableTitle.value = refreshed.title;
+
+    return false;
+  }
+
+  unplayableTitle.value = null;
+
+  return true;
+}
+
 async function startPlayback(track: TrackView) {
-  await library.refreshTrack(track.id);
-  await player.playFrom(library.visibleTracks, track.id);
+  if (await isPlayable(track)) {
+    await player.playFrom(library.visibleTracks, track.id);
+  }
 }
 
 async function startFacetPlayback(track: TrackView) {
-  await library.refreshTrack(track.id);
-  await player.playFrom(selectedFacetTracks.value, track.id);
+  if (await isPlayable(track)) {
+    await player.playFrom(selectedFacetTracks.value, track.id);
+  }
 }
 
 function facetKeyOf(track: TrackView, field: FacetField) {
@@ -534,6 +561,16 @@ async function confirmRemoval() {
           missing: library.lastLibraryImport.missing.length,
         })
       }}
+    </LibraryBanner>
+
+    <LibraryBanner
+      v-if="unplayableTitle !== null"
+      tone="warning"
+      alert
+      data-testid="unplayable-notice"
+      @dismiss="unplayableTitle = null"
+    >
+      {{ t('library.playback.unavailable', { title: unplayableTitle }) }}
     </LibraryBanner>
 
     <!-- What the refresh found on opening: files gone from disk are a warning, tags read

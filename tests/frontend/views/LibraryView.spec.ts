@@ -667,6 +667,30 @@ describe('LibraryView', () => {
     expect(wrapper.find('[data-testid="bulk-metadata-editor"]').exists()).toBe(true);
   });
 
+  it('does not open the player on a track whose file is gone', async () => {
+    const { wrapper, store } = await mountView();
+    useSettingsStore().viewMode = 'table';
+    const track = makeTrack({ title: 'Gone', missing: true });
+    store.tracks = [track];
+    vi.spyOn(store, 'refreshTrack').mockResolvedValue(track);
+    const player = usePlayerStore();
+    const playFrom = vi.spyOn(player, 'playFrom').mockResolvedValue();
+    await flushPromises();
+
+    await wrapper.get('.library_row').trigger('dblclick');
+    await flushPromises();
+
+    expect(playFrom).not.toHaveBeenCalled();
+
+    const banner = wrapper.get('[data-testid="unplayable-notice"]');
+
+    expect(banner.text()).toContain('«Gone» non può essere riprodotto');
+
+    await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
+
+    expect(wrapper.find('[data-testid="unplayable-notice"]').exists()).toBe(false);
+  });
+
   it('flags on the banner the files that left their place', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [makeTrack({ title: 'Gone', missing: true })];

@@ -463,6 +463,9 @@
         "album": "Ohne Album",
         "genre": "Ohne Genre"
       }
+    },
+    "playback": {
+      "unavailable": "„{title}“ kann nicht wiedergegeben werden: Die Datei ist unter dem hinterlegten Pfad nicht verfügbar."
     }
   },
   "metadata": {

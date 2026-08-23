@@ -463,6 +463,9 @@
         "album": "No album",
         "genre": "No genre"
       }
+    },
+    "playback": {
+      "unavailable": "“{title}” cannot be played: the file is not available at the path on record."
     }
   },
   "metadata": {

@@ -463,6 +463,9 @@
         "album": "Sans album",
         "genre": "Sans genre"
       }
+    },
+    "playback": {
+      "unavailable": "« {title} » ne peut pas être lu : le fichier n’est pas disponible au chemin enregistré."
     }
   },
   "metadata": {

@@ -485,9 +485,11 @@ describe('LibraryView', () => {
     store.lastLibraryImport = { added: 2, updated: 1, skipped: 0, missing: [], total: 3 };
     await flushPromises();
 
-    expect(wrapper.get('output').text()).toContain('3 brani letti');
+    const banner = wrapper.get('[data-testid="library-import-notice"]');
 
-    await wrapper.get('output button').trigger('click');
+    expect(banner.text()).toContain('3 brani letti');
+
+    await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
     expect(store.lastLibraryImport).toBeNull();
   });
 
@@ -496,9 +498,11 @@ describe('LibraryView', () => {
     store.lastVerification = { total: 3, missing: 1 };
     await flushPromises();
 
-    expect(wrapper.get('output').text()).toContain('file mancanti 1 su 3 brani');
+    const banner = wrapper.get('[data-testid="verification-notice"]');
 
-    await wrapper.get('output button').trigger('click');
+    expect(banner.text()).toContain('file mancanti 1 su 3 brani');
+
+    await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
     expect(store.lastVerification).toBeNull();
   });
 
@@ -672,7 +676,9 @@ describe('LibraryView', () => {
     const banner = wrapper.get('[data-testid="refresh-missing"]');
 
     expect(banner.attributes('role')).toBe('alert');
-    expect(banner.text()).toContain('1 file non è più al suo posto');
+    // Impersonal, and about the file rather than about the reader.
+    expect(banner.text()).toContain('1 file non risulta più disponibile nel percorso registrato');
+    expect(banner.classes()).toContain('library_banner_warning');
     // The row says it too, next to the title it belongs to.
     expect(wrapper.find('.library_row_missing, .preview_card_missing').exists()).toBe(true);
   });

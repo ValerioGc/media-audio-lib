@@ -380,7 +380,7 @@
       "summary": "Prüfung abgeschlossen: {missing} fehlende Dateien von {total} Titeln."
     },
     "refresh": {
-      "missing": "{count} Datei ist nicht mehr an ihrem Platz | {count} Dateien sind nicht mehr an ihrem Platz",
+      "missing": "{count} Datei ist unter dem hinterlegten Pfad nicht mehr verfügbar | {count} Dateien sind unter den hinterlegten Pfaden nicht mehr verfügbar",
       "refreshed": "{count} außerhalb der App bearbeitete Titel wurden aktualisiert"
     },
     "exportList": {

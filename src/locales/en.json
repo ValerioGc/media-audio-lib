@@ -380,7 +380,7 @@
       "summary": "Verification complete: missing files {missing} out of {total} tracks."
     },
     "refresh": {
-      "missing": "{count} file is no longer where it was | {count} files are no longer where they were",
+      "missing": "{count} file is no longer available at the path on record | {count} files are no longer available at the paths on record",
       "refreshed": "{count} tracks edited outside the app were brought up to date"
     },
     "exportList": {

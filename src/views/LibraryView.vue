@@ -6,6 +6,7 @@ import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppModal from '@/components/common/AppModal.vue';
 import DefaultPlayerBanner from '@/components/library/DefaultPlayerBanner.vue';
+import LibraryBanner from '@/components/library/LibraryBanner.vue';
 import LibraryContentTabs from '@/components/library/LibraryContentTabs.vue';
 import LibraryCounts from '@/components/library/LibraryCounts.vue';
 import LibraryEmptyState from '@/components/library/LibraryEmptyState.vue';
@@ -509,14 +510,21 @@ async function confirmRemoval() {
 
     <DefaultPlayerBanner v-if="!settings.defaultPlayerBannerDismissed" />
 
-    <output v-if="library.lastExport !== null" class="library_view_notice">
+    <LibraryBanner
+      v-if="library.lastExport !== null"
+      icon="export"
+      data-testid="export-notice"
+      @dismiss="library.dismissExport()"
+    >
       {{ t('library.catalog.exported', { path: library.lastExport }) }}
-      <AppButton variant="ghost" @click="library.dismissExport()">
-        {{ t('library.report.dismiss') }}
-      </AppButton>
-    </output>
+    </LibraryBanner>
 
-    <output v-if="library.lastLibraryImport !== null" class="library_view_notice">
+    <LibraryBanner
+      v-if="library.lastLibraryImport !== null"
+      icon="import"
+      data-testid="library-import-notice"
+      @dismiss="library.dismissLibraryImport()"
+    >
       {{
         t('settings.importExport.report.summary', {
           total: library.lastLibraryImport.total,
@@ -526,20 +534,17 @@ async function confirmRemoval() {
           missing: library.lastLibraryImport.missing.length,
         })
       }}
-      <AppButton variant="ghost" @click="library.dismissLibraryImport()">
-        {{ t('library.report.dismiss') }}
-      </AppButton>
-    </output>
+    </LibraryBanner>
 
-    <!-- What the refresh found on opening: files gone from disk are an error, tags read
-         again are a note that closes itself. -->
-    <p
+    <!-- What the refresh found on opening: files gone from disk are a warning, tags read
+         again are a note. -->
+    <LibraryBanner
       v-if="library.hasMissingAfterRefresh"
-      class="library_view_error"
-      role="alert"
+      tone="warning"
+      alert
       data-testid="refresh-missing"
+      @dismiss="library.dismissRefresh()"
     >
-      <AppIcon name="warning" />
       {{
         t(
           'library.refresh.missing',
@@ -547,15 +552,13 @@ async function confirmRemoval() {
           library.lastRefresh?.missing.length ?? 0,
         )
       }}
-      <AppButton variant="ghost" @click="library.dismissRefresh()">
-        {{ t('library.report.dismiss') }}
-      </AppButton>
-    </p>
+    </LibraryBanner>
 
-    <output
+    <LibraryBanner
       v-else-if="(library.lastRefresh?.refreshed ?? 0) > 0"
-      class="library_view_notice"
+      icon="verify"
       data-testid="refresh-updated"
+      @dismiss="library.dismissRefresh()"
     >
       {{
         t(
@@ -564,22 +567,22 @@ async function confirmRemoval() {
           library.lastRefresh?.refreshed ?? 0,
         )
       }}
-      <AppButton variant="ghost" @click="library.dismissRefresh()">
-        {{ t('library.report.dismiss') }}
-      </AppButton>
-    </output>
+    </LibraryBanner>
 
-    <output v-if="library.lastVerification !== null" class="library_view_notice">
+    <LibraryBanner
+      v-if="library.lastVerification !== null"
+      icon="verify"
+      :tone="library.lastVerification.missing > 0 ? 'warning' : 'info'"
+      data-testid="verification-notice"
+      @dismiss="library.dismissVerification()"
+    >
       {{
         t('library.verification.summary', {
           total: library.lastVerification.total,
           missing: library.lastVerification.missing,
         })
       }}
-      <AppButton variant="ghost" @click="library.dismissVerification()">
-        {{ t('library.report.dismiss') }}
-      </AppButton>
-    </output>
+    </LibraryBanner>
 
     <LibraryImportReport
       v-if="library.lastReport !== null"
@@ -851,18 +854,6 @@ async function confirmRemoval() {
     display: flex;
     flex-direction: column;
     gap: $space_md;
-  }
-
-  &_notice {
-    display: flex;
-    gap: $space_sm;
-    align-items: center;
-    justify-content: space-between;
-    padding: $space_sm $space_md;
-    font-size: 0.875em;
-
-    @include surface_panel($radius_md, var(--color_surface_alt));
-    overflow-wrap: anywhere;
   }
 
   &_error {

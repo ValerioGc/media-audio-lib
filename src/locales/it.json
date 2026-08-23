@@ -380,7 +380,7 @@
       "summary": "Verifica completata: file mancanti {missing} su {total} brani."
     },
     "refresh": {
-      "missing": "{count} file non è più al suo posto | {count} file non sono più al loro posto",
+      "missing": "{count} file non risulta più disponibile nel percorso registrato | {count} file non risultano più disponibili nei percorsi registrati",
       "refreshed": "Aggiornati {count} brani modificati fuori dall’app"
     },
     "exportList": {

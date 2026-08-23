@@ -380,7 +380,7 @@
       "summary": "Verificación terminada: {missing} archivos ausentes de {total} pistas."
     },
     "refresh": {
-      "missing": "{count} archivo ya no está en su sitio | {count} archivos ya no están en su sitio",
+      "missing": "{count} archivo ya no está disponible en la ruta registrada | {count} archivos ya no están disponibles en las rutas registradas",
       "refreshed": "Se han actualizado {count} pistas modificadas fuera de la app"
     },
     "exportList": {

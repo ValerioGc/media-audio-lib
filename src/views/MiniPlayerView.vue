@@ -305,6 +305,11 @@ async function close(quitsApp: boolean) {
   gap: $space_xs;
   height: 100%;
   padding: $space_2xs $space_sm $space_sm;
+  // Two lines rather than one: the dock is an undecorated window standing on whatever
+  // happens to be behind it, and a single edge disappears against a surface of its own
+  // value. The outer one holds the shape, the inner one keeps it there on a dark desktop.
+  border: 1px solid var(--color_border_strong);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color_text) 10%, transparent);
   background-color: var(--color_bg);
   color: var(--color_text);
 

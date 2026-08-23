@@ -61,6 +61,10 @@ function toggleDirection() {
 </template>
 
 <style scoped lang="scss">
+// Both halves are given the same height rather than left to their own padding: the select
+// is a native control and the button is not, and they never land on the same line by chance.
+$sort_control_height: 2.25rem;
+
 .library_sort_select {
   display: flex;
   gap: $space_xs;
@@ -70,12 +74,16 @@ function toggleDirection() {
     min-width: 8rem;
 
     :deep(.app_select_field) {
-      border-color: var(--color_accent);
-      background-color: var(--color_accent);
-      color: var(--color_on_accent);
+      height: $sort_control_height;
+      min-width: 0;
+      padding: 0 $space_sm;
 
+      // At rest it is a control like any other. The accent belongs to the pointer, which is
+      // what says the order can be changed from here.
       &:hover {
-        background-color: var(--color_accent_hover);
+        border-color: var(--color_accent);
+        background-color: var(--color_accent);
+        color: var(--color_on_accent);
       }
     }
   }
@@ -85,18 +93,23 @@ function toggleDirection() {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border: 1px solid var(--color_accent);
+    width: $sort_control_height;
+    height: $sort_control_height;
+    border: 1px solid var(--color_border_strong);
     border-radius: $radius_md;
-    background-color: var(--color_accent);
-    color: var(--color_on_accent);
+    background-color: var(--color_surface);
+    color: var(--color_text);
     font: inherit;
     cursor: pointer;
-    transition: background-color $duration_fast ease;
+    transition:
+      border-color $duration_fast ease,
+      background-color $duration_fast ease,
+      color $duration_fast ease;
 
     &:hover {
-      background-color: var(--color_accent_hover);
+      border-color: var(--color_accent);
+      background-color: var(--color_accent);
+      color: var(--color_on_accent);
     }
 
     @include focus_ring;

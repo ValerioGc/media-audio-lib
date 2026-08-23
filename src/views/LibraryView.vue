@@ -590,10 +590,10 @@ async function confirmRemoval() {
         />
         <LibraryFacetList
           v-else-if="activeFacet !== null"
+          v-model:sort="facetSort"
           :tracks="library.visibleTracks"
           :field="activeFacet"
           :view-mode="activeFacetViewMode"
-          v-model:sort="facetSort"
           :playing-track="player.currentTrack"
           @open="openFacet"
         />

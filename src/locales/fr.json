@@ -9,7 +9,7 @@
     "about": "À propos"
   },
   "about": {
-    "title": "À propos de Media Audio Lib",
+    "title": "Info",
     "description": "Lecteur audio et gestionnaire de bibliothèque : il modifie les tags et les pochettes directement dans les fichiers, les laisse où ils sont et les lit sans quitter la fenêtre.",
     "website": "Site web",
     "repository": "Projet GitHub",

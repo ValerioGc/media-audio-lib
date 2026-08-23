@@ -68,6 +68,16 @@ function toggleDirection() {
 
   &_field {
     min-width: 8rem;
+
+    :deep(.app_select_field) {
+      border-color: var(--color_accent);
+      background-color: var(--color_accent);
+      color: var(--color_on_accent);
+
+      &:hover {
+        background-color: var(--color_accent_hover);
+      }
+    }
   }
 
   &_direction {
@@ -77,16 +87,16 @@ function toggleDirection() {
     justify-content: center;
     width: 2.25rem;
     height: 2.25rem;
-    border: 1px solid var(--color_border_strong);
+    border: 1px solid var(--color_accent);
     border-radius: $radius_md;
-    background-color: var(--color_surface);
-    color: var(--color_text);
+    background-color: var(--color_accent);
+    color: var(--color_on_accent);
     font: inherit;
     cursor: pointer;
     transition: background-color $duration_fast ease;
 
     &:hover {
-      background-color: var(--color_surface_hover);
+      background-color: var(--color_accent_hover);
     }
 
     @include focus_ring;

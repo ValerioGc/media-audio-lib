@@ -9,7 +9,7 @@
     "about": "About"
   },
   "about": {
-    "title": "About Media Audio Lib",
+    "title": "Info",
     "description": "Audio player and library manager: it edits tags and cover art straight into the files, leaves them where they are, and plays them without leaving the window.",
     "website": "Website",
     "repository": "GitHub project",

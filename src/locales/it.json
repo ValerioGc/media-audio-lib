@@ -9,7 +9,7 @@
     "about": "Informazioni"
   },
   "about": {
-    "title": "Informazioni su Media Audio Lib",
+    "title": "Info",
     "description": "Player audio e gestore di libreria: modifica tag e copertine direttamente nei file, li tiene dove sono e li riproduce senza uscire dalla finestra.",
     "website": "Sito web",
     "repository": "Progetto GitHub",

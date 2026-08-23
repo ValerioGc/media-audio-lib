@@ -1,4 +1,10 @@
-/** Single place where the glyphs used by the interface live. */
+/**
+ * Single place where the glyphs used by the interface live.
+ *
+ * Text rather than pictures: a glyph follows the colour and the size of what it sits in,
+ * costs nothing to load and never falls out of step with the text beside it. Every one of
+ * them is drawn by the system font on both target platforms.
+ */
 export const ICON_GLYPHS = {
   remove: '✕',
   edit: '✎',
@@ -19,12 +25,12 @@ export const ICON_GLYPHS = {
   volume: '◀))',
   mute: '◀✕',
   switch: '⇄',
-  repeatOne: '↻1',
+  repeatOne: '↻¹',
   list: '☰',
   grid: '▦',
   external: '↗',
   minimize: '─',
-  tray: '＿',
+  tray: '▁',
   maximize: '▢',
   help: '?',
   info: 'i',
@@ -35,7 +41,7 @@ export const ICON_GLYPHS = {
   verify: '✓',
   duplicate: '⧉',
   check: '✔',
-  drag: '⋮⋮',
+  drag: '⠿',
   export: '⤓',
   import: '⤒',
 } as const;

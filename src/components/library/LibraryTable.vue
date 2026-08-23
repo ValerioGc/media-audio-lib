@@ -395,12 +395,14 @@ onUnmounted(stopResize);
     font-size: 0.875em;
   }
 
+  // The same on the left as a row of the list, or the headings would stand a step away
+  // from the columns they name.
   &_head_row {
     display: grid;
     grid-template-columns: var(--library_grid_columns);
     gap: $space_sm;
     align-items: center;
-    padding: $space_sm $space_md;
+    padding: $space_sm $space_md $space_sm 0;
   }
 
   // Not clipped. The grab handle straddles the edge of the heading, so hiding what falls

@@ -134,7 +134,10 @@ function openActionsMenu(event: MouseEvent) {
   gap: $space_sm;
   align-items: center;
   height: var(--library_row_height);
-  padding: 0 $space_md;
+  // Nothing on the left: the cover is the first thing in the row and it starts at the edge
+  // of the list, filling its column rather than sitting in from it. The cells keep a step
+  // of their own, which is what holds the writing apart.
+  padding: 0 $space_md 0 0;
   border-bottom: 1px solid var(--color_border);
   cursor: pointer;
   transition: background-color $duration_fast ease;
@@ -174,9 +177,13 @@ function openActionsMenu(event: MouseEvent) {
 
   // The cover is the one cell measured in both directions: it fills its column and the
   // row was made tall enough to hold it.
+  //
+  // No step in from the edge either: the step is there so writing does not begin where the
+  // writing before it ended, and a picture that fills its column has nothing to keep clear.
   &_cover {
     display: flex;
     align-items: center;
+    padding-left: 0;
     // A square of the cover column, never taller than the row it sits in.
     height: min(var(--library_cover_size), calc(var(--library_row_height) - #{$space_sm}));
   }

@@ -28,8 +28,8 @@
       "description": "Ajustes generales de inicio de la aplicación y de comportamiento de la ventana.",
       "autostart": "Iniciar con el sistema",
       "minimized": "Iniciar minimizada en la bandeja del sistema",
-      "closeToTray": "Al cerrar, permanecer en la bandeja del sistema",
-      "hint": "Con la aplicación en la bandeja del sistema, un clic en el icono reabre la ventana y el botón derecho ofrece detener la reproducción o salir."
+      "closeToTray": "Al cerrar la ventana, la aplicación permanece en la bandeja del sistema",
+      "hint": "Cuando la aplicación está minimizada en la bandeja del sistema, un clic en el icono reabre la ventana y el botón derecho ofrece detener la reproducción o salir."
     },
     "playerBehaviour": {
       "title": "Reproductor",
@@ -181,10 +181,10 @@
     },
     "coverCache": {
       "title": "Caché de portadas",
-      "description": "Las portadas se guardan en el disco, para no tener que leerlas de tus archivos en cada arranque. Puedes vaciarla cuando quieras: se reconstruye sola y tus archivos no se tocan.",
-      "size": "Ahora mismo ocupa {size} en el disco.",
+      "description": "Las portadas se guardan en el disco, para no tener que leerlas de los archivos en cada arranque. La caché se puede vaciar en cualquier momento: se reconstruye sola y los archivos de la biblioteca no se modifican.",
+      "size": "En este momento la caché ocupa {size} en el disco.",
       "empty": "La caché está vacía: no ocupa espacio.",
-      "limit": "Al superar {limit}, las portadas pedidas hace más tiempo se eliminan automáticamente.",
+      "limit": "Cuando la caché supera {limit}, las portadas solicitadas hace más tiempo se eliminan automáticamente.",
       "clear": "Vaciar la caché",
       "clearing": "Vaciando…",
       "cleared": "Caché vaciada."

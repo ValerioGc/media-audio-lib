@@ -28,8 +28,8 @@
       "description": "Réglages généraux du démarrage de l’application et du comportement de la fenêtre.",
       "autostart": "Démarrer avec le système",
       "minimized": "Démarrer réduite dans la zone de notification",
-      "closeToTray": "À la fermeture, rester dans la zone de notification",
-      "hint": "Avec l’application dans la zone de notification, un clic sur l’icône rouvre la fenêtre et un clic droit propose d’arrêter la lecture ou de quitter."
+      "closeToTray": "À la fermeture de la fenêtre, l’application reste dans la zone de notification",
+      "hint": "Lorsque l’application est réduite dans la zone de notification, un clic sur l’icône rouvre la fenêtre et un clic droit propose d’arrêter la lecture ou de quitter."
     },
     "playerBehaviour": {
       "title": "Lecteur",
@@ -181,10 +181,10 @@
     },
     "coverCache": {
       "title": "Cache des pochettes",
-      "description": "Les pochettes sont conservées sur le disque, pour ne pas devoir les relire dans vos fichiers à chaque démarrage. Vous pouvez le vider quand vous voulez : il se reconstruit seul et vos fichiers ne sont pas touchés.",
-      "size": "Occupe actuellement {size} sur le disque.",
+      "description": "Les pochettes sont conservées sur le disque, pour ne pas devoir les relire dans les fichiers à chaque démarrage. Le cache peut être vidé à tout moment : il se reconstruit seul et les fichiers de la bibliothèque ne sont pas modifiés.",
+      "size": "Le cache occupe actuellement {size} sur le disque.",
       "empty": "Le cache est vide : il n’occupe aucun espace.",
-      "limit": "Au-delà de {limit}, les pochettes demandées il y a le plus longtemps sont supprimées automatiquement.",
+      "limit": "Lorsque le cache dépasse {limit}, les pochettes demandées il y a le plus longtemps sont supprimées automatiquement.",
       "clear": "Vider le cache",
       "clearing": "Nettoyage…",
       "cleared": "Cache vidé."

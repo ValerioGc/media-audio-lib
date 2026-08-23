@@ -28,8 +28,8 @@
       "description": "Impostazioni generali di avvio dell’applicazione e di comportamento della finestra.",
       "autostart": "Avvia all'accensione del sistema",
       "minimized": "Parti ridotta nella barra di sistema",
-      "closeToTray": "Chiudendo, resta nella barra di sistema",
-      "hint": "Con l’applicazione nella barra di sistema il clic sull’icona riapre la finestra, il tasto destro offre di interrompere la riproduzione o di uscire."
+      "closeToTray": "Alla chiusura della finestra, l’applicazione resta nella barra di sistema",
+      "hint": "Quando l’applicazione è minimizzata nella barra di sistema, un clic sull’icona riapre la finestra e il tasto destro offre di interrompere la riproduzione o di uscire."
     },
     "playerBehaviour": {
       "title": "Player",
@@ -181,10 +181,10 @@
     },
     "coverCache": {
       "title": "Cache delle copertine",
-      "description": "Le copertine dei brani vengono conservate su disco, per non doverle rileggere dai file a ogni avvio. Puoi svuotarla quando vuoi: si ricostruisce da sola e i tuoi file non vengono toccati.",
-      "size": "Al momento occupa {size} sul disco.",
+      "description": "Le copertine dei brani vengono conservate su disco, per non doverle rileggere dai file a ogni avvio. È possibile svuotare la cache in qualsiasi momento: si ricostruisce da sola e i file della libreria non vengono modificati.",
+      "size": "Al momento la cache occupa {size} sul disco.",
       "empty": "La cache è vuota: non occupa spazio.",
-      "limit": "Quando supera {limit}, le copertine chieste da più tempo vengono rimosse automaticamente.",
+      "limit": "Quando la cache supera {limit}, le copertine richieste da più tempo vengono rimosse automaticamente.",
       "clear": "Svuota la cache",
       "clearing": "Pulizia in corso…",
       "cleared": "Cache svuotata."

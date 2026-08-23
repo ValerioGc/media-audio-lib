@@ -28,8 +28,8 @@
       "description": "Allgemeine Einstellungen zum Start der Anwendung und zum Verhalten des Fensters.",
       "autostart": "Mit dem System starten",
       "minimized": "Minimiert im Infobereich starten",
-      "closeToTray": "Beim Schließen im Infobereich bleiben",
-      "hint": "Liegt die Anwendung im Infobereich, öffnet ein Klick auf das Symbol das Fenster wieder, die rechte Maustaste bietet an, die Wiedergabe zu beenden oder zu schließen."
+      "closeToTray": "Beim Schließen des Fensters bleibt die Anwendung im Infobereich",
+      "hint": "Wenn die Anwendung im Infobereich minimiert ist, öffnet ein Klick auf das Symbol das Fenster wieder, die rechte Maustaste bietet an, die Wiedergabe zu beenden oder zu schließen."
     },
     "playerBehaviour": {
       "title": "Player",
@@ -181,10 +181,10 @@
     },
     "coverCache": {
       "title": "Cover-Cache",
-      "description": "Cover werden auf der Festplatte behalten, damit sie nicht bei jedem Start neu aus Ihren Dateien gelesen werden müssen. Sie können ihn jederzeit leeren: er baut sich von selbst wieder auf und Ihre Dateien bleiben unberührt.",
-      "size": "Belegt derzeit {size} auf der Festplatte.",
+      "description": "Cover werden auf der Festplatte behalten, damit sie nicht bei jedem Start neu aus den Dateien gelesen werden müssen. Der Cache kann jederzeit geleert werden: er baut sich von selbst wieder auf und die Dateien der Bibliothek bleiben unverändert.",
+      "size": "Der Cache belegt derzeit {size} auf der Festplatte.",
       "empty": "Der Cache ist leer: er belegt keinen Speicher.",
-      "limit": "Über {limit} hinaus werden die am längsten nicht angefragten Cover automatisch entfernt.",
+      "limit": "Wenn der Cache {limit} überschreitet, werden die am längsten nicht angefragten Cover automatisch entfernt.",
       "clear": "Cache leeren",
       "clearing": "Wird geleert…",
       "cleared": "Cache geleert."

@@ -43,10 +43,10 @@ const MAIN_WINDOW: &str = "main";
 pub const MINI_WINDOW: &str = "mini";
 
 /// Sizes of the dock, in logical pixels: one per layout, one per level.
-pub const MINI_SIZE: (f64, f64) = (360.0, 104.0);
-pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 216.0);
+pub const MINI_SIZE: (f64, f64) = (360.0, 112.0);
+pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 172.0);
 pub const MINI_SIZE_VERTICAL: (f64, f64) = (232.0, 268.0);
-pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (232.0, 400.0);
+pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (232.0, 322.0);
 
 /// Room left between the dock and the corner of the screen it first appears in.
 pub const MINI_SCREEN_MARGIN: f64 = 16.0;

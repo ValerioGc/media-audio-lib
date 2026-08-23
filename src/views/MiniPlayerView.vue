@@ -21,6 +21,7 @@ const settings = useSettingsStore();
 
 const state = ref<MiniPlayerState | null>(null);
 const isClosing = ref(false);
+const isSheetOpen = ref(false);
 const remembers = ref(false);
 let unlistenState: (() => void) | null = null;
 let unlistenMoved: (() => void) | null = null;
@@ -34,6 +35,14 @@ const gradientStyle = computed(() =>
     ? {}
     : { '--dock_gradient': state.value.gradient },
 );
+
+/** How far along the track is, as the share of the bar that is filled. */
+const progressStyle = computed(() => {
+  const duration = state.value?.duration ?? 0;
+  const share = duration > 0 ? ((state.value?.position ?? 0) / duration) * 100 : 0;
+
+  return { '--mini_progress': `${Math.min(100, Math.max(0, share))}%` };
+});
 
 onMounted(async () => {
   // The dock reads the same settings file as the app, so theme, accent and text size follow.
@@ -72,10 +81,6 @@ async function toggleOrientation() {
 
 async function toggleOnTop() {
   await settings.setMiniPlayerAlwaysOnTop(!settings.miniPlayerAlwaysOnTop);
-}
-
-async function toggleGradient() {
-  await settings.setMiniPlayerGradient(!settings.miniPlayerGradient);
 }
 
 /** Closing the dock may or may not mean closing the app: the answer can be remembered. */
@@ -118,7 +123,7 @@ async function close(quitsApp: boolean) {
       mini_player_expanded: isExpanded,
       mini_player_accented: state?.gradient !== null && state?.gradient !== undefined,
     }"
-    :style="gradientStyle"
+    :style="{ ...gradientStyle, ...progressStyle }"
   >
     <!-- The window commands take the top line, out of the way of the transport. -->
     <div class="mini_player_bar" data-tauri-drag-region>
@@ -135,6 +140,16 @@ async function close(quitsApp: boolean) {
 
       <span class="mini_player_grip" data-tauri-drag-region></span>
 
+      <button
+        class="mini_player_button"
+        type="button"
+        :aria-label="t('mini.menu.label')"
+        :aria-expanded="isSheetOpen"
+        data-testid="mini-menu"
+        @click="isSheetOpen = !isSheetOpen"
+      >
+        <AppIcon name="more" />
+      </button>
       <button
         class="mini_player_button"
         type="button"
@@ -155,6 +170,8 @@ async function close(quitsApp: boolean) {
       </button>
     </div>
 
+    <!-- What is playing and what to do with it on the same line: the dock is read across,
+         and the bar underneath is then the only thing left to look at. -->
     <div class="mini_player_track">
       <span class="mini_player_cover">
         <img v-if="state?.cover" :src="state.cover" alt="" />
@@ -165,56 +182,59 @@ async function close(quitsApp: boolean) {
         <span class="mini_player_title">{{ state?.title ?? t('mini.idle') }}</span>
         <span class="mini_player_artist">{{ state?.artist ?? '' }}</span>
       </span>
-    </div>
 
-    <div class="mini_player_controls">
-      <button
-        v-if="isExpanded"
-        class="mini_player_button"
-        type="button"
-        :aria-label="t('player.previous')"
-        :disabled="!state?.hasPrevious"
-        data-testid="mini-previous"
-        @click="sendMiniCommand('previous')"
-      >
-        <AppIcon name="previous" />
-      </button>
-      <button
-        class="mini_player_button mini_player_button_main"
-        type="button"
-        :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
-        data-testid="mini-toggle"
-        @click="sendMiniCommand('toggle')"
-      >
-        <AppIcon :name="state?.isPlaying ? 'pause' : 'play'" />
-      </button>
-      <button
-        class="mini_player_button"
-        type="button"
-        :aria-label="t('player.next')"
-        :disabled="!state?.hasNext"
-        data-testid="mini-next"
-        @click="sendMiniCommand('next')"
-      >
-        <AppIcon name="next" />
-      </button>
-      <button
-        v-if="isExpanded"
-        class="mini_player_button"
-        type="button"
-        :aria-label="t('player.stop')"
-        data-testid="mini-stop"
-        @click="sendMiniCommand('stop')"
-      >
-        <AppIcon name="stop" />
-      </button>
+      <div class="mini_player_controls">
+        <button
+          v-if="isExpanded"
+          class="mini_player_button"
+          type="button"
+          :aria-label="t('player.previous')"
+          :disabled="!state?.hasPrevious"
+          data-testid="mini-previous"
+          @click="sendMiniCommand('previous')"
+        >
+          <AppIcon name="previous" />
+        </button>
+        <button
+          class="mini_player_button mini_player_button_main"
+          type="button"
+          :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
+          data-testid="mini-toggle"
+          @click="sendMiniCommand('toggle')"
+        >
+          <AppIcon :name="state?.isPlaying ? 'pause' : 'play'" />
+        </button>
+        <button
+          class="mini_player_button"
+          type="button"
+          :aria-label="t('player.next')"
+          :disabled="!state?.hasNext"
+          data-testid="mini-next"
+          @click="sendMiniCommand('next')"
+        >
+          <AppIcon name="next" />
+        </button>
+        <button
+          v-if="isExpanded"
+          class="mini_player_button"
+          type="button"
+          :aria-label="t('player.stop')"
+          data-testid="mini-stop"
+          @click="sendMiniCommand('stop')"
+        >
+          <AppIcon name="stop" />
+        </button>
+      </div>
     </div>
 
     <!-- The line follows the track without taking a row of its own; the bar is seekable. -->
     <PlayerProgress
       v-if="settings.miniPlayerProgress !== 'none'"
       class="mini_player_progress"
-      :class="{ mini_player_progress_line: settings.miniPlayerProgress === 'line' }"
+      :class="{
+        mini_player_progress_line: settings.miniPlayerProgress === 'line',
+        mini_player_progress_playing: state?.isPlaying === true,
+      }"
       :position="state?.position ?? 0"
       :duration="state?.duration ?? 0"
       :hide-times="settings.miniPlayerProgress === 'line'"
@@ -222,62 +242,94 @@ async function close(quitsApp: boolean) {
       @seek="sendMiniCommand('seek', $event)"
     />
 
-    <!-- The second level: what does not fit in a glance, and the settings of the dock. -->
-    <template v-if="isExpanded">
-      <div class="mini_player_sound">
-        <button
-          class="mini_player_button"
-          type="button"
-          :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
-          :aria-pressed="state?.isMuted ?? false"
-          data-testid="mini-mute"
-          @click="sendMiniCommand('mute')"
-        >
-          <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
-        </button>
+    <!-- The second level: the volume, next to the transport rather than under it. -->
+    <div v-if="isExpanded" class="mini_player_sound">
+      <button
+        class="mini_player_button"
+        type="button"
+        :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+        :aria-pressed="state?.isMuted ?? false"
+        data-testid="mini-mute"
+        @click="sendMiniCommand('mute')"
+      >
+        <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+      </button>
+      <PlayerVolume
+        class="mini_player_volume"
+        :model-value="state?.volume ?? 0"
+        @update:model-value="sendMiniCommand('volume', $event)"
+      />
+    </div>
+
+    <!-- The commands that do not fit on the face of the dock, and the way it is laid out.
+         A panel inside the window rather than a dropdown: the window is a few hundred
+         pixels tall, and anything hanging below its edge would simply be cut off. -->
+    <div v-if="isSheetOpen" class="mini_player_sheet" role="menu" data-testid="mini-sheet">
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitem"
+        data-testid="mini-sheet-stop"
+        @click="sendMiniCommand('stop')"
+      >
+        <AppIcon name="stop" />
+        <span>{{ t('player.stop') }}</span>
+      </button>
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitem"
+        :disabled="!state?.hasPrevious"
+        data-testid="mini-sheet-previous"
+        @click="sendMiniCommand('previous')"
+      >
+        <AppIcon name="previous" />
+        <span>{{ t('player.previous') }}</span>
+      </button>
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitemradio"
+        :aria-checked="state?.isMuted ?? false"
+        data-testid="mini-sheet-mute"
+        @click="sendMiniCommand('mute')"
+      >
+        <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+        <span>{{ state?.isMuted ? t('player.unmute') : t('player.mute') }}</span>
+      </button>
+
+      <div class="mini_player_sheet_volume">
         <PlayerVolume
-          class="mini_player_volume"
           :model-value="state?.volume ?? 0"
           @update:model-value="sendMiniCommand('volume', $event)"
         />
       </div>
 
-      <div class="mini_player_options">
-        <button
-          class="mini_player_option"
-          :class="{ mini_player_option_on: isVertical }"
-          type="button"
-          :aria-pressed="isVertical"
-          data-testid="mini-orientation"
-          @click="toggleOrientation"
-        >
-          <AppIcon :name="isVertical ? 'grid' : 'list'" />
-          <span>{{ isVertical ? t('mini.menu.horizontal') : t('mini.menu.vertical') }}</span>
-        </button>
-        <button
-          class="mini_player_option"
-          :class="{ mini_player_option_on: settings.miniPlayerAlwaysOnTop }"
-          type="button"
-          :aria-pressed="settings.miniPlayerAlwaysOnTop"
-          data-testid="mini-on-top"
-          @click="toggleOnTop"
-        >
-          <AppIcon name="expand" />
-          <span>{{ t('mini.menu.alwaysOnTop') }}</span>
-        </button>
-        <button
-          class="mini_player_option"
-          :class="{ mini_player_option_on: settings.miniPlayerGradient }"
-          type="button"
-          :aria-pressed="settings.miniPlayerGradient"
-          data-testid="mini-gradient"
-          @click="toggleGradient"
-        >
-          <AppIcon name="grid" />
-          <span>{{ t('mini.menu.gradient') }}</span>
-        </button>
-      </div>
-    </template>
+      <hr class="mini_player_sheet_divider" />
+
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitemradio"
+        :aria-checked="isVertical"
+        data-testid="mini-orientation"
+        @click="toggleOrientation"
+      >
+        <AppIcon :name="isVertical ? 'grid' : 'list'" />
+        <span>{{ isVertical ? t('mini.menu.horizontal') : t('mini.menu.vertical') }}</span>
+      </button>
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitemradio"
+        :aria-checked="settings.miniPlayerAlwaysOnTop"
+        data-testid="mini-on-top"
+        @click="toggleOnTop"
+      >
+        <AppIcon name="expand" />
+        <span>{{ t('mini.menu.alwaysOnTop') }}</span>
+      </button>
+    </div>
 
     <AppModal :open="isClosing" :title="t('mini.confirm.title')" @close="isClosing = false">
       <p>{{ t('mini.confirm.message') }}</p>
@@ -301,6 +353,7 @@ async function close(quitsApp: boolean) {
 <style scoped lang="scss">
 .mini_player {
   display: flex;
+  position: relative;
   flex-direction: column;
   gap: $space_xs;
   height: 100%;
@@ -372,6 +425,7 @@ async function close(quitsApp: boolean) {
 
   &_names {
     display: flex;
+    flex: 1;
     flex-direction: column;
     min-width: 0;
   }
@@ -396,16 +450,26 @@ async function close(quitsApp: boolean) {
     white-space: nowrap;
   }
 
-  &_controls,
-  &_sound {
+  &_controls {
     display: flex;
+    flex-shrink: 0;
     gap: $space_xs;
     align-items: center;
     justify-content: center;
   }
 
+  // The volume is not the length of the track: a short slider, kept at the end of the row
+  // next to the command it belongs to.
+  &_sound {
+    display: flex;
+    gap: $space_xs;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
   &_volume {
-    flex: 1;
+    flex: 0 0 auto;
+    width: 6rem;
   }
 
   &_progress {
@@ -417,37 +481,102 @@ async function close(quitsApp: boolean) {
     font-size: 0.75em;
   }
 
-  &_options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space_2xs;
-    justify-content: center;
-  }
-
-  &_option {
-    display: inline-flex;
-    gap: $space_2xs;
-    align-items: center;
-    padding: $space_2xs $space_xs;
-    border: 1px solid var(--color_border);
-    border-radius: 999px;
+  // The bar is the one thing on its row, so it is drawn to be seen from across a desk: a
+  // thicker track, and a round marker large enough to be aimed at.
+  &_progress :deep(.app_slider_field) {
+    height: 1.1rem;
+    appearance: none;
     background: none;
-    color: var(--color_text_muted);
-    font: inherit;
-    font-size: 0.7em;
-    cursor: pointer;
 
-    &:hover {
-      background-color: var(--color_surface_hover);
-      color: var(--color_text);
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to right,
+        var(--color_accent) var(--mini_progress, 0%),
+        color-mix(in srgb, var(--color_text) 20%, transparent) var(--mini_progress, 0%)
+      );
     }
 
-    @include focus_ring;
+    &::-webkit-slider-thumb {
+      width: 0.85rem;
+      height: 0.85rem;
+      margin-top: -0.25rem;
+      appearance: none;
+      border-radius: 999px;
+      background-color: var(--color_accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color_accent) 25%, transparent);
+    }
+  }
 
-    &_on {
-      border-color: var(--color_accent);
-      background-color: var(--color_accent_soft);
-      color: var(--color_accent);
+  // While the sound is running the marker breathes, which is what says at a glance that the
+  // dock is playing rather than paused at that point.
+  &_progress_playing :deep(.app_slider_field::-webkit-slider-thumb) {
+    animation: mini_player_pulse 1.6s ease-in-out infinite;
+  }
+
+  // Over the face of the dock, under the top line that opened it.
+  &_sheet {
+    display: flex;
+    position: absolute;
+    top: 2rem;
+    right: $space_2xs;
+    bottom: $space_2xs;
+    left: $space_2xs;
+    z-index: 5;
+    flex-direction: column;
+    gap: $space_2xs;
+    padding: $space_xs;
+    @include surface_panel($radius_md);
+    box-shadow: var(--shadow_raised);
+
+    @include scroll_area;
+
+    &_item {
+      display: flex;
+      flex-shrink: 0;
+      gap: $space_sm;
+      align-items: center;
+      min-height: 1.9rem;
+      padding: 0 $space_sm;
+      border: 0;
+      border-radius: $radius_sm;
+      background: none;
+      color: var(--color_text);
+      font: inherit;
+      font-size: 0.8125em;
+      text-align: left;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &:hover:not(:disabled) {
+        background-color: var(--color_surface_hover);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      &[aria-checked='true'] {
+        color: var(--color_accent);
+      }
+
+      @include focus_ring;
+    }
+
+    &_volume {
+      display: flex;
+      flex-shrink: 0;
+      padding: 0 $space_sm;
+    }
+
+    &_divider {
+      flex-shrink: 0;
+      height: 1px;
+      margin: $space_2xs 0;
+      border: 0;
+      background-color: var(--color_border);
     }
   }
 
@@ -503,6 +632,23 @@ async function close(quitsApp: boolean) {
       height: 1rem;
       accent-color: var(--color_accent);
     }
+  }
+}
+
+@keyframes mini_player_pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color_accent) 25%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color_accent) 12%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mini_player_progress_playing :deep(.app_slider_field::-webkit-slider-thumb) {
+    animation: none;
   }
 }
 </style>

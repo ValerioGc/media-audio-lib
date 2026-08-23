@@ -82,7 +82,6 @@ describe('MiniPlayerView', () => {
 
     expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="mini-orientation"]').exists()).toBe(false);
 
     await wrapper.get('[data-testid="mini-level"]').trigger('click');
     await flushPromises();
@@ -91,6 +90,17 @@ describe('MiniPlayerView', () => {
     expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="mini-stop"]').exists()).toBe(true);
     expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(true);
+  });
+
+  it('keeps the transport beside the track, with the bar alone under it', async () => {
+    const { wrapper } = await mountDock();
+    const track = wrapper.get('.mini_player_track');
+
+    // Compact: name, artist and the transport share one row.
+    expect(track.find('.mini_player_names').exists()).toBe(true);
+    expect(track.find('[data-testid="mini-toggle"]').exists()).toBe(true);
+    expect(track.find('[data-testid="mini-next"]').exists()).toBe(true);
+    expect(wrapper.find('.mini_player_progress').exists()).toBe(true);
   });
 
   it('draws the progress the way the settings ask for', async () => {
@@ -125,19 +135,39 @@ describe('MiniPlayerView', () => {
     expect(send.mock.calls.map(([action]) => action)).toEqual(['toggle', 'stop', 'mute', 'expand']);
   });
 
-  it('turns the dock on its side, keeps it in front and paints it, from its own options', async () => {
+  it('keeps its commands and its layout behind the three dots', async () => {
+    const send = vi.spyOn(bridge, 'sendMiniCommand').mockResolvedValue(true);
     const { wrapper, settings } = await mountDock();
-    settings.miniPlayerLevel = 'expanded';
+    mocks.state(playing);
     await flushPromises();
 
-    await wrapper.get('[data-testid="mini-orientation"]').trigger('click');
+    // Nothing of it is on the face of the dock until it is asked for.
+    expect(wrapper.find('[data-testid="mini-sheet"]').exists()).toBe(false);
+
+    await wrapper.get('[data-testid="mini-menu"]').trigger('click');
+
+    const sheet = wrapper.get('[data-testid="mini-sheet"]');
+
+    await sheet.get('[data-testid="mini-sheet-stop"]').trigger('click');
+    await sheet.get('[data-testid="mini-sheet-mute"]').trigger('click');
+
+    expect(send.mock.calls.map(([action]) => action)).toEqual(['stop', 'mute']);
+    // The previous track is offered, and refused while there is none behind this one.
+    expect(sheet.get('[data-testid="mini-sheet-previous"]').attributes('disabled')).toBeDefined();
+
+    await sheet.get('[data-testid="mini-orientation"]').trigger('click');
     expect(settings.miniPlayerOrientation).toBe('vertical');
 
-    await wrapper.get('[data-testid="mini-on-top"]').trigger('click');
+    await sheet.get('[data-testid="mini-on-top"]').trigger('click');
     expect(settings.miniPlayerAlwaysOnTop).toBe(false);
+  });
 
-    await wrapper.get('[data-testid="mini-gradient"]').trigger('click');
-    expect(settings.miniPlayerGradient).toBe(false);
+  it('leaves the cover background to the settings of the app', async () => {
+    const { wrapper } = await mountDock();
+
+    await wrapper.get('[data-testid="mini-menu"]').trigger('click');
+
+    expect(wrapper.find('[data-testid="mini-gradient"]').exists()).toBe(false);
   });
 
   it('asks before closing, and can be told once and for all', async () => {

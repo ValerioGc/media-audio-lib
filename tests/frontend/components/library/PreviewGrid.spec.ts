@@ -31,7 +31,7 @@ describe('PreviewGrid', () => {
 
     expect(wrapper.get('ul').attributes('style')).toContain('--preview_card_width: 9rem');
 
-    await settings.setPreviewSize('large');
+    await settings.setPreviewSize('tracks', 'large');
 
     expect(wrapper.get('ul').attributes('style')).toContain('--preview_card_width: 12rem');
   });

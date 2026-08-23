@@ -592,6 +592,58 @@ describe('LibraryView', () => {
     expect(remove).toHaveBeenCalledWith(track.id);
   });
 
+  /**
+   * Every list puts its controls in the same place: the toolbar at the top of the page,
+   * rather than beside the cards they act on.
+   */
+  it('keeps the preview controls in the toolbar, whichever tab is open', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    settings.viewMode = 'preview';
+    store.tracks = [makeTrack({ artist: 'Artist A', genre: 'Jazz' })];
+    await flushPromises();
+
+    const inToolbar = (selector: string) =>
+      wrapper.get('.library_view_header').find(selector).exists();
+
+    expect(inToolbar('[data-testid="preview-sort-field"]')).toBe(true);
+    expect(inToolbar('[data-testid="preview-size-medium"]')).toBe(true);
+
+    await wrapper.get('#library-tab-artists').trigger('click');
+    await flushPromises();
+
+    expect(inToolbar('[data-testid="preview-sort-field"]')).toBe(true);
+    expect(inToolbar('[data-testid="preview-size-medium"]')).toBe(true);
+    expect(
+      wrapper.get('.library_view_panel').find('[data-testid="preview-sort-field"]').exists(),
+    ).toBe(false);
+
+    // A genre is a short list of names read in one go: no order to choose.
+    await wrapper.get('#library-tab-genres').trigger('click');
+    await flushPromises();
+
+    expect(inToolbar('[data-testid="preview-sort-field"]')).toBe(false);
+    expect(inToolbar('[data-testid="preview-size-medium"]')).toBe(true);
+  });
+
+  it('remembers a card size for each page on its own', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    settings.viewMode = 'preview';
+    store.tracks = [makeTrack({ artist: 'Artist A' })];
+    await flushPromises();
+
+    await wrapper.get('[data-testid="preview-size-large"]').trigger('click');
+    await wrapper.get('#library-tab-artists').trigger('click');
+    await flushPromises();
+
+    expect(settings.previewSizes.tracks).toBe('large');
+    expect(settings.previewSizes.artists).toBe('medium');
+    expect(wrapper.get('[data-testid="preview-size-medium"]').attributes('aria-pressed')).toBe(
+      'true',
+    );
+  });
+
   it('selects multiple tracks with Ctrl and Shift and opens bulk editing', async () => {
     const { wrapper, store } = await mountView();
     useSettingsStore().viewMode = 'table';

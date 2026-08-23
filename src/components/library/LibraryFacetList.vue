@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
-import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import { MAX_LISTED_ARTISTS } from '@/config/app-config';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
-import { groupCardWidth } from '@/services/preview-size';
+import {
+  DEFAULT_FACET_SORT,
+  facetSortColumns,
+  type FacetField,
+  type FacetSort,
+  type FacetSortColumn,
+} from '@/services/facet-columns';
+import { FACET_PAGES, groupCardWidth } from '@/services/preview-size';
 import { formatDuration } from '@/services/track-sorting';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
-
-type FacetField = 'artist' | 'album' | 'genre';
 
 export interface FacetGroupOpenPayload {
   field: FacetField;
@@ -49,12 +53,24 @@ const emit = defineEmits<{
   open: [group: FacetGroupOpenPayload];
 }>();
 
+/**
+ * How the groups are ordered.
+ *
+ * A model rather than state of its own: the control that changes it sits in the toolbar at
+ * the top of the page, too far up the tree to reach from here, so whoever placed this list
+ * holds the value and binds it. Left unbound — as the group window does — it keeps its own.
+ */
+const sort = defineModel<FacetSort>('sort', {
+  default: () => ({ ...DEFAULT_FACET_SORT }),
+});
+
 const { t } = useI18n();
 const settings = useSettingsStore();
 
 // The cards of a group carry more than a title, so they start wider than a track's — but
 // they follow the same choice.
-const cardWidth = computed(() => groupCardWidth(settings.previewSize));
+// Artists, albums and genres are three pages, each with a size of its own.
+const cardWidth = computed(() => groupCardWidth(settings.previewSizes[FACET_PAGES[props.field]]));
 
 function facetValueOf(track: TrackView, field: FacetField): string {
   return track[field]?.trim() ?? '';
@@ -155,35 +171,8 @@ const groups = computed<FacetGroup[]>(() => {
 });
 
 /** The columns of the list view, in the order the rows lay them out. */
-type FacetSortColumn = 'name' | 'artist' | 'artists' | 'albums' | 'tracks' | 'duration';
-
-const sort = ref<{ column: FacetSortColumn; direction: 'asc' | 'desc' }>({
-  column: 'name',
-  direction: 'asc',
-});
-
-const listColumns = computed<{ key: FacetSortColumn; label: string }[]>(() => [
-  { key: 'name', label: t(`library.groups.columns.${props.field}`) },
-  ...(props.field === 'album'
-    ? [{ key: 'artist' as const, label: t('library.groups.columns.artist') }]
-    : []),
-  ...(props.field === 'genre'
-    ? [{ key: 'artists' as const, label: t('library.groups.columns.artists') }]
-    : []),
-  ...(props.field === 'artist' || props.field === 'genre'
-    ? [{ key: 'albums' as const, label: t('library.groups.columns.albums') }]
-    : []),
-  { key: 'tracks', label: t('library.groups.columns.tracks') },
-  { key: 'duration', label: t('library.groups.columns.duration') },
-]);
-
-// Each field has columns of its own: a sort left over from the previous one would have
-// nothing to read.
-watch(
-  () => props.field,
-  () => {
-    sort.value = { column: 'name', direction: 'asc' };
-  },
+const listColumns = computed(() =>
+  facetSortColumns(props.field).map((column) => ({ key: column.key, label: t(column.labelKey) })),
 );
 
 function sortValueOf(group: FacetGroup, column: FacetSortColumn): string | number {
@@ -235,16 +224,6 @@ const sortedGroups = computed(() => {
   });
 });
 
-/**
- * The cards have no column headers to sort from, so they get the control instead. A genre
- * is read as one list of a few names: it is left alone.
- */
-const showsSortSelect = computed(() => props.viewMode === 'preview' && props.field !== 'genre');
-
-const sortOptions = computed(() =>
-  listColumns.value.map((column) => ({ value: column.key, label: column.label })),
-);
-
 function ariaSort(column: FacetSortColumn) {
   if (sort.value.column !== column) {
     return 'none';
@@ -279,15 +258,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 </script>
 
 <template>
-  <LibrarySortSelect
-    v-if="showsSortSelect"
-    class="library_facet_sort"
-    :column="sort.column"
-    :direction="sort.direction"
-    :options="sortOptions"
-    @select="toggleSort($event as FacetSortColumn)"
-  />
-
   <section
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
@@ -439,11 +409,6 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 </template>
 
 <style scoped lang="scss">
-.library_facet_sort {
-  flex: 0 0 auto;
-  align-self: flex-end;
-}
-
 .library_facet_preview {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--preview_card_width, 13rem), 1fr));

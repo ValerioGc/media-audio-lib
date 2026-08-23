@@ -14,11 +14,11 @@ describe('PreviewSizeToggle', () => {
   it('offers the three sizes and marks the one in use', () => {
     const options = withPinia();
     const settings = useSettingsStore();
-    const wrapper = mount(PreviewSizeToggle, options);
+    const wrapper = mount(PreviewSizeToggle, { ...options, props: { page: 'tracks' } });
 
     expect(wrapper.findAll('button')).toHaveLength(3);
     expect(
-      wrapper.get(`[data-testid="preview-size-${settings.previewSize}"]`).attributes(),
+      wrapper.get(`[data-testid="preview-size-${settings.previewSizes.tracks}"]`).attributes(),
     ).toMatchObject({ 'aria-pressed': 'true' });
   });
 
@@ -26,10 +26,10 @@ describe('PreviewSizeToggle', () => {
     const options = withPinia();
     const settings = useSettingsStore();
 
-    const wrapper = mount(PreviewSizeToggle, options);
+    const wrapper = mount(PreviewSizeToggle, { ...options, props: { page: 'tracks' } });
     await wrapper.get('[data-testid="preview-size-large"]').trigger('click');
 
-    expect(settings.previewSize).toBe('large');
+    expect(settings.previewSizes.tracks).toBe('large');
     expect(wrapper.get('[data-testid="preview-size-large"]').attributes('aria-pressed')).toBe(
       'true',
     );
@@ -39,7 +39,7 @@ describe('PreviewSizeToggle', () => {
   });
 
   it('names each size for whoever cannot see the squares', () => {
-    const wrapper = mount(PreviewSizeToggle, withPinia());
+    const wrapper = mount(PreviewSizeToggle, { ...withPinia(), props: { page: 'tracks' } });
 
     expect(wrapper.get('[data-testid="preview-size-small"]').attributes('aria-label')).toBe(
       'Anteprime piccole',

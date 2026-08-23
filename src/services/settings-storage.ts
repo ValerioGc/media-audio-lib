@@ -19,9 +19,12 @@ import {
   TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
   THEME_CHOICES,
+  DEFAULT_PREVIEW_SIZES,
   PREVIEW_SIZES,
+  PREVIEW_SIZE_PAGES,
   VIEW_MODES,
   type AppSettings,
+  type PreviewSizes,
   type TableColumnKey,
   type TableColumnSetting,
 } from '@/types/settings';
@@ -109,6 +112,18 @@ function sanitizeTableColumns(value: unknown): TableColumnSetting[] {
   return normalizeTableColumnOrder(columns);
 }
 
+/** One size per page, each read on its own so a broken entry costs only itself. */
+function sanitizePreviewSizes(raw: unknown): PreviewSizes {
+  const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
+
+  return Object.fromEntries(
+    PREVIEW_SIZE_PAGES.map((page) => [
+      page,
+      pickKnown(PREVIEW_SIZES, source[page], DEFAULT_PREVIEW_SIZES[page]),
+    ]),
+  ) as PreviewSizes;
+}
+
 /** Turns untrusted persisted data into a complete, valid settings object. */
 export function sanitizeSettings(raw: unknown): AppSettings {
   const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {};
@@ -133,7 +148,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
         ? source.glassSurfacesEnabled
         : DEFAULT_SETTINGS.glassSurfacesEnabled,
     viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
-    previewSize: pickKnown(PREVIEW_SIZES, source.previewSize, DEFAULT_SETTINGS.previewSize),
+    previewSizes: sanitizePreviewSizes(source.previewSizes),
     mainLibraryId:
       typeof source.mainLibraryId === 'string' && source.mainLibraryId.trim().length > 0
         ? source.mainLibraryId

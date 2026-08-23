@@ -392,7 +392,11 @@ describe('LibraryFacetList', () => {
     );
   });
 
-  it('sorts the cards of the artists from a control of their own', async () => {
+  /**
+   * The control that sets this lives in the toolbar at the top of the page now, so what is
+   * left to check here is that the cards follow whatever order they are handed.
+   */
+  it('orders the cards by the sort it is given', async () => {
     const tracks = [
       makeTrack({ title: 'Uno', artist: 'Artist A', album: 'Album A', durationMs: 60_000 }),
       makeTrack({ title: 'Due', artist: 'Artist B', album: 'Album B', durationMs: 200_000 }),
@@ -407,27 +411,26 @@ describe('LibraryFacetList', () => {
 
     expect(names()).toEqual(['Artist A', 'Artist B']);
 
-    await wrapper.get('[data-testid="preview-sort-field"] select').setValue('duration');
-    expect(names()).toEqual(['Artist A', 'Artist B']);
+    await wrapper.setProps({ sort: { column: 'duration', direction: 'desc' } });
 
-    await wrapper.get('[data-testid="preview-sort-direction"]').trigger('click');
     expect(names()).toEqual(['Artist B', 'Artist A']);
   });
 
-  it('leaves the genres out of it, and the table too', () => {
-    const tracks = [makeTrack({ artist: 'Artist A', album: 'Album A', genre: 'Jazz' })];
+  it('sorts on its own where nobody holds the order for it', async () => {
+    const tracks = [
+      makeTrack({ artist: 'Artist A', durationMs: 60_000 }),
+      makeTrack({ artist: 'Artist B', durationMs: 200_000 }),
+    ];
 
-    const genres = mount(LibraryFacetList, {
+    const wrapper = mount(LibraryFacetList, {
       ...withPinia(),
-      props: { field: 'genre', viewMode: 'preview', tracks },
-    });
-    const table = mount(LibraryFacetList, {
-      ...withPinia(),
-      props: { field: 'album', viewMode: 'table', tracks },
+      props: { field: 'artist', viewMode: 'table', tracks },
     });
 
-    // A genre is a short list of names, and a table sorts from its own headers.
-    expect(genres.find('[data-testid="preview-sort-field"]').exists()).toBe(false);
-    expect(table.find('[data-testid="preview-sort-field"]').exists()).toBe(false);
+    await wrapper.get('[data-testid="facet-sort-duration"]').trigger('click');
+
+    expect(wrapper.emitted('update:sort')?.at(-1)).toEqual([
+      { column: 'duration', direction: 'asc' },
+    ]);
   });
 });

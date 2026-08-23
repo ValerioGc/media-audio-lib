@@ -10,21 +10,37 @@ import PreviewSizeToggle from '@/components/library/PreviewSizeToggle.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
 import { SORTABLE_COLUMNS, type SortableColumn } from '@/types/library';
-import type { ViewMode } from '@/types/settings';
+import type { PreviewSizePage, ViewMode } from '@/types/settings';
+import type { SelectOption } from '@/types/ui';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     viewMode?: ViewMode | undefined;
     selectedCount?: number | undefined;
     /** The preview has no column headers to sort from: it gets the control instead. */
     showSort?: boolean;
-    /** Only the preview has cards, so only the preview is asked how large they should be. */
-    showPreviewSize?: boolean;
+    /**
+     * The page whose cards the size control speaks for, or nothing where there are none.
+     *
+     * Every page keeps a size of its own, so the control has to know which one it is
+     * changing — and every list puts its controls here, in the same place.
+     */
+    previewSizePage?: PreviewSizePage | undefined;
+    /** How the list below is ordered, when it is not the tracks that are listed. */
+    sort?: { column: string; direction: 'asc' | 'desc' } | undefined;
+    sortOptions?: readonly SelectOption[] | undefined;
   }>(),
-  { viewMode: undefined, selectedCount: 0, showPreviewSize: false },
+  {
+    viewMode: undefined,
+    selectedCount: 0,
+    previewSizePage: undefined,
+    sort: undefined,
+    sortOptions: undefined,
+  },
 );
 const emit = defineEmits<{
   'update:viewMode': [mode: ViewMode];
+  sort: [column: string];
   editSelected: [];
 }>();
 
@@ -36,14 +52,30 @@ const searchValue = computed({
   set: (value: string) => library.setQuery(value),
 });
 
-const sortOptions = computed(() =>
-  SORTABLE_COLUMNS.map((column) => ({
-    value: column,
-    label: t(`library.columns.${column}`),
-  })),
+/**
+ * What the sort control offers, and where it stands.
+ *
+ * The tracks are sorted through the library itself; a list of groups is sorted by whoever
+ * placed it, and hands its state down. Either way the control is here, at the top of the
+ * page, rather than beside the thing it orders.
+ */
+const shownSort = computed(() => props.sort ?? library.sort);
+
+const shownSortOptions = computed(
+  () =>
+    props.sortOptions ??
+    SORTABLE_COLUMNS.map((column) => ({
+      value: column,
+      label: t(`library.columns.${column}`),
+    })),
 );
 
 function sortBy(column: string) {
+  if (props.sort !== undefined) {
+    emit('sort', column);
+    return;
+  }
+
   library.toggleSort(column as SortableColumn);
 }
 </script>
@@ -72,13 +104,17 @@ function sortBy(column: string) {
     <LibrarySortSelect
       v-if="showSort"
       class="library_toolbar_sort"
-      :column="library.sort.column"
-      :direction="library.sort.direction"
-      :options="sortOptions"
+      :column="shownSort.column"
+      :direction="shownSort.direction"
+      :options="shownSortOptions"
       @select="sortBy"
     />
 
-    <PreviewSizeToggle v-if="showPreviewSize" class="library_toolbar_preview_size" />
+    <PreviewSizeToggle
+      v-if="previewSizePage !== undefined"
+      class="library_toolbar_preview_size"
+      :page="previewSizePage"
+    />
 
     <!-- The view switch sits at the far right of the toolbar. -->
     <LibraryViewToggle
@@ -106,12 +142,19 @@ function sortBy(column: string) {
     margin-left: auto;
   }
 
+  &_preview_size {
+    margin-left: auto;
+  }
+
   &_view {
     margin-left: auto;
   }
 
-  // With both on screen the sort keeps its place and only the switch is pushed right.
-  &_sort + &_view {
+  // Whichever of them comes first is pushed to the right and the others follow it, so the
+  // group stays together at the end of the row instead of spreading along it.
+  &_sort ~ &_preview_size,
+  &_sort ~ &_view,
+  &_preview_size ~ &_view {
     margin-left: 0;
   }
 }

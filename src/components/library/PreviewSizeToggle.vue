@@ -5,7 +5,9 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import { useSettingsStore } from '@/stores/settings';
-import { PREVIEW_SIZES, type PreviewSize } from '@/types/settings';
+import { PREVIEW_SIZES, type PreviewSize, type PreviewSizePage } from '@/types/settings';
+
+const props = defineProps<{ page: PreviewSizePage }>();
 
 const { t } = useI18n();
 const settings = useSettingsStore();
@@ -20,12 +22,12 @@ const options = computed(() =>
   PREVIEW_SIZES.map((size) => ({
     size,
     label: t(`library.previewSize.${size}`),
-    active: settings.previewSize === size,
+    active: settings.previewSizes[props.page] === size,
   })),
 );
 
 function setSize(size: PreviewSize) {
-  settings.setPreviewSize(size);
+  settings.setPreviewSize(props.page, size);
 }
 </script>
 

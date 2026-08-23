@@ -69,9 +69,27 @@ export type DockCloseAction = (typeof DOCK_CLOSE_ACTIONS)[number];
 export const VIEW_MODES = ['table', 'preview'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
-/** How large the cards of the preview are, from the fewest per row to the most. */
+/** How large the cards of the preview are, from the most per row to the fewest. */
 export const PREVIEW_SIZES = ['small', 'medium', 'large'] as const;
 export type PreviewSize = (typeof PREVIEW_SIZES)[number];
+
+/**
+ * The pages that show cards, each remembering a size of its own.
+ *
+ * A wall of track covers and a list of twelve artists are not looked at the same way, and
+ * the size that suits one is rarely the size that suits the other.
+ */
+export const PREVIEW_SIZE_PAGES = ['tracks', 'artists', 'albums', 'genres'] as const;
+export type PreviewSizePage = (typeof PREVIEW_SIZE_PAGES)[number];
+
+export type PreviewSizes = Record<PreviewSizePage, PreviewSize>;
+
+export const DEFAULT_PREVIEW_SIZES: PreviewSizes = {
+  tracks: 'medium',
+  artists: 'medium',
+  albums: 'medium',
+  genres: 'medium',
+};
 
 export const TABLE_COLUMN_KEYS = [
   'cover',
@@ -131,7 +149,7 @@ export interface AppSettings {
   glassSurfacesEnabled: boolean;
   ambientOnPanels: boolean;
   viewMode: ViewMode;
-  previewSize: PreviewSize;
+  previewSizes: PreviewSizes;
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
   coverGradientIntensity: number;
@@ -167,7 +185,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   glassSurfacesEnabled: true,
   ambientOnPanels: true,
   viewMode: 'preview',
-  previewSize: 'medium',
+  previewSizes: DEFAULT_PREVIEW_SIZES,
   mainLibraryId: null,
   coverGradientEnabled: true,
   coverGradientIntensity: 100,

@@ -45,6 +45,8 @@ import {
   type TextSize,
   type ThemeChoice,
   type PreviewSize,
+  type PreviewSizePage,
+  type PreviewSizes,
   type ViewMode,
 } from '@/types/settings';
 
@@ -59,7 +61,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const glassSurfacesEnabled = ref(DEFAULT_SETTINGS.glassSurfacesEnabled);
   const ambientOnPanels = ref(DEFAULT_SETTINGS.ambientOnPanels);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
-  const previewSize = ref<PreviewSize>(DEFAULT_SETTINGS.previewSize);
+  const previewSizes = ref<PreviewSizes>({ ...DEFAULT_SETTINGS.previewSizes });
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
   const coverGradientIntensity = ref(DEFAULT_SETTINGS.coverGradientIntensity);
@@ -105,7 +107,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled: glassSurfacesEnabled.value,
     ambientOnPanels: ambientOnPanels.value,
     viewMode: viewMode.value,
-    previewSize: previewSize.value,
+    previewSizes: { ...previewSizes.value },
     mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
     coverGradientIntensity: coverGradientIntensity.value,
@@ -191,7 +193,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled.value = restored.glassSurfacesEnabled;
     ambientOnPanels.value = restored.ambientOnPanels;
     viewMode.value = restored.viewMode;
-    previewSize.value = restored.previewSize;
+    previewSizes.value = { ...restored.previewSizes };
     mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
     coverGradientStyle.value = restored.coverGradientStyle;
@@ -238,9 +240,10 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
-  // As is the size of its cards: the choice made in the view is the one that comes back.
-  async function setPreviewSize(next: PreviewSize) {
-    previewSize.value = next;
+  // As is the size of its cards, page by page: the choice made in a view is the one that
+  // comes back to it.
+  async function setPreviewSize(page: PreviewSizePage, next: PreviewSize) {
+    previewSizes.value = { ...previewSizes.value, [page]: next };
     await persist();
   }
 
@@ -525,7 +528,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled,
     ambientOnPanels,
     viewMode,
-    previewSize,
+    previewSizes,
     mainLibraryId,
     coverGradientEnabled,
     coverGradientIntensity,

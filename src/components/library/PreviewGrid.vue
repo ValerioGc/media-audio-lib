@@ -27,7 +27,7 @@ const settings = useSettingsStore();
 
 // The floor the grid fills the row against: how many cards fit on a line is what the size
 // really decides.
-const cardWidth = computed(() => trackCardWidth(settings.previewSize));
+const cardWidth = computed(() => trackCardWidth(settings.previewSizes.tracks));
 </script>
 
 <template>

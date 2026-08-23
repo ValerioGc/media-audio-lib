@@ -27,14 +27,17 @@ import PreviewGrid from '@/components/library/PreviewGrid.vue';
 import BulkMetadataEditor from '@/components/metadata/BulkMetadataEditor.vue';
 import MetadataEditor from '@/components/metadata/MetadataEditor.vue';
 import { useFileDrop } from '@/composables/useFileDrop';
+import {
+  DEFAULT_FACET_SORT,
+  facetSortColumns,
+  type FacetField,
+  type FacetSort,
+} from '@/services/facet-columns';
 import { useLibraryStore } from '@/stores/library';
 import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { LibraryContentTab, TrackSelectionIntent, TrackView } from '@/types/library';
-import type { TableColumnKey, ViewMode } from '@/types/settings';
-
-/** The three ways the library groups the same tracks. */
-type FacetField = 'artist' | 'album' | 'genre';
+import type { PreviewSizePage, TableColumnKey, ViewMode } from '@/types/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
@@ -44,6 +47,7 @@ const pendingRemoval = ref<TrackView | null>(null);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const facetModalHistory = ref<FacetModalState[]>([]);
 const activeTab = ref<LibraryContentTab>('tracks');
+
 const groupModalViewMode = ref<ViewMode>('preview');
 const facetViewModes = ref<Record<FacetField, ViewMode>>({
   artist: 'preview',
@@ -235,6 +239,53 @@ const displayedViewMode = computed(() =>
   activeTab.value === 'tracks' ? settings.viewMode : activeFacetViewMode.value,
 );
 
+/**
+ * How the list of groups on the open tab is ordered.
+ *
+ * Held here because the control that changes it is in the toolbar, at the top of the page,
+ * while the list it orders is in the panel below: neither can reach the other.
+ */
+const facetSort = ref<FacetSort>({ ...DEFAULT_FACET_SORT });
+
+// Each tab has columns of its own: an order left over from the previous one would have
+// nothing to read.
+watch(activeFacet, () => {
+  facetSort.value = { ...DEFAULT_FACET_SORT };
+});
+
+const facetSortOptions = computed(() =>
+  activeFacet.value === null
+    ? []
+    : facetSortColumns(activeFacet.value).map((column) => ({
+        value: column.key,
+        label: t(column.labelKey),
+      })),
+);
+
+function sortFacets(column: string) {
+  const wanted = column as FacetSort['column'];
+
+  facetSort.value =
+    facetSort.value.column === wanted
+      ? { column: wanted, direction: facetSort.value.direction === 'asc' ? 'desc' : 'asc' }
+      : { column: wanted, direction: 'asc' };
+}
+
+/**
+ * Whether the toolbar shows a way to order what is below it.
+ *
+ * Only the preview needs one — a table is ordered from its own headings — and a list of
+ * genres is a handful of names read in one go, which is left alone.
+ */
+const showsSortControl = computed(
+  () => displayedViewMode.value === 'preview' && activeTab.value !== 'genres',
+);
+
+/** The page whose card size the toolbar is asking about, when cards are on screen. */
+const previewSizePage = computed<PreviewSizePage | undefined>(() =>
+  displayedViewMode.value === 'preview' ? activeTab.value : undefined,
+);
+
 const { isDraggingOver } = useFileDrop((paths) => {
   library.addPaths(paths);
 });
@@ -403,9 +454,12 @@ async function confirmRemoval() {
       <LibraryToolbar
         :view-mode="displayedViewMode"
         :selected-count="library.selectedIds.length"
-        :show-sort="activeTab === 'tracks' && displayedViewMode === 'preview'"
-        :show-preview-size="displayedViewMode === 'preview'"
+        :show-sort="showsSortControl"
+        :preview-size-page="previewSizePage"
+        :sort="activeFacet === null ? undefined : facetSort"
+        :sort-options="activeFacet === null ? undefined : facetSortOptions"
         @update:view-mode="setDisplayedViewMode"
+        @sort="sortFacets"
         @edit-selected="openBulkEditor"
       />
     </header>
@@ -539,6 +593,7 @@ async function confirmRemoval() {
           :tracks="library.visibleTracks"
           :field="activeFacet"
           :view-mode="activeFacetViewMode"
+          v-model:sort="facetSort"
           :playing-track="player.currentTrack"
           @open="openFacet"
         />

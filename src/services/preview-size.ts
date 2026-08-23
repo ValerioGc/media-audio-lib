@@ -1,4 +1,11 @@
-import type { PreviewSize } from '@/types/settings';
+import type { PreviewSize, PreviewSizePage } from '@/types/settings';
+
+/** The page a list of groups is shown on, by the field it groups the library by. */
+export const FACET_PAGES: Record<'artist' | 'album' | 'genre', PreviewSizePage> = {
+  artist: 'artists',
+  album: 'albums',
+  genre: 'genres',
+};
 
 /**
  * The narrowest a card of the track preview may be, per size.

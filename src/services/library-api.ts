@@ -7,6 +7,7 @@ import type {
   CoverCacheReport,
   LibraryInfo,
   LibraryImportReport,
+  LibraryExportMode,
   LibraryImportStrategy,
   LibraryRefreshReport,
   LibrarySummary,
@@ -88,10 +89,14 @@ export async function deleteLibrary(id: string): Promise<LibrarySummary[]> {
 }
 
 /** Writes a copy of the library to `destination` and returns the file written. */
-export async function exportLibrary(id: string, destination: string): Promise<string> {
+export async function exportLibrary(
+  id: string,
+  destination: string,
+  mode: LibraryExportMode,
+): Promise<string> {
   requireShell();
 
-  return invoke<string>('export_library', { id, destination });
+  return invoke<string>('export_library', { id, destination, mode });
 }
 
 export async function exportTrackList(

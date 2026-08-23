@@ -691,7 +691,7 @@ describe('useLibraryStore - multiple libraries', () => {
     await expect(store.exportLibrary('lib-2')).resolves.toBe(true);
 
     expect(pickExportFile).toHaveBeenCalledWith('Jazz');
-    expect(exportLibrary).toHaveBeenCalledWith('lib-2', 'C:/backup/jazz.json');
+    expect(exportLibrary).toHaveBeenCalledWith('lib-2', 'C:/backup/jazz.json', 'full');
     expect(store.lastExport).toBe('C:/backup/jazz.json');
 
     store.dismissExport();

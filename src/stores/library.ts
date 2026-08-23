@@ -9,6 +9,7 @@ import {
   DEFAULT_SORT,
   type AddReport,
   type Cover,
+  type LibraryExportMode,
   type LibraryImportReport,
   type LibraryImportStrategy,
   type MissingInfoFilter,
@@ -394,7 +395,7 @@ export const useLibraryStore = defineStore('library', () => {
   }
 
   /** Asks where to save and writes the copy; returns false when the user cancels. */
-  async function exportLibrary(id: string): Promise<boolean> {
+  async function exportLibrary(id: string, mode: LibraryExportMode = 'full'): Promise<boolean> {
     errorKey.value = null;
     lastExport.value = null;
 
@@ -407,7 +408,7 @@ export const useLibraryStore = defineStore('library', () => {
         return false;
       }
 
-      lastExport.value = await api.exportLibrary(id, destination);
+      lastExport.value = await api.exportLibrary(id, destination, mode);
 
       return true;
     } catch (error) {

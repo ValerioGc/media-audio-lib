@@ -23,19 +23,33 @@ describe('ImportExportPanel', () => {
     const { wrapper, library } = mountPanel();
     const importLibrary = vi.spyOn(library, 'importLibrary').mockResolvedValue(true);
 
-    await wrapper.get('select').setValue('replace');
+    await wrapper.findAll('select')[0]?.setValue('replace');
     await wrapper.get('[data-testid="import-library-file"]').trigger('click');
 
     expect(importLibrary).toHaveBeenCalledWith('replace');
   });
 
-  it('exports the active library', async () => {
+  it('exports the active library, whole by default', async () => {
     const { wrapper, library } = mountPanel();
     const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
 
     await wrapper.get('[data-testid="export-active-library"]').trigger('click');
 
-    expect(exportLibrary).toHaveBeenCalledWith('lib-1');
+    expect(exportLibrary).toHaveBeenCalledWith('lib-1', 'full');
+  });
+
+  it('exports only the paths when that is the choice', async () => {
+    const { wrapper, library } = mountPanel();
+    const exportLibrary = vi.spyOn(library, 'exportLibrary').mockResolvedValue(true);
+
+    await wrapper.get('[data-testid="export-mode"] select').setValue('paths');
+    await wrapper.get('[data-testid="export-active-library"]').trigger('click');
+
+    expect(exportLibrary).toHaveBeenCalledWith('lib-1', 'paths');
+    // The hint follows the choice: the two modes do not cost the same thing.
+    expect(wrapper.get('[data-testid="export-mode-hint"]').text()).toContain(
+      'Salva solo dove si trovano i file',
+    );
   });
 
   it('reports a running import, and holds the commands back while it runs', async () => {

@@ -6,12 +6,17 @@ import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppSelect from '@/components/common/AppSelect.vue';
 import { useLibraryStore } from '@/stores/library';
-import type { LibraryImportStrategy } from '@/types/library';
+import {
+  LIBRARY_EXPORT_MODES,
+  type LibraryExportMode,
+  type LibraryImportStrategy,
+} from '@/types/library';
 import type { SelectOption } from '@/types/ui';
 
 const { t } = useI18n();
 const library = useLibraryStore();
 const strategy = ref<LibraryImportStrategy>('mergeSkipDuplicates');
+const exportMode = ref<LibraryExportMode>('full');
 
 const strategyOptions = computed<SelectOption[]>(() =>
   (['replace', 'merge', 'mergeSkipDuplicates'] as const).map((value) => ({
@@ -20,9 +25,16 @@ const strategyOptions = computed<SelectOption[]>(() =>
   })),
 );
 
+const exportModeOptions = computed<SelectOption[]>(() =>
+  LIBRARY_EXPORT_MODES.map((value) => ({
+    value,
+    label: t(`settings.importExport.mode.options.${value}`),
+  })),
+);
+
 async function exportActive() {
   if (library.activeLibraryId !== null) {
-    await library.exportLibrary(library.activeLibraryId);
+    await library.exportLibrary(library.activeLibraryId, exportMode.value);
   }
 }
 </script>
@@ -64,6 +76,14 @@ async function exportActive() {
     </div>
 
     <div class="import_export_panel_controls">
+      <AppSelect
+        v-model="exportMode"
+        class="import_export_panel_field"
+        :label="t('settings.importExport.mode.label')"
+        :options="exportModeOptions"
+        data-testid="export-mode"
+      />
+
       <AppButton
         :disabled="library.activeLibraryId === null || library.isLibraryImporting"
         data-testid="export-active-library"
@@ -73,6 +93,10 @@ async function exportActive() {
         {{ t('settings.importExport.export') }}
       </AppButton>
     </div>
+
+    <p class="import_export_panel_hint" data-testid="export-mode-hint">
+      {{ t(`settings.importExport.mode.hints.${exportMode}`) }}
+    </p>
 
     <output v-if="library.lastLibraryImport !== null" class="import_export_panel_report">
       <span>
@@ -108,6 +132,11 @@ async function exportActive() {
 
   &_field {
     flex: 1;
+  }
+
+  &_hint {
+    color: var(--color_text_muted);
+    font-size: 0.8125em;
   }
 
   &_busy {

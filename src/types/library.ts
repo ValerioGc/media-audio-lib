@@ -69,6 +69,16 @@ export interface LibrarySummary {
 
 export type LibraryImportStrategy = 'replace' | 'merge' | 'mergeSkipDuplicates';
 
+/**
+ * How much of the library an export carries.
+ *
+ * `full` writes it as it stands, artwork included. `paths` writes only where the files are,
+ * and the tags are read back from those files when the export is imported: a far smaller
+ * file, at the cost of needing the same files in the same places.
+ */
+export const LIBRARY_EXPORT_MODES = ['full', 'paths'] as const;
+export type LibraryExportMode = (typeof LIBRARY_EXPORT_MODES)[number];
+
 export interface LibraryImportReport {
   added: number;
   updated: number;

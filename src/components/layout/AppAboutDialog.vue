@@ -73,7 +73,7 @@ async function openLink(url: string) {
   &_name {
     display: flex;
     gap: $space_sm;
-    align-items: baseline;
+    align-items: center;
     color: var(--color_text);
     font-size: 1.125em;
     font-weight: 600;

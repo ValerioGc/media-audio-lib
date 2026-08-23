@@ -258,7 +258,7 @@ const facetSortOptions = computed(() =>
     ? []
     : facetSortColumns(activeFacet.value).map((column) => ({
         value: column.key,
-        label: t(column.labelKey),
+        label: t(column.sortLabelKey ?? column.labelKey),
       })),
 );
 

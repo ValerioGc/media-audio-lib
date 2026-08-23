@@ -17,9 +17,17 @@ export const DEFAULT_FACET_SORT: FacetSort = { column: 'name', direction: 'asc' 
  * Shared rather than kept in the list: the control that sorts it sits in the toolbar at
  * the top of the page, and the toolbar has to name the same columns the rows show.
  */
-export function facetSortColumns(field: FacetField): { key: FacetSortColumn; labelKey: string }[] {
+export function facetSortColumns(
+  field: FacetField,
+): { key: FacetSortColumn; labelKey: string; sortLabelKey?: string }[] {
   return [
-    { key: 'name', labelKey: `library.groups.columns.${field}` },
+    // In a table the first column is headed by what it holds — Album, Autore, Genere. In a
+    // list of things to sort by, all three are the name of the card: what else would it be?
+    {
+      key: 'name',
+      labelKey: `library.groups.columns.${field}`,
+      sortLabelKey: 'library.columns.title',
+    },
     ...(field === 'album'
       ? [{ key: 'artist' as const, labelKey: 'library.groups.columns.artist' }]
       : []),

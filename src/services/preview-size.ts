@@ -34,3 +34,27 @@ export function trackCardWidth(size: PreviewSize): string {
 export function groupCardWidth(size: PreviewSize): string {
   return GROUP_CARD_WIDTHS[size];
 }
+
+/**
+ * A genre card is laid out sideways — cover on the left, names on the right — so it starts
+ * about twice as wide as the others and keeps a height of its own rather than a square.
+ */
+const GENRE_CARD_WIDTHS: Record<PreviewSize, string> = {
+  small: '20rem',
+  medium: '24rem',
+  large: '30rem',
+};
+
+const GENRE_CARD_HEIGHTS: Record<PreviewSize, string> = {
+  small: '7.5rem',
+  medium: '9rem',
+  large: '11rem',
+};
+
+export function genreCardWidth(size: PreviewSize): string {
+  return GENRE_CARD_WIDTHS[size];
+}
+
+export function genreCardHeight(size: PreviewSize): string {
+  return GENRE_CARD_HEIGHTS[size];
+}

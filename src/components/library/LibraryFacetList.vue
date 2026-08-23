@@ -13,7 +13,12 @@ import {
   type FacetSort,
   type FacetSortColumn,
 } from '@/services/facet-columns';
-import { FACET_PAGES, groupCardWidth } from '@/services/preview-size';
+import {
+  FACET_PAGES,
+  genreCardHeight,
+  genreCardWidth,
+  groupCardWidth,
+} from '@/services/preview-size';
 import { formatDuration } from '@/services/track-sorting';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
@@ -70,7 +75,16 @@ const settings = useSettingsStore();
 // The cards of a group carry more than a title, so they start wider than a track's — but
 // they follow the same choice.
 // Artists, albums and genres are three pages, each with a size of its own.
-const cardWidth = computed(() => groupCardWidth(settings.previewSizes[FACET_PAGES[props.field]]));
+const previewSize = computed(() => settings.previewSizes[FACET_PAGES[props.field]]);
+
+const cardWidth = computed(() =>
+  props.field === 'genre' ? genreCardWidth(previewSize.value) : groupCardWidth(previewSize.value),
+);
+
+/** Only the genre cards have one: the others are as tall as a square and its writing. */
+const cardHeight = computed(() =>
+  props.field === 'genre' ? genreCardHeight(previewSize.value) : undefined,
+);
 
 function facetValueOf(track: TrackView, field: FacetField): string {
   return track[field]?.trim() ?? '';
@@ -262,7 +276,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
     :class="{ library_facet_preview_genre: field === 'genre' }"
-    :style="{ '--preview_card_width': cardWidth }"
+    :style="{ '--preview_card_width': cardWidth, '--preview_card_height': cardHeight }"
     :aria-label="t(`library.groups.columns.${field}`)"
   >
     <!-- A real button rather than a card pretending to be one: Enter, Space and focus
@@ -421,9 +435,9 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   @include scroll_area;
 
+  // A genre card is read sideways, so its rows are a height rather than a square.
   &_genre {
-    grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
-    grid-auto-rows: 9rem;
+    grid-auto-rows: var(--preview_card_height, 9rem);
   }
 }
 

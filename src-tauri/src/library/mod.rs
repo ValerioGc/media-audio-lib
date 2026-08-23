@@ -123,6 +123,160 @@ pub struct LibraryMetadata {
     pub genre_artwork: Vec<LibraryArtwork>,
 }
 
+/// How much of a library an export file carries.
+///
+/// `Full` writes the library as it stands, artwork included. `Paths` writes only where the
+/// files are: the tags are read again from those files when the export is imported, which
+/// is what makes the file small enough to send.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum LibraryExportMode {
+    #[default]
+    Full,
+    Paths,
+}
+
+/// What an export says about itself, before anything else in the file.
+///
+/// Only what cannot be worked out from the rest of it: where it was written, by which
+/// version, and how. The number of tracks is the one figure repeated on purpose — it is
+/// what a reader checks the file against before importing it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ExportInfo {
+    pub app: String,
+    pub app_version: String,
+    pub os: String,
+    pub arch: String,
+    pub exported_at: u64,
+    pub mode: LibraryExportMode,
+    pub track_count: usize,
+}
+
+/// A library written out to be carried elsewhere.
+///
+/// A full export is still a valid library file, so an older version of the app reads it as
+/// one and ignores the header. A paths export carries `paths` instead of `tracks`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LibraryExport {
+    pub version: u32,
+    pub export: ExportInfo,
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<LibraryMetadata>,
+    // Always written, even empty: a full export is then byte for byte a library file, and
+    // an older version of the app opens it without knowing anything about exports.
+    pub tracks: Vec<Track>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub paths: Vec<String>,
+}
+
+impl LibraryExport {
+    pub fn new(library: &Library, mode: LibraryExportMode, app_version: &str) -> Self {
+        let export = ExportInfo {
+            app: DEFAULT_LIBRARY_NAME.to_owned(),
+            app_version: app_version.to_owned(),
+            os: std::env::consts::OS.to_owned(),
+            arch: std::env::consts::ARCH.to_owned(),
+            exported_at: now_seconds(),
+            mode,
+            track_count: library.tracks.len(),
+        };
+
+        match mode {
+            LibraryExportMode::Full => Self {
+                version: library.version,
+                export,
+                name: library.name.clone(),
+                metadata: Some(library.metadata.clone()),
+                tracks: library.tracks.clone(),
+                paths: Vec::new(),
+            },
+            LibraryExportMode::Paths => Self {
+                version: library.version,
+                export,
+                name: library.name.clone(),
+                metadata: None,
+                tracks: Vec::new(),
+                paths: library
+                    .tracks
+                    .iter()
+                    .map(|track| track.path.clone())
+                    .collect(),
+            },
+        }
+    }
+
+    /// Writes through a temporary file, like the library itself.
+    pub fn save(&self, path: &Path) -> AppResult<()> {
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        let temporary = temporary_path(path);
+        std::fs::write(&temporary, serde_json::to_string_pretty(self)?)?;
+        std::fs::rename(&temporary, path)?;
+
+        Ok(())
+    }
+}
+
+/// A file offered for import, in either of the two shapes an export can take.
+///
+/// Written loosely on purpose: a library file from any earlier version is read by the same
+/// struct, since everything the newer shapes added carries a default.
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ImportedFile {
+    version: u32,
+    #[serde(default = "default_library_name")]
+    name: String,
+    #[serde(default)]
+    metadata: LibraryMetadata,
+    #[serde(default)]
+    tracks: Vec<Track>,
+    #[serde(default)]
+    paths: Vec<String>,
+}
+
+/// Reads a file to import: a library, a full export, or a list of paths.
+///
+/// A paths export holds no tags of its own, so they are read back from the files it points
+/// at — which is also what makes such an export follow whatever the tags say now.
+pub fn load_for_import(path: &Path) -> AppResult<Library> {
+    ensure_readable_size(path, MAX_LIBRARY_FILE_BYTES)?;
+
+    let contents = std::fs::read_to_string(path)?;
+    let file: ImportedFile = serde_json::from_str(&contents)?;
+
+    if file.version > SCHEMA_VERSION {
+        return Err(AppError::UnsupportedFormat(format!(
+            "library with schema v{} (supported up to v{SCHEMA_VERSION})",
+            file.version
+        )));
+    }
+
+    let name = clean_library_name(&file.name)
+        .map(|name| shorten_library_name(&name))
+        .unwrap_or_else(default_library_name);
+
+    let mut library = Library {
+        version: SCHEMA_VERSION,
+        name,
+        metadata: file.metadata,
+        tracks: file.tracks,
+    };
+
+    if library.tracks.is_empty() && !file.paths.is_empty() {
+        add_paths(&mut library, &file.paths, now_seconds());
+    }
+
+    library.sync_metadata();
+
+    Ok(library)
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Library {

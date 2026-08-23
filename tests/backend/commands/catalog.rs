@@ -176,11 +176,84 @@
             &setup.state,
             &active,
             &destination.to_string_lossy(),
+            LibraryExportMode::Full,
+            "9.9.9",
         )
         .expect("library exported");
 
+        // A full export stays a valid library file, header and all.
         let exported = Library::load(&destination).expect("readable copy");
         assert_eq!(exported.name, "Main");
+
+        let raw = std::fs::read_to_string(&destination).expect("export read");
+        let header: serde_json::Value = serde_json::from_str(&raw).expect("export parsed");
+        assert_eq!(header["export"]["appVersion"], "9.9.9");
+        assert_eq!(header["export"]["mode"], "full");
+        assert_eq!(header["export"]["os"], std::env::consts::OS);
+        assert!(header["export"]["exportedAt"].as_u64().is_some());
+    }
+
+    #[test]
+    fn exports_only_the_paths_when_asked_to() {
+        let setup = setup();
+        let track = wav_with_cover(setup._directory.path(), "paths.wav");
+        setup
+            .state
+            .update(|library| {
+                library.add(Track {
+                    id: track_id(&track),
+                    path: track.display().to_string(),
+                    title: "Track".to_owned(),
+                    artist: Some("Artist A".to_owned()),
+                    album: None,
+                    year: None,
+                    genre: None,
+                    duration_ms: 1,
+                    format: "wav".to_owned(),
+                    has_cover: true,
+                    added_at: 1,
+                })
+            })
+            .expect("state updated");
+        let active = summaries(&setup.catalog, &setup.state).expect("list")[0]
+            .id
+            .clone();
+        let destination = setup._directory.path().join("paths.json");
+
+        export(
+            &setup.catalog,
+            &setup.state,
+            &active,
+            &destination.to_string_lossy(),
+            LibraryExportMode::Paths,
+            "9.9.9",
+        )
+        .expect("library exported");
+
+        let raw = std::fs::read_to_string(&destination).expect("export read");
+        let file: serde_json::Value = serde_json::from_str(&raw).expect("export parsed");
+        assert_eq!(file["export"]["mode"], "paths");
+        assert_eq!(file["export"]["trackCount"], 1);
+        assert_eq!(file["paths"].as_array().expect("paths").len(), 1);
+        assert!(file["tracks"].as_array().expect("tracks").is_empty());
+        assert!(file["metadata"].is_null());
+
+        // The tags come back from the files the paths point at.
+        let report = import(
+            &setup.state,
+            &destination.to_string_lossy(),
+            LibraryImportStrategy::Replace,
+        )
+        .expect("import succeeded");
+
+        assert_eq!(report.added, 1);
+        assert_eq!(
+            setup
+                .state
+                .read(|library| library.tracks().len())
+                .expect("read"),
+            1
+        );
     }
 
     #[test]
@@ -215,6 +288,8 @@
             &setup.state,
             &active,
             &destination.to_string_lossy(),
+            LibraryExportMode::Full,
+            "9.9.9",
         )
         .expect("library exported");
 
@@ -236,6 +311,8 @@
             &setup.state,
             &created.id,
             &destination.to_string_lossy(),
+            LibraryExportMode::Full,
+            "9.9.9",
         )
         .expect("library exported");
 
@@ -252,7 +329,15 @@
             .id
             .clone();
 
-        let error = export(&setup.catalog, &setup.state, &active, "  ").expect_err("destination");
+        let error = export(
+            &setup.catalog,
+            &setup.state,
+            &active,
+            "  ",
+            LibraryExportMode::Full,
+            "9.9.9",
+        )
+        .expect_err("destination");
 
         assert!(matches!(error, AppError::Validation(_)));
     }
@@ -313,7 +398,14 @@
             Err(AppError::NotFound(_))
         ));
         assert!(matches!(
-            export(&setup.catalog, &setup.state, "unknown", "copy.json"),
+            export(
+                &setup.catalog,
+                &setup.state,
+                "unknown",
+                "copy.json",
+                LibraryExportMode::Full,
+                "9.9.9",
+            ),
             Err(AppError::NotFound(_))
         ));
     }

@@ -9,7 +9,9 @@ use serde::{Deserialize, Serialize};
 use crate::catalog::{self, Catalog, CatalogState};
 use crate::commands::library::LibraryInfo;
 use crate::error::{AppError, AppResult};
-use crate::library::{Library, LibraryImportReport, LibraryImportStrategy};
+use crate::library::{
+    Library, LibraryExport, LibraryExportMode, LibraryImportReport, LibraryImportStrategy,
+};
 use crate::state::LibraryState;
 
 /// One library as shown in the settings list.
@@ -169,6 +171,8 @@ pub fn export(
     state: &LibraryState,
     id: &str,
     destination: &str,
+    mode: LibraryExportMode,
+    app_version: &str,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
         return Err(AppError::Validation(
@@ -186,10 +190,13 @@ pub fn export(
     } else {
         Library::load(&source)?
     };
-    library.fill_missing_artwork();
+    // A paths export carries no artwork, so there is nothing to fill in for it.
+    if mode == LibraryExportMode::Full {
+        library.fill_missing_artwork();
+    }
 
     let destination = PathBuf::from(destination);
-    library.save(&destination)?;
+    LibraryExport::new(&library, mode, app_version).save(&destination)?;
 
     Ok(destination.to_string_lossy().into_owned())
 }
@@ -206,7 +213,7 @@ pub fn import(
         ));
     }
 
-    let mut imported = Library::load(&PathBuf::from(source))?;
+    let mut imported = crate::library::load_for_import(&PathBuf::from(source))?;
     crate::library::maintain_from_disk(&mut imported);
 
     state.update(|library| library.import(imported, strategy))
@@ -251,15 +258,24 @@ pub fn delete_library(
     delete(&catalog, &state, &id)
 }
 
-/// Exports a library to the chosen file.
+/// Exports a library to the chosen file, whole or as a list of paths.
 #[tauri::command]
-pub fn export_library(
+pub fn export_library<R: tauri::Runtime>(
+    app: tauri::AppHandle<R>,
     catalog: State<'_, CatalogState>,
     state: State<'_, LibraryState>,
     id: String,
     destination: String,
+    mode: Option<LibraryExportMode>,
 ) -> AppResult<String> {
-    export(&catalog, &state, &id, &destination)
+    export(
+        &catalog,
+        &state,
+        &id,
+        &destination,
+        mode.unwrap_or_default(),
+        &tauri::Manager::package_info(&app).version.to_string(),
+    )
 }
 
 /// Imports a library file into the active library.

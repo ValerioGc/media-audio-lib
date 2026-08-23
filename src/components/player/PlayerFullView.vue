@@ -176,6 +176,9 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
         {{ t(`player.errors.${player.errorKey}`) }}
       </p>
 
+      <!-- The transport is read from its centre, so nothing shares its line: the progress
+           runs above it and the secondary controls sit under it, each on a row of its own
+           and each centred on the same axis as play. -->
       <div class="player_full_playback">
         <PlayerProgress
           :position="player.position"
@@ -183,31 +186,30 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
           @seek="player.seek($event)"
         />
 
-        <div class="player_full_transport">
-          <PlayerControls
-            class="player_full_transport_main"
-            prominent
-            :is-playing="player.isPlaying"
-            :has-next="player.hasNext"
-            :is-shuffle-enabled="player.isShuffleEnabled"
-            :is-repeat-one-enabled="player.isRepeatOneEnabled"
-            :disabled="player.isLoading"
-            @previous="player.previous()"
-            @toggle="player.toggle()"
-            @next="player.next()"
-            @toggle-shuffle="player.toggleShuffle()"
-            @toggle-repeat-one="player.toggleRepeatOne()"
-          />
-          <PlayerSideControls
-            class="player_full_transport_side"
-            :volume="player.volume"
-            :muted="player.isMuted"
-            :disabled="player.isLoading"
-            @stop="player.stop()"
-            @toggle-mute="player.toggleMute()"
-            @update:volume="player.setVolume($event)"
-          />
-        </div>
+        <PlayerControls
+          class="player_full_transport"
+          prominent
+          :is-playing="player.isPlaying"
+          :has-next="player.hasNext"
+          :is-shuffle-enabled="player.isShuffleEnabled"
+          :is-repeat-one-enabled="player.isRepeatOneEnabled"
+          :disabled="player.isLoading"
+          @previous="player.previous()"
+          @toggle="player.toggle()"
+          @next="player.next()"
+          @toggle-shuffle="player.toggleShuffle()"
+          @toggle-repeat-one="player.toggleRepeatOne()"
+        />
+
+        <PlayerSideControls
+          class="player_full_secondary"
+          :volume="player.volume"
+          :muted="player.isMuted"
+          :disabled="player.isLoading"
+          @stop="player.stop()"
+          @toggle-mute="player.toggleMute()"
+          @update:volume="player.setVolume($event)"
+        />
       </div>
     </div>
   </section>
@@ -381,51 +383,41 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
   }
 
   &_error {
-    color: #c42b1c;
+    color: var(--color_danger);
   }
 
+  // A panel of its own under the cover: the controls stop floating on the page and read as
+  // one block, whatever the background behind them is doing.
   &_playback {
     display: flex;
     flex-direction: column;
-    gap: $space_md;
-    width: min(36rem, 100%);
-  }
-
-  // The transport is centred on the page and the secondary controls sit at its right,
-  // without pushing play off the middle.
-  &_transport {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
     gap: $space_sm;
     align-items: center;
+    width: min(34rem, 100%);
+    padding: $space_sm $space_md $space_md;
+    @include glass_surface($radius_lg);
+  }
 
-    &_main {
-      grid-column: 2;
-      justify-content: center;
-    }
+  &_transport {
+    justify-content: center;
+  }
 
-    &_side {
-      grid-column: 3;
-      justify-content: flex-end;
-    }
+  // Quieter than the transport and set apart from it: stop and the volume are not steps
+  // through the queue, and standing them on their own line says so.
+  &_secondary {
+    justify-content: center;
+    padding-top: $space_xs;
+    border-top: 1px solid var(--color_border);
+    width: 100%;
+  }
+
+  :deep(.player_progress) {
+    width: 100%;
   }
 }
 
 @media (max-width: 640px) {
   .player_full {
-    &_transport {
-      grid-template-columns: 1fr;
-      justify-items: center;
-
-      &_main {
-        grid-column: 1;
-      }
-
-      &_side {
-        grid-column: 1;
-      }
-    }
-
     &_detail + &_detail {
       padding-left: 0;
       border-left: 0;

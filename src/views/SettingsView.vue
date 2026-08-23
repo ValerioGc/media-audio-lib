@@ -146,20 +146,32 @@ const tabs = computed(() => [
 </template>
 
 <style scoped lang="scss">
+// The page takes the whole window and the content lines up in a column inside it.
+//
+// The other way round — a narrow page holding the scrolling box — put the scrollbar against
+// the sections and left the wheel doing nothing over the empty space beside them, which is
+// most of the window on a wide screen.
 .settings_view {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: $space_lg;
+  width: 100%;
   min-height: 0;
+  --settings_column: 54rem;
 
-  @include page_column(54rem);
+  // Everything that is not the scrolling box lines itself up with what is inside it.
+  > :deep(.back_to_library) {
+    @include page_column(var(--settings_column));
+  }
 
   &_header {
     display: flex;
     flex-direction: column;
     gap: $space_xs;
     text-align: center;
+
+    @include page_column(var(--settings_column));
   }
 
   &_title {
@@ -175,6 +187,8 @@ const tabs = computed(() => [
     display: flex;
     flex-direction: column;
     gap: $space_lg;
+
+    @include page_column(var(--settings_column));
   }
 
   &_divider {

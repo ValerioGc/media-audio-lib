@@ -91,18 +91,23 @@ function onKeydown(event: KeyboardEvent, index: number) {
     // The tabs sit in the middle of the settings page, as requested.
     justify-content: center;
     padding: $space_xs;
+
+    @include page_column(var(--settings_column));
     border: 1px solid var(--color_border);
     border-radius: $radius_lg;
     background-color: var(--color_surface_alt);
   }
 
   // The sections are what scrolls: the tabs above them stay where they were pressed.
+  //
+  // As wide as the window, so the wheel turns anywhere over the page and the scrollbar sits
+  // at the edge of the window rather than against the sections. What is inside keeps to the
+  // column, which is what the reader sees.
   &_panel {
     display: flex;
     flex: 1;
     flex-direction: column;
     min-height: 0;
-    padding-right: $space_2xs;
 
     @include scroll_area;
   }

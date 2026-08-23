@@ -9,6 +9,7 @@ import LibraryRow from '@/components/library/LibraryRow.vue';
 import { fixedCoverWidth, libraryRowHeight } from '@/config/layout';
 import { useVirtualList } from '@/composables/useVirtualList';
 import {
+  contextualColumnWidths,
   fittedTableColumnWidths,
   isResizableTableColumn,
   isSortableTableColumn,
@@ -93,8 +94,9 @@ watch(
   { immediate: true },
 );
 
-// A contextual table lists the columns it needs: the library settings only lend their widths,
-// so what the main list shows cannot add or drop a column here.
+// A contextual table lists the columns it needs, and keeps them at their narrowest: it is
+// shown inside a window, where the room the main list gives its columns is room the name of
+// the track no longer has.
 const columnSettings = computed(() => {
   const keys = props.columnKeys;
 
@@ -102,13 +104,15 @@ const columnSettings = computed(() => {
     return visibleTableColumns(settings.tableColumns);
   }
 
-  return keys.map((key) => ({
-    ...(settings.tableColumns.find((column) => column.key === key) ?? {
+  return contextualColumnWidths(
+    keys.map((key) => ({
       key,
       width: TABLE_COLUMN_WIDTHS[key].default,
-    }),
-    ...(key === 'cover' ? { width: coverColumnWidth.value } : {}),
-    visible: true,
+      visible: true,
+    })),
+  ).map((column) => ({
+    ...column,
+    ...(column.key === 'cover' ? { width: coverColumnWidth.value } : {}),
   }));
 });
 
@@ -161,7 +165,7 @@ const bottomSpacerHeight = computed(() =>
 const tableColumnCount = computed(() => columns.value.length + 1);
 
 const gridStyle = computed(() => ({
-  '--library_grid_columns': tableGridTemplate(columns.value),
+  '--library_grid_columns': tableGridTemplate(columns.value, props.columnKeys !== undefined),
   '--library_row_height': `${rowHeight.value}px`,
   '--library_cover_size': `${coverColumnWidth.value}px`,
 }));
@@ -362,6 +366,10 @@ onUnmounted(stopResize);
   // One scrolling box for the head and the rows: reserving the scrollbar gutter twice is
   // what used to leave the headings a scrollbar out of line with their columns, and what
   // put a sideways bar under a table that fitted.
+  //
+  // And no gutter held in reserve: the head scrolls with the rows now, so there is nothing
+  // left to drift out of line — while a table short enough to need no bar was showing a
+  // strip of empty room where one would have gone.
   &_scroller {
     display: flex;
     flex: 1;
@@ -369,7 +377,7 @@ onUnmounted(stopResize);
     min-height: 0;
     overflow-x: hidden;
 
-    @include scroll_area;
+    @include scroll_area(auto);
   }
 
   // `flex: 1` would mean `flex-basis: 0`, which makes this box as tall as the scroller

@@ -102,11 +102,16 @@ const { t } = useI18n();
     flex: 0 0 auto;
   }
 
+  // `min-width: 0` is what makes the width above hold. A flex item is allowed to grow past
+  // its basis to fit its content, and the name below does not wrap: an album called
+  // "Musica per ciechi muti e sordi" would widen its card, and the cover with it, while the
+  // one beside it stayed narrow.
   &_card {
     display: flex;
     position: relative;
     flex: 0 0 8.5rem;
     flex-direction: column;
+    min-width: 0;
     gap: $space_xs;
     padding: $space_sm;
     color: var(--color_text);

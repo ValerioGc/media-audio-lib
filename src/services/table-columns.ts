@@ -126,11 +126,34 @@ const MIN_TITLE_WIDTH = '6rem';
  * which is what keeps the whole grid the width of the table: no sideways scroll, and the
  * actions never move from the right edge.
  */
-function tableColumnTrack(column: TableColumnSetting): string {
+/**
+ * The columns that share the free space of a table shown inside a window, and how much of
+ * it each one takes.
+ *
+ * On the page only the title stretches, because there is room enough for the rest to keep
+ * the width the reader gave them. In a window there is not: leaving the whole of the free
+ * space to the title pushes the album to the far side of it, a screen away from the name it
+ * belongs to. They stretch together, the title twice as fast.
+ */
+const CONTEXTUAL_SHARES: Partial<Record<TableColumnKey, number>> = {
+  title: 2,
+  album: 1,
+  artist: 1,
+  genre: 1,
+  path: 1,
+};
+
+function tableColumnTrack(column: TableColumnSetting, contextual: boolean): string {
   const fixedWidth = FIXED_TABLE_COLUMN_WIDTHS[column.key];
 
   if (fixedWidth !== undefined) {
     return fixedWidth;
+  }
+
+  const share = contextual ? CONTEXTUAL_SHARES[column.key] : undefined;
+
+  if (share !== undefined) {
+    return `minmax(${TABLE_COLUMN_WIDTHS[column.key].min}px, ${share}fr)`;
   }
 
   if (column.key === FLEXIBLE_TABLE_COLUMN) {
@@ -140,10 +163,29 @@ function tableColumnTrack(column: TableColumnSetting): string {
   return `${column.width}px`;
 }
 
-export function tableGridTemplate(columns: readonly TableColumnSetting[]): string {
-  const dataColumns = visibleTableColumns(columns).map(tableColumnTrack);
+export function tableGridTemplate(
+  columns: readonly TableColumnSetting[],
+  contextual = false,
+): string {
+  const dataColumns = visibleTableColumns(columns).map((column) =>
+    tableColumnTrack(column, contextual),
+  );
 
   return [...dataColumns, TABLE_ACTIONS_COLUMN_WIDTH].join(' ');
+}
+
+/**
+ * The widths a table shown inside a window uses, rather than the ones of the main list.
+ *
+ * There is far less room in a window than on the page, and the column being read is the
+ * name of the track: giving the others what they are given in the list leaves the name
+ * cut short beside an album column half of which is empty. They keep their narrowest here,
+ * and what is left over goes to the name.
+ */
+export function contextualColumnWidths(
+  columns: readonly TableColumnSetting[],
+): TableColumnSetting[] {
+  return columns.map((column) => ({ ...column, width: TABLE_COLUMN_WIDTHS[column.key].min }));
 }
 
 export function tableColumnValue(track: TrackView, key: TableColumnKey, unknown: string): string {

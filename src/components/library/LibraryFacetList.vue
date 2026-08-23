@@ -477,9 +477,13 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     box-shadow: inset 0 0 0 1px var(--color_accent);
   }
 
+  // No floor: it was twenty rem, which left a band of empty card under the writing of every
+  // artist whatever the writing said.
+  //
+  // The body keeps its `flex` all the same. A row gives every card the height of its tallest,
+  // and a body that may shrink is a body that gets squeezed under that height and spills its
+  // last line out of the card.
   &_artist {
-    min-height: 20rem;
-
     .library_facet_card_cover_mosaic {
       height: clamp(8rem, 14vw, 10.5rem);
       aspect-ratio: auto;

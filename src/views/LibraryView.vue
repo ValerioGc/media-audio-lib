@@ -644,6 +644,7 @@ async function confirmRemoval() {
       :title="t('library.groups.modalTitle', { name: selectedFacet?.name ?? '' })"
       wide
       glass
+      content-scrolls
       @close="closeFacetModal"
     >
       <div class="library_view_group_modal">

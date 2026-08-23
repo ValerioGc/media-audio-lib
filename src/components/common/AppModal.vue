@@ -7,6 +7,11 @@ const props = defineProps<{
   wide?: boolean;
   /** Translucent panel, and the background of the window painted through it. */
   glass?: boolean;
+  /**
+   * For a dialog whose content scrolls itself — a list, a table. The body stops being a
+   * scrolling box of its own, so the panel shows one scrollbar instead of two side by side.
+   */
+  contentScrolls?: boolean;
 }>();
 
 const emit = defineEmits<{ close: [] }>();
@@ -48,7 +53,7 @@ watch(
         :aria-labelledby="titleId"
       >
         <h2 :id="titleId" class="app_modal_title">{{ title }}</h2>
-        <div class="app_modal_body">
+        <div class="app_modal_body" :class="{ app_modal_body_content_scrolls: contentScrolls }">
           <slot />
         </div>
         <footer class="app_modal_actions">
@@ -121,6 +126,11 @@ watch(
     color: var(--color_text_muted);
 
     @include scroll_area;
+
+    &_content_scrolls {
+      overflow: visible;
+      scrollbar-gutter: auto;
+    }
   }
 
   &_actions {

@@ -68,4 +68,21 @@ describe('AppModal', () => {
     // the attributes of the document.
     expect(glass.get('.app_modal_panel').classes()).toContain('app_modal_panel_glass');
   });
+
+  it('gives up its own scrolling box when the content scrolls itself', () => {
+    const plain = mount(AppModal, {
+      props: { open: true, title: 'Plain' },
+      attachTo: document.body,
+    });
+    const inner = mount(AppModal, {
+      props: { open: true, title: 'Inner', contentScrolls: true },
+      attachTo: document.body,
+    });
+
+    expect(plain.get('.app_modal_body').classes('app_modal_body_content_scrolls')).toBe(false);
+    expect(inner.get('.app_modal_body').classes('app_modal_body_content_scrolls')).toBe(true);
+
+    plain.unmount();
+    inner.unmount();
+  });
 });

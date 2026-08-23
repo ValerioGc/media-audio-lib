@@ -38,6 +38,21 @@ describe('ImportExportPanel', () => {
     expect(exportLibrary).toHaveBeenCalledWith('lib-1');
   });
 
+  it('reports a running import, and holds the commands back while it runs', async () => {
+    const { wrapper, library } = mountPanel();
+
+    expect(wrapper.find('[data-testid="import-busy"]').exists()).toBe(false);
+
+    library.isLibraryImporting = true;
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('[data-testid="import-busy"]').text()).toContain('Importazione in corso');
+    expect(wrapper.get('[data-testid="import-library-file"]').attributes('disabled')).toBeDefined();
+    expect(
+      wrapper.get('[data-testid="export-active-library"]').attributes('disabled'),
+    ).toBeDefined();
+  });
+
   it('shows and closes the import summary', async () => {
     const { wrapper, library } = mountPanel();
     library.lastLibraryImport = {

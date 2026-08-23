@@ -18,8 +18,10 @@ import SettingsTabs from '@/components/settings/SettingsTabs.vue';
 import StartupPanel from '@/components/settings/StartupPanel.vue';
 import TextSizeSelect from '@/components/settings/TextSizeSelect.vue';
 import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
+import { useLibraryStore } from '@/stores/library';
 
 const { t } = useI18n();
+const library = useLibraryStore();
 
 const tabs = computed(() => [
   { id: 'general', label: t('settings.tabs.general') },
@@ -29,7 +31,16 @@ const tabs = computed(() => [
 </script>
 
 <template>
-  <div class="settings_view">
+  <!-- A library import runs to the end before anything else is answered: leaving the page,
+       switching tab or starting a second command in the middle of it would each act on a
+       library that is being rewritten. The fieldset takes every control down at once, and
+       the import panel says why. -->
+  <fieldset
+    class="settings_view"
+    :disabled="library.isLibraryImporting"
+    :aria-busy="library.isLibraryImporting"
+    data-testid="settings-page"
+  >
     <BackToLibrary />
 
     <header class="settings_view_header">
@@ -142,7 +153,7 @@ const tabs = computed(() => [
         </div>
       </template>
     </SettingsTabs>
-  </div>
+  </fieldset>
 </template>
 
 <style scoped lang="scss">
@@ -158,6 +169,12 @@ const tabs = computed(() => [
   gap: $space_lg;
   width: 100%;
   min-height: 0;
+  // A fieldset carries a border, a margin and a minimum width of its own, none of which
+  // belong to a page.
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
   --settings_column: 54rem;
 
   // Everything that is not the scrolling box lines itself up with what is inside it.

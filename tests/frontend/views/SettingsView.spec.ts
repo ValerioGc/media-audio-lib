@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
+import { useLibraryStore } from '@/stores/library';
 import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -130,5 +131,27 @@ describe('SettingsView', () => {
     await wrapper.get('[data-testid="back-to-library"]').trigger('click');
 
     expect(navigation.view).toBe('library');
+  });
+
+  it('locks the whole page while a library import runs', async () => {
+    const options = withPinia();
+    const library = useLibraryStore();
+    const wrapper = mount(SettingsView, options);
+    const page = wrapper.get('[data-testid="settings-page"]');
+
+    expect(page.attributes('disabled')).toBeUndefined();
+
+    library.isLibraryImporting = true;
+    await wrapper.vm.$nextTick();
+
+    // One fieldset over the page: the way back, the tabs and every command go down with it.
+    expect(page.attributes('disabled')).toBeDefined();
+    expect(page.attributes('aria-busy')).toBe('true');
+    expect(wrapper.get('[data-testid="back-to-library"]').attributes('disabled')).toBeUndefined();
+
+    library.isLibraryImporting = false;
+    await wrapper.vm.$nextTick();
+
+    expect(page.attributes('disabled')).toBeUndefined();
   });
 });

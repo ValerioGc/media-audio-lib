@@ -29,37 +29,49 @@ async function exportActive() {
 
 <template>
   <div class="import_export_panel">
+    <!-- Above the controls, not below them: an import locks the page, and the reason has to
+         be on screen before the reader looks for what stopped answering. -->
+    <p
+      v-if="library.isLibraryImporting"
+      class="import_export_panel_busy"
+      role="status"
+      data-testid="import-busy"
+    >
+      <span class="import_export_panel_busy_spinner" aria-hidden="true" />
+      {{ t('settings.importExport.busy') }}
+    </p>
+
     <div class="import_export_panel_controls">
       <AppSelect
         v-model="strategy"
-        class="import_export_panel_strategy"
+        class="import_export_panel_field"
         :label="t('settings.importExport.strategy.label')"
         :options="strategyOptions"
       />
 
-      <div class="import_export_panel_actions">
-        <AppButton
-          :disabled="library.isLibraryImporting"
-          data-testid="import-library-file"
-          @click="library.importLibrary(strategy)"
-        >
-          <AppIcon name="import" />
-          {{
-            library.isLibraryImporting
-              ? t('settings.importExport.importing')
-              : t('settings.importExport.import')
-          }}
-        </AppButton>
+      <AppButton
+        :disabled="library.isLibraryImporting"
+        data-testid="import-library-file"
+        @click="library.importLibrary(strategy)"
+      >
+        <AppIcon name="import" />
+        {{
+          library.isLibraryImporting
+            ? t('settings.importExport.importing')
+            : t('settings.importExport.import')
+        }}
+      </AppButton>
+    </div>
 
-        <AppButton
-          :disabled="library.activeLibraryId === null"
-          data-testid="export-active-library"
-          @click="exportActive"
-        >
-          <AppIcon name="export" />
-          {{ t('settings.importExport.export') }}
-        </AppButton>
-      </div>
+    <div class="import_export_panel_controls">
+      <AppButton
+        :disabled="library.activeLibraryId === null || library.isLibraryImporting"
+        data-testid="export-active-library"
+        @click="exportActive"
+      >
+        <AppIcon name="export" />
+        {{ t('settings.importExport.export') }}
+      </AppButton>
     </div>
 
     <output v-if="library.lastLibraryImport !== null" class="import_export_panel_report">
@@ -94,14 +106,30 @@ async function exportActive() {
     justify-content: space-between;
   }
 
-  &_strategy {
+  &_field {
     flex: 1;
   }
 
-  &_actions {
+  &_busy {
     display: flex;
-    flex-shrink: 0;
     gap: $space_sm;
+    align-items: center;
+    padding: $space_sm $space_md;
+    border-left: 3px solid var(--color_accent);
+    border-radius: $radius_sm;
+    background-color: var(--color_accent_soft);
+    color: var(--color_text);
+    font-size: 0.875em;
+
+    &_spinner {
+      flex-shrink: 0;
+      width: 0.9rem;
+      height: 0.9rem;
+      border: 2px solid var(--color_accent);
+      border-right-color: transparent;
+      border-radius: 999px;
+      animation: import_export_panel_spin 700ms linear infinite;
+    }
   }
 
   &_report {
@@ -112,6 +140,18 @@ async function exportActive() {
     padding: $space_sm $space_md;
     @include surface_panel($radius_md, var(--color_surface_alt));
     font-size: 0.875em;
+  }
+}
+
+@keyframes import_export_panel_spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .import_export_panel_busy_spinner {
+    animation: none;
   }
 }
 </style>

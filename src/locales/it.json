@@ -163,6 +163,7 @@
       "import": "Importa",
       "importing": "Importazione…",
       "export": "Esporta attiva",
+      "busy": "Importazione in corso. Gli altri comandi restano bloccati fino al termine.",
       "strategy": {
         "label": "Strategia di import",
         "options": {
@@ -173,6 +174,17 @@
       },
       "report": {
         "summary": "{total} brani letti: {added} aggiunti, {updated} aggiornati, {skipped} saltati, {missing} file mancanti."
+      },
+      "mode": {
+        "label": "Contenuto dell’esportazione",
+        "options": {
+          "full": "Libreria completa",
+          "paths": "Solo percorsi dei file"
+        },
+        "hints": {
+          "full": "Dati e copertine inclusi: il file è più grande, ma si apre anche senza i brani originali.",
+          "paths": "Salva solo dove si trovano i file: all’importazione i dati vengono riletti dai file stessi, quindi devono essere ancora al loro posto."
+        }
       }
     },
     "libraries": {

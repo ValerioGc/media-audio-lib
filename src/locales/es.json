@@ -199,7 +199,14 @@
       "limit": "Cuando la caché supera {limit}, las portadas solicitadas hace más tiempo se eliminan automáticamente.",
       "clear": "Vaciar la caché",
       "clearing": "Vaciando…",
-      "cleared": "Caché vaciada."
+      "cleared": "Caché vaciada.",
+      "confirm": {
+        "title": "¿Vaciar la caché de carátulas?",
+        "message": "Las carátulas guardadas en el disco se eliminan y se vuelven a leer de los archivos cuando hagan falta. Las pistas de la biblioteca no se modifican.",
+        "cancel": "Cancelar",
+        "confirm": "Vaciar"
+      },
+      "failed": "No se ha podido vaciar la caché."
     }
   },
   "library": {

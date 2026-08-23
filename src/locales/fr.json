@@ -199,7 +199,14 @@
       "limit": "Lorsque le cache dépasse {limit}, les pochettes demandées il y a le plus longtemps sont supprimées automatiquement.",
       "clear": "Vider le cache",
       "clearing": "Nettoyage…",
-      "cleared": "Cache vidé."
+      "cleared": "Cache vidé.",
+      "confirm": {
+        "title": "Vider le cache des pochettes ?",
+        "message": "Les pochettes conservées sur le disque sont supprimées puis relues dans les fichiers dès qu’elles resservent. Les morceaux de la bibliothèque ne sont pas modifiés.",
+        "cancel": "Annuler",
+        "confirm": "Vider"
+      },
+      "failed": "Le cache n’a pas pu être vidé."
     }
   },
   "library": {

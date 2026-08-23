@@ -80,13 +80,14 @@ withDefaults(
   }
 
   &_danger {
-    border-color: var(--color_border_strong);
+    border-color: var(--color_danger_border);
     background-color: var(--color_surface);
-    color: #c42b1c;
+    color: var(--color_danger);
 
     &:hover:not(:disabled) {
-      background-color: #c42b1c;
-      color: #ffffff;
+      border-color: var(--color_danger);
+      background-color: var(--color_danger);
+      color: var(--color_on_danger);
     }
   }
 }

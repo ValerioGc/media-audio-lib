@@ -199,7 +199,14 @@
       "limit": "When the cache goes past {limit}, the covers requested longest ago are removed automatically.",
       "clear": "Empty the cache",
       "clearing": "Emptying…",
-      "cleared": "Cache emptied."
+      "cleared": "Cache emptied.",
+      "confirm": {
+        "title": "Empty the cover cache?",
+        "message": "The covers kept on disk are removed and read from the files again when they are next needed. The tracks of the library are left untouched.",
+        "cancel": "Cancel",
+        "confirm": "Empty it"
+      },
+      "failed": "The cache could not be emptied."
     }
   },
   "library": {

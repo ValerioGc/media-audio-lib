@@ -199,7 +199,14 @@
       "limit": "Wenn der Cache {limit} überschreitet, werden die am längsten nicht angefragten Cover automatisch entfernt.",
       "clear": "Cache leeren",
       "clearing": "Wird geleert…",
-      "cleared": "Cache geleert."
+      "cleared": "Cache geleert.",
+      "confirm": {
+        "title": "Cover-Cache leeren?",
+        "message": "Die auf der Festplatte abgelegten Cover werden entfernt und bei Bedarf erneut aus den Dateien gelesen. Die Titel der Bibliothek bleiben unverändert.",
+        "cancel": "Abbrechen",
+        "confirm": "Leeren"
+      },
+      "failed": "Der Cache konnte nicht geleert werden."
     }
   },
   "library": {

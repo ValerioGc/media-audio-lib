@@ -199,7 +199,14 @@
       "limit": "Quando la cache supera {limit}, le copertine richieste da più tempo vengono rimosse automaticamente.",
       "clear": "Svuota la cache",
       "clearing": "Pulizia in corso…",
-      "cleared": "Cache svuotata."
+      "cleared": "Cache svuotata.",
+      "confirm": {
+        "title": "Svuotare la cache delle copertine?",
+        "message": "Le copertine conservate su disco vengono rimosse e rilette dai file quando servono di nuovo. I brani della libreria non vengono modificati.",
+        "cancel": "Annulla",
+        "confirm": "Svuota"
+      },
+      "failed": "Non è stato possibile svuotare la cache."
     }
   },
   "library": {

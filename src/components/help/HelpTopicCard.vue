@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import HelpFigure from '@/components/help/HelpFigure.vue';
 import { HELP_TOPICS, HELP_TOPIC_ICONS, type HelpTopic } from '@/config/help';
 
 const props = defineProps<{ topic: HelpTopic }>();
@@ -44,6 +45,8 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
       <span class="help_topic_label">{{ t('help.where') }}</span>
       {{ t(`help.topics.${topic}.where`) }}
     </p>
+
+    <HelpFigure :topic="topic" />
 
     <!-- Numbered by hand rather than by the list marker: the number is a mark of its own,
          and the text beside it keeps one left edge however many lines it runs to. -->

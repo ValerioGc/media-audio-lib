@@ -549,6 +549,7 @@
       "start": {
         "title": "First steps",
         "where": "applies the first time the application is opened.",
+        "figure": "The toolbar at the top of the library: this is where the music comes in the first time.",
         "steps": [
           "The library starts empty: the first step is telling the application where the music is.",
           "Use \"Add folder\" to bring in a whole folder and its subfolders in one go.",
@@ -562,6 +563,7 @@
       "import": {
         "title": "Adding tracks and folders",
         "where": "top bar of the Library, or by dropping onto the window.",
+        "figure": "The commands that add tracks and folders.",
         "steps": [
           "Press \"Add tracks\" to choose one or more audio files, or \"Add folder\" to import all the music in a folder and its subfolders.",
           "You can also drop files or folders onto the window: the library lights up to say it is ready for them.",
@@ -575,6 +577,7 @@
       "organize": {
         "title": "Searching, filtering and sorting",
         "where": "top bar, column headers and library menu.",
+        "figure": "The search field and the library menu, with the filters and the tools.",
         "steps": [
           "Type in the search field to filter by title, artist, album, genre or path.",
           "Click a column header to sort; a second click on the same column turns the order around.",
@@ -588,6 +591,7 @@
       "views": {
         "title": "Views, tabs and connections",
         "where": "the two icons on the right of the bar, and the tabs under it.",
+        "figure": "The switch between list and cards, at the end of the toolbar.",
         "steps": [
           "The list icon shows the columns, the grid icon shows the covers; the choice is remembered.",
           "The Tracks, Artists, Albums and Genres tabs gather the same library in four ways.",
@@ -601,6 +605,7 @@
       "metadata": {
         "title": "Editing the metadata",
         "where": "the three dots menu on the row or on the card, or a right click on the row.",
+        "figure": "The three-dot menu on the row of the track.",
         "steps": [
           "Open the three dots menu, or right click the row, and choose Edit.",
           "Change title, artist, album, year and genre; the genre can be picked among the ones already in the library or typed.",
@@ -627,6 +632,7 @@
       "player": {
         "title": "Listening to the music",
         "where": "double click a row or a card; the player appears at the bottom.",
+        "figure": "The player along the bottom, with the controls and the progress bar.",
         "steps": [
           "Double click the track to listen to: the list you are looking at becomes the queue.",
           "The player at the bottom carries cover, title, artist, progress, volume and mute.",
@@ -640,6 +646,7 @@
       "dock": {
         "title": "Floating player",
         "where": "appears when the app goes to the system tray while something is playing.",
+        "figure": "The floating player and its controls.",
         "steps": [
           "The low dash button, in the title bar, sends the app to the system tray: the playback carries on.",
           "With a track playing, the floating player appears: a small window with cover, title and controls.",
@@ -666,6 +673,7 @@
       "libraries": {
         "title": "More than one library",
         "where": "the two arrows icon beside the name, and Settings → Library.",
+        "figure": "The two-arrow icon next to the name of the library.",
         "steps": [
           "Each library has its own list of tracks: one for everyday music, one for work, and so on.",
           "The two arrows icon beside the name opens the quick switch between libraries.",
@@ -679,6 +687,7 @@
       "transfer": {
         "title": "Importing and exporting",
         "where": "library menu and Settings → Library.",
+        "figure": "The import and export section of the settings.",
         "steps": [
           "\"Export library\" saves a file with the list of tracks and their data, covers included.",
           "Importing a library asks how to merge it: replace the open one, add only the new tracks, or update the ones already there as well.",
@@ -704,6 +713,7 @@
       "settings": {
         "title": "Startup, window and general",
         "where": "Settings → General, and the title bar.",
+        "figure": "The gear in the title bar, which opens the settings.",
         "steps": [
           "Language: Italian, English, French, Spanish and German, applied immediately.",
           "Startup and window: start the app with the system, start minimized in the system tray, and stay there on close instead of quitting.",

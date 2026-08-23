@@ -549,6 +549,7 @@
       "start": {
         "title": "Primeros pasos",
         "where": "se aplica la primera vez que se abre la aplicación.",
+        "figure": "La barra superior de la biblioteca: por ahí entra la música la primera vez.",
         "steps": [
           "La biblioteca empieza vacía: el primer paso es indicar dónde está la música.",
           "Usa «Añadir carpeta» para incorporar de una vez una carpeta entera y sus subcarpetas.",
@@ -562,6 +563,7 @@
       "import": {
         "title": "Añadir pistas y carpetas",
         "where": "barra superior de la Biblioteca, o soltando sobre la ventana.",
+        "figure": "Los comandos que añaden pistas y carpetas.",
         "steps": [
           "Pulsa «Añadir pistas» para elegir uno o varios archivos de audio, o «Añadir carpeta» para importar toda la música de una carpeta y sus subcarpetas.",
           "También puedes soltar archivos o carpetas en la ventana: la biblioteca se ilumina para indicar que está lista.",
@@ -575,6 +577,7 @@
       "organize": {
         "title": "Buscar, filtrar y ordenar",
         "where": "barra superior, cabeceras de columna y menú de la biblioteca.",
+        "figure": "El campo de búsqueda y el menú de la biblioteca, con los filtros y las herramientas.",
         "steps": [
           "Escribe en el campo de búsqueda para filtrar por título, artista, álbum, género o ruta.",
           "Haz clic en una cabecera para ordenar; un segundo clic en la misma columna invierte el orden.",
@@ -588,6 +591,7 @@
       "views": {
         "title": "Vistas, pestañas y enlaces",
         "where": "los dos iconos a la derecha de la barra, y las pestañas debajo.",
+        "figure": "El selector entre lista y miniaturas, al final de la barra.",
         "steps": [
           "El icono de líneas muestra las columnas, el de cuadrícula las carátulas; la elección se recuerda.",
           "Las pestañas Pistas, Artistas, Álbumes y Géneros agrupan la misma biblioteca de cuatro formas.",
@@ -601,6 +605,7 @@
       "metadata": {
         "title": "Editar los metadatos",
         "where": "menú de tres puntos en la fila o en la tarjeta, o clic derecho en la fila.",
+        "figure": "El menú de tres puntos en la fila de la pista.",
         "steps": [
           "Abre el menú de tres puntos, o haz clic derecho en la fila, y elige Editar.",
           "Cambia título, artista, álbum, año y género; el género se elige entre los ya presentes o se escribe.",
@@ -627,6 +632,7 @@
       "player": {
         "title": "Escuchar la música",
         "where": "doble clic en una fila o una tarjeta; el reproductor aparece abajo.",
+        "figure": "El reproductor en la parte inferior, con los controles y la barra de progreso.",
         "steps": [
           "Haz doble clic en la pista que quieras oír: la lista que estás viendo se convierte en la cola.",
           "El reproductor de abajo lleva carátula, título, artista, avance, volumen y silencio.",
@@ -640,6 +646,7 @@
       "dock": {
         "title": "Reproductor flotante",
         "where": "aparece al minimizar la app en la bandeja del sistema mientras suena algo.",
+        "figure": "El reproductor flotante y sus controles.",
         "steps": [
           "El botón con el guion bajo, en la barra de título, envía la app a la bandeja del sistema: la reproducción continúa.",
           "Si hay una pista sonando aparece el reproductor flotante: una ventanita con carátula, título y mandos.",
@@ -666,6 +673,7 @@
       "libraries": {
         "title": "Varias bibliotecas",
         "where": "icono de las dos flechas junto al nombre, y Ajustes → Biblioteca.",
+        "figure": "El icono de dos flechas junto al nombre de la biblioteca.",
         "steps": [
           "Cada biblioteca tiene su propia lista de pistas: una para la música diaria, otra para el trabajo, y así.",
           "El icono de las dos flechas junto al nombre abre el cambio rápido de biblioteca.",
@@ -679,6 +687,7 @@
       "transfer": {
         "title": "Importar y exportar",
         "where": "menú de la biblioteca y Ajustes → Biblioteca.",
+        "figure": "La sección de importación y exportación de los ajustes.",
         "steps": [
           "«Exportar biblioteca» guarda un archivo con la lista de pistas y sus datos, carátulas incluidas.",
           "Importar una biblioteca pregunta cómo unirla: sustituir la abierta, añadir solo las pistas nuevas, o actualizar también las que ya están.",
@@ -704,6 +713,7 @@
       "settings": {
         "title": "Inicio, ventana y generales",
         "where": "Ajustes → General, y barra de título.",
+        "figure": "El engranaje de la barra de título, que abre los ajustes.",
         "steps": [
           "Idioma: italiano, inglés, francés, español y alemán, con efecto inmediato.",
           "Inicio y ventana: arrancar la app con el sistema, empezar minimizada en la bandeja, y quedarse ahí al cerrar en vez de salir.",

@@ -549,6 +549,7 @@
       "start": {
         "title": "Premiers pas",
         "where": "concerne la première ouverture de l’application.",
+        "figure": "La barre en haut de la bibliothèque : c’est par là que la musique entre la première fois.",
         "steps": [
           "La bibliothèque est vide au départ : la première étape consiste à indiquer où se trouve la musique.",
           "Utilisez « Ajouter un dossier » pour importer en une fois un dossier entier et ses sous-dossiers.",
@@ -562,6 +563,7 @@
       "import": {
         "title": "Ajouter des morceaux et des dossiers",
         "where": "barre du haut de la Bibliothèque, ou en déposant sur la fenêtre.",
+        "figure": "Les commandes qui ajoutent des morceaux et des dossiers.",
         "steps": [
           "Appuyez sur « Ajouter des morceaux » pour choisir un ou plusieurs fichiers audio, ou sur « Ajouter un dossier » pour importer toute la musique d’un dossier et de ses sous-dossiers.",
           "Vous pouvez aussi déposer des fichiers ou des dossiers sur la fenêtre : la bibliothèque s’éclaire pour dire qu’elle est prête.",
@@ -575,6 +577,7 @@
       "organize": {
         "title": "Chercher, filtrer et trier",
         "where": "barre du haut, en-têtes de colonnes et menu de la bibliothèque.",
+        "figure": "Le champ de recherche et le menu de la bibliothèque, avec les filtres et les outils.",
         "steps": [
           "Écrivez dans le champ de recherche pour filtrer par titre, artiste, album, genre ou chemin.",
           "Cliquez sur un en-tête de colonne pour trier ; un second clic sur la même colonne inverse l’ordre.",
@@ -588,6 +591,7 @@
       "views": {
         "title": "Vues, onglets et liens",
         "where": "les deux icônes à droite de la barre, et les onglets en dessous.",
+        "figure": "Le sélecteur entre liste et vignettes, au bout de la barre.",
         "steps": [
           "L’icône en lignes montre les colonnes, celle en grille montre les pochettes ; le choix est retenu.",
           "Les onglets Morceaux, Artistes, Albums et Genres rassemblent la même bibliothèque de quatre façons.",
@@ -601,6 +605,7 @@
       "metadata": {
         "title": "Modifier les métadonnées",
         "where": "menu à trois points sur la ligne ou sur la carte, ou clic droit sur la ligne.",
+        "figure": "Le menu à trois points sur la ligne du morceau.",
         "steps": [
           "Ouvrez le menu à trois points, ou faites un clic droit sur la ligne, et choisissez Modifier.",
           "Changez le titre, l’artiste, l’album, l’année et le genre ; le genre se choisit parmi ceux déjà présents ou s’écrit.",
@@ -627,6 +632,7 @@
       "player": {
         "title": "Écouter la musique",
         "where": "double-clic sur une ligne ou une carte ; le lecteur apparaît en bas.",
+        "figure": "Le lecteur en bas, avec les commandes et la barre de progression.",
         "steps": [
           "Double-cliquez le morceau à écouter : la liste affichée devient la file de lecture.",
           "Le lecteur en bas porte la pochette, le titre, l’artiste, l’avancement, le volume et la coupure du son.",
@@ -640,6 +646,7 @@
       "dock": {
         "title": "Lecteur flottant",
         "where": "apparaît quand l’app passe dans la zone de notification pendant la lecture.",
+        "figure": "Le lecteur flottant et ses commandes.",
         "steps": [
           "Le bouton au trait bas, dans la barre de titre, envoie l’app dans la zone de notification : la lecture continue.",
           "S’il y a un morceau en cours, le lecteur flottant apparaît : une petite fenêtre avec pochette, titre et commandes.",
@@ -666,6 +673,7 @@
       "libraries": {
         "title": "Plusieurs bibliothèques",
         "where": "icône aux deux flèches près du nom, et Réglages → Bibliothèque.",
+        "figure": "L’icône aux deux flèches à côté du nom de la bibliothèque.",
         "steps": [
           "Chaque bibliothèque a sa propre liste : une pour la musique de tous les jours, une pour le travail, et ainsi de suite.",
           "L’icône aux deux flèches près du nom ouvre le changement rapide de bibliothèque.",
@@ -679,6 +687,7 @@
       "transfer": {
         "title": "Importer et exporter",
         "where": "menu de la bibliothèque et Réglages → Bibliothèque.",
+        "figure": "La section import et export des réglages.",
         "steps": [
           "« Exporter la bibliothèque » enregistre un fichier avec la liste des morceaux et leurs données, pochettes comprises.",
           "L’import d’une bibliothèque demande comment la fusionner : remplacer celle qui est ouverte, n’ajouter que les nouveaux morceaux, ou mettre aussi à jour ceux déjà présents.",
@@ -704,6 +713,7 @@
       "settings": {
         "title": "Démarrage, fenêtre et général",
         "where": "Réglages → Général, et barre de titre.",
+        "figure": "L’engrenage de la barre de titre, qui ouvre les réglages.",
         "steps": [
           "Langue : italien, anglais, français, espagnol et allemand, avec effet immédiat.",
           "Démarrage et fenêtre : lancer l’app avec le système, démarrer réduite dans la zone de notification, et y rester à la fermeture au lieu de quitter.",

@@ -67,6 +67,7 @@ npm run dev       # launches the desktop app in development mode
 ```
 media-audio-lib/
 ├─ src/                        # Vue 3 frontend
+│  ├─ assets/help/             # optional guide screenshots (see its README)
 │  ├─ assets/styles/           # SCSS: tokens, themes, mixins, global stylesheet
 │  ├─ components/
 │  │  ├─ common/               # reusable base components

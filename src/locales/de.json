@@ -549,6 +549,7 @@
       "start": {
         "title": "Erste Schritte",
         "where": "gilt beim ersten Öffnen der Anwendung.",
+        "figure": "Die obere Leiste der Bibliothek: Hier kommt die Musik beim ersten Mal herein.",
         "steps": [
           "Die Bibliothek ist zu Beginn leer: Der erste Schritt ist, der Anwendung zu sagen, wo die Musik liegt.",
           "Mit „Ordner hinzufügen“ wird ein ganzer Ordner samt Unterordnern auf einmal übernommen.",
@@ -562,6 +563,7 @@
       "import": {
         "title": "Titel und Ordner hinzufügen",
         "where": "obere Leiste der Bibliothek, oder per Ablegen auf dem Fenster.",
+        "figure": "Die Befehle, die Titel und Ordner hinzufügen.",
         "steps": [
           "Mit „Titel hinzufügen“ wählst du eine oder mehrere Audiodateien, mit „Ordner hinzufügen“ die ganze Musik eines Ordners samt Unterordnern.",
           "Du kannst Dateien oder Ordner auch auf das Fenster ziehen: die Bibliothek leuchtet auf und ist bereit.",
@@ -575,6 +577,7 @@
       "organize": {
         "title": "Suchen, filtern und sortieren",
         "where": "obere Leiste, Spaltenköpfe und Bibliotheksmenü.",
+        "figure": "Das Suchfeld und das Bibliotheksmenü mit Filtern und Werkzeugen.",
         "steps": [
           "Schreibe ins Suchfeld, um nach Titel, Interpret, Album, Genre oder Pfad zu filtern.",
           "Ein Klick auf einen Spaltenkopf sortiert; ein zweiter Klick auf dieselbe Spalte dreht die Reihenfolge um.",
@@ -588,6 +591,7 @@
       "views": {
         "title": "Ansichten, Reiter und Verbindungen",
         "where": "die beiden Symbole rechts in der Leiste und die Reiter darunter.",
+        "figure": "Der Umschalter zwischen Liste und Vorschaukarten am Ende der Leiste.",
         "steps": [
           "Das Listensymbol zeigt die Spalten, das Rastersymbol die Cover; die Wahl wird gemerkt.",
           "Die Reiter Titel, Interpreten, Alben und Genres fassen dieselbe Bibliothek auf vier Arten zusammen.",
@@ -601,6 +605,7 @@
       "metadata": {
         "title": "Metadaten bearbeiten",
         "where": "Drei-Punkte-Menü der Zeile oder der Karte, oder Rechtsklick auf die Zeile.",
+        "figure": "Das Drei-Punkte-Menü in der Zeile des Titels.",
         "steps": [
           "Öffne das Drei-Punkte-Menü oder klicke mit rechts auf die Zeile und wähle Bearbeiten.",
           "Ändere Titel, Interpret, Album, Jahr und Genre; das Genre lässt sich aus den vorhandenen wählen oder schreiben.",
@@ -627,6 +632,7 @@
       "player": {
         "title": "Musik hören",
         "where": "Doppelklick auf eine Zeile oder Karte; der Player erscheint unten.",
+        "figure": "Der Player am unteren Rand mit den Bedienelementen und der Fortschrittsleiste.",
         "steps": [
           "Doppelklicke den Titel: die Liste, die du gerade siehst, wird zur Warteschlange.",
           "Der Player unten trägt Cover, Titel, Interpret, Fortschritt, Lautstärke und Stummschaltung.",
@@ -640,6 +646,7 @@
       "dock": {
         "title": "Schwebender Player",
         "where": "erscheint, wenn die App bei laufender Wiedergabe in den Infobereich geht.",
+        "figure": "Der schwebende Player und seine Bedienelemente.",
         "steps": [
           "Die Schaltfläche mit dem tiefen Strich in der Titelleiste schickt die App in den Infobereich: die Wiedergabe läuft weiter.",
           "Läuft ein Titel, erscheint der schwebende Player: ein kleines Fenster mit Cover, Titel und Bedienelementen.",
@@ -666,6 +673,7 @@
       "libraries": {
         "title": "Mehrere Bibliotheken",
         "where": "Doppelpfeil-Symbol neben dem Namen und Einstellungen → Bibliothek.",
+        "figure": "Das Doppelpfeil-Symbol neben dem Namen der Bibliothek.",
         "steps": [
           "Jede Bibliothek hat ihre eigene Titelliste: eine für den Alltag, eine für die Arbeit, und so fort.",
           "Das Doppelpfeil-Symbol neben dem Namen öffnet den schnellen Wechsel.",
@@ -679,6 +687,7 @@
       "transfer": {
         "title": "Importieren und exportieren",
         "where": "Bibliotheksmenü und Einstellungen → Bibliothek.",
+        "figure": "Der Bereich Import und Export in den Einstellungen.",
         "steps": [
           "„Bibliothek exportieren“ speichert eine Datei mit der Titelliste und ihren Daten, Cover eingeschlossen.",
           "Der Import einer Bibliothek fragt, wie zusammengeführt wird: die offene ersetzen, nur neue Titel hinzufügen, oder auch vorhandene aktualisieren.",
@@ -704,6 +713,7 @@
       "settings": {
         "title": "Start, Fenster und Allgemeines",
         "where": "Einstellungen → Allgemein und Titelleiste.",
+        "figure": "Das Zahnrad in der Titelleiste, das die Einstellungen öffnet.",
         "steps": [
           "Sprache: Italienisch, Englisch, Französisch, Spanisch und Deutsch, sofort wirksam.",
           "Start und Fenster: die App mit dem System starten, minimiert im Infobereich beginnen und beim Schließen dort bleiben statt zu beenden.",

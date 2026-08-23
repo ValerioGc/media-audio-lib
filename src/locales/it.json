@@ -549,6 +549,7 @@
       "start": {
         "title": "Primi passi",
         "where": "vale per la prima apertura dell’applicazione.",
+        "figure": "La barra in alto della libreria: da qui si aggiunge la musica la prima volta.",
         "steps": [
           "La libreria parte vuota: il primo passo è dire all’applicazione dove si trova la musica.",
           "Usa \"Aggiungi cartella\" per portare dentro in una volta sola una cartella intera e le sue sottocartelle.",
@@ -562,6 +563,7 @@
       "import": {
         "title": "Aggiungere brani e cartelle",
         "where": "barra in alto della Libreria, oppure trascinando sulla finestra.",
+        "figure": "I comandi per aggiungere brani e cartelle.",
         "steps": [
           "Premi \"Aggiungi brani\" per scegliere uno o più file audio, o \"Aggiungi cartella\" per importare tutta la musica di una cartella e delle sue sottocartelle.",
           "In alternativa trascina file o cartelle nella finestra: la libreria si illumina per dirti che è pronta a riceverli.",
@@ -575,6 +577,7 @@
       "organize": {
         "title": "Cercare, filtrare e ordinare",
         "where": "barra in alto, intestazioni delle colonne e menu della libreria.",
+        "figure": "Il campo di ricerca e il menu della libreria, con filtri e strumenti.",
         "steps": [
           "Scrivi nel campo di ricerca per filtrare per titolo, autore, album, genere o percorso.",
           "Fai clic su un’intestazione di colonna per ordinare; un secondo clic sulla stessa colonna inverte l’ordine.",
@@ -588,6 +591,7 @@
       "views": {
         "title": "Viste, schede e collegamenti",
         "where": "le due icone a destra nella barra e le schede sotto di essa.",
+        "figure": "L’interruttore tra elenco e anteprime, in fondo alla barra.",
         "steps": [
           "L’icona a righe mostra l’elenco con le colonne, quella a griglia le anteprime delle copertine; la scelta viene ricordata.",
           "Le schede Brani, Autori, Album e Generi raggruppano la stessa libreria in quattro modi.",
@@ -601,6 +605,7 @@
       "metadata": {
         "title": "Modificare i metadati",
         "where": "menu con i tre puntini sulla riga o sulla scheda del brano, oppure clic destro sulla riga.",
+        "figure": "Il menu con i tre puntini sulla riga del brano.",
         "steps": [
           "Apri il menu con i tre puntini, o con clic destro sulla riga, e scegli Modifica.",
           "Cambia nome, autore, album, anno e genere; il genere si può scegliere tra quelli già in libreria o scrivere.",
@@ -627,6 +632,7 @@
       "player": {
         "title": "Ascoltare la musica",
         "where": "doppio clic su una riga o su una scheda; il player compare in basso.",
+        "figure": "Il player in basso, con i comandi e la barra di avanzamento.",
         "steps": [
           "Fai doppio clic sul brano da ascoltare: l’elenco che stai guardando diventa la coda di riproduzione.",
           "Il player in basso porta copertina, titolo, autore, avanzamento, volume e silenziamento.",
@@ -640,6 +646,7 @@
       "dock": {
         "title": "Player flottante",
         "where": "compare riducendo l’app nella barra di sistema mentre suona qualcosa.",
+        "figure": "Il player flottante e i suoi comandi.",
         "steps": [
           "Il pulsante con il trattino basso, nella barra del titolo, manda l’app nella barra di sistema: la riproduzione continua.",
           "Se c’è un brano in ascolto compare il player flottante, una finestrella con copertina, titolo e comandi.",
@@ -666,6 +673,7 @@
       "libraries": {
         "title": "Più librerie",
         "where": "icona con le due frecce accanto al nome, e Impostazioni → Libreria.",
+        "figure": "L’icona con le due frecce accanto al nome della libreria.",
         "steps": [
           "Ogni libreria ha il suo elenco di brani: una per la musica di tutti i giorni, una per il lavoro, e così via.",
           "L’icona con le due frecce accanto al nome apre il cambio rapido di libreria.",
@@ -679,6 +687,7 @@
       "transfer": {
         "title": "Importare ed esportare",
         "where": "menu della libreria e Impostazioni → Libreria.",
+        "figure": "La sezione di importazione ed esportazione nelle impostazioni.",
         "steps": [
           "\"Esporta libreria\" salva un file con l’elenco dei brani e i loro dati, copertine comprese.",
           "L’importazione di una libreria chiede come unirla: sostituire quella aperta, aggiungere solo i brani nuovi o aggiornare anche quelli già presenti.",
@@ -704,6 +713,7 @@
       "settings": {
         "title": "Avvio, finestra e generali",
         "where": "Impostazioni → Generale, e barra del titolo.",
+        "figure": "L’ingranaggio nella barra del titolo, che apre le impostazioni.",
         "steps": [
           "Lingua: italiano, inglese, francese, spagnolo e tedesco, con effetto immediato.",
           "Avvio e finestra: avviare l’app con il sistema, partire ridotta nella barra di sistema e restarci alla chiusura invece di uscire.",

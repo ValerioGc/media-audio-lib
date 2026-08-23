@@ -43,29 +43,29 @@
     "@tauri-apps/plugin-store": "^2.4.4",
     "pinia": "^4.0.3",
     "vue": "^3.5.41",
-    "vue-i18n": "^11.4.8"
+    "vue-i18n": "^11.4.9"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@fullhuman/postcss-purgecss": "^6.0.0",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
     "@tauri-apps/cli": "^2.11.4",
     "@types/node": "^22.20.1",
     "@vitejs/plugin-vue": "^6.0.8",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/test-utils": "^2.4.11",
-    "cssnano": "^7.0.6",
-    "eslint": "^10.8.1",
+    "cssnano": "^8.0.8",
+    "eslint": "^10.9.0",
     "eslint-plugin-vue": "^10.10.0",
     "jsdom": "^30.0.1",
     "postcss": "^8.5.3",
     "postcss-combine-duplicated-selectors": "^10.0.3",
     "prettier": "^3.9.6",
-    "sass-embedded": "^1.102.0",
+    "sass-embedded": "^1.103.1",
     "typescript": "^6.0.3",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11",
+    "vue-tsc": "^3.3.11"
   }
 }

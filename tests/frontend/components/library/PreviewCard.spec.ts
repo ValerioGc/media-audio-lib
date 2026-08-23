@@ -97,10 +97,19 @@ describe('PreviewCard', () => {
     expect(wrapper.get('.app_tooltip_bubble').text()).toBe('Blue in Green');
   });
 
-  it('reports files missing from disk', () => {
+  it('reports files missing from disk as a corner alert', () => {
     const wrapper = mountCard(makeTrack({ missing: true }));
+    const bubble = wrapper.get('[data-testid="missing-bubble"]');
 
-    expect(wrapper.get('.preview_card_badge').text()).toContain('File non più presente su disco');
+    expect(bubble.attributes('title')).toBe('File non più presente su disco');
+    expect(bubble.get('.app_icon').classes()).toContain('app_icon_warning');
+    expect(wrapper.get('.preview_card_body').text()).not.toContain('File non più presente');
+  });
+
+  it('leaves the corner clear when the file is there', () => {
+    const wrapper = mountCard(makeTrack({ missing: false }));
+
+    expect(wrapper.find('[data-testid="missing-bubble"]').exists()).toBe(false);
   });
 
   it('emits selection when the card button is pressed', async () => {

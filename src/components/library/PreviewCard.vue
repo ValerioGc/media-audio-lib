@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 
-import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
 import CoverImage from '@/components/library/CoverImage.vue';
 import LibraryRowActions from '@/components/library/LibraryRowActions.vue';
+import MissingBubble from '@/components/library/MissingBubble.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
@@ -65,6 +65,7 @@ function select(event: MouseEvent) {
     </AppTooltip>
 
     <PlayingBubble v-if="playing" />
+    <MissingBubble v-if="track.missing" />
 
     <CoverImage :track="track" size="card" />
 
@@ -75,10 +76,6 @@ function select(event: MouseEvent) {
       </p>
       <p v-if="metaKeys.includes('album')" class="preview_card_meta">
         {{ track.album ?? t('library.row.unknown') }}
-      </p>
-      <p v-if="track.missing" class="preview_card_badge">
-        <AppIcon name="warning" />
-        {{ t('library.row.missing') }}
       </p>
     </div>
 
@@ -138,6 +135,12 @@ function select(event: MouseEvent) {
 
   &_missing {
     color: var(--color_text_muted);
+
+    // The cover is the part that has nothing left behind it: dimming it says so without
+    // spending a line of the body on a sentence.
+    :deep(.cover_image) {
+      opacity: 0.55;
+    }
   }
 
   &_playing {
@@ -171,13 +174,6 @@ function select(event: MouseEvent) {
     font-size: 0.8125em;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  &_badge {
-    display: flex;
-    gap: $space_xs;
-    align-items: center;
-    font-size: 0.75em;
   }
 
   // The menu takes the same corner: reading the state matters while the card is at rest,

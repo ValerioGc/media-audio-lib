@@ -25,6 +25,20 @@ describe('LibraryCreateForm', () => {
     expect(wrapper.get('input').attributes('maxlength')).toBe('120');
   });
 
+  it('offers nothing to create until the field holds a name', async () => {
+    const { wrapper } = mountForm();
+    const button = wrapper.get('[data-testid="create-library"]');
+
+    expect(button.attributes('disabled')).toBeDefined();
+
+    // Spaces are not a name: the shell refuses them, and so does the button.
+    await wrapper.get('input').setValue('   ');
+    expect(button.attributes('disabled')).toBeDefined();
+
+    await wrapper.get('input').setValue('Soundtracks');
+    expect(button.attributes('disabled')).toBeUndefined();
+  });
+
   it('creates a library and clears the field', async () => {
     const { wrapper, library } = mountForm();
     const createLibrary = vi.spyOn(library, 'createLibrary').mockResolvedValue(true);

@@ -65,10 +65,47 @@ fn unique_id(catalog: &Catalog, name: &str) -> String {
     candidate
 }
 
+/// Whether two names would be read as the same library by the person looking at them.
+///
+/// Case and the spaces around a name are not what tells two libraries apart: "Jazz" and
+/// "jazz " in the same list are a mistake waiting to be made, not two collections.
+fn same_name(first: &str, second: &str) -> bool {
+    first.trim().to_lowercase() == second.trim().to_lowercase()
+}
+
+/// Refuses a name another library already answers to.
+///
+/// `except` is the library allowed to keep it: renaming one to what it is already called
+/// is not a clash with itself.
+pub fn ensure_name_is_free(
+    catalog: &CatalogState,
+    state: &LibraryState,
+    name: &str,
+    except: Option<&str>,
+) -> AppResult<()> {
+    let taken = summaries(catalog, state)?.into_iter().any(|library| {
+        same_name(&library.name, name) && except.is_none_or(|allowed| library.id != allowed)
+    });
+
+    if taken {
+        return Err(AppError::Validation(format!(
+            "esiste già una libreria chiamata {name}"
+        )));
+    }
+
+    Ok(())
+}
+
 /// Creates an empty library and adds it to the catalog without opening it.
-pub fn create(catalog: &CatalogState, name: &str) -> AppResult<LibrarySummary> {
+pub fn create(
+    catalog: &CatalogState,
+    state: &LibraryState,
+    name: &str,
+) -> AppResult<LibrarySummary> {
     let mut library = Library::new();
     let name = library.rename(name)?;
+
+    ensure_name_is_free(catalog, state, &name, None)?;
 
     let id = catalog.read(|entries| unique_id(entries, &name))?;
     let file = catalog::library_file(catalog.directory(), &id);
@@ -186,8 +223,12 @@ pub fn list_libraries(
 
 /// Creates a new empty library.
 #[tauri::command]
-pub fn create_library(catalog: State<'_, CatalogState>, name: String) -> AppResult<LibrarySummary> {
-    create(&catalog, &name)
+pub fn create_library(
+    catalog: State<'_, CatalogState>,
+    state: State<'_, LibraryState>,
+    name: String,
+) -> AppResult<LibrarySummary> {
+    create(&catalog, &state, &name)
 }
 
 /// Makes another library the active one.

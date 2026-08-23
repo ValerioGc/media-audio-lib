@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::error::{AppError, AppResult};
 use crate::library::{self, AddReport, LibraryMetadata, TrackView};
+use crate::catalog::CatalogState;
 use crate::state::LibraryState;
 
 /// What a refresh found: how many entries changed, and which files are no longer there.
@@ -172,8 +173,18 @@ pub fn library_info(state: State<'_, LibraryState>) -> AppResult<LibraryInfo> {
 }
 
 /// Renames the active library.
+///
+/// The catalog is asked as well: a name is only free if no other library already answers
+/// to it, and creation is not the only door into the same mistake.
 #[tauri::command]
-pub fn rename_library(state: State<'_, LibraryState>, name: String) -> AppResult<LibraryInfo> {
+pub fn rename_library(
+    catalog: State<'_, CatalogState>,
+    state: State<'_, LibraryState>,
+    name: String,
+) -> AppResult<LibraryInfo> {
+    let active = catalog.read(|catalog| catalog.active.clone())?;
+    crate::commands::catalog::ensure_name_is_free(&catalog, &state, &name, Some(&active))?;
+
     state.update(|library| library.rename(&name))??;
     state.read(info_of)
 }

@@ -94,6 +94,13 @@ export function fittedTableColumnWidths(
     columns
       .filter((column) => isResizableTableColumn(column.key))
       .map((column) => {
+        // The cover holds a picture, not words: fitting it to its content means the
+        // narrowest it goes. Measuring the heading instead would size a square by the
+        // length of the word above it.
+        if (column.key === 'cover') {
+          return [column.key, TABLE_COLUMN_WIDTHS.cover.min];
+        }
+
         const contentWidths = sampledTracks.map((track) =>
           estimateTextWidth(tableColumnContentValue(track, column.key)),
         );

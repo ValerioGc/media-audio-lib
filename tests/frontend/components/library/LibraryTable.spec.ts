@@ -161,6 +161,10 @@ describe('LibraryTable', () => {
     expect(settings.tableColumns.find((column) => column.key === 'artist')?.width).toBeGreaterThan(
       TABLE_COLUMN_WIDTHS.artist.default,
     );
+    // And the cover holds no words to be fitted to.
+    expect(settings.tableColumns.find((column) => column.key === 'cover')?.width).toBe(
+      TABLE_COLUMN_WIDTHS.cover.min,
+    );
   });
 
   /**

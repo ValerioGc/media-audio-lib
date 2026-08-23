@@ -12,7 +12,7 @@ import { usePlayerStore } from '@/stores/player';
 import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
-defineProps<{ track: TrackView }>();
+const props = defineProps<{ track: TrackView }>();
 
 const emit = defineEmits<{
   expand: [];
@@ -22,6 +22,18 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const player = usePlayerStore();
 const settings = useSettingsStore();
+
+/**
+ * The line under the artist: what places the track without repeating it.
+ *
+ * Album and year are written together, and either of them may be missing, so the line only
+ * appears when there is something to put on it.
+ */
+const placement = computed(() =>
+  [props.track.album, props.track.year]
+    .filter((part) => part !== null && `${part}` !== '')
+    .join(' · '),
+);
 
 const accentStyle = computed(() => ({
   '--player_surface_strength': `${100 - settings.playerTransparency}%`,
@@ -77,10 +89,17 @@ const accentStyle = computed(() => ({
       <div class="player_bar_track">
         <CoverImage :track="track" size="thumb" eager />
 
+        <!-- Three lines rather than two: what is playing, who by, and where it comes from.
+             Each is written on a line of its own so none of them has to be read out of a
+             string of separators. -->
         <div class="player_bar_info">
+          <p class="player_bar_label">{{ t('player.nowPlaying') }}</p>
           <p class="player_bar_title" :title="track.title">{{ track.title }}</p>
           <p class="player_bar_artist" :title="track.artist ?? t('library.row.unknown')">
             {{ track.artist ?? t('library.row.unknown') }}
+          </p>
+          <p v-if="placement !== ''" class="player_bar_placement" :title="placement">
+            {{ placement }}
           </p>
         </div>
       </div>
@@ -198,7 +217,7 @@ const accentStyle = computed(() => ({
 
   &_error {
     padding-bottom: $space_xs;
-    color: #c42b1c;
+    color: var(--color_danger);
     font-size: 0.875em;
   }
 
@@ -210,10 +229,17 @@ const accentStyle = computed(() => ({
 
   &_track {
     display: flex;
-    flex: 1 1 14rem;
+    flex: 1 1 16rem;
     gap: $space_md;
     align-items: center;
     min-width: 0;
+
+    // Tall enough to stand against the block of text next to it, which is now three lines.
+    :deep(.cover_image_thumb) {
+      width: 3.25rem;
+      height: 3.25rem;
+      border-radius: $radius_md;
+    }
   }
 
   &_playback {
@@ -229,25 +255,44 @@ const accentStyle = computed(() => ({
     flex: 1;
     flex-direction: column;
     min-width: 0;
+    line-height: 1.3;
+  }
+
+  // The heading of the block, said once and small: the lines under it are then free to be
+  // the track itself rather than a sentence about it.
+  &_label {
+    color: var(--color_text_muted);
+    font-size: 0.625em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &_title,
+  &_artist,
+  &_placement {
+    @include selectable_text;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &_title {
-    @include selectable_text;
-
-    overflow: hidden;
+    font-size: 1.0625em;
     font-weight: 600;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    letter-spacing: -0.01em;
   }
 
   &_artist {
-    @include selectable_text;
+    color: var(--color_accent);
+    font-size: 0.8125em;
+    font-weight: 600;
+  }
 
-    overflow: hidden;
+  &_placement {
     color: var(--color_text_muted);
-    font-size: 0.875em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 0.75em;
   }
 
   &_actions {

@@ -7,7 +7,9 @@ import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
 import { MAX_LISTED_ARTISTS } from '@/config/app-config';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayingBubble from '@/components/library/PlayingBubble.vue';
+import { groupCardWidth } from '@/services/preview-size';
 import { formatDuration } from '@/services/track-sorting';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 import type { ViewMode } from '@/types/settings';
 
@@ -48,6 +50,11 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const settings = useSettingsStore();
+
+// The cards of a group carry more than a title, so they start wider than a track's — but
+// they follow the same choice.
+const cardWidth = computed(() => groupCardWidth(settings.previewSize));
 
 function facetValueOf(track: TrackView, field: FacetField): string {
   return track[field]?.trim() ?? '';
@@ -285,6 +292,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     v-if="viewMode === 'preview'"
     class="library_facet_preview"
     :class="{ library_facet_preview_genre: field === 'genre' }"
+    :style="{ '--preview_card_width': cardWidth }"
     :aria-label="t(`library.groups.columns.${field}`)"
   >
     <!-- A real button rather than a card pretending to be one: Enter, Space and focus
@@ -438,7 +446,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
 .library_facet_preview {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--preview_card_width, 13rem), 1fr));
   align-content: start;
   align-items: stretch;
   gap: $space_md;

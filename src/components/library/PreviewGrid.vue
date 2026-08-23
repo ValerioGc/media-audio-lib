@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
 import PreviewCard, { type PreviewCardMeta } from '@/components/library/PreviewCard.vue';
+import { trackCardWidth } from '@/services/preview-size';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackSelectionIntent, TrackView } from '@/types/library';
 
 withDefaults(
@@ -18,10 +22,16 @@ const emit = defineEmits<{
   edit: [track: TrackView];
   remove: [track: TrackView];
 }>();
+
+const settings = useSettingsStore();
+
+// The floor the grid fills the row against: how many cards fit on a line is what the size
+// really decides.
+const cardWidth = computed(() => trackCardWidth(settings.previewSize));
 </script>
 
 <template>
-  <ul class="preview_grid">
+  <ul class="preview_grid" :style="{ '--preview_card_width': cardWidth }">
     <li v-for="track in tracks" :key="track.id" class="preview_grid_item">
       <PreviewCard
         :track="track"
@@ -40,7 +50,7 @@ const emit = defineEmits<{
 <style scoped lang="scss">
 .preview_grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--preview_card_width, 9rem), 1fr));
   // The rows keep the height of their cards: a grid stretches them over the free space
   // instead, which a short list has plenty of.
   align-content: start;

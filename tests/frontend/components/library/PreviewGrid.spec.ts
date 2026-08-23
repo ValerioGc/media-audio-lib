@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
 import { makeTrack, makeTracks } from '@tests/support/tracks';
+import { useSettingsStore } from '@/stores/settings';
 import type { TrackView } from '@/types/library';
 
 import PreviewGrid from '@/components/library/PreviewGrid.vue';
@@ -20,6 +21,21 @@ function mountGrid(
 }
 
 describe('PreviewGrid', () => {
+  it('sizes its cards from the setting', async () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    const wrapper = mount(PreviewGrid, {
+      ...options,
+      props: { tracks: [makeTrack()], selectedIds: [], playingId: null },
+    });
+
+    expect(wrapper.get('ul').attributes('style')).toContain('--preview_card_width: 9rem');
+
+    await settings.setPreviewSize('large');
+
+    expect(wrapper.get('ul').attributes('style')).toContain('--preview_card_width: 12rem');
+  });
+
   it('renders one card per track', () => {
     const wrapper = mountGrid(makeTracks(5));
 

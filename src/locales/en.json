@@ -396,6 +396,12 @@
       "table": "List",
       "preview": "Previews"
     },
+    "previewSize": {
+      "label": "Preview size",
+      "small": "Small previews",
+      "medium": "Medium previews",
+      "large": "Large previews"
+    },
     "tabs": {
       "label": "Library sections",
       "tracks": "Tracks",

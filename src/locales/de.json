@@ -396,6 +396,12 @@
       "table": "Liste",
       "preview": "Vorschauen"
     },
+    "previewSize": {
+      "label": "Größe der Vorschauen",
+      "small": "Kleine Vorschauen",
+      "medium": "Mittlere Vorschauen",
+      "large": "Große Vorschauen"
+    },
     "tabs": {
       "label": "Bereiche der Bibliothek",
       "tracks": "Titel",

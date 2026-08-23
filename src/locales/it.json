@@ -396,6 +396,12 @@
       "table": "Elenco",
       "preview": "Anteprime"
     },
+    "previewSize": {
+      "label": "Dimensione delle anteprime",
+      "small": "Anteprime piccole",
+      "medium": "Anteprime medie",
+      "large": "Anteprime grandi"
+    },
     "tabs": {
       "label": "Sezioni libreria",
       "tracks": "Brani",

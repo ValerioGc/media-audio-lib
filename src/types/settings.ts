@@ -69,6 +69,10 @@ export type DockCloseAction = (typeof DOCK_CLOSE_ACTIONS)[number];
 export const VIEW_MODES = ['table', 'preview'] as const;
 export type ViewMode = (typeof VIEW_MODES)[number];
 
+/** How large the cards of the preview are, from the fewest per row to the most. */
+export const PREVIEW_SIZES = ['small', 'medium', 'large'] as const;
+export type PreviewSize = (typeof PREVIEW_SIZES)[number];
+
 export const TABLE_COLUMN_KEYS = [
   'cover',
   'title',
@@ -127,6 +131,7 @@ export interface AppSettings {
   glassSurfacesEnabled: boolean;
   ambientOnPanels: boolean;
   viewMode: ViewMode;
+  previewSize: PreviewSize;
   mainLibraryId: string | null;
   coverGradientEnabled: boolean;
   coverGradientIntensity: number;
@@ -162,6 +167,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   glassSurfacesEnabled: true,
   ambientOnPanels: true,
   viewMode: 'preview',
+  previewSize: 'medium',
   mainLibraryId: null,
   coverGradientEnabled: true,
   coverGradientIntensity: 100,

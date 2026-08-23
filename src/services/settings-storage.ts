@@ -19,6 +19,7 @@ import {
   TABLE_COLUMN_WIDTHS,
   TEXT_SIZES,
   THEME_CHOICES,
+  PREVIEW_SIZES,
   VIEW_MODES,
   type AppSettings,
   type TableColumnKey,
@@ -132,6 +133,7 @@ export function sanitizeSettings(raw: unknown): AppSettings {
         ? source.glassSurfacesEnabled
         : DEFAULT_SETTINGS.glassSurfacesEnabled,
     viewMode: pickKnown(VIEW_MODES, source.viewMode, DEFAULT_SETTINGS.viewMode),
+    previewSize: pickKnown(PREVIEW_SIZES, source.previewSize, DEFAULT_SETTINGS.previewSize),
     mainLibraryId:
       typeof source.mainLibraryId === 'string' && source.mainLibraryId.trim().length > 0
         ? source.mainLibraryId

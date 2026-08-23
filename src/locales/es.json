@@ -396,6 +396,12 @@
       "table": "Lista",
       "preview": "Vistas previas"
     },
+    "previewSize": {
+      "label": "Tamaño de las vistas previas",
+      "small": "Vistas previas pequeñas",
+      "medium": "Vistas previas medianas",
+      "large": "Vistas previas grandes"
+    },
     "tabs": {
       "label": "Secciones de la biblioteca",
       "tracks": "Pistas",

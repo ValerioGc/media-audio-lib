@@ -396,6 +396,12 @@
       "table": "Liste",
       "preview": "Aperçus"
     },
+    "previewSize": {
+      "label": "Taille des aperçus",
+      "small": "Petits aperçus",
+      "medium": "Aperçus moyens",
+      "large": "Grands aperçus"
+    },
     "tabs": {
       "label": "Sections de la bibliothèque",
       "tracks": "Morceaux",

@@ -44,6 +44,7 @@ import {
   type TableColumnSetting,
   type TextSize,
   type ThemeChoice,
+  type PreviewSize,
   type ViewMode,
 } from '@/types/settings';
 
@@ -58,6 +59,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const glassSurfacesEnabled = ref(DEFAULT_SETTINGS.glassSurfacesEnabled);
   const ambientOnPanels = ref(DEFAULT_SETTINGS.ambientOnPanels);
   const viewMode = ref<ViewMode>(DEFAULT_SETTINGS.viewMode);
+  const previewSize = ref<PreviewSize>(DEFAULT_SETTINGS.previewSize);
   const mainLibraryId = ref<string | null>(DEFAULT_SETTINGS.mainLibraryId);
   const coverGradientEnabled = ref(DEFAULT_SETTINGS.coverGradientEnabled);
   const coverGradientIntensity = ref(DEFAULT_SETTINGS.coverGradientIntensity);
@@ -103,6 +105,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled: glassSurfacesEnabled.value,
     ambientOnPanels: ambientOnPanels.value,
     viewMode: viewMode.value,
+    previewSize: previewSize.value,
     mainLibraryId: mainLibraryId.value,
     coverGradientEnabled: coverGradientEnabled.value,
     coverGradientIntensity: coverGradientIntensity.value,
@@ -188,6 +191,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled.value = restored.glassSurfacesEnabled;
     ambientOnPanels.value = restored.ambientOnPanels;
     viewMode.value = restored.viewMode;
+    previewSize.value = restored.previewSize;
     mainLibraryId.value = restored.mainLibraryId;
     coverGradientEnabled.value = restored.coverGradientEnabled;
     coverGradientStyle.value = restored.coverGradientStyle;
@@ -231,6 +235,12 @@ export const useSettingsStore = defineStore('settings', () => {
   // The chosen library view is remembered across sessions.
   async function setViewMode(next: ViewMode) {
     viewMode.value = next;
+    await persist();
+  }
+
+  // As is the size of its cards: the choice made in the view is the one that comes back.
+  async function setPreviewSize(next: PreviewSize) {
+    previewSize.value = next;
     await persist();
   }
 
@@ -515,6 +525,7 @@ export const useSettingsStore = defineStore('settings', () => {
     glassSurfacesEnabled,
     ambientOnPanels,
     viewMode,
+    previewSize,
     mainLibraryId,
     coverGradientEnabled,
     coverGradientIntensity,
@@ -552,6 +563,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setAmbientDirection,
     setGlassSurfacesEnabled,
     setViewMode,
+    setPreviewSize,
     setMainLibraryId,
     setCoverGradientEnabled,
     setCoverGradientIntensity,

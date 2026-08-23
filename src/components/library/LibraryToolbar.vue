@@ -6,6 +6,7 @@ import AppButton from '@/components/common/AppButton.vue';
 import AppInput from '@/components/common/AppInput.vue';
 import LibraryImportButton from '@/components/library/LibraryImportButton.vue';
 import LibrarySortSelect from '@/components/library/LibrarySortSelect.vue';
+import PreviewSizeToggle from '@/components/library/PreviewSizeToggle.vue';
 import LibraryViewToggle from '@/components/library/LibraryViewToggle.vue';
 import { useLibraryStore } from '@/stores/library';
 import { SORTABLE_COLUMNS, type SortableColumn } from '@/types/library';
@@ -17,8 +18,10 @@ withDefaults(
     selectedCount?: number | undefined;
     /** The preview has no column headers to sort from: it gets the control instead. */
     showSort?: boolean;
+    /** Only the preview has cards, so only the preview is asked how large they should be. */
+    showPreviewSize?: boolean;
   }>(),
-  { viewMode: undefined, selectedCount: 0 },
+  { viewMode: undefined, selectedCount: 0, showPreviewSize: false },
 );
 const emit = defineEmits<{
   'update:viewMode': [mode: ViewMode];
@@ -74,6 +77,8 @@ function sortBy(column: string) {
       :options="sortOptions"
       @select="sortBy"
     />
+
+    <PreviewSizeToggle v-if="showPreviewSize" class="library_toolbar_preview_size" />
 
     <!-- The view switch sits at the far right of the toolbar. -->
     <LibraryViewToggle

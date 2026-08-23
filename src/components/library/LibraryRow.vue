@@ -162,10 +162,13 @@ function openActionsMenu(event: MouseEvent) {
     background: var(--cover_row_gradient), var(--color_surface);
   }
 
+  // The step in from the edge of the column, the same one the headings take: without it
+  // the text of a cell starts where the text of the one before it ends.
   &_cell {
-    padding: 0;
+    padding: 0 0 0 $space_sm;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
     white-space: nowrap;
   }
 
@@ -224,10 +227,12 @@ function openActionsMenu(event: MouseEvent) {
   // The cell paints nothing: the menu sits straight on the row. A background of its own
   // could never match, because the gradient of a playing row is spread over the whole
   // width and would restart inside these few rem as a brighter patch.
+  // The menu is pinned to the right edge and takes no step in: the step is for reading.
   &_actions {
     display: flex;
     gap: $space_xs;
     grid-column: -1;
+    padding-left: 0;
     position: sticky;
     right: 0;
     z-index: 1;

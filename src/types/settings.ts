@@ -117,7 +117,9 @@ export const TABLE_COLUMN_WIDTHS: Record<
   TableColumnKey,
   { min: number; max: number; default: number }
 > = {
-  cover: { min: 36, max: 60, default: 44 },
+  // Starts at its narrowest: a list is read by its titles, and whoever wants the covers
+  // larger drags the column and is remembered.
+  cover: { min: 36, max: 60, default: 36 },
   title: { min: 180, max: 520, default: 260 },
   artist: { min: 120, max: 360, default: 180 },
   album: { min: 120, max: 360, default: 180 },

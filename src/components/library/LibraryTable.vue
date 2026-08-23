@@ -427,8 +427,11 @@ onUnmounted(stopResize);
     }
   }
 
+  // The same step the sorting button takes with its own padding, so a heading that cannot
+  // be sorted still lines up with the cells under it.
   &_label {
     display: block;
+    padding-left: $space_sm;
     overflow: hidden;
     text-overflow: ellipsis;
   }

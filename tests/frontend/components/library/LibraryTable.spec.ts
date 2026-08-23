@@ -219,6 +219,14 @@ describe('LibraryTable', () => {
     expect(widthOf(settings, 'artist')).toBe(before - 30);
   });
 
+  it('starts the cover column at its narrowest', () => {
+    const settings = useSettingsStore();
+
+    expect(settings.tableColumns.find((column) => column.key === 'cover')?.width).toBe(
+      TABLE_COLUMN_WIDTHS.cover.min,
+    );
+  });
+
   it('puts a handle on every edge that can move, and on no other', () => {
     const wrapper = mountTable([makeTrack()]);
     const headings = wrapper.findAll('.library_table_heading');

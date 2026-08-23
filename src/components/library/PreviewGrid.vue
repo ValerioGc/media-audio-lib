@@ -51,10 +51,15 @@ const cardWidth = computed(() => trackCardWidth(settings.previewSizes.tracks));
 .preview_grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--preview_card_width, 9rem), 1fr));
-  // The rows keep the height of their cards: a grid stretches them over the free space
-  // instead, which a short list has plenty of.
+  // `align-content: start` is what keeps the rows the height of their cards: without it a
+  // grid shares the free space among them, which a short list has plenty of.
+  //
+  // Sizing the rows by `min-content` did the same thing and one thing more: the square of a
+  // cover is held by a percentage padding, and percentages count as zero while a browser
+  // measures intrinsic height. Every row came out as tall as its text alone, and each card
+  // spilled its cover over the row below — where it covered the text, except on the last
+  // row, which had nothing under it to hide.
   align-content: start;
-  grid-auto-rows: min-content;
   gap: $space_md;
   flex: 1;
   min-height: 0;

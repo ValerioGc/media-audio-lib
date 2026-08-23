@@ -450,13 +450,11 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
 
   @include focus_ring;
 
+  // No floor of its own: the cover is a square of the width the card was given, and the
+  // card is as tall as that square and its writing. A number here would be a guess at one
+  // width, and there are three of them now.
   &_album {
-    min-height: 19rem;
     padding: $space_md;
-
-    &.library_facet_card_playing {
-      min-height: 20.5rem;
-    }
   }
 
   &_playing {
@@ -499,8 +497,8 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
       }
 
       // The mosaic sizes its own tiles: a square each would fight the grid.
-      :deep(.cover_image_card::before) {
-        display: none;
+      :deep(.cover_image_card) {
+        aspect-ratio: auto;
       }
 
       &_single {

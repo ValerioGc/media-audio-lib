@@ -79,29 +79,17 @@ watch(source, () => {
     border-radius: $radius_sm;
   }
 
-  // The square is held by a spacer of its own, so the box keeps its height whether the cover
-  // has loaded, is missing, or the parent is a flex column: those are the cases where
-  // `aspect-ratio` and a padding on the box itself both give way.
+  // The square comes from the ratio rather than from a spacer with a percentage padding.
+  //
+  // A percentage counts as nothing while a browser works out how tall something wants to
+  // be, so a card holding one of these measured as tall as its text alone: the row came out
+  // short and every cover spilled over the row beneath it, hiding the writing there. The
+  // ratio is part of the measurement, which is the whole difference.
   &_card {
-    position: relative;
     width: 100%;
+    aspect-ratio: 1;
     border-radius: $radius_md;
     font-size: 2rem;
-
-    &::before {
-      flex: 0 0 auto;
-      width: 0;
-      padding-bottom: 100%;
-      content: '';
-    }
-
-    > * {
-      position: absolute;
-      display: flex;
-      inset: 0;
-      align-items: center;
-      justify-content: center;
-    }
   }
 
   // Sized by the height of its row, which already follows the width of the cover column.

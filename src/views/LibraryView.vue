@@ -827,13 +827,22 @@ async function confirmRemoval() {
   }
 
   // A little air above the line, so the counts do not touch the toolbar over them.
+  // The line under the tabs belongs to the row, not to the strip of tabs: the counts sit on
+  // the same line, and a rail that stopped where the tabs stop left it cut short of them.
   &_tabs {
     display: flex;
     flex-wrap: wrap;
     gap: $space_sm $space_md;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
     padding-top: $space_xs;
+    border-bottom: 1px solid var(--color_border);
+
+    // The strip keeps the indicator that runs along the bottom of it, and gives up the rail
+    // it used to draw for itself.
+    :deep(.library_tabs::after) {
+      display: none;
+    }
   }
 
   &_panel {

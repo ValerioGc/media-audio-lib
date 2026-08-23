@@ -37,15 +37,16 @@ describe('libraryRowHeight', () => {
   it('grows with the cover column once the cover needs the room', () => {
     document.documentElement.style.fontSize = '16px';
 
-    expect(libraryRowHeight(64)).toBe(72);
-    expect(libraryRowHeight(72)).toBe(80);
+    expect(libraryRowHeight(64)).toBe(64);
+    expect(libraryRowHeight(72)).toBe(72);
   });
 
-  it('never lets the cover touch the edges of its row', () => {
+  /** The cover fills its row corner to corner, so the row is exactly as tall as it is wide. */
+  it('is as tall as the cover once the cover is the taller of the two', () => {
     document.documentElement.style.fontSize = '16px';
 
-    for (const width of [44, 52, 60, 72]) {
-      expect(libraryRowHeight(width)).toBeGreaterThan(width);
+    for (const width of [60, 64, 72, 80]) {
+      expect(libraryRowHeight(width)).toBe(width);
     }
   });
 

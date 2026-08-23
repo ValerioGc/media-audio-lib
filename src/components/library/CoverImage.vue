@@ -92,15 +92,13 @@ watch(source, () => {
     font-size: 2rem;
   }
 
-  // Sized by the height of its row, which already follows the width of the cover column.
-  // Driving it from the cell instead would stretch it: in a table laid out to fit, that
-  // column is a fraction of the free space and can be far wider than it is tall.
+  // Every corner of the cell it is given. The column is a set number of pixels and the row
+  // follows it, so the two agree on a square — and where they do not, the picture is cropped
+  // by `object-fit` rather than leaving the cell showing around it.
   &_fill {
-    width: auto;
+    width: 100%;
     height: 100%;
-    max-width: 100%;
-    aspect-ratio: 1;
-    border-radius: $radius_sm;
+    border-radius: 0;
   }
 
   &_picture {

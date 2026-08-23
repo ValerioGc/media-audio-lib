@@ -182,10 +182,10 @@ function openActionsMenu(event: MouseEvent) {
   // writing before it ended, and a picture that fills its column has nothing to keep clear.
   &_cover {
     display: flex;
-    align-items: center;
     padding-left: 0;
-    // A square of the cover column, never taller than the row it sits in.
-    height: min(var(--library_cover_size), calc(var(--library_row_height) - #{$space_sm}));
+    // The whole cell, corner to corner: the picture is cropped to fill it rather than left
+    // with a band of empty row above and below.
+    height: 100%;
   }
 
   &_title {

@@ -361,13 +361,13 @@ describe('LibraryTable', () => {
 
     expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
 
-    // 60 is as wide as the cover column goes.
     await settings.setTableColumnWidth('cover', 72);
     await wrapper.vm.$nextTick();
 
-    // The rows and the windowing maths read the same value, so they cannot drift apart.
-    expect(wrapper.attributes('style')).toContain('--library_row_height: 68px');
-    expect(reservedListHeight(wrapper, 68)).toBe(6800);
+    // The cover fills its row corner to corner, so the row is as tall as the column is
+    // wide. The rows and the windowing maths read the same value and cannot drift apart.
+    expect(wrapper.attributes('style')).toContain('--library_row_height: 72px');
+    expect(reservedListHeight(wrapper, 72)).toBe(7200);
 
     document.documentElement.style.removeProperty('font-size');
   });
@@ -392,7 +392,7 @@ describe('LibraryTable', () => {
 
     // The library setting is left out of it: the square fills the row, and only the text
     // size can move it.
-    expect(wrapper.attributes('style')).toContain('--library_cover_size: 48px');
+    expect(wrapper.attributes('style')).toContain('--library_cover_size: 56px');
     expect(wrapper.attributes('style')).toContain('--library_row_height: 56px');
     expect(wrapper.find('.library_table_resize').exists()).toBe(false);
 

@@ -117,11 +117,10 @@ export const TABLE_COLUMN_WIDTHS: Record<
   TableColumnKey,
   { min: number; max: number; default: number }
 > = {
-  // Starts at its narrowest, and its narrowest is the height of a row less the room left
-  // around it (`LIBRARY_ROW_HEIGHT_REM` minus `LIBRARY_COVER_INSET_PX`): under that the
-  // picture stops filling the row it sits in and leaves a band of empty space around itself
-  // for nothing. It is the same square every other table of the app shows.
-  cover: { min: 48, max: 60, default: 48 },
+  // Starts at its narrowest, and its narrowest is the height of a row (`LIBRARY_ROW_HEIGHT_REM`
+  // at the default text size): under that the picture would be narrower than the row is tall
+  // and stop being a square. Widening the column makes the row grow with it.
+  cover: { min: 56, max: 80, default: 56 },
   title: { min: 180, max: 520, default: 260 },
   artist: { min: 120, max: 360, default: 180 },
   album: { min: 120, max: 360, default: 180 },

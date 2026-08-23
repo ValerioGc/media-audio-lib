@@ -1,9 +1,6 @@
 /** Height of one row of the list view, in rem. Keep in sync with `$library_row_height`. */
 export const LIBRARY_ROW_HEIGHT_REM = 3.5;
 
-/** Room left around the cover inside its cell, in pixels. */
-export const LIBRARY_COVER_INSET_PX = 8;
-
 /**
  * Width the title column needs before the playing badge spells itself out. Under it the
  * badge keeps only its symbol, so the title itself is left some room to be read.
@@ -37,16 +34,13 @@ export function remToPixels(value: number): number {
  * otherwise the image would be cut off by the row instead of growing.
  */
 /**
- * The cover of a table that does not offer its column settings: a square that fills the
+ * The cover of a table that does not offer its column settings: a square as tall as the
  * row, the same in every one of them, and only the text size moves it.
  */
 export function fixedCoverWidth(): number {
-  return Math.round(remToPixels(LIBRARY_ROW_HEIGHT_REM)) - LIBRARY_COVER_INSET_PX;
+  return Math.round(remToPixels(LIBRARY_ROW_HEIGHT_REM));
 }
 
 export function libraryRowHeight(coverWidth: number): number {
-  return Math.max(
-    remToPixels(LIBRARY_ROW_HEIGHT_REM),
-    Math.round(coverWidth) + LIBRARY_COVER_INSET_PX,
-  );
+  return Math.max(remToPixels(LIBRARY_ROW_HEIGHT_REM), Math.round(coverWidth));
 }

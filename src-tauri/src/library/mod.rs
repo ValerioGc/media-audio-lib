@@ -5,6 +5,8 @@
 
 use std::collections::{BTreeSet, HashSet};
 use std::path::{Component, Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
@@ -768,28 +770,43 @@ pub fn files_to_reread(library: &Library) -> Vec<(String, PathBuf)> {
 /// Kept apart from the library on purpose: this is the slow half, and holding the library
 /// while it runs is what used to leave the window unable to answer for anything else.
 pub fn read_all_metadata(files: &[(String, PathBuf)]) -> Vec<(String, TrackMetadata)> {
-    let next = std::sync::atomic::AtomicUsize::new(0);
-    let read = std::sync::Mutex::new(Vec::with_capacity(files.len()));
+    let next = AtomicUsize::new(0);
+    let read = Mutex::new(Vec::with_capacity(files.len()));
 
     std::thread::scope(|scope| {
         for _ in 0..REREAD_THREADS.min(files.len().max(1)) {
-            scope.spawn(|| loop {
-                let index = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-
-                let Some((id, path)) = files.get(index) else {
-                    return;
-                };
-
-                if let Ok(metadata) = metadata::read_metadata(path) {
-                    if let Ok(mut read) = read.lock() {
-                        read.push((id.clone(), metadata));
-                    }
-                }
-            });
+            scope.spawn(|| read_until_done(files, &next, &read));
         }
     });
 
     read.into_inner().unwrap_or_default()
+}
+
+/// Reads files off the shared list until it runs out. One of these runs per thread.
+///
+/// The counter is what divides the work: whoever gets there first takes the next file, so
+/// a thread held up by a slow read does not leave the others waiting behind it.
+fn read_until_done(
+    files: &[(String, PathBuf)],
+    next: &AtomicUsize,
+    read: &Mutex<Vec<(String, TrackMetadata)>>,
+) {
+    loop {
+        let index = next.fetch_add(1, Ordering::Relaxed);
+
+        let Some((id, path)) = files.get(index) else {
+            return;
+        };
+
+        let Ok(metadata) = metadata::read_metadata(path) else {
+            // A file that cannot be read is left as the library already has it.
+            continue;
+        };
+
+        if let Ok(mut read) = read.lock() {
+            read.push((id.clone(), metadata));
+        }
+    }
 }
 
 /// Writes back what was read, and says how many entries it changed.

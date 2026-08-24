@@ -77,7 +77,7 @@ media-audio-lib/
 │  │  ├─ metadata/             # metadata editor
 │  │  ├─ player/               # dock, controls, progress, full page view
 │  │  └─ settings/             # settings
-│  ├─ composables/             # list virtualisation, drag & drop
+│  ├─ composables/             # list virtualisation, drag & drop, foreground timers
 │  ├─ config/                  # shared configuration, genres, icons, layout
 │  ├─ i18n/                    # vue-i18n instance and locale detection
 │  ├─ locales/                 # translation files (it, en, fr, es, de)

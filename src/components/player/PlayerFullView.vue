@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
 import AppTooltip from '@/components/common/AppTooltip.vue';
+import { useOverlay } from '@/composables/useForeground';
 import CoverImage from '@/components/library/CoverImage.vue';
 import PlayerControls from '@/components/player/PlayerControls.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
@@ -33,6 +34,9 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const player = usePlayerStore();
 const settings = useSettingsStore();
+
+// The full view is drawn over the library: it exists only while it covers it.
+useOverlay(() => true);
 
 /**
  * Everything that is not title and artist goes under the cover.

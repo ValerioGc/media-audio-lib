@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
+import { useForegroundTimeout } from '@/composables/useForeground';
 import { useSettingsStore } from '@/stores/settings';
 import type { AddReport } from '@/types/library';
 
@@ -20,31 +21,22 @@ const autoDismissMs = computed(() => settings.bannerDuration * 1000);
 /** An import that lost files stays until the user has read it and closed it. */
 const hasFailures = computed(() => props.report.failed.length > 0);
 
-const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
 // Restarting the animation needs a fresh element, hence a key that changes per report.
 const runId = ref(0);
 
-function stopTimer() {
-  if (timeoutId.value !== null) {
-    clearTimeout(timeoutId.value);
-    timeoutId.value = null;
-  }
-}
+/** As long as the page is in front of the reader; an import that lost files never elapses. */
+const { isCounting, restart } = useForegroundTimeout(
+  () => (hasFailures.value ? 0 : autoDismissMs.value),
+  () => emit('dismiss'),
+);
 
 watch(
   () => props.report,
   () => {
-    stopTimer();
     runId.value += 1;
-
-    if (!hasFailures.value && autoDismissMs.value > 0) {
-      timeoutId.value = setTimeout(() => emit('dismiss'), autoDismissMs.value);
-    }
+    restart();
   },
-  { immediate: true },
 );
-
-onBeforeUnmount(stopTimer);
 
 const lines = computed(() =>
   (
@@ -97,7 +89,10 @@ const lines = computed(() =>
       :key="runId"
       class="library_report_countdown"
       data-testid="report-countdown"
-      :style="{ animationDuration: `${autoDismissMs}ms` }"
+      :style="{
+        animationDuration: `${autoDismissMs}ms`,
+        animationPlayState: isCounting ? 'running' : 'paused',
+      }"
       aria-hidden="true"
     />
   </section>

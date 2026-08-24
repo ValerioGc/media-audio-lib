@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resetI18n, withPinia } from '@tests/support/mount';
 import { useSettingsStore } from '@/stores/settings';
 
+import AppModal from '@/components/common/AppModal.vue';
 import LibraryBanner from '@/components/library/LibraryBanner.vue';
 
 beforeEach(() => {
@@ -86,5 +87,36 @@ describe('LibraryBanner', () => {
     await wrapper.get('[data-testid="library-banner-dismiss"]').trigger('click');
 
     expect(wrapper.emitted('dismiss')).toHaveLength(1);
+  });
+
+  it('holds the countdown while a panel covers the page', async () => {
+    const { wrapper } = mountBanner();
+    // The delay is started on mount, so the bar takes a tick to be drawn running.
+    await wrapper.vm.$nextTick();
+    const countdown = wrapper.get('[data-testid="library-banner-countdown"]');
+
+    expect(countdown.attributes('style')).toContain('animation-play-state: running');
+
+    // A dialog opens over the library: the message underneath stops running out.
+    const modal = mount(AppModal, { props: { open: true, title: 'Over the page' } });
+    await wrapper.vm.$nextTick();
+
+    expect(countdown.attributes('style')).toContain('animation-play-state: paused');
+
+    vi.advanceTimersByTime(60_000);
+
+    expect(wrapper.emitted('dismiss')).toBeUndefined();
+
+    await modal.setProps({ open: false });
+    await wrapper.vm.$nextTick();
+
+    expect(countdown.attributes('style')).toContain('animation-play-state: running');
+
+    vi.advanceTimersByTime(5000);
+
+    expect(wrapper.emitted('dismiss')).toHaveLength(1);
+
+    modal.unmount();
+    wrapper.unmount();
   });
 });

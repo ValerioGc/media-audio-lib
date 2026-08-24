@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useId, watch } from 'vue';
 
+import { useOverlay } from '@/composables/useForeground';
+
 const props = defineProps<{
   open: boolean;
   title: string;
@@ -17,6 +19,9 @@ const props = defineProps<{
 const emit = defineEmits<{ close: [] }>();
 
 const titleId = useId();
+
+// The page is behind this panel while it is open, so anything counted down out there stops.
+useOverlay(() => props.open);
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {

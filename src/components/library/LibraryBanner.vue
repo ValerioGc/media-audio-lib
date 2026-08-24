@@ -6,10 +6,11 @@
  * One shape for all of them, told apart by tone alone. The symbol and the message sit
  * together on the left, where reading starts, and the way to close it is at the right.
  */
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
+import { useForegroundTimeout } from '@/composables/useForeground';
 import type { IconName } from '@/config/icons';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -41,20 +42,15 @@ const settings = useSettingsStore();
  */
 const autoDismissMs = computed(() => (props.dismissible ? settings.bannerDuration * 1000 : 0));
 
-const timeoutId = ref<ReturnType<typeof setTimeout> | null>(null);
-
-onMounted(() => {
-  if (autoDismissMs.value > 0) {
-    timeoutId.value = setTimeout(() => emit('dismiss'), autoDismissMs.value);
-  }
-});
-
-onBeforeUnmount(() => {
-  if (timeoutId.value !== null) {
-    clearTimeout(timeoutId.value);
-    timeoutId.value = null;
-  }
-});
+/**
+ * The delay runs only while the page is in front of the reader, and the bar under the
+ * banner is paused along with it: a window put away, or a panel opened over the library,
+ * would otherwise take the message away unread.
+ */
+const { isCounting } = useForegroundTimeout(
+  () => autoDismissMs.value,
+  () => emit('dismiss'),
+);
 
 const TONE_ICONS: Record<'info' | 'warning' | 'danger', IconName> = {
   info: 'info',
@@ -105,7 +101,10 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       v-if="autoDismissMs > 0"
       class="library_banner_countdown"
       data-testid="library-banner-countdown"
-      :style="{ animationDuration: `${autoDismissMs}ms` }"
+      :style="{
+        animationDuration: `${autoDismissMs}ms`,
+        animationPlayState: isCounting ? 'running' : 'paused',
+      }"
       aria-hidden="true"
     />
   </div>

@@ -143,7 +143,8 @@
     },
     "appearance": {
       "application": "Applicazione",
-      "player": "Player audio"
+      "player": "Player audio",
+      "library": "Elenco brani"
     },
     "libraryTab": {
       "title": "Impostazioni della libreria",
@@ -195,7 +196,7 @@
       "title": "Cache delle copertine",
       "description": "Le copertine dei brani vengono conservate su disco, per non doverle rileggere dai file a ogni avvio. È possibile svuotare la cache in qualsiasi momento: si ricostruisce da sola e i file della libreria non vengono modificati.",
       "size": "Spazio occupato: {size}",
-      "empty": "La cache è vuota: non occupa spazio.",
+      "empty": "Spazio occupato: 0 MB",
       "limit": "Quando la cache supera {limit}, le copertine richieste da più tempo vengono rimosse automaticamente.",
       "clear": "Svuota la cache",
       "clearing": "Pulizia in corso…",
@@ -390,7 +391,10 @@
     },
     "refresh": {
       "missing": "{count} file non risulta più disponibile nel percorso registrato | {count} file non risultano più disponibili nei percorsi registrati",
-      "refreshed": "Aggiornati {count} brani modificati fuori dall’app"
+      "refreshed": "Aggiornati {count} brani modificati fuori dall’app",
+      "removeMissing": "Rimuovi file mancanti",
+      "removeMissingTitle": "Rimuovere i file mancanti?",
+      "removeMissingMessage": "{count} brani verranno rimossi dalla libreria. I file sul disco non verranno eliminati."
     },
     "exportList": {
       "title": "Esporta elenco brani",

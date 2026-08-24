@@ -73,10 +73,6 @@ async function moveColumn(column: TableColumnSetting, direction: -1 | 1) {
   }
 }
 
-async function setDividers(event: Event) {
-  await settings.setTableColumnDividers((event.target as HTMLInputElement).checked);
-}
-
 async function fitColumnsToContent() {
   await settings.setTableColumnWidths(
     fittedTableColumnWidths(settings.tableColumns, library.visibleTracks, columnLabels.value),
@@ -143,22 +139,9 @@ async function endReorder() {
           data-testid="column-fit"
           @click="fitColumnsToContent"
         >
-          <AppIcon name="maximize" />
+          <AppIcon name="resize" />
           <span>{{ t('library.columnSettings.fit') }}</span>
         </button>
-
-        <label class="library_column_settings_option">
-          <input
-            type="checkbox"
-            :checked="settings.tableColumnDividers"
-            data-testid="column-dividers"
-            @change="setDividers"
-          />
-          <span class="library_column_settings_option_text">
-            <span>{{ t('library.columnSettings.dividers') }}</span>
-            <small>{{ t('library.columnSettings.dividersHint') }}</small>
-          </span>
-        </label>
       </div>
 
       <ul class="library_column_settings_list">
@@ -263,22 +246,6 @@ async function endReorder() {
     flex-direction: column;
     gap: $space_sm;
     align-items: flex-start;
-  }
-
-  &_option {
-    @include settings_check;
-
-    align-items: flex-start;
-
-    &_text {
-      display: flex;
-      flex-direction: column;
-
-      small {
-        color: var(--color_text_muted);
-        font-size: 0.8125em;
-      }
-    }
   }
 
   &_fit {

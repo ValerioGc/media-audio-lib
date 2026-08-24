@@ -511,7 +511,7 @@ function openGroupFromKeyboard(event: KeyboardEvent, group: FacetGroup) {
     gap: $space_md;
     align-items: center;
     min-height: 0;
-    padding: $space_2xs $space_md;
+    padding: $space_2xs;
 
     // A square as tall as the row, so widening the cards enlarges these covers too rather
     // than leaving them adrift in a taller card.

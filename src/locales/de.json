@@ -143,7 +143,8 @@
     },
     "appearance": {
       "application": "Anwendung",
-      "player": "Audioplayer"
+      "player": "Audioplayer",
+      "library": "Titelliste"
     },
     "libraryTab": {
       "title": "Bibliothekseinstellungen",
@@ -195,7 +196,7 @@
       "title": "Cover-Cache",
       "description": "Cover werden auf der Festplatte behalten, damit sie nicht bei jedem Start neu aus den Dateien gelesen werden müssen. Der Cache kann jederzeit geleert werden: er baut sich von selbst wieder auf und die Dateien der Bibliothek bleiben unverändert.",
       "size": "Belegter Speicher: {size}",
-      "empty": "Der Cache ist leer: er belegt keinen Speicher.",
+      "empty": "Belegter Speicher: 0 MB",
       "limit": "Wenn der Cache {limit} überschreitet, werden die am längsten nicht angefragten Cover automatisch entfernt.",
       "clear": "Cache leeren",
       "clearing": "Wird geleert…",
@@ -390,7 +391,10 @@
     },
     "refresh": {
       "missing": "{count} Datei ist unter dem hinterlegten Pfad nicht mehr verfügbar | {count} Dateien sind unter den hinterlegten Pfaden nicht mehr verfügbar",
-      "refreshed": "{count} außerhalb der App bearbeitete Titel wurden aktualisiert"
+      "refreshed": "{count} außerhalb der App bearbeitete Titel wurden aktualisiert",
+      "removeMissing": "Fehlende Dateien entfernen",
+      "removeMissingTitle": "Fehlende Dateien entfernen?",
+      "removeMissingMessage": "{count} Titel werden aus der Bibliothek entfernt. Dateien auf der Festplatte werden nicht gelöscht."
     },
     "exportList": {
       "title": "Titelliste exportieren",

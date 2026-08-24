@@ -121,9 +121,11 @@ async function close(quitsApp: boolean) {
     :class="{
       mini_player_vertical: isVertical,
       mini_player_expanded: isExpanded,
+      mini_player_loading: state === null,
       mini_player_accented: state?.gradient !== null && state?.gradient !== undefined,
     }"
     :style="{ ...gradientStyle, ...progressStyle }"
+    :aria-busy="state === null"
   >
     <!-- The window commands take the top line, out of the way of the transport. -->
     <div class="mini_player_bar" data-tauri-drag-region>
@@ -199,6 +201,7 @@ async function close(quitsApp: boolean) {
           class="mini_player_button mini_player_button_main"
           type="button"
           :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
+          :disabled="state === null"
           data-testid="mini-toggle"
           @click="sendMiniCommand('toggle')"
         >
@@ -219,6 +222,7 @@ async function close(quitsApp: boolean) {
           class="mini_player_button"
           type="button"
           :aria-label="t('player.stop')"
+          :disabled="state === null"
           data-testid="mini-stop"
           @click="sendMiniCommand('stop')"
         >
@@ -249,6 +253,7 @@ async function close(quitsApp: boolean) {
         type="button"
         :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
         :aria-pressed="state?.isMuted ?? false"
+        :disabled="state === null"
         data-testid="mini-mute"
         @click="sendMiniCommand('mute')"
       >
@@ -257,18 +262,19 @@ async function close(quitsApp: boolean) {
       <PlayerVolume
         class="mini_player_volume"
         :model-value="state?.volume ?? 0"
+        :disabled="state === null"
         @update:model-value="sendMiniCommand('volume', $event)"
       />
     </div>
 
-    <!-- The commands that do not fit on the face of the dock, and the way it is laid out.
-         A panel inside the window rather than a dropdown: the window is a few hundred
-         pixels tall, and anything hanging below its edge would simply be cut off. -->
+    <!-- The commands that do not fit on the face of the dock float above it, opened by the
+         three-dot button. -->
     <div v-if="isSheetOpen" class="mini_player_sheet" role="menu" data-testid="mini-sheet">
       <button
         class="mini_player_sheet_item"
         type="button"
         role="menuitem"
+        :disabled="state === null"
         data-testid="mini-sheet-stop"
         @click="sendMiniCommand('stop')"
       >
@@ -291,6 +297,7 @@ async function close(quitsApp: boolean) {
         type="button"
         role="menuitemradio"
         :aria-checked="state?.isMuted ?? false"
+        :disabled="state === null"
         data-testid="mini-sheet-mute"
         @click="sendMiniCommand('mute')"
       >
@@ -301,6 +308,7 @@ async function close(quitsApp: boolean) {
       <div class="mini_player_sheet_volume">
         <PlayerVolume
           :model-value="state?.volume ?? 0"
+          :disabled="state === null"
           @update:model-value="sendMiniCommand('volume', $event)"
         />
       </div>
@@ -312,6 +320,7 @@ async function close(quitsApp: boolean) {
         type="button"
         role="menuitemradio"
         :aria-checked="isVertical"
+        :disabled="state === null"
         data-testid="mini-orientation"
         @click="toggleOrientation"
       >
@@ -323,6 +332,7 @@ async function close(quitsApp: boolean) {
         type="button"
         role="menuitemradio"
         :aria-checked="settings.miniPlayerAlwaysOnTop"
+        :disabled="state === null"
         data-testid="mini-on-top"
         @click="toggleOnTop"
       >
@@ -400,6 +410,7 @@ async function close(quitsApp: boolean) {
 
   &_cover {
     display: inline-flex;
+    position: relative;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
@@ -416,6 +427,26 @@ async function close(quitsApp: boolean) {
       height: 100%;
       object-fit: cover;
     }
+
+    &::after {
+      position: absolute;
+      inset: 0.2rem;
+      border-radius: $radius_sm;
+      background: linear-gradient(
+        110deg,
+        transparent 20%,
+        color-mix(in srgb, var(--color_text) 24%, transparent) 45%,
+        transparent 70%
+      );
+      content: '';
+      opacity: 0;
+      transform: translateX(-100%);
+    }
+  }
+
+  &_loading &_cover::after {
+    opacity: 1;
+    animation: mini_player_loading 1.2s ease-in-out infinite;
   }
 
   &_vertical &_cover {
@@ -518,11 +549,11 @@ async function close(quitsApp: boolean) {
   // Over the face of the dock, under the top line that opened it.
   &_sheet {
     display: flex;
-    position: absolute;
-    top: 2rem;
+    position: fixed;
+    top: 2.35rem;
     right: $space_2xs;
-    bottom: $space_2xs;
-    left: $space_2xs;
+    width: min(16rem, calc(100% - #{$space_sm}));
+    max-height: calc(100% - 2.75rem);
     z-index: 5;
     flex-direction: column;
     gap: $space_2xs;
@@ -595,6 +626,11 @@ async function close(quitsApp: boolean) {
     font-size: 0.75em;
     cursor: pointer;
 
+    &:disabled {
+      opacity: 0.35;
+      cursor: wait;
+    }
+
     &:hover:not(:disabled) {
       background-color: var(--color_surface_hover);
       color: var(--color_text);
@@ -643,6 +679,12 @@ async function close(quitsApp: boolean) {
 
   50% {
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--color_accent) 12%, transparent);
+  }
+}
+
+@keyframes mini_player_loading {
+  to {
+    transform: translateX(100%);
   }
 }
 

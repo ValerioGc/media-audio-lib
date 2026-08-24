@@ -55,6 +55,7 @@ describe('SettingsView', () => {
       'Tema',
       'Colore accent',
       'Sfondo ed effetto vetro',
+      'Elenco brani',
       'Colore sfondo da copertina',
     ]);
   });
@@ -125,6 +126,7 @@ describe('SettingsView', () => {
       'Theme',
       'Accent colour',
       'Background and glass',
+      'Track list',
       'Background colour from the cover',
     ]);
   });

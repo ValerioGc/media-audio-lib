@@ -143,7 +143,8 @@
     },
     "appearance": {
       "application": "Aplicación",
-      "player": "Reproductor de audio"
+      "player": "Reproductor de audio",
+      "library": "Lista de pistas"
     },
     "libraryTab": {
       "title": "Ajustes de la biblioteca",
@@ -195,7 +196,7 @@
       "title": "Caché de portadas",
       "description": "Las portadas se guardan en el disco, para no tener que leerlas de los archivos en cada arranque. La caché se puede vaciar en cualquier momento: se reconstruye sola y los archivos de la biblioteca no se modifican.",
       "size": "Espacio ocupado: {size}",
-      "empty": "La caché está vacía: no ocupa espacio.",
+      "empty": "Espacio ocupado: 0 MB",
       "limit": "Cuando la caché supera {limit}, las portadas solicitadas hace más tiempo se eliminan automáticamente.",
       "clear": "Vaciar la caché",
       "clearing": "Vaciando…",
@@ -390,7 +391,10 @@
     },
     "refresh": {
       "missing": "{count} archivo ya no está disponible en la ruta registrada | {count} archivos ya no están disponibles en las rutas registradas",
-      "refreshed": "Se han actualizado {count} pistas modificadas fuera de la app"
+      "refreshed": "Se han actualizado {count} pistas modificadas fuera de la app",
+      "removeMissing": "Eliminar archivos ausentes",
+      "removeMissingTitle": "¿Eliminar archivos ausentes?",
+      "removeMissingMessage": "Se quitarán {count} pistas de la biblioteca. Los archivos del disco no se eliminarán."
     },
     "exportList": {
       "title": "Exportar la lista de pistas",

@@ -54,7 +54,7 @@ describe('LibraryTable', () => {
       'Anno',
       'Genere',
       'Durata',
-      '▢⚙',
+      '↔⚙',
     ]);
   });
 

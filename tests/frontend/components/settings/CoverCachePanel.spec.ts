@@ -69,7 +69,7 @@ describe('CoverCachePanel', () => {
     await confirmClear(wrapper);
 
     expect(mocks.clearCoverCache).toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="cover-cache-size"]').text()).toContain('vuota');
+    expect(wrapper.get('[data-testid="cover-cache-size"]').text()).toContain('0 MB');
     expect(wrapper.get('[data-testid="cover-cache-status"]').text()).toContain('svuotata');
 
     wrapper.unmount();
@@ -118,7 +118,7 @@ describe('CoverCachePanel', () => {
 
     const wrapper = await mountPanel();
 
-    expect(wrapper.get('[data-testid="cover-cache-size"]').text()).toContain('vuota');
+    expect(wrapper.get('[data-testid="cover-cache-size"]').text()).toContain('0 MB');
     // Without a limit from the shell there is no figure to quote for it.
     expect(wrapper.find('.cover_cache_panel_hint').exists()).toBe(false);
   });

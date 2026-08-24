@@ -20,15 +20,21 @@ import StartupPanel from '@/components/settings/StartupPanel.vue';
 import TextSizeSelect from '@/components/settings/TextSizeSelect.vue';
 import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
 import { useLibraryStore } from '@/stores/library';
+import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const settings = useSettingsStore();
 
 const tabs = computed(() => [
   { id: 'general', label: t('settings.tabs.general') },
   { id: 'appearance', label: t('settings.tabs.appearance') },
   { id: 'library', label: t('settings.tabs.library') },
 ]);
+
+async function setTableDividers(event: Event) {
+  await settings.setTableColumnDividers((event.target as HTMLInputElement).checked);
+}
 </script>
 
 <template>
@@ -148,6 +154,21 @@ const tabs = computed(() => [
             <AmbienceToggle />
           </SettingsSection>
 
+          <SettingsSection
+            :title="t('settings.appearance.library')"
+            :description="t('library.columnSettings.dividersHint')"
+          >
+            <label class="settings_view_check">
+              <input
+                type="checkbox"
+                :checked="settings.tableColumnDividers"
+                data-testid="settings-column-dividers"
+                @change="setTableDividers"
+              />
+              <span>{{ t('library.columnSettings.dividers') }}</span>
+            </label>
+          </SettingsSection>
+
           <div class="settings_view_divider">
             <span>{{ t('settings.appearance.player') }}</span>
           </div>
@@ -231,6 +252,10 @@ const tabs = computed(() => [
       background-color: var(--color_border);
       content: '';
     }
+  }
+
+  &_check {
+    @include settings_check;
   }
 }
 </style>

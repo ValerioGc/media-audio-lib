@@ -143,7 +143,8 @@
     },
     "appearance": {
       "application": "Application",
-      "player": "Audio player"
+      "player": "Audio player",
+      "library": "Track list"
     },
     "libraryTab": {
       "title": "Library settings",
@@ -195,7 +196,7 @@
       "title": "Cover cache",
       "description": "Cover art is kept on disk, so it does not have to be read out of the files at every start. The cache can be emptied at any time: it rebuilds itself and the library files are left untouched.",
       "size": "Space used: {size}",
-      "empty": "The cache is empty: it takes no space.",
+      "empty": "Space used: 0 MB",
       "limit": "When the cache goes past {limit}, the covers requested longest ago are removed automatically.",
       "clear": "Empty the cache",
       "clearing": "Emptying…",
@@ -390,7 +391,10 @@
     },
     "refresh": {
       "missing": "{count} file is no longer available at the path on record | {count} files are no longer available at the paths on record",
-      "refreshed": "{count} tracks edited outside the app were brought up to date"
+      "refreshed": "{count} tracks edited outside the app were brought up to date",
+      "removeMissing": "Remove missing files",
+      "removeMissingTitle": "Remove missing files?",
+      "removeMissingMessage": "{count} tracks will be removed from the library. Files on disk will not be deleted."
     },
     "exportList": {
       "title": "Export track list",

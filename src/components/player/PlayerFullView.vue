@@ -149,7 +149,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
           <CoverImage :track="track" size="card" eager />
         </div>
 
-        <!-- Album, year and genre read as one line under the cover, not as three blocks. -->
+        <!-- Keep each metadata field readable on its own row, especially when album names are
+             longer than the player width. -->
         <dl class="player_full_details">
           <div v-for="detail in details" :key="detail.key" class="player_full_detail">
             <dt class="player_full_detail_label">{{ t(`library.columns.${detail.key}`) }}</dt>
@@ -348,26 +349,24 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
 
   &_details {
     display: flex;
-    flex-wrap: wrap;
-    gap: $space_2xs $space_sm;
-    justify-content: center;
+    flex-direction: column;
+    gap: $space_xs;
+    align-items: stretch;
     max-width: min(34rem, 100%);
+    width: min(34rem, 100%);
     margin: 0;
   }
 
   &_detail {
     display: flex;
-    gap: $space_xs;
+    gap: $space_md;
     align-items: baseline;
     min-width: 0;
-
-    // A pipe between the fields, and none before the first of them.
-    & + &::before {
-      color: var(--color_border_strong);
-      content: '|';
-    }
+    padding: $space_xs $space_sm;
+    border-bottom: 1px solid var(--color_border);
 
     &_label {
+      flex: 0 0 5rem;
       color: var(--color_text_muted);
       font-size: 0.7em;
       letter-spacing: 0.06em;

@@ -143,7 +143,8 @@
     },
     "appearance": {
       "application": "Application",
-      "player": "Lecteur audio"
+      "player": "Lecteur audio",
+      "library": "Liste des morceaux"
     },
     "libraryTab": {
       "title": "Paramètres de la bibliothèque",
@@ -195,7 +196,7 @@
       "title": "Cache des pochettes",
       "description": "Les pochettes sont conservées sur le disque, pour ne pas devoir les relire dans les fichiers à chaque démarrage. Le cache peut être vidé à tout moment : il se reconstruit seul et les fichiers de la bibliothèque ne sont pas modifiés.",
       "size": "Espace occupé : {size}",
-      "empty": "Le cache est vide : il n’occupe aucun espace.",
+      "empty": "Espace utilisé : 0 Mo",
       "limit": "Lorsque le cache dépasse {limit}, les pochettes demandées il y a le plus longtemps sont supprimées automatiquement.",
       "clear": "Vider le cache",
       "clearing": "Nettoyage…",
@@ -390,7 +391,10 @@
     },
     "refresh": {
       "missing": "{count} fichier n’est plus disponible au chemin enregistré | {count} fichiers ne sont plus disponibles aux chemins enregistrés",
-      "refreshed": "{count} morceaux modifiés hors de l’app ont été mis à jour"
+      "refreshed": "{count} morceaux modifiés hors de l’app ont été mis à jour",
+      "removeMissing": "Retirer les fichiers absents",
+      "removeMissingTitle": "Retirer les fichiers absents ?",
+      "removeMissingMessage": "{count} morceaux seront retirés de la bibliothèque. Les fichiers sur le disque ne seront pas supprimés."
     },
     "exportList": {
       "title": "Exporter la liste des morceaux",

@@ -569,6 +569,19 @@ export const useLibraryStore = defineStore('library', () => {
     }
   }
 
+  /** Removes every track whose file was reported missing; files on disk are never touched. */
+  async function removeMissingTracks() {
+    const missingIds = tracks.value.filter((track) => track.missing).map((track) => track.id);
+
+    for (const id of missingIds) {
+      await remove(id);
+    }
+
+    if (tracks.value.every((track) => !track.missing)) {
+      dismissRefresh();
+    }
+  }
+
   /**
    * Where to fetch the cover of a track, or null when there is nothing to fetch.
    *
@@ -792,6 +805,7 @@ export const useLibraryStore = defineStore('library', () => {
     pickAndAdd,
     pickFoldersAndAdd,
     remove,
+    removeMissingTracks,
     verifyTrack,
     refreshFromDisk,
     refreshTrack,

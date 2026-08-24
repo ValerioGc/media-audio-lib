@@ -302,7 +302,7 @@ onUnmounted(stopResize);
                   data-testid="table-fit-columns"
                   @click="fitColumnsToContent"
                 >
-                  <AppIcon name="maximize" />
+                  <AppIcon name="resize" />
                 </button>
               </AppTooltip>
               <AppTooltip v-if="showColumnSettings" :text="t('library.columnSettings.open')">
@@ -395,6 +395,10 @@ onUnmounted(stopResize);
     flex-direction: column;
     min-width: 100%;
     border-collapse: collapse;
+    // Keep the table surface painted while its grid is recalculated after a column toggle.
+    // Without an explicit background the browser can briefly expose its default white table
+    // layer between the old and the new column layout.
+    background-color: var(--surface_glass_background);
   }
 
   &_head {

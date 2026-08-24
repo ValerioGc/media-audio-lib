@@ -47,6 +47,7 @@ const library = useLibraryStore();
 const settings = useSettingsStore();
 const player = usePlayerStore();
 const pendingRemoval = ref<TrackView | null>(null);
+const isRemovingMissing = ref(false);
 const selectedFacet = ref<FacetGroupOpenPayload | null>(null);
 const facetModalHistory = ref<FacetModalState[]>([]);
 const activeTab = ref<LibraryContentTab>('tracks');
@@ -331,7 +332,22 @@ const { isDraggingOver } = useFileDrop((paths) => {
 });
 
 onMounted(async () => {
+  // Returning from help or settings remounts this view. If a library is already active,
+  // refresh that library instead of treating the return as a fresh home-page visit.
+  if (library.activeLibraryId !== null) {
+    await library.load();
+    return;
+  }
+
   await library.loadHomeLibrary(settings.mainLibraryId);
+});
+
+watch(activeTab, (tab) => {
+  // Missing-data filters only make sense on the tracks page. Leaving it active on a grouped
+  // page made the next visit look empty and effectively locked the navigation there.
+  if (tab !== 'tracks' && library.missingInfoFilter !== 'all') {
+    library.setMissingInfoFilter('all');
+  }
 });
 
 watch(
@@ -544,6 +560,11 @@ async function confirmRemoval() {
     await library.remove(track.id);
   }
 }
+
+async function confirmMissingRemoval() {
+  isRemovingMissing.value = false;
+  await library.removeMissingTracks();
+}
 </script>
 
 <template>
@@ -650,6 +671,12 @@ async function confirmRemoval() {
           library.lastRefresh?.missing.length ?? 0,
         )
       }}
+
+      <template #action>
+        <AppButton variant="danger" data-testid="remove-missing" @click="isRemovingMissing = true">
+          {{ t('library.refresh.removeMissing') }}
+        </AppButton>
+      </template>
     </LibraryBanner>
 
     <LibraryBanner
@@ -922,6 +949,28 @@ async function confirmRemoval() {
         <AppButton @click="pendingRemoval = null">{{ t('library.remove.cancel') }}</AppButton>
         <AppButton variant="danger" data-testid="confirm-remove" @click="confirmRemoval">
           {{ t('library.remove.confirm') }}
+        </AppButton>
+      </template>
+    </AppModal>
+
+    <AppModal
+      :open="isRemovingMissing"
+      :title="t('library.refresh.removeMissingTitle')"
+      @close="isRemovingMissing = false"
+    >
+      {{
+        t('library.refresh.removeMissingMessage', {
+          count: library.tracks.filter((track) => track.missing).length,
+        })
+      }}
+      <template #actions>
+        <AppButton @click="isRemovingMissing = false">{{ t('library.remove.cancel') }}</AppButton>
+        <AppButton
+          variant="danger"
+          data-testid="confirm-remove-missing"
+          @click="confirmMissingRemoval"
+        >
+          {{ t('library.refresh.removeMissing') }}
         </AppButton>
       </template>
     </AppModal>

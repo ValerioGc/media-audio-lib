@@ -115,6 +115,45 @@ describe('MiniPlayerView', () => {
     );
   });
 
+  it('puts vertical compact audio controls beside the transport above progress', async () => {
+    const { wrapper, settings } = await mountDock();
+    settings.miniPlayerOrientation = 'vertical';
+    settings.miniPlayerLevel = 'compact';
+    await flushPromises();
+
+    expect(wrapper.get('.mini_player_track').find('[data-testid="mini-toggle"]').exists()).toBe(
+      false,
+    );
+    expect(
+      wrapper.get('.mini_player_playback_row').find('[data-testid="mini-toggle"]').exists(),
+    ).toBe(true);
+    expect(
+      wrapper.get('.mini_player_playback_row').find('[data-testid="mini-mute"]').exists(),
+    ).toBe(true);
+    expect(wrapper.get('.mini_player_progress_area').classes()).toContain(
+      'mini_player_progress_area_compact',
+    );
+  });
+
+  it('puts vertical expanded audio controls below progress', async () => {
+    const { wrapper, settings } = await mountDock();
+    settings.miniPlayerOrientation = 'vertical';
+    settings.miniPlayerLevel = 'expanded';
+    mocks.state(playing);
+    await flushPromises();
+
+    expect(wrapper.get('.mini_player_track').find('.mini_player_names').exists()).toBe(true);
+    expect(
+      wrapper.get('.mini_player_playback_row').find('[data-testid="mini-toggle"]').exists(),
+    ).toBe(true);
+    expect(
+      wrapper.get('.mini_player_playback_row').find('[data-testid="mini-mute"]').exists(),
+    ).toBe(false);
+    expect(
+      wrapper.get('.mini_player_sound_vertical_bottom').find('[data-testid="mini-mute"]').exists(),
+    ).toBe(true);
+  });
+
   it('holds back the second level until it is asked for', async () => {
     const { wrapper, settings } = await mountDock();
 

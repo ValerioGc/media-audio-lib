@@ -120,17 +120,19 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
   }
 
   if (action === 'expand') {
-    navigation.go('library');
-    player.expand();
     await closeMiniPlayer();
     await showWindow();
+    // Apply the destination after the main window is visible: the final navigation state
+    // must win over the page that was open when the app went to the tray.
+    navigation.go('library');
+    player.expand();
     return;
   }
 
   if (action === 'settings') {
-    navigation.goToSettings('player');
     await closeMiniPlayer();
     await showWindow();
+    navigation.goToSettings('player');
     return;
   }
 

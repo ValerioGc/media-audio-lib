@@ -240,7 +240,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         {{ state?.year }}
       </span>
 
-      <div v-if="!isExpanded" class="mini_player_controls">
+      <div v-if="!isExpanded && !isVertical" class="mini_player_controls">
         <button
           class="mini_player_button"
           type="button"
@@ -283,7 +283,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         mini_player_progress_area_expanded: isExpanded,
       }"
     >
-      <div v-if="isExpanded" class="mini_player_playback_row">
+      <div v-if="isExpanded || isVertical" class="mini_player_playback_row">
         <div class="mini_player_controls">
           <button
             class="mini_player_button"
@@ -327,7 +327,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
           </button>
         </div>
 
-        <div class="mini_player_sound">
+        <div v-if="!isExpanded || !isVertical" class="mini_player_sound">
           <button
             class="mini_player_button"
             type="button"
@@ -362,7 +362,30 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         @seek="sendMiniCommand('seek', $event)"
       />
 
-      <div v-if="!isExpanded" class="mini_player_sound">
+      <div
+        v-if="isExpanded && isVertical"
+        class="mini_player_sound mini_player_sound_vertical_bottom"
+      >
+        <button
+          class="mini_player_button"
+          type="button"
+          :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+          :aria-pressed="state?.isMuted ?? false"
+          :disabled="state === null"
+          data-testid="mini-mute"
+          @click="sendMiniCommand('mute')"
+        >
+          <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+        </button>
+        <PlayerVolume
+          class="mini_player_volume"
+          :model-value="state?.volume ?? 0"
+          :disabled="state === null"
+          @update:model-value="sendMiniCommand('volume', $event)"
+        />
+      </div>
+
+      <div v-if="!isExpanded && !isVertical" class="mini_player_sound">
         <button
           class="mini_player_button"
           type="button"
@@ -486,6 +509,11 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     flex: 0 0 auto;
     flex-direction: column;
     text-align: center;
+  }
+
+  &.mini_player_vertical.mini_player_expanded &_track {
+    flex-direction: row;
+    text-align: left;
   }
 
   &_cover {
@@ -636,6 +664,20 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     &_expanded {
       gap: $space_sm;
     }
+  }
+
+  &.mini_player_vertical:not(.mini_player_expanded) &_progress_area_compact {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $space_sm;
+  }
+
+  &.mini_player_vertical.mini_player_expanded &_playback_row {
+    justify-content: flex-start;
+  }
+
+  &_sound_vertical_bottom {
+    justify-content: flex-start;
   }
 
   &_volume {

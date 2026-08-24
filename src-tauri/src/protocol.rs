@@ -153,7 +153,9 @@ fn serve(request: &Request<Vec<u8>>, path: &Path) -> Response<Vec<u8>> {
 
     let response = Response::builder()
         .header(header::CONTENT_TYPE, content_type(path))
-        .header(header::ACCEPT_RANGES, "bytes");
+        .header(header::ACCEPT_RANGES, "bytes")
+        // The frontend samples covers in a canvas to build the player gradient.
+        .header(header::ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
     match single_range(request, length) {
         Some(Err(())) => Response::builder()

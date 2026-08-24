@@ -13,6 +13,8 @@ const mocks = vi.hoisted(() => ({ state: vi.fn() }));
 const playing = {
   title: 'Blue in Green',
   artist: 'Miles',
+  album: 'Kind of Blue',
+  year: 1959,
   cover: null,
   isPlaying: true,
   hasNext: true,
@@ -66,6 +68,8 @@ describe('MiniPlayerView', () => {
     expect(wrapper.get('[data-testid="mini-next"]').attributes('disabled')).toBeUndefined();
     // The colour of the cover is painted behind the dock while the setting asks for it.
     expect(wrapper.get('.mini_player').classes()).toContain('mini_player_accented');
+    expect(wrapper.get('.mini_player').attributes('style')).toContain('background-image');
+    expect(wrapper.get('.mini_player').attributes('style')).toContain('linear-gradient');
   });
 
   it('keeps the window commands on the top line, transport apart', async () => {
@@ -80,6 +84,35 @@ describe('MiniPlayerView', () => {
     expect(bar.find('[data-testid="mini-expand"]').attributes('disabled')).toBeDefined();
     expect(bar.find('[data-testid="mini-close"]').attributes('disabled')).toBeDefined();
     expect(bar.find('[data-testid="mini-toggle"]').exists()).toBe(false);
+  });
+
+  it('keeps window commands above playback in the expanded view', async () => {
+    const { wrapper, settings } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
+
+    settings.miniPlayerLevel = 'expanded';
+    await flushPromises();
+
+    const bar = wrapper.get('.mini_player_bar');
+    const controls = wrapper.get('.mini_player_controls');
+
+    expect(bar.find('[data-testid="mini-menu"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-pin"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-expand"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-close"]').exists()).toBe(true);
+    expect(controls.find('[data-testid="mini-previous"]').exists()).toBe(true);
+    expect(controls.find('[data-testid="mini-next"]').exists()).toBe(true);
+    expect(controls.find('[data-testid="mini-stop"]').exists()).toBe(true);
+    expect(controls.find('[data-testid="mini-menu"]').exists()).toBe(false);
+    expect(wrapper.get('.mini_player_album').text()).toBe('Kind of Blue');
+    expect(wrapper.get('[data-testid="mini-year"]').text()).toBe('1959');
+    expect(
+      wrapper.get('.mini_player_playback_row').find('[data-testid="mini-mute"]').exists(),
+    ).toBe(true);
+    expect(wrapper.get('.mini_player_progress_area').classes()).toContain(
+      'mini_player_progress_area_expanded',
+    );
   });
 
   it('holds back the second level until it is asked for', async () => {
@@ -101,7 +134,9 @@ describe('MiniPlayerView', () => {
   });
 
   it('keeps the transport beside the track, with the bar alone under it', async () => {
-    const { wrapper } = await mountDock();
+    const { wrapper, settings } = await mountDock();
+    settings.miniPlayerLevel = 'compact';
+    await flushPromises();
     const track = wrapper.get('.mini_player_track');
 
     // Compact: name, artist and the transport share one row.
@@ -109,6 +144,12 @@ describe('MiniPlayerView', () => {
     expect(track.find('[data-testid="mini-toggle"]').exists()).toBe(true);
     expect(track.find('[data-testid="mini-next"]').exists()).toBe(true);
     expect(wrapper.find('.mini_player_progress').exists()).toBe(true);
+    expect(wrapper.get('.mini_player_progress_area').classes()).toContain(
+      'mini_player_progress_area_compact',
+    );
+    expect(
+      wrapper.get('.mini_player_progress_area').find('[data-testid="mini-mute"]').exists(),
+    ).toBe(true);
   });
 
   it('draws the progress the way the settings ask for', async () => {

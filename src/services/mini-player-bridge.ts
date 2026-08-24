@@ -4,6 +4,8 @@ import { isTauriRuntime } from '@/config/app-config';
 export interface MiniPlayerState {
   title: string;
   artist: string | null;
+  album: string | null;
+  year: number | null;
   cover: string | null;
   isPlaying: boolean;
   hasNext: boolean;

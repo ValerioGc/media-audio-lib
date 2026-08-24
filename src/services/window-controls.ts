@@ -114,6 +114,14 @@ export async function hideWindow(): Promise<boolean> {
   return withWindow((appWindow) => appWindow.hide());
 }
 
+/** Shows the current auxiliary window after its own webview has mounted. */
+export async function showCurrentWindow(): Promise<boolean> {
+  return withWindow(async (appWindow) => {
+    await appWindow.show();
+    await appWindow.setFocus();
+  });
+}
+
 /**
  * Brings the window back, wherever the system left it.
  *

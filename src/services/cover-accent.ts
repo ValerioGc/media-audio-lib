@@ -94,6 +94,9 @@ function imageFromSource(source: string): Promise<HTMLImageElement> {
     const image = new Image();
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error('cover-not-readable'));
+    // Cover files come from the app's protected custom scheme. Anonymous CORS keeps the
+    // decoded image usable by the canvas instead of tainting it before getImageData().
+    image.crossOrigin = 'anonymous';
     image.src = source;
   });
 }

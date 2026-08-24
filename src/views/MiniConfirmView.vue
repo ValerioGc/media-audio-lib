@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import { sendMiniCloseDecision } from '@/services/mini-player-bridge';
-import { closeWindow } from '@/services/window-controls';
+import { closeWindow, showCurrentWindow } from '@/services/window-controls';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
@@ -15,6 +15,9 @@ const isSending = ref(false);
 onMounted(() => {
   settings.initialize().catch((error: unknown) => {
     console.error('Loading settings for the close question failed', error);
+  });
+  showCurrentWindow().catch((error: unknown) => {
+    console.error('Showing the close question failed', error);
   });
 });
 

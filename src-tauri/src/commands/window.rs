@@ -175,10 +175,16 @@ pub fn open_mini_close_confirmation<R: Runtime>(app: AppHandle<R>) -> bool {
     .skip_taskbar(true)
     .shadow(true)
     .center()
-    .visible(true)
+    .visible(false)
     .build();
 
-    built.is_ok()
+    let Ok(_window) = built else {
+        return false;
+    };
+
+    // The confirmation webview shows itself after Vue has mounted, so the native white
+    // surface is never exposed while the page is still loading.
+    true
 }
 
 #[tauri::command]

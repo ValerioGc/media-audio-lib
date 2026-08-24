@@ -35,7 +35,7 @@ const isExpanded = computed(() => settings.miniPlayerLevel === 'expanded');
 const gradientStyle = computed(() =>
   state.value?.gradient === null || state.value === null
     ? {}
-    : { '--dock_gradient': state.value.gradient },
+    : { backgroundImage: state.value.gradient },
 );
 
 /** How far along the track is, as the share of the bar that is filled. */
@@ -164,7 +164,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       <span class="mini_player_grip" data-tauri-drag-region></span>
 
       <button
-        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.menu.label')"
@@ -176,7 +175,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         <AppIcon name="more" />
       </button>
       <button
-        v-if="!isExpanded"
         class="mini_player_button"
         :class="{ mini_player_button_active: settings.miniPlayerAlwaysOnTop }"
         type="button"
@@ -189,7 +187,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         <AppIcon name="pin" />
       </button>
       <button
-        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.expand')"
@@ -200,7 +197,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         <AppIcon name="maximize" />
       </button>
       <button
-        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.close')"
@@ -212,8 +208,8 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       </button>
     </div>
 
-    <!-- What is playing and what to do with it on the same line: the dock is read across,
-         and the bar underneath is then the only thing left to look at. -->
+    <!-- The expanded view gives the track information its own line. The compact view keeps
+         transport beside the title so the fixed-size dock stays quick to read. -->
     <div class="mini_player_track">
       <span class="mini_player_cover">
         <img v-if="state?.cover" :src="state.cover" alt="" />
@@ -233,9 +229,18 @@ async function close(quitsApp: boolean, remember = remembers.value) {
           class="mini_player_artist mini_player_skeleton mini_player_skeleton_artist"
           aria-hidden="true"
         ></span>
+        <span v-if="isExpanded && state?.album" class="mini_player_album">{{ state.album }}</span>
       </span>
 
-      <div class="mini_player_controls">
+      <span
+        v-if="isExpanded && state !== null && state.year !== null"
+        class="mini_player_year"
+        data-testid="mini-year"
+      >
+        {{ state?.year }}
+      </span>
+
+      <div v-if="!isExpanded" class="mini_player_controls">
         <button
           class="mini_player_button"
           type="button"
@@ -266,102 +271,116 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         >
           <AppIcon name="next" />
         </button>
-        <button
-          v-if="isExpanded"
-          class="mini_player_button"
-          type="button"
-          :aria-label="t('player.stop')"
-          :disabled="state === null"
-          data-testid="mini-stop"
-          @click="sendMiniCommand('stop')"
-        >
-          <AppIcon name="stop" />
-        </button>
-
-        <!-- In the expanded layout the window commands sit beside the transport, where they
-             are used, instead of taking a separate command row above it. -->
-        <div v-if="isExpanded" class="mini_player_window_controls">
-          <button
-            class="mini_player_button"
-            type="button"
-            :aria-label="t('mini.menu.label')"
-            :aria-expanded="isSheetOpen"
-            :disabled="state === null"
-            data-testid="mini-menu"
-            @click="isSheetOpen = !isSheetOpen"
-          >
-            <AppIcon name="more" />
-          </button>
-          <button
-            class="mini_player_button"
-            :class="{ mini_player_button_active: settings.miniPlayerAlwaysOnTop }"
-            type="button"
-            :aria-label="settings.miniPlayerAlwaysOnTop ? t('mini.unpin') : t('mini.pin')"
-            :aria-pressed="settings.miniPlayerAlwaysOnTop"
-            :disabled="state === null"
-            data-testid="mini-pin"
-            @click="toggleOnTop"
-          >
-            <AppIcon name="pin" />
-          </button>
-          <button
-            class="mini_player_button"
-            type="button"
-            :aria-label="t('mini.expand')"
-            :disabled="state === null"
-            data-testid="mini-expand"
-            @click="sendMiniCommand('expand')"
-          >
-            <AppIcon name="maximize" />
-          </button>
-          <button
-            class="mini_player_button"
-            type="button"
-            :aria-label="t('mini.close')"
-            :disabled="state === null"
-            data-testid="mini-close"
-            @click="requestClose"
-          >
-            <AppIcon name="close" />
-          </button>
-        </div>
       </div>
     </div>
 
-    <!-- The line follows the track without taking a row of its own; the bar is seekable. -->
-    <PlayerProgress
-      v-if="settings.miniPlayerProgress !== 'none'"
-      class="mini_player_progress"
+    <!-- Expanded: transport left and volume right above the progress bar. Compact: the
+         volume stays beside the progress bar because the transport is already above it. -->
+    <div
+      class="mini_player_progress_area"
       :class="{
-        mini_player_progress_line: settings.miniPlayerProgress === 'line',
-        mini_player_progress_playing: state?.isPlaying === true,
+        mini_player_progress_area_compact: !isExpanded,
+        mini_player_progress_area_expanded: isExpanded,
       }"
-      :position="state?.position ?? 0"
-      :duration="state?.duration ?? 0"
-      :hide-times="settings.miniPlayerProgress === 'line'"
-      data-testid="mini-progress"
-      @seek="sendMiniCommand('seek', $event)"
-    />
+    >
+      <div v-if="isExpanded" class="mini_player_playback_row">
+        <div class="mini_player_controls">
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('player.previous')"
+            :disabled="!state?.hasPrevious"
+            data-testid="mini-previous"
+            @click="sendMiniCommand('previous')"
+          >
+            <AppIcon name="previous" />
+          </button>
+          <button
+            class="mini_player_button mini_player_button_main"
+            type="button"
+            :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
+            :disabled="state === null"
+            data-testid="mini-toggle"
+            @click="sendMiniCommand('toggle')"
+          >
+            <AppIcon :name="state?.isPlaying ? 'pause' : 'play'" />
+          </button>
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('player.next')"
+            :disabled="!state?.hasNext"
+            data-testid="mini-next"
+            @click="sendMiniCommand('next')"
+          >
+            <AppIcon name="next" />
+          </button>
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('player.stop')"
+            :disabled="state === null"
+            data-testid="mini-stop"
+            @click="sendMiniCommand('stop')"
+          >
+            <AppIcon name="stop" />
+          </button>
+        </div>
 
-    <!-- The second level: the volume, next to the transport rather than under it. -->
-    <div class="mini_player_sound">
-      <button
-        class="mini_player_button"
-        type="button"
-        :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
-        :aria-pressed="state?.isMuted ?? false"
-        :disabled="state === null"
-        data-testid="mini-mute"
-        @click="sendMiniCommand('mute')"
-      >
-        <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
-      </button>
-      <PlayerVolume
-        class="mini_player_volume"
-        :model-value="state?.volume ?? 0"
-        :disabled="state === null"
-        @update:model-value="sendMiniCommand('volume', $event)"
+        <div class="mini_player_sound">
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+            :aria-pressed="state?.isMuted ?? false"
+            :disabled="state === null"
+            data-testid="mini-mute"
+            @click="sendMiniCommand('mute')"
+          >
+            <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+          </button>
+          <PlayerVolume
+            class="mini_player_volume"
+            :model-value="state?.volume ?? 0"
+            :disabled="state === null"
+            @update:model-value="sendMiniCommand('volume', $event)"
+          />
+        </div>
+      </div>
+
+      <PlayerProgress
+        v-if="settings.miniPlayerProgress !== 'none'"
+        class="mini_player_progress"
+        :class="{
+          mini_player_progress_line: settings.miniPlayerProgress === 'line',
+          mini_player_progress_playing: state?.isPlaying === true,
+        }"
+        :position="state?.position ?? 0"
+        :duration="state?.duration ?? 0"
+        :hide-times="settings.miniPlayerProgress === 'line'"
+        data-testid="mini-progress"
+        @seek="sendMiniCommand('seek', $event)"
       />
+
+      <div v-if="!isExpanded" class="mini_player_sound">
+        <button
+          class="mini_player_button"
+          type="button"
+          :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+          :aria-pressed="state?.isMuted ?? false"
+          :disabled="state === null"
+          data-testid="mini-mute"
+          @click="sendMiniCommand('mute')"
+        >
+          <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+        </button>
+        <PlayerVolume
+          class="mini_player_volume"
+          :model-value="state?.volume ?? 0"
+          :disabled="state === null"
+          @update:model-value="sendMiniCommand('volume', $event)"
+        />
+      </div>
     </div>
   </div>
 
@@ -467,8 +486,8 @@ async function close(quitsApp: boolean, remember = remembers.value) {
 
   // The colour of the cover, laid over the window background.
   &_accented {
-    background-image: var(--dock_gradient);
     background-repeat: no-repeat;
+    background-size: cover;
   }
 
   &_bar {
@@ -486,9 +505,13 @@ async function close(quitsApp: boolean, remember = remembers.value) {
   &_track {
     display: flex;
     flex: 1;
-    gap: $space_sm;
+    gap: $space_md;
     align-items: center;
     min-width: 0;
+  }
+
+  &_expanded &_track {
+    align-items: center;
   }
 
   &_vertical &_track {
@@ -503,8 +526,8 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 3rem;
+    height: 3rem;
     overflow: hidden;
     border: 1px solid var(--color_border);
     border-radius: $radius_sm;
@@ -543,6 +566,16 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     height: 5rem;
   }
 
+  &_expanded &_cover {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  &.mini_player_vertical.mini_player_expanded &_cover {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+
   &_names {
     display: flex;
     flex: 1;
@@ -554,7 +587,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     @include selectable_text;
 
     overflow: hidden;
-    font-size: 0.875em;
+    font-size: 0.9375em;
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -565,9 +598,35 @@ async function close(quitsApp: boolean, remember = remembers.value) {
 
     overflow: hidden;
     color: var(--color_text_muted);
+    font-size: 0.8em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &_expanded &_title {
+    font-size: 1em;
+  }
+
+  &_expanded &_artist {
+    font-size: 0.8125em;
+  }
+
+  &_album {
+    @include selectable_text;
+
+    overflow: hidden;
+    color: var(--color_text_muted);
     font-size: 0.75em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  &_year {
+    flex-shrink: 0;
+    margin-left: auto;
+    color: var(--color_text_muted);
+    font-size: 0.875em;
+    font-variant-numeric: tabular-nums;
   }
 
   &_controls {
@@ -578,21 +637,37 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     justify-content: center;
   }
 
-  &_window_controls {
+  &_playback_row {
     display: flex;
-    gap: $space_2xs;
+    gap: $space_sm;
     align-items: center;
-    padding-left: $space_2xs;
-    border-left: 1px solid var(--color_border);
+    justify-content: space-between;
   }
 
   // The volume is not the length of the track: a short slider, kept at the end of the row
   // next to the command it belongs to.
   &_sound {
     display: flex;
+    flex-shrink: 0;
     gap: $space_xs;
     align-items: center;
     justify-content: flex-end;
+  }
+
+  &_progress_area {
+    display: flex;
+    flex-direction: column;
+    gap: $space_xs;
+    min-width: 0;
+
+    &_compact {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    &_expanded {
+      gap: $space_sm;
+    }
   }
 
   &_volume {

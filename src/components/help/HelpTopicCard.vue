@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import HelpFigure from '@/components/help/HelpFigure.vue';
-import { HELP_TOPICS, HELP_TOPIC_ICONS, type HelpTopic } from '@/config/help';
+import { HELP_TOPICS, HELP_TOPIC_ICONS, HELP_TOPIC_LAYOUTS, type HelpTopic } from '@/config/help';
 
 const props = defineProps<{ topic: HelpTopic }>();
 
@@ -13,6 +13,7 @@ const emit = defineEmits<{ open: [topic: HelpTopic] }>();
 const { t, tm, rt } = useI18n();
 
 const icon = computed(() => HELP_TOPIC_ICONS[props.topic]);
+const layout = computed(() => HELP_TOPIC_LAYOUTS[props.topic]);
 const position = computed(() => HELP_TOPICS.indexOf(props.topic) + 1);
 
 /** The steps are a list in the translation files, so each language sets its own length. */
@@ -40,22 +41,35 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
       </div>
     </header>
 
-    <p class="help_topic_where">
-      <AppIcon name="search" />
-      <span class="help_topic_label">{{ t('help.where') }}</span>
-      {{ t(`help.topics.${topic}.where`) }}
-    </p>
+    <div
+      class="help_topic_content"
+      :class="{
+        help_topic_content_overview: layout === 'overview',
+        help_topic_content_flow: layout === 'flow',
+        help_topic_content_reference: layout === 'reference',
+        help_topic_content_settings: layout === 'settings',
+        help_topic_content_safety: layout === 'safety',
+      }"
+    >
+      <div class="help_topic_context">
+        <AppIcon name="search" />
+        <p>
+          <span class="help_topic_label">{{ t('help.where') }}</span>
+          {{ t(`help.topics.${topic}.where`) }}
+        </p>
+      </div>
 
-    <HelpFigure :topic="topic" />
+      <HelpFigure :topic="topic" />
 
-    <!-- Numbered by hand rather than by the list marker: the number is a mark of its own,
-         and the text beside it keeps one left edge however many lines it runs to. -->
-    <ol class="help_topic_steps">
-      <li v-for="(step, index) in steps" :key="index" class="help_topic_step">
-        <span class="help_topic_step_number" aria-hidden="true">{{ index + 1 }}</span>
-        <span class="help_topic_step_text">{{ step }}</span>
-      </li>
-    </ol>
+      <section class="help_topic_sections">
+        <article v-for="(step, index) in steps" :key="index" class="help_topic_section">
+          <span v-if="layout === 'flow'" class="help_topic_section_index" aria-hidden="true">
+            {{ index + 1 }}
+          </span>
+          <p class="help_topic_section_text">{{ step }}</p>
+        </article>
+      </section>
+    </div>
 
     <p class="help_topic_tip">
       <AppIcon name="info" />
@@ -143,16 +157,31 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
     letter-spacing: -0.01em;
   }
 
-  // Where the feature lives, written as a tag: it is an address, not a step.
-  &_where {
+  &_content {
+    display: flex;
+    flex-direction: column;
+    gap: $space_lg;
+  }
+
+  &_context {
     display: flex;
     gap: $space_sm;
-    align-items: baseline;
-    padding: $space_xs $space_sm;
+    align-items: flex-start;
+    padding: $space_sm $space_md;
+    border-left: 3px solid var(--color_accent);
     border-radius: $radius_sm;
     background-color: var(--color_surface_alt);
     color: var(--color_text_muted);
-    font-size: 0.875em;
+    font-size: 0.9375em;
+
+    :deep(.app_icon) {
+      flex-shrink: 0;
+      color: var(--color_accent);
+    }
+
+    p {
+      min-width: 0;
+    }
   }
 
   &_label {
@@ -161,38 +190,67 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
     font-weight: 600;
   }
 
-  &_steps {
+  &_sections {
     display: flex;
-    flex-direction: column;
-    gap: $space_sm;
+    flex-wrap: wrap;
+    gap: $space_md;
     margin: 0;
-    padding-left: 0;
-    list-style: none;
   }
 
-  &_step {
+  &_section {
+    flex: 1 1 100%;
+    min-width: 0;
+    padding: $space_md;
+    border: 1px solid var(--color_border);
+    border-radius: $radius_md;
+    background-color: var(--color_surface_alt);
+  }
+
+  &_section_text {
+    margin: 0;
+  }
+
+  &_section_index {
     display: flex;
-    gap: $space_sm;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: $space_sm;
+    border-radius: 50%;
+    background-color: var(--color_accent_soft);
+    color: var(--color_accent);
+    font-size: 0.75em;
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
 
-    &_number {
-      display: flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      width: 1.5rem;
-      height: 1.5rem;
-      border: 1px solid var(--color_border_strong);
-      border-radius: 999px;
-      color: var(--color_text_muted);
-      font-size: 0.75em;
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-    }
+  &_content_overview &_sections,
+  &_content_reference &_sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
-    &_text {
-      padding-top: 0.1rem;
-    }
+  &_content_overview &_section:first-child {
+    grid-column: 1 / -1;
+    border-color: var(--color_accent);
+    background-color: var(--color_accent_soft);
+  }
+
+  &_content_flow &_section {
+    border-left: 3px solid var(--color_accent);
+  }
+
+  &_content_settings &_section {
+    padding: $space_sm 0;
+    border-width: 0 0 1px;
+    border-radius: 0;
+    background: none;
+  }
+
+  &_content_safety &_section {
+    border-color: var(--color_warning_border);
+    background-color: var(--color_warning_soft);
   }
 
   // The one thing worth knowing that is not a step: set apart so it is not read as one.

@@ -50,8 +50,8 @@ describe('HelpView', () => {
       const card = wrapper.get('.help_topic');
 
       expect(card.get('.help_topic_title').text().length).toBeGreaterThan(0);
-      expect(card.get('.help_topic_where').text()).toContain('Dove:');
-      expect(card.findAll('.help_topic_steps li').length).toBeGreaterThan(0);
+      expect(card.get('.help_topic_context').text()).toContain('Dove:');
+      expect(card.findAll('.help_topic_section').length).toBeGreaterThan(0);
       expect(card.get('.help_topic_tip').text()).toContain('Suggerimento');
     }
   });
@@ -61,7 +61,7 @@ describe('HelpView', () => {
     await wrapper.get('[data-testid="help-index-import"]').trigger('click');
     const topic = wrapper.get('.help_topic[data-topic="import"]');
 
-    const steps = topic.findAll('.help_topic_steps li').map((step) => step.text());
+    const steps = topic.findAll('.help_topic_section').map((step) => step.text());
 
     expect(steps[0]).toContain('Aggiungi brani');
     expect(steps.some((step) => step.includes('Aggiungi cartella'))).toBe(true);
@@ -79,7 +79,7 @@ describe('HelpView', () => {
     expect(wrapper.get('.help_topic[data-topic="import"] .help_topic_title').text()).toBe(
       'Adding tracks and folders',
     );
-    expect(wrapper.get('.help_topic_where').text()).toContain('Where:');
+    expect(wrapper.get('.help_topic_context').text()).toContain('Where:');
   });
 
   it('walks the guide from one topic to the next', async () => {

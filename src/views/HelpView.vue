@@ -56,6 +56,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
   flex-direction: column;
   gap: $space_lg;
   min-height: 0;
+  overflow: hidden;
 
   @include page_column(64rem);
 
@@ -84,17 +85,18 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     grid-template-rows: minmax(0, 1fr);
     gap: $space_lg;
     align-items: stretch;
-    height: 0;
     min-height: 0;
     overflow: hidden;
+    overscroll-behavior: none;
   }
 
   &_topic {
     min-width: 0;
     min-height: 0;
-    height: 100%;
+    max-height: none;
 
-    @include scroll_area;
+    @include scroll_area(auto);
+    overscroll-behavior: none;
   }
 
   &_index {
@@ -102,11 +104,12 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     flex-direction: column;
     gap: $space_sm;
     min-height: 0;
-    height: 100%;
+    max-height: none;
     padding: $space_md;
     @include glass_surface($radius_lg);
 
-    @include scroll_area;
+    @include scroll_area(auto);
+    overscroll-behavior: none;
   }
 
   &_index_title {

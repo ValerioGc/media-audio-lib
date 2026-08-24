@@ -3,8 +3,8 @@
 use tauri::{AppHandle, Manager as _, Runtime, State, WebviewUrl, WebviewWindowBuilder};
 
 use crate::{
-    keep_inside_the_app, tray_menu, CloseToTray, MINI_SCREEN_MARGIN, MINI_SIZE, MINI_SIZE_EXPANDED,
-    MINI_SIZE_VERTICAL, MINI_SIZE_VERTICAL_EXPANDED, MINI_WINDOW,
+    keep_inside_the_app, tray_menu, CloseToTray, MINI_CONFIRM_WINDOW, MINI_SCREEN_MARGIN,
+    MINI_SIZE, MINI_SIZE_EXPANDED, MINI_SIZE_VERTICAL, MINI_SIZE_VERTICAL_EXPANDED, MINI_WINDOW,
 };
 
 /// How much room the dock takes, for the layout and the level it is in.
@@ -150,6 +150,35 @@ pub async fn open_mini_player<R: Runtime>(
     let _ = window.show();
 
     true
+}
+
+/// Opens the close question as a small independent window, centred on the current monitor.
+#[tauri::command]
+pub fn open_mini_close_confirmation<R: Runtime>(app: AppHandle<R>) -> bool {
+    if let Some(window) = app.get_webview_window(MINI_CONFIRM_WINDOW) {
+        let _ = window.show();
+        let _ = window.set_focus();
+
+        return true;
+    }
+
+    let built = keep_inside_the_app(WebviewWindowBuilder::new(
+        &app,
+        MINI_CONFIRM_WINDOW,
+        WebviewUrl::App("index.html?view=mini-confirm".into()),
+    ))
+    .title("Media Audio Lib")
+    .inner_size(440.0, 270.0)
+    .resizable(false)
+    .decorations(false)
+    .always_on_top(true)
+    .skip_taskbar(true)
+    .shadow(true)
+    .center()
+    .visible(true)
+    .build();
+
+    built.is_ok()
 }
 
 #[tauri::command]

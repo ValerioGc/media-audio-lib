@@ -567,6 +567,7 @@
       "title": "Close the mini player?",
       "message": "Choose whether to close only the mini-player window and leave the application in the system tray, or quit the application completely.",
       "remember": "Remember this choice",
+      "cancel": "Cancel",
       "dockOnly": "Close only the mini player",
       "wholeApp": "Quit the application"
     },

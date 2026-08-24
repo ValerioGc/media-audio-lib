@@ -18,13 +18,29 @@ export interface MiniPlayerState {
 
 /** What the dock asks for. The main window is the one that can do any of it. */
 export interface MiniPlayerCommand {
-  action: 'toggle' | 'next' | 'previous' | 'stop' | 'expand' | 'quit' | 'seek' | 'volume' | 'mute';
+  action:
+    | 'toggle'
+    | 'next'
+    | 'previous'
+    | 'stop'
+    | 'expand'
+    | 'quit'
+    | 'sync'
+    | 'seek'
+    | 'volume'
+    | 'mute';
   /** Seconds for a seek, a fraction of one for the volume. */
   value?: number;
 }
 
+export interface MiniCloseDecision {
+  quitsApp: boolean;
+  remember: boolean;
+}
+
 const STATE_EVENT = 'mini://state';
 const COMMAND_EVENT = 'mini://command';
+const CLOSE_DECISION_EVENT = 'mini://close-decision';
 
 type Unlisten = () => void;
 
@@ -86,4 +102,15 @@ export async function onMiniCommand(
   run: (command: MiniPlayerCommand) => void,
 ): Promise<Unlisten | null> {
   return listenTo<MiniPlayerCommand>(COMMAND_EVENT, run);
+}
+
+/** The separate confirmation window sends the answer back to the mini player. */
+export async function sendMiniCloseDecision(decision: MiniCloseDecision): Promise<boolean> {
+  return emitEvent(CLOSE_DECISION_EVENT, decision);
+}
+
+export async function onMiniCloseDecision(
+  run: (decision: MiniCloseDecision) => void,
+): Promise<Unlisten | null> {
+  return listenTo<MiniCloseDecision>(CLOSE_DECISION_EVENT, run);
 }

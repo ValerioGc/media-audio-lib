@@ -85,8 +85,9 @@ describe('MiniPlayerView', () => {
   it('holds back the second level until it is asked for', async () => {
     const { wrapper, settings } = await mountDock();
 
-    expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(false);
-    expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="mini-previous"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(true);
 
     mocks.state(playing);
     await flushPromises();
@@ -139,7 +140,9 @@ describe('MiniPlayerView', () => {
     await wrapper.get('[data-testid="mini-mute"]').trigger('click');
     await wrapper.get('[data-testid="mini-expand"]').trigger('click');
 
-    expect(send.mock.calls.map(([action]) => action)).toEqual(['toggle', 'stop', 'mute', 'expand']);
+    expect(send.mock.calls.map(([action]) => action).filter((action) => action !== 'sync')).toEqual(
+      ['toggle', 'stop', 'mute', 'expand'],
+    );
   });
 
   it('keeps its commands and its layout behind the three dots', async () => {
@@ -158,7 +161,9 @@ describe('MiniPlayerView', () => {
     await sheet.get('[data-testid="mini-sheet-stop"]').trigger('click');
     await sheet.get('[data-testid="mini-sheet-mute"]').trigger('click');
 
-    expect(send.mock.calls.map(([action]) => action)).toEqual(['stop', 'mute']);
+    expect(send.mock.calls.map(([action]) => action).filter((action) => action !== 'sync')).toEqual(
+      ['stop', 'mute'],
+    );
     // The previous track is offered, and refused while there is none behind this one.
     expect(sheet.get('[data-testid="mini-sheet-previous"]').attributes('disabled')).toBeDefined();
 
@@ -182,6 +187,7 @@ describe('MiniPlayerView', () => {
 
   it('asks before closing, and can be told once and for all', async () => {
     const closeDock = vi.spyOn(shell, 'closeMiniPlayer').mockResolvedValue(true);
+    vi.spyOn(shell, 'openMiniCloseConfirmation').mockResolvedValue(false);
     const { wrapper, settings } = await mountDock();
     mocks.state(playing);
     await flushPromises();

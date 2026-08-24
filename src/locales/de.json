@@ -567,6 +567,7 @@
       "title": "Mini-Player schließen?",
       "message": "Wähle, ob nur das Mini-Player-Fenster geschlossen und die Anwendung im Infobereich gelassen oder die Anwendung vollständig beendet werden soll.",
       "remember": "Diese Wahl merken",
+      "cancel": "Abbrechen",
       "dockOnly": "Nur Mini-Player schließen",
       "wholeApp": "Anwendung beenden"
     },

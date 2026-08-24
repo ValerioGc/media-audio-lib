@@ -8,11 +8,12 @@ import AppModal from '@/components/common/AppModal.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
 import PlayerVolume from '@/components/player/PlayerVolume.vue';
 import {
+  onMiniCloseDecision,
   onPlayerState,
   sendMiniCommand,
   type MiniPlayerState,
 } from '@/services/mini-player-bridge';
-import { closeMiniPlayer } from '@/services/shell-integration';
+import { closeMiniPlayer, openMiniCloseConfirmation } from '@/services/shell-integration';
 import { onWindowMoved, windowPosition } from '@/services/window-controls';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -25,6 +26,7 @@ const isSheetOpen = ref(false);
 const remembers = ref(false);
 let unlistenState: (() => void) | null = null;
 let unlistenMoved: (() => void) | null = null;
+let unlistenCloseDecision: (() => void) | null = null;
 
 const isVertical = computed(() => settings.miniPlayerOrientation === 'vertical');
 const isExpanded = computed(() => settings.miniPlayerLevel === 'expanded');
@@ -50,6 +52,15 @@ onMounted(async () => {
   unlistenState = await onPlayerState((received) => {
     state.value = received;
   });
+  unlistenCloseDecision = await onMiniCloseDecision((decision) => {
+    close(decision.quitsApp, decision.remember).catch((error: unknown) => {
+      console.error('Closing the mini player from the confirmation window failed', error);
+    });
+  });
+
+  // The state event may have been emitted before this separate webview started listening.
+  // Asking for a fresh snapshot also carries the cover gradient into a newly opened dock.
+  await sendMiniCommand('sync');
 
   // Wherever it is left is where it comes back: the position is written down as it moves.
   unlistenMoved = await onWindowMoved((position) => {
@@ -62,8 +73,10 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   unlistenState?.();
   unlistenMoved?.();
+  unlistenCloseDecision?.();
   unlistenState = null;
   unlistenMoved = null;
+  unlistenCloseDecision = null;
   settings.dispose();
 });
 
@@ -86,15 +99,22 @@ async function toggleOnTop() {
 /** Closing the dock may or may not mean closing the app: the answer can be remembered. */
 async function requestClose() {
   if (settings.miniPlayerCloseAction === 'ask') {
-    isClosing.value = true;
+    const opened = await openMiniCloseConfirmation();
+
+    // Browser previews and tests have no Tauri window to open, so retain the in-webview
+    // dialog as a graceful fallback outside the desktop shell.
+    if (!opened) {
+      isClosing.value = true;
+    }
+
     return;
   }
 
   await close(settings.miniPlayerCloseAction === 'app');
 }
 
-async function close(quitsApp: boolean) {
-  if (remembers.value) {
+async function close(quitsApp: boolean, remember = remembers.value) {
+  if (remember) {
     await settings.setMiniPlayerCloseAction(quitsApp ? 'app' : 'dock');
   }
 
@@ -144,6 +164,7 @@ async function close(quitsApp: boolean) {
       <span class="mini_player_grip" data-tauri-drag-region></span>
 
       <button
+        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.menu.label')"
@@ -155,6 +176,7 @@ async function close(quitsApp: boolean) {
         <AppIcon name="more" />
       </button>
       <button
+        v-if="!isExpanded"
         class="mini_player_button"
         :class="{ mini_player_button_active: settings.miniPlayerAlwaysOnTop }"
         type="button"
@@ -167,6 +189,7 @@ async function close(quitsApp: boolean) {
         <AppIcon name="pin" />
       </button>
       <button
+        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.expand')"
@@ -177,6 +200,7 @@ async function close(quitsApp: boolean) {
         <AppIcon name="maximize" />
       </button>
       <button
+        v-if="!isExpanded"
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.close')"
@@ -213,7 +237,6 @@ async function close(quitsApp: boolean) {
 
       <div class="mini_player_controls">
         <button
-          v-if="isExpanded"
           class="mini_player_button"
           type="button"
           :aria-label="t('player.previous')"
@@ -254,6 +277,54 @@ async function close(quitsApp: boolean) {
         >
           <AppIcon name="stop" />
         </button>
+
+        <!-- In the expanded layout the window commands sit beside the transport, where they
+             are used, instead of taking a separate command row above it. -->
+        <div v-if="isExpanded" class="mini_player_window_controls">
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('mini.menu.label')"
+            :aria-expanded="isSheetOpen"
+            :disabled="state === null"
+            data-testid="mini-menu"
+            @click="isSheetOpen = !isSheetOpen"
+          >
+            <AppIcon name="more" />
+          </button>
+          <button
+            class="mini_player_button"
+            :class="{ mini_player_button_active: settings.miniPlayerAlwaysOnTop }"
+            type="button"
+            :aria-label="settings.miniPlayerAlwaysOnTop ? t('mini.unpin') : t('mini.pin')"
+            :aria-pressed="settings.miniPlayerAlwaysOnTop"
+            :disabled="state === null"
+            data-testid="mini-pin"
+            @click="toggleOnTop"
+          >
+            <AppIcon name="pin" />
+          </button>
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('mini.expand')"
+            :disabled="state === null"
+            data-testid="mini-expand"
+            @click="sendMiniCommand('expand')"
+          >
+            <AppIcon name="maximize" />
+          </button>
+          <button
+            class="mini_player_button"
+            type="button"
+            :aria-label="t('mini.close')"
+            :disabled="state === null"
+            data-testid="mini-close"
+            @click="requestClose"
+          >
+            <AppIcon name="close" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -273,7 +344,7 @@ async function close(quitsApp: boolean) {
     />
 
     <!-- The second level: the volume, next to the transport rather than under it. -->
-    <div v-if="isExpanded" class="mini_player_sound">
+    <div class="mini_player_sound">
       <button
         class="mini_player_button"
         type="button"
@@ -505,6 +576,14 @@ async function close(quitsApp: boolean) {
     gap: $space_xs;
     align-items: center;
     justify-content: center;
+  }
+
+  &_window_controls {
+    display: flex;
+    gap: $space_2xs;
+    align-items: center;
+    padding-left: $space_2xs;
+    border-left: 1px solid var(--color_border);
   }
 
   // The volume is not the length of the track: a short slider, kept at the end of the row

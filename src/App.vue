@@ -123,6 +123,11 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
     return;
   }
 
+  if (action === 'sync') {
+    await publishToDock();
+    return;
+  }
+
   await quitApp();
 }
 

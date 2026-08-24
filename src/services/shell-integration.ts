@@ -119,6 +119,11 @@ export async function closeMiniPlayer(): Promise<boolean> {
   return invokeCommand('close_mini_player', {});
 }
 
+/** Opens the confirmation as its own centred window, above the floating player. */
+export async function openMiniCloseConfirmation(): Promise<boolean> {
+  return invokeCommand('open_mini_close_confirmation', {});
+}
+
 /** Reshapes the dock where it stands, without opening it again. */
 export async function applyMiniPlayerShape(
   vertical: boolean,

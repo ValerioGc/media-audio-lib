@@ -567,6 +567,7 @@
       "title": "¿Cerrar el mini reproductor?",
       "message": "Elige si quieres cerrar solo la ventana del mini reproductor y dejar la aplicación en la bandeja del sistema, o salir de la aplicación por completo.",
       "remember": "Recordar esta elección",
+      "cancel": "Cancelar",
       "dockOnly": "Cerrar solo el mini reproductor",
       "wholeApp": "Salir de la aplicación"
     },

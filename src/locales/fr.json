@@ -567,6 +567,7 @@
       "title": "Fermer le mini-lecteur ?",
       "message": "Choisissez de fermer uniquement la fenêtre du mini-lecteur et de laisser l’application dans la zone de notification, ou de quitter complètement l’application.",
       "remember": "Retenir ce choix",
+      "cancel": "Annuler",
       "dockOnly": "Fermer uniquement le mini-lecteur",
       "wholeApp": "Quitter l’application"
     },

@@ -567,6 +567,7 @@
       "title": "Chiudere il mini player?",
       "message": "Scegli se chiudere solo la finestra del mini player e lasciare l’applicazione nella barra di sistema, oppure uscire completamente dall’app.",
       "remember": "Ricorda la scelta",
+      "cancel": "Annulla",
       "dockOnly": "Chiudi solo il mini player",
       "wholeApp": "Esci dall’applicazione"
     },

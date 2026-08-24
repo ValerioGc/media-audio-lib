@@ -41,9 +41,11 @@ const MAIN_WINDOW: &str = "main";
 
 /// The floating dock: a window of its own, so it survives the main one going to the tray.
 pub const MINI_WINDOW: &str = "mini";
+/// The close question is a separate centred window, so it is never clipped by the dock.
+pub const MINI_CONFIRM_WINDOW: &str = "mini-confirm";
 
 /// Sizes of the dock, in logical pixels: one per layout, one per level.
-pub const MINI_SIZE: (f64, f64) = (360.0, 112.0);
+pub const MINI_SIZE: (f64, f64) = (360.0, 144.0);
 pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 172.0);
 pub const MINI_SIZE_VERTICAL: (f64, f64) = (232.0, 268.0);
 pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (232.0, 322.0);
@@ -312,6 +314,7 @@ pub fn run() {
             commands::window::set_close_to_tray,
             commands::window::set_tray_menu,
             commands::window::open_mini_player,
+            commands::window::open_mini_close_confirmation,
             commands::window::close_mini_player,
             commands::window::set_mini_player_shape,
             commands::window::quit_app,

@@ -12,33 +12,20 @@ import { computed, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 /** How many panels are currently covering the page. */
 const overlays = ref(0);
 const isWindowVisible = ref(true);
-let isListening = false;
 
 function readVisibility() {
   isWindowVisible.value = document.visibilityState !== 'hidden';
 }
 
-/**
- * One listener for the whole app, attached the first time anybody asks.
- *
- * It is never taken down: the answer is wanted for as long as the window is open, and a
- * count of who is still interested would cost more than the listener does.
- */
-function listenOnce() {
-  if (isListening || typeof document === 'undefined') {
-    return;
-  }
-
-  isListening = true;
+// One listener for the window, attached when the module is first pulled in and never taken
+// down: the answer is wanted for as long as the window is open, and keeping a count of who
+// is still interested would cost more than the listener does.
+if (typeof document !== 'undefined') {
   readVisibility();
   document.addEventListener('visibilitychange', readVisibility);
 }
 
-export const isForeground = computed(() => {
-  listenOnce();
-
-  return isWindowVisible.value && overlays.value === 0;
-});
+export const isForeground = computed(() => isWindowVisible.value && overlays.value === 0);
 
 /**
  * Declares that this component covers the page while `isActive` says so.

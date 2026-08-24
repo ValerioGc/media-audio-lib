@@ -726,14 +726,29 @@ describe('LibraryView', () => {
 
     expect(playFrom).not.toHaveBeenCalled();
 
-    const banner = wrapper.get('[data-testid="unplayable-notice"]');
+    const modal = wrapper.get('dialog');
 
-    expect(banner.text()).toContain('«Gone» non può essere riprodotto');
-    expect(banner.find('[data-testid="remove-missing-from-playback"]').exists()).toBe(true);
+    expect(modal.text()).toContain('«Gone» non può essere riprodotto');
+    expect(modal.find('[data-testid="remove-missing-from-playback"]').exists()).toBe(true);
 
-    await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
+    await modal.findAll('button')[0]?.trigger('click');
 
-    expect(wrapper.find('[data-testid="unplayable-notice"]').exists()).toBe(false);
+    expect(wrapper.find('dialog').exists()).toBe(false);
+  });
+
+  it('shows the direct missing-track warning even after the library warning was dismissed', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    const track = makeTrack({ title: 'Gone', missing: true });
+    store.tracks = [track];
+    settings.dismissedMissingReport = store.missingReportKey;
+    vi.spyOn(store, 'refreshTrack').mockResolvedValue(track);
+    await flushPromises();
+
+    await wrapper.find('.preview_card_select').trigger('dblclick');
+    await flushPromises();
+
+    expect(wrapper.find('dialog').exists()).toBe(true);
   });
 
   it('flags on the banner the files that left their place', async () => {

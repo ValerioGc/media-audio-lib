@@ -437,14 +437,16 @@ watch(
 /** The track whose file was not there when it was asked for, named on a banner. */
 const unplayableTitle = ref<string | null>(null);
 
-const showsUnplayableBanner = computed(
-  () =>
-    unplayableTitle.value !== null && library.missingReportKey !== settings.dismissedMissingReport,
-);
-
+// A direct attempt to open a missing track is a fresh user action: it must still explain why
+// nothing happened even when the persistent library warning was already dismissed.
 async function dismissUnplayableBanner() {
   unplayableTitle.value = null;
   await rememberMissingBannerDismissal();
+}
+
+function openMissingRemovalFromPlayback() {
+  isRemovingMissing.value = true;
+  unplayableTitle.value = null;
 }
 
 async function dismissVerificationBanner() {
@@ -706,25 +708,24 @@ async function confirmMissingRemoval() {
       </template>
     </LibraryBanner>
 
-    <LibraryBanner
-      v-if="showsUnplayableBanner"
-      tone="warning"
-      alert
-      data-testid="unplayable-notice"
-      @dismiss="dismissUnplayableBanner"
+    <AppModal
+      :open="unplayableTitle !== null"
+      :title="t('library.playback.missingTitle')"
+      @close="dismissUnplayableBanner"
     >
       {{ t('library.playback.unavailable', { title: unplayableTitle }) }}
 
-      <template #action>
+      <template #actions>
+        <AppButton @click="dismissUnplayableBanner">{{ t('library.remove.cancel') }}</AppButton>
         <AppButton
           variant="danger"
           data-testid="remove-missing-from-playback"
-          @click="isRemovingMissing = true"
+          @click="openMissingRemovalFromPlayback"
         >
           {{ t('library.refresh.removeMissing') }}
         </AppButton>
       </template>
-    </LibraryBanner>
+    </AppModal>
 
     <!-- What the refresh found on opening: files gone from disk are a warning, tags read
          again are a note. -->

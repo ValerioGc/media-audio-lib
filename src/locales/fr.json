@@ -479,6 +479,7 @@
       }
     },
     "playback": {
+      "missingTitle": "Fichier manquant",
       "unavailable": "« {title} » ne peut pas être lu : le fichier n’est pas disponible au chemin enregistré."
     }
   },

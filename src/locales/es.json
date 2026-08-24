@@ -479,6 +479,7 @@
       }
     },
     "playback": {
+      "missingTitle": "Archivo ausente",
       "unavailable": "«{title}» no se puede reproducir: el archivo no está disponible en la ruta registrada."
     }
   },

@@ -479,6 +479,7 @@
       }
     },
     "playback": {
+      "missingTitle": "Fehlende Datei",
       "unavailable": "„{title}“ kann nicht wiedergegeben werden: Die Datei ist unter dem hinterlegten Pfad nicht verfügbar."
     }
   },

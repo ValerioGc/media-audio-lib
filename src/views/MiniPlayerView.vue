@@ -134,6 +134,7 @@ async function close(quitsApp: boolean) {
         type="button"
         :aria-label="isExpanded ? t('mini.collapse') : t('mini.expandDock')"
         :aria-pressed="isExpanded"
+        :disabled="state === null"
         data-testid="mini-level"
         @click="toggleLevel"
       >
@@ -147,6 +148,7 @@ async function close(quitsApp: boolean) {
         type="button"
         :aria-label="t('mini.menu.label')"
         :aria-expanded="isSheetOpen"
+        :disabled="state === null"
         data-testid="mini-menu"
         @click="isSheetOpen = !isSheetOpen"
       >
@@ -154,8 +156,21 @@ async function close(quitsApp: boolean) {
       </button>
       <button
         class="mini_player_button"
+        :class="{ mini_player_button_active: settings.miniPlayerAlwaysOnTop }"
+        type="button"
+        :aria-label="settings.miniPlayerAlwaysOnTop ? t('mini.unpin') : t('mini.pin')"
+        :aria-pressed="settings.miniPlayerAlwaysOnTop"
+        :disabled="state === null"
+        data-testid="mini-pin"
+        @click="toggleOnTop"
+      >
+        <AppIcon name="pin" />
+      </button>
+      <button
+        class="mini_player_button"
         type="button"
         :aria-label="t('mini.expand')"
+        :disabled="state === null"
         data-testid="mini-expand"
         @click="sendMiniCommand('expand')"
       >
@@ -165,6 +180,7 @@ async function close(quitsApp: boolean) {
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.close')"
+        :disabled="state === null"
         data-testid="mini-close"
         @click="requestClose"
       >
@@ -181,8 +197,18 @@ async function close(quitsApp: boolean) {
       </span>
 
       <span class="mini_player_names">
-        <span class="mini_player_title">{{ state?.title ?? t('mini.idle') }}</span>
-        <span class="mini_player_artist">{{ state?.artist ?? '' }}</span>
+        <span v-if="state !== null" class="mini_player_title">{{ state.title }}</span>
+        <span
+          v-else
+          class="mini_player_title mini_player_skeleton mini_player_skeleton_title"
+          aria-hidden="true"
+        ></span>
+        <span v-if="state !== null" class="mini_player_artist">{{ state.artist ?? '' }}</span>
+        <span
+          v-else
+          class="mini_player_artist mini_player_skeleton mini_player_skeleton_artist"
+          aria-hidden="true"
+        ></span>
       </span>
 
       <div class="mini_player_controls">
@@ -266,9 +292,11 @@ async function close(quitsApp: boolean) {
         @update:model-value="sendMiniCommand('volume', $event)"
       />
     </div>
+  </div>
 
-    <!-- The commands that do not fit on the face of the dock float above it, opened by the
-         three-dot button. -->
+  <!-- The menu belongs to the window, not to the dock surface: it can float over it and over
+       the confirmation dialog without being clipped by the dock layout. -->
+  <Teleport to="body">
     <div v-if="isSheetOpen" class="mini_player_sheet" role="menu" data-testid="mini-sheet">
       <button
         class="mini_player_sheet_item"
@@ -327,37 +355,27 @@ async function close(quitsApp: boolean) {
         <AppIcon :name="isVertical ? 'grid' : 'list'" />
         <span>{{ isVertical ? t('mini.menu.horizontal') : t('mini.menu.vertical') }}</span>
       </button>
-      <button
-        class="mini_player_sheet_item"
-        type="button"
-        role="menuitemradio"
-        :aria-checked="settings.miniPlayerAlwaysOnTop"
-        :disabled="state === null"
-        data-testid="mini-on-top"
-        @click="toggleOnTop"
-      >
-        <AppIcon name="expand" />
-        <span>{{ t('mini.menu.alwaysOnTop') }}</span>
-      </button>
     </div>
+  </Teleport>
 
-    <AppModal :open="isClosing" :title="t('mini.confirm.title')" @close="isClosing = false">
-      <p>{{ t('mini.confirm.message') }}</p>
-      <label class="mini_player_remember">
-        <input v-model="remembers" type="checkbox" data-testid="mini-remember" />
-        <span>{{ t('mini.confirm.remember') }}</span>
-      </label>
+  <!-- Kept outside the dock surface so the dialog has its own layer and never changes the
+       dock's layout. AppModal also teleports its dialog to the window body. -->
+  <AppModal :open="isClosing" :title="t('mini.confirm.title')" @close="isClosing = false">
+    <p>{{ t('mini.confirm.message') }}</p>
+    <label class="mini_player_remember">
+      <input v-model="remembers" type="checkbox" data-testid="mini-remember" />
+      <span>{{ t('mini.confirm.remember') }}</span>
+    </label>
 
-      <template #actions>
-        <AppButton data-testid="mini-close-dock" @click="close(false)">
-          {{ t('mini.confirm.dockOnly') }}
-        </AppButton>
-        <AppButton variant="danger" data-testid="mini-close-app" @click="close(true)">
-          {{ t('mini.confirm.wholeApp') }}
-        </AppButton>
-      </template>
-    </AppModal>
-  </div>
+    <template #actions>
+      <AppButton data-testid="mini-close-dock" @click="close(false)">
+        {{ t('mini.confirm.dockOnly') }}
+      </AppButton>
+      <AppButton variant="danger" data-testid="mini-close-app" @click="close(true)">
+        {{ t('mini.confirm.wholeApp') }}
+      </AppButton>
+    </template>
+  </AppModal>
 </template>
 
 <style scoped lang="scss">
@@ -554,7 +572,7 @@ async function close(quitsApp: boolean) {
     right: $space_2xs;
     width: min(16rem, calc(100% - #{$space_sm}));
     max-height: calc(100% - 2.75rem);
-    z-index: 5;
+    z-index: 50;
     flex-direction: column;
     gap: $space_2xs;
     padding: $space_xs;
@@ -654,6 +672,39 @@ async function close(quitsApp: boolean) {
         color: var(--color_on_accent);
       }
     }
+
+    &_active {
+      background-color: color-mix(in srgb, var(--color_accent) 18%, transparent);
+      color: var(--color_accent);
+
+      &:hover:not(:disabled) {
+        background-color: color-mix(in srgb, var(--color_accent) 28%, transparent);
+        color: var(--color_accent);
+      }
+    }
+  }
+
+  &_skeleton {
+    display: block;
+    height: 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(
+      100deg,
+      color-mix(in srgb, var(--color_text) 10%, transparent) 20%,
+      color-mix(in srgb, var(--color_text) 24%, transparent) 50%,
+      color-mix(in srgb, var(--color_text) 10%, transparent) 80%
+    );
+    background-size: 200% 100%;
+    animation: mini_player_skeleton 1.25s ease-in-out infinite;
+  }
+
+  &_skeleton_title {
+    width: min(12rem, 80%);
+  }
+
+  &_skeleton_artist {
+    width: min(8rem, 55%);
+    margin-top: $space_2xs;
   }
 
   &_remember {
@@ -688,8 +739,22 @@ async function close(quitsApp: boolean) {
   }
 }
 
+@keyframes mini_player_skeleton {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mini_player_progress_playing :deep(.app_slider_field::-webkit-slider-thumb) {
+    animation: none;
+  }
+
+  .mini_player_skeleton {
     animation: none;
   }
 }

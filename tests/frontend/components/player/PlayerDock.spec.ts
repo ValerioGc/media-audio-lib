@@ -160,6 +160,7 @@ describe('PlayerDock', () => {
     const player = usePlayerStore();
     const settings = useSettingsStore();
     settings.coverGradientEnabled = false;
+    settings.miniPlayerGradient = false;
     player.setCoverAccent({
       rgb: '10 20 30',
       surfaceGradient: 'linear-gradient(red, transparent)',
@@ -172,6 +173,27 @@ describe('PlayerDock', () => {
 
     expect(mocks.dominantCoverAccent).not.toHaveBeenCalled();
     expect(player.coverAccent).toBeNull();
+  });
+
+  it('loads the cover color for the mini player on its own', async () => {
+    const options = withPinia();
+    const player = usePlayerStore();
+    const library = useLibraryStore();
+    const settings = useSettingsStore();
+    settings.coverGradientEnabled = false;
+    settings.miniPlayerGradient = true;
+    vi.spyOn(library, 'coverUrl').mockReturnValue('cover://localhost/track.mp3?v=0');
+    await player.play(makeTrack({ hasCover: true }));
+
+    mountDock(options);
+    await flushPromises();
+
+    expect(mocks.dominantCoverAccent).toHaveBeenCalledWith('cover://localhost/track.mp3?v=0', {
+      intensity: 100,
+      style: 'orbs',
+      direction: 'topLeft',
+    });
+    expect(player.coverAccent?.surfaceGradient).toContain('10 20 30');
   });
 
   it('switches to full page with the arrow and back', async () => {

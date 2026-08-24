@@ -18,6 +18,7 @@ const props = withDefaults(
 const GAP_PX = 6;
 
 const isVisible = ref(false);
+const isPositioned = ref(false);
 const anchor = ref<HTMLElement | null>(null);
 const bubble = ref<HTMLElement | null>(null);
 const resolvedPlacement = ref<TooltipPlacement>(props.placement);
@@ -71,18 +72,26 @@ function place() {
 
 function hide() {
   isVisible.value = false;
+  isPositioned.value = false;
   window.removeEventListener('scroll', hide, true);
   window.removeEventListener('resize', hide);
 }
 
 async function show() {
   isVisible.value = true;
+  isPositioned.value = false;
   // Scrolling or resizing moves the trigger away from a bubble already on screen.
   window.addEventListener('scroll', hide, true);
   window.addEventListener('resize', hide);
 
   await nextTick();
+
+  if (!isVisible.value) {
+    return;
+  }
+
   place();
+  isPositioned.value = true;
 }
 
 onBeforeUnmount(hide);
@@ -105,7 +114,11 @@ onBeforeUnmount(hide);
         class="app_tooltip_bubble"
         role="tooltip"
         :data-placement="resolvedPlacement"
-        :style="{ top: `${position.top}px`, left: `${position.left}px` }"
+        :style="{
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+          visibility: isPositioned ? 'visible' : 'hidden',
+        }"
         >{{ text }}</span
       >
     </Teleport>

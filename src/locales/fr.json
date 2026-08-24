@@ -561,12 +561,14 @@
       "alwaysOnTop": "Toujours au premier plan",
       "gradient": "Fond depuis la pochette"
     },
+    "pin": "Garder le mini-lecteur toujours au premier plan",
+    "unpin": "Ne plus garder le mini-lecteur au premier plan",
     "confirm": {
-      "title": "Fermer le lecteur flottant ?",
-      "message": "Vous pouvez fermer le lecteur seul et laisser l’app dans la zone de notification, ou tout quitter.",
+      "title": "Fermer le mini-lecteur ?",
+      "message": "Choisissez de fermer uniquement la fenêtre du mini-lecteur et de laisser l’application dans la zone de notification, ou de quitter complètement l’application.",
       "remember": "Retenir ce choix",
-      "dockOnly": "Le lecteur seul",
-      "wholeApp": "Tout fermer"
+      "dockOnly": "Fermer uniquement le mini-lecteur",
+      "wholeApp": "Quitter l’application"
     },
     "collapse": "Moins de commandes",
     "expandDock": "Afficher toutes les commandes"

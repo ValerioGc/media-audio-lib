@@ -18,9 +18,6 @@ import {
 const { t } = useI18n();
 const settings = useSettingsStore();
 
-/** The shape of the dock only means something once the dock is allowed to appear. */
-const isDockDisabled = computed(() => !settings.miniPlayerEnabled);
-
 const orientationOptions = computed(() =>
   DOCK_ORIENTATIONS.map((orientation) => ({
     value: orientation,
@@ -55,10 +52,6 @@ async function onKeepOpenChange(event: Event) {
 
 async function onDockChange(event: Event) {
   await settings.setMiniPlayerEnabled((event.target as HTMLInputElement).checked);
-}
-
-async function onAlwaysOnTopChange(event: Event) {
-  await settings.setMiniPlayerAlwaysOnTop((event.target as HTMLInputElement).checked);
 }
 
 async function onOrientationChange(value: string) {
@@ -110,17 +103,6 @@ async function onCloseActionChange(value: string) {
 
     <!-- The shape of the dock: what it is set to here is what it opens as. -->
     <template v-if="settings.miniPlayerEnabled">
-      <label class="player_behaviour_panel_check player_behaviour_panel_check_nested">
-        <input
-          type="checkbox"
-          :checked="settings.miniPlayerAlwaysOnTop"
-          :disabled="isDockDisabled"
-          data-testid="mini-player-on-top-toggle"
-          @change="onAlwaysOnTopChange"
-        />
-        <span>{{ t('settings.playerBehaviour.alwaysOnTop') }}</span>
-      </label>
-
       <AppSelect
         class="player_behaviour_panel_select"
         :model-value="settings.miniPlayerOrientation"

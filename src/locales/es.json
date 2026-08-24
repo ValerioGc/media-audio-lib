@@ -561,12 +561,14 @@
       "alwaysOnTop": "Siempre en primer plano",
       "gradient": "Fondo desde la carátula"
     },
+    "pin": "Mantener el mini reproductor siempre en primer plano",
+    "unpin": "Dejar de mantener el mini reproductor en primer plano",
     "confirm": {
-      "title": "¿Cerrar el reproductor flotante?",
-      "message": "Puedes cerrar solo el reproductor y dejar la app en la bandeja del sistema, o salir del todo.",
+      "title": "¿Cerrar el mini reproductor?",
+      "message": "Elige si quieres cerrar solo la ventana del mini reproductor y dejar la aplicación en la bandeja del sistema, o salir de la aplicación por completo.",
       "remember": "Recordar esta elección",
-      "dockOnly": "Solo el reproductor",
-      "wholeApp": "Cerrar todo"
+      "dockOnly": "Cerrar solo el mini reproductor",
+      "wholeApp": "Salir de la aplicación"
     },
     "collapse": "Menos mandos",
     "expandDock": "Mostrar todos los mandos"

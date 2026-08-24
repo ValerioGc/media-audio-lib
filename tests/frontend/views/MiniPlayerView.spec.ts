@@ -52,7 +52,8 @@ describe('MiniPlayerView', () => {
   it('draws the track the main window is playing', async () => {
     const { wrapper } = await mountDock();
 
-    expect(wrapper.get('.mini_player_title').text()).toBe('Nulla in riproduzione');
+    expect(wrapper.find('.mini_player_skeleton_title').exists()).toBe(true);
+    expect(wrapper.get('[data-testid="mini-menu"]').attributes('disabled')).toBeDefined();
 
     mocks.state(playing);
     await flushPromises();
@@ -74,6 +75,10 @@ describe('MiniPlayerView', () => {
     expect(bar.find('[data-testid="mini-expand"]').exists()).toBe(true);
     expect(bar.find('[data-testid="mini-close"]').exists()).toBe(true);
     expect(bar.find('[data-testid="mini-level"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-pin"]').exists()).toBe(true);
+    expect(bar.find('[data-testid="mini-level"]').attributes('disabled')).toBeDefined();
+    expect(bar.find('[data-testid="mini-expand"]').attributes('disabled')).toBeDefined();
+    expect(bar.find('[data-testid="mini-close"]').attributes('disabled')).toBeDefined();
     expect(bar.find('[data-testid="mini-toggle"]').exists()).toBe(false);
   });
 
@@ -83,6 +88,8 @@ describe('MiniPlayerView', () => {
     expect(wrapper.find('[data-testid="mini-previous"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="mini-mute"]').exists()).toBe(false);
 
+    mocks.state(playing);
+    await flushPromises();
     await wrapper.get('[data-testid="mini-level"]').trigger('click');
     await flushPromises();
 
@@ -158,12 +165,15 @@ describe('MiniPlayerView', () => {
     await sheet.get('[data-testid="mini-orientation"]').trigger('click');
     expect(settings.miniPlayerOrientation).toBe('vertical');
 
-    await sheet.get('[data-testid="mini-on-top"]').trigger('click');
+    expect(sheet.find('[data-testid="mini-on-top"]').exists()).toBe(false);
+    await wrapper.get('[data-testid="mini-pin"]').trigger('click');
     expect(settings.miniPlayerAlwaysOnTop).toBe(false);
   });
 
   it('leaves the cover background to the settings of the app', async () => {
     const { wrapper } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
 
     await wrapper.get('[data-testid="mini-menu"]').trigger('click');
 
@@ -173,6 +183,8 @@ describe('MiniPlayerView', () => {
   it('asks before closing, and can be told once and for all', async () => {
     const closeDock = vi.spyOn(shell, 'closeMiniPlayer').mockResolvedValue(true);
     const { wrapper, settings } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
 
     await wrapper.get('[data-testid="mini-close"]').trigger('click');
     expect(wrapper.find('dialog').exists()).toBe(true);
@@ -188,6 +200,8 @@ describe('MiniPlayerView', () => {
   it('skips the question once the answer is remembered', async () => {
     const send = vi.spyOn(bridge, 'sendMiniCommand').mockResolvedValue(true);
     const { wrapper, settings } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
     settings.miniPlayerCloseAction = 'app';
 
     await wrapper.get('[data-testid="mini-close"]').trigger('click');

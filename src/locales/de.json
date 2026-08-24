@@ -561,12 +561,14 @@
       "alwaysOnTop": "Immer im Vordergrund",
       "gradient": "Hintergrund aus dem Cover"
     },
+    "pin": "Mini-Player immer im Vordergrund halten",
+    "unpin": "Mini-Player nicht mehr im Vordergrund halten",
     "confirm": {
-      "title": "Den schwebenden Player schließen?",
-      "message": "Du kannst nur den Player schließen und die App im Infobereich lassen, oder ganz beenden.",
+      "title": "Mini-Player schließen?",
+      "message": "Wähle, ob nur das Mini-Player-Fenster geschlossen und die Anwendung im Infobereich gelassen oder die Anwendung vollständig beendet werden soll.",
       "remember": "Diese Wahl merken",
-      "dockOnly": "Nur den Player",
-      "wholeApp": "Alles schließen"
+      "dockOnly": "Nur Mini-Player schließen",
+      "wholeApp": "Anwendung beenden"
     },
     "collapse": "Weniger Bedienelemente",
     "expandDock": "Alle Bedienelemente zeigen"

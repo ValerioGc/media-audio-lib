@@ -561,12 +561,14 @@
       "alwaysOnTop": "Always on top",
       "gradient": "Background from the cover"
     },
+    "pin": "Keep the mini player always on top",
+    "unpin": "Stop keeping the mini player on top",
     "confirm": {
-      "title": "Close the floating player?",
-      "message": "You can close the player alone and leave the app in the system tray, or quit altogether.",
+      "title": "Close the mini player?",
+      "message": "Choose whether to close only the mini-player window and leave the application in the system tray, or quit the application completely.",
       "remember": "Remember this choice",
-      "dockOnly": "Player only",
-      "wholeApp": "Close everything"
+      "dockOnly": "Close only the mini player",
+      "wholeApp": "Quit the application"
     },
     "collapse": "Fewer controls",
     "expandDock": "Show every control"

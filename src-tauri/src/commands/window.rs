@@ -69,11 +69,18 @@ fn anchored_position<R: Runtime>(
         position.y
     };
 
-    // A monitor smaller than the dock would leave the two bounds crossed, and `clamp` panics
-    // on that: the lower bound wins, which is the top left corner of the screen.
+    // Keep the same safety gap used for the initial corner. Without it, a resize from the
+    // bottom-right corner can leave the new window flush with or slightly beyond the edge.
+    // A monitor smaller than the dock would leave the two bounds crossed, so choose the lower
+    // bound first instead of calling `clamp` with an invalid range.
+    let min_x = origin.x + MINI_SCREEN_MARGIN;
+    let max_x = (origin.x + area.width - width - MINI_SCREEN_MARGIN).max(min_x);
+    let min_y = origin.y + MINI_SCREEN_MARGIN * 4.0;
+    let max_y = (origin.y + area.height - height - MINI_SCREEN_MARGIN * 4.0).max(min_y);
+
     Some(tauri::LogicalPosition::new(
-        x.min(origin.x + area.width - width).max(origin.x),
-        y.min(origin.y + area.height - height).max(origin.y),
+        x.min(max_x).max(min_x),
+        y.min(max_y).max(min_y),
     ))
 }
 

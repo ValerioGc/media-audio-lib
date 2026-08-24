@@ -561,12 +561,14 @@
       "alwaysOnTop": "Sempre in primo piano",
       "gradient": "Sfondo dalla copertina"
     },
+    "pin": "Tieni il mini player sempre in primo piano",
+    "unpin": "Disattiva il mini player sempre in primo piano",
     "confirm": {
-      "title": "Chiudere il player flottante?",
-      "message": "Puoi chiudere solo il player e lasciare l’applicazione nella barra di sistema, oppure uscire del tutto.",
+      "title": "Chiudere il mini player?",
+      "message": "Scegli se chiudere solo la finestra del mini player e lasciare l’applicazione nella barra di sistema, oppure uscire completamente dall’app.",
       "remember": "Ricorda la scelta",
-      "dockOnly": "Solo il player",
-      "wholeApp": "Chiudi tutto"
+      "dockOnly": "Chiudi solo il mini player",
+      "wholeApp": "Esci dall’applicazione"
     },
     "collapse": "Riduci i comandi",
     "expandDock": "Mostra tutti i comandi"

@@ -33,15 +33,16 @@ watch(
   [
     () => player.currentTrack,
     () => settings.coverGradientEnabled,
+    () => settings.miniPlayerGradient,
     () => settings.coverGradientIntensity,
     () => settings.coverGradientStyle,
     () => settings.coverGradientDirection,
   ],
-  async ([track, enabled, intensity, style, direction]) => {
+  async ([track, enabled, miniEnabled, intensity, style, direction]) => {
     const request = ++accentRequest;
     player.setCoverAccent(null);
 
-    if (!enabled || track === null || track.missing) {
+    if ((!enabled && !miniEnabled) || track === null || track.missing) {
       return;
     }
 

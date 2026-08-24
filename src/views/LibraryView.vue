@@ -575,9 +575,7 @@ async function confirmRemoval() {
     >
       {{
         t('library.missingInfo.filtered', {
-          filter: t(
-            `library.toolbar.missingInfo.options.${library.missingInfoFilter}`,
-          ).toLowerCase(),
+          filter: t(`library.toolbar.missingInfo.options.${library.missingInfoFilter}`),
         })
       }}
 

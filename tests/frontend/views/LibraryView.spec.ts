@@ -678,7 +678,9 @@ describe('LibraryView', () => {
     const banner = wrapper.get('[data-testid="missing-info-banner"]');
 
     expect(banner.text()).toContain('Vista filtrata');
-    expect(banner.text()).toContain('copertina');
+    // The name of the field is written as the interface writes it everywhere else: lowering
+    // its case would be wrong in German, where a noun keeps its capital.
+    expect(banner.text()).toContain('Copertina');
     // A state, not an event: the banner has no close of its own.
     expect(banner.find('[data-testid="library-banner-dismiss"]').exists()).toBe(false);
 

@@ -89,6 +89,7 @@ export const useSettingsStore = defineStore('settings', () => {
   );
   const tableColumnDividers = ref(DEFAULT_SETTINGS.tableColumnDividers);
   const bannerDuration = ref<BannerDuration>(DEFAULT_SETTINGS.bannerDuration);
+  const dismissedMissingReport = ref(DEFAULT_SETTINGS.dismissedMissingReport);
   const systemTheme = ref<ResolvedTheme>('light');
   const isReady = ref(false);
 
@@ -135,6 +136,7 @@ export const useSettingsStore = defineStore('settings', () => {
     tableColumns: tableColumns.value,
     tableColumnDividers: tableColumnDividers.value,
     bannerDuration: bannerDuration.value,
+    dismissedMissingReport: dismissedMissingReport.value,
   }));
 
   function apply() {
@@ -224,6 +226,7 @@ export const useSettingsStore = defineStore('settings', () => {
     tableColumns.value = restored.tableColumns.map((column) => ({ ...column }));
     tableColumnDividers.value = restored.tableColumnDividers;
     bannerDuration.value = restored.bannerDuration;
+    dismissedMissingReport.value = restored.dismissedMissingReport;
 
     apply();
     isReady.value = true;
@@ -519,6 +522,18 @@ export const useSettingsStore = defineStore('settings', () => {
     await persist();
   }
 
+  /**
+   * Writes down which report of missing files was closed, so it is not raised again.
+   *
+   * The banner is a piece of news, not a state: the count beside the tabs is what keeps the
+   * situation on screen. An empty key clears the memory, which is what a check finding
+   * nothing missing leaves behind.
+   */
+  async function setDismissedMissingReport(next: string) {
+    dismissedMissingReport.value = next;
+    await persist();
+  }
+
   async function setTableColumnDividers(next: boolean) {
     tableColumnDividers.value = next;
     await persist();
@@ -571,6 +586,7 @@ export const useSettingsStore = defineStore('settings', () => {
     tableColumns,
     tableColumnDividers,
     bannerDuration,
+    dismissedMissingReport,
     systemTheme,
     isReady,
     resolvedTheme,
@@ -614,6 +630,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setTableColumnWidths,
     setTableColumnDividers,
     setBannerDuration,
+    setDismissedMissingReport,
     moveTableColumn,
     nudgeTableColumn,
     resetTableColumns,

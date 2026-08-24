@@ -821,6 +821,33 @@ describe('refresh from disk', () => {
     expect(library.lastRefresh).toBeNull();
   });
 
+  it('names a set of missing files, and names two different sets apart', () => {
+    const library = useLibraryStore();
+
+    expect(library.missingReportKey).toBe('');
+
+    library.lastRefresh = { refreshed: 0, missing: ['C:/a.mp3', 'C:/b.mp3'] };
+    const key = library.missingReportKey;
+
+    expect(key).not.toBe('');
+
+    // The order the check read them in is not part of what was found.
+    library.lastRefresh = { refreshed: 0, missing: ['C:/b.mp3', 'C:/a.mp3'] };
+
+    expect(library.missingReportKey).toBe(key);
+
+    library.lastRefresh = { refreshed: 0, missing: ['C:/a.mp3', 'C:/c.mp3'] };
+
+    expect(library.missingReportKey).not.toBe(key);
+
+    // Two paths run together must not read as the same set as one long one.
+    library.lastRefresh = { refreshed: 0, missing: ['C:/ab.mp3'] };
+    const joined = library.missingReportKey;
+    library.lastRefresh = { refreshed: 0, missing: ['C:/a', 'b.mp3'] };
+
+    expect(library.missingReportKey).not.toBe(joined);
+  });
+
   it('leaves the list alone when the refresh fails', async () => {
     const library = useLibraryStore();
     vi.spyOn(console, 'error').mockImplementation(() => {});

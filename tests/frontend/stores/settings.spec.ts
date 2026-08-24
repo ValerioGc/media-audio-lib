@@ -347,6 +347,21 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
+  it('remembers which report of missing files was answered for', async () => {
+    const store = useSettingsStore();
+    const storage = createFakeStorage();
+    await store.initialize(storage);
+
+    expect(store.dismissedMissingReport).toBe('');
+
+    await store.setDismissedMissingReport('2:abcdef01');
+
+    expect(store.dismissedMissingReport).toBe('2:abcdef01');
+    expect(storage.saved.at(-1)?.dismissedMissingReport).toBe('2:abcdef01');
+
+    store.dispose();
+  });
+
   it('restores the view saved in a previous session', async () => {
     const store = useSettingsStore();
 

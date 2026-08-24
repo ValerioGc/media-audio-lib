@@ -144,6 +144,14 @@ export const DEFAULT_TABLE_COLUMNS: TableColumnSetting[] = TABLE_COLUMN_KEYS.map
  * and a reader who wants to take their time should not have to race the clock.
  */
 export const BANNER_DURATIONS = [0, 3, 5, 8, 15] as const;
+
+/**
+ * How long the name of a dismissed missing-file report may be.
+ *
+ * It is written by the app and read back as an opaque value, so the limit is only there to
+ * stop a hand-edited preferences file from carrying something unbounded.
+ */
+export const MAX_DISMISSED_REPORT_LENGTH = 64;
 export type BannerDuration = (typeof BANNER_DURATIONS)[number];
 
 export const MAX_PLAYER_BLUR = 28;
@@ -186,6 +194,7 @@ export interface AppSettings {
   tableColumns: TableColumnSetting[];
   tableColumnDividers: boolean;
   bannerDuration: BannerDuration;
+  dismissedMissingReport: string;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -224,4 +233,5 @@ export const DEFAULT_SETTINGS: AppSettings = {
   tableColumns: DEFAULT_TABLE_COLUMNS,
   tableColumnDividers: false,
   bannerDuration: 5,
+  dismissedMissingReport: '',
 };

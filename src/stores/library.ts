@@ -33,6 +33,32 @@ function errorKeyOf(error: unknown): Exclude<LibraryErrorKey, null> {
   return error instanceof ShellUnavailableError ? 'shellUnavailable' : 'generic';
 }
 
+/**
+ * FNV-1a over the paths, sorted so the order they were read in does not matter.
+ *
+ * A hash rather than the list: it is written to the preferences file, where a library that
+ * lost a whole drive would otherwise leave hundreds of paths behind. The count is kept
+ * beside it, which makes the stored value readable and separates two sets of the same size
+ * from two of different sizes without touching the hash.
+ */
+function fingerprintOf(paths: readonly string[]): string {
+  let hash = 0x811c9dc5;
+
+  for (const path of [...paths].sort()) {
+    for (let index = 0; index < path.length; index += 1) {
+      hash ^= path.charCodeAt(index);
+      hash = Math.imul(hash, 0x01000193);
+    }
+
+    // The separator keeps two paths from running into one another: without it `ab` and `c`
+    // would hash the same as `a` and `bc`.
+    hash ^= 0x1f;
+    hash = Math.imul(hash, 0x01000193);
+  }
+
+  return `${paths.length}:${(hash >>> 0).toString(16)}`;
+}
+
 function hasMissingInfo(track: TrackView, filter: MissingInfoFilter): boolean {
   if (filter === 'all') {
     return true;
@@ -134,6 +160,18 @@ export const useLibraryStore = defineStore('library', () => {
   const hasNoMatches = computed(() => !isEmpty.value && visibleTracks.value.length === 0);
   const missingCount = computed(() => tracks.value.filter((track) => track.missing).length);
   const hasMissingAfterRefresh = computed(() => (lastRefresh.value?.missing.length ?? 0) > 0);
+
+  /**
+   * A short name for the set of files the last check found gone.
+   *
+   * The banner reporting them is closed for good rather than for the moment, so what was
+   * closed has to be written down — and the list itself can run to hundreds of paths. Two
+   * checks that found the same files answer with the same key, and one that found a file
+   * the other did not answers with a different one, which is all the comparison needs.
+   */
+  const missingReportKey = computed(() =>
+    hasMissingAfterRefresh.value ? fingerprintOf(lastRefresh.value?.missing ?? []) : '',
+  );
 
   /** How many different values the library holds for a field, blanks left out. */
   function distinctCount(field: 'artist' | 'album' | 'genre'): number {
@@ -728,6 +766,7 @@ export const useLibraryStore = defineStore('library', () => {
     hasNoMatches,
     missingCount,
     hasMissingAfterRefresh,
+    missingReportKey,
     lastRefresh,
     artistCount,
     albumCount,

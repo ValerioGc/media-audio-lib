@@ -7,6 +7,7 @@ import {
   DEFAULT_TABLE_COLUMNS,
   LOCALES,
   MAX_COVER_GRADIENT_INTENSITY,
+  MAX_DISMISSED_REPORT_LENGTH,
   MAX_PLAYER_BLUR,
   MIN_COVER_GRADIENT_INTENSITY,
   AMBIENT_DIRECTIONS,
@@ -230,6 +231,10 @@ export function sanitizeSettings(raw: unknown): AppSettings {
     bannerDuration: BANNER_DURATIONS.includes(source.bannerDuration as BannerDuration)
       ? (source.bannerDuration as BannerDuration)
       : DEFAULT_SETTINGS.bannerDuration,
+    dismissedMissingReport:
+      typeof source.dismissedMissingReport === 'string'
+        ? source.dismissedMissingReport.slice(0, MAX_DISMISSED_REPORT_LENGTH)
+        : DEFAULT_SETTINGS.dismissedMissingReport,
   };
 }
 

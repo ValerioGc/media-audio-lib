@@ -730,6 +730,78 @@ describe('LibraryView', () => {
     expect(wrapper.find('.library_row_missing, .preview_card_missing').exists()).toBe(true);
   });
 
+  it('keeps the missing-file warning closed once it has been answered for', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    store.tracks = [makeTrack({ title: 'Gone', missing: true })];
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    const key = store.missingReportKey;
+
+    await wrapper
+      .get('[data-testid="refresh-missing"] [data-testid="library-banner-dismiss"]')
+      .trigger('click');
+    await flushPromises();
+
+    // What was closed is written down, so the answer outlives the session.
+    expect(key).not.toBe('');
+    expect(settings.dismissedMissingReport).toBe(key);
+
+    // The same check running again — opening the library, closing a dialog — says nothing new.
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="refresh-missing"]').exists()).toBe(false);
+    // The count beside the tabs is what keeps the situation on screen.
+    expect(wrapper.get('[data-testid="missing-count"]').text()).toContain('1');
+  });
+
+  it('raises the warning again, with the new count, when another file goes', async () => {
+    const { wrapper, store } = await mountView();
+    store.tracks = [makeTrack({ title: 'Gone', missing: true })];
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    await wrapper
+      .get('[data-testid="refresh-missing"] [data-testid="library-banner-dismiss"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="refresh-missing"]').exists()).toBe(false);
+
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3', 'C:/music/second.mp3'] };
+    await flushPromises();
+
+    const banner = wrapper.get('[data-testid="refresh-missing"]');
+
+    expect(banner.text()).toContain('2 file non risultano più disponibili');
+  });
+
+  it('forgets the answer once a check finds nothing gone', async () => {
+    const { wrapper, store } = await mountView();
+    const settings = useSettingsStore();
+    store.tracks = [makeTrack({ title: 'Gone', missing: true })];
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    await wrapper
+      .get('[data-testid="refresh-missing"] [data-testid="library-banner-dismiss"]')
+      .trigger('click');
+    await flushPromises();
+
+    store.lastRefresh = { refreshed: 0, missing: [] };
+    await flushPromises();
+
+    expect(settings.dismissedMissingReport).toBe('');
+
+    // The same file going a second time is news again, not an answer already given.
+    store.lastRefresh = { refreshed: 0, missing: ['C:/music/gone.mp3'] };
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="refresh-missing"]').exists()).toBe(true);
+  });
+
   it('notes the tracks brought up to date, without raising an alarm', async () => {
     const { wrapper, store } = await mountView();
     store.tracks = [makeTrack()];

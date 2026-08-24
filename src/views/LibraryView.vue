@@ -345,6 +345,40 @@ watch(
 
 /** The visible list becomes the queue, so previous and next follow what is on screen. */
 /** The file is read again first: what plays is what is on the disk right now. */
+/**
+ * Whether the files gone from disk are worth raising, or have already been answered for.
+ *
+ * The warning is closed for good rather than for the session: the count beside the tabs is
+ * what keeps the situation on screen, so repeating the banner at every start says nothing
+ * new. It comes back when the check finds a set of files the closed one did not cover — a
+ * track that has just gone — and then carries the count as it now stands.
+ */
+const showsMissingBanner = computed(
+  () =>
+    library.hasMissingAfterRefresh && library.missingReportKey !== settings.dismissedMissingReport,
+);
+
+async function dismissMissingReport() {
+  const key = library.missingReportKey;
+  library.dismissRefresh();
+  await settings.setDismissedMissingReport(key);
+}
+
+// A check that finds nothing gone closes the matter, so what was answered for is forgotten:
+// the same files going missing a second time are news again rather than an old answer.
+watch(
+  () => library.lastRefresh,
+  (report) => {
+    if (report === null || report.missing.length > 0 || settings.dismissedMissingReport === '') {
+      return;
+    }
+
+    settings.setDismissedMissingReport('').catch((error: unknown) => {
+      console.error('Clearing the answered missing report failed', error);
+    });
+  },
+);
+
 /** The track whose file was not there when it was asked for, named on a banner. */
 const unplayableTitle = ref<string | null>(null);
 
@@ -603,11 +637,11 @@ async function confirmRemoval() {
     <!-- What the refresh found on opening: files gone from disk are a warning, tags read
          again are a note. -->
     <LibraryBanner
-      v-if="library.hasMissingAfterRefresh"
+      v-if="showsMissingBanner"
       tone="warning"
       alert
       data-testid="refresh-missing"
-      @dismiss="library.dismissRefresh()"
+      @dismiss="dismissMissingReport"
     >
       {{
         t(

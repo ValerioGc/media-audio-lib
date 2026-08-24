@@ -79,7 +79,7 @@
     fn unreadable_file_is_a_serialization_error() {
         let dir = TempDir::new("library-broken");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, "{ non valido").expect("file written");
+        std::fs::write(&file, "{ invalid").expect("file written");
 
         assert!(matches!(
             Library::load(&file).unwrap_err(),
@@ -543,7 +543,7 @@
     #[test]
     fn imports_valid_files_and_reports_skipped_ones() {
         let dir = TempDir::new("library-import");
-        let valido = wav_with_tags(dir.path(), "valido.wav");
+        let valido = wav_with_tags(dir.path(), "valid.wav");
         let rotto = corrupted_file(dir.path(), "rotto.mp3");
         let mut library = Library::new();
 
@@ -586,7 +586,7 @@
     fn importing_drops_the_entries_that_are_not_audio_files() {
         let mut library = Library::new();
         let mut imported = Library::new();
-        imported.add(sample_track("brano"));
+        imported.add(sample_track("track"));
         imported.add(Track {
             path: "C:/Users/qualcuno/.ssh/id_rsa".to_owned(),
             ..sample_track("intruso")
@@ -594,7 +594,7 @@
 
         let report = library.import(imported, LibraryImportStrategy::Replace);
 
-        assert_eq!(report.total, 2, "il conteggio dice quante voci conteneva");
+        assert_eq!(report.total, 2, "the count says how many entries it held");
         assert_eq!(report.skipped, 1);
         assert_eq!(library.len(), 1);
         assert!(library
@@ -618,9 +618,9 @@
         let path = dir.path().join("library.json");
         let mut library = Library::new();
         library.name = "b".repeat(MAX_LIBRARY_NAME_LENGTH * 3);
-        library.save(&path).expect("libreria salvata");
+        library.save(&path).expect("library saved");
 
-        let reloaded = Library::load(&path).expect("libreria riletta");
+        let reloaded = Library::load(&path).expect("library read back");
 
         assert_eq!(reloaded.name.chars().count(), MAX_LIBRARY_NAME_LENGTH);
     }
@@ -629,7 +629,7 @@
     fn refuses_a_library_file_too_large_to_read() {
         let dir = TempDir::new("library-huge");
         let path = dir.path().join("library.json");
-        Library::new().save(&path).expect("libreria salvata");
+        Library::new().save(&path).expect("library saved");
 
         // The weight it refuses is an argument, so no gigantic fixture is needed.
         assert!(ensure_readable_size(&path, MAX_LIBRARY_FILE_BYTES).is_ok());

@@ -18,7 +18,7 @@
 
     #[test]
     fn app_info_is_serializable_for_the_frontend() {
-        let json = serde_json::to_string(&build_app_info()).expect("serializzazione riuscita");
+        let json = serde_json::to_string(&build_app_info()).expect("serialization succeeded");
 
         assert!(json.contains("\"supportedExtensions\""));
     }

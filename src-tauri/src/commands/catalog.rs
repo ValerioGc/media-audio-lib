@@ -91,7 +91,7 @@ pub fn ensure_name_is_free(
 
     if taken {
         return Err(AppError::Validation(format!(
-            "esiste già una libreria chiamata {name}"
+            "a library named {name} already exists"
         )));
     }
 
@@ -175,9 +175,7 @@ pub fn export(
     app_version: &str,
 ) -> AppResult<String> {
     if destination.trim().is_empty() {
-        return Err(AppError::Validation(
-            "percorso di destinazione mancante".to_owned(),
-        ));
+        return Err(AppError::Validation("missing destination path".to_owned()));
     }
 
     let source = catalog.file_of(id)?;
@@ -208,9 +206,7 @@ pub fn import(
     strategy: LibraryImportStrategy,
 ) -> AppResult<LibraryImportReport> {
     if source.trim().is_empty() {
-        return Err(AppError::Validation(
-            "percorso di importazione mancante".to_owned(),
-        ));
+        return Err(AppError::Validation("missing source path".to_owned()));
     }
 
     let mut imported = crate::library::load_for_import(&PathBuf::from(source))?;

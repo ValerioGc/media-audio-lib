@@ -18,7 +18,7 @@ impl TempDir {
             tempfile::Builder::new()
                 .prefix(prefix)
                 .tempdir()
-                .expect("cartella temporanea creata"),
+                .expect("temporary folder created"),
         )
     }
 
@@ -91,7 +91,7 @@ fn flac_bytes() -> Vec<u8> {
 
 fn write_file(directory: &Path, name: &str, bytes: &[u8]) -> PathBuf {
     let path = directory.join(name);
-    std::fs::write(&path, bytes).expect("file di test scritto");
+    std::fs::write(&path, bytes).expect("test file written");
     path
 }
 
@@ -99,7 +99,7 @@ fn tag_with_values(tag_type: TagType) -> Tag {
     let mut tag = Tag::new(tag_type);
     tag.set_title("Test Title".to_owned());
     tag.set_artist("Test Artist".to_owned());
-    tag.set_album("Album di prova".to_owned());
+    tag.set_album("Sample Album".to_owned());
     tag.insert_text(ItemKey::RecordingDate, "1999".to_owned());
     tag.set_genre("Rock".to_owned());
     tag
@@ -107,7 +107,7 @@ fn tag_with_values(tag_type: TagType) -> Tag {
 
 fn save_tag(tag: &Tag, path: &Path) {
     tag.save_to_path(path, WriteOptions::default())
-        .expect("tag scritti sul file di test");
+        .expect("tags written to the test file");
 }
 
 pub fn wav_with_tags(directory: &Path, name: &str) -> PathBuf {

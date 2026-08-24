@@ -43,7 +43,7 @@
     fn starts_empty_when_file_is_unreadable() {
         let dir = TempDir::new("state-broken");
         let file = dir.path().join("library.json");
-        std::fs::write(&file, "{ non valido").expect("file written");
+        std::fs::write(&file, "{ invalid").expect("file written");
 
         let state = LibraryState::from_file(file.clone());
 
@@ -189,7 +189,7 @@
             .update(|library| {
                 crate::library::add_paths(library, &[track.display().to_string()], 0)
             })
-            .expect("brano aggiunto");
+            .expect("track added");
 
         // The set is built on the first question and dropped by the change above, so this
         // is the new answer and not the one from before.
@@ -204,22 +204,22 @@
         let dir = TempDir::new("state-derived");
         let file = dir.path().join("library.json");
         let state = LibraryState::new(file.clone(), Library::new());
-        state.update(|_| ()).expect("prima scrittura");
+        state.update(|_| ()).expect("first write");
 
         state
             .update_derived(|library| library.rename("Derivata"))
             .expect("cambiamento derivato")
-            .expect("nome valido");
+            .expect("valid name");
 
         assert_eq!(
-            Library::load(&file).expect("riletta").name,
+            Library::load(&file).expect("read back").name,
             crate::library::DEFAULT_LIBRARY_NAME,
-            "il file non è stato riscritto"
+            "the file was not written again"
         );
 
         state.flush().expect("scrittura differita");
 
-        assert_eq!(Library::load(&file).expect("riletta").name, "Derivata");
+        assert_eq!(Library::load(&file).expect("read back").name, "Derivata");
     }
 
     #[test]
@@ -231,9 +231,9 @@
         state
             .update(|library| library.rename("Scelta"))
             .expect("aggiornamento")
-            .expect("nome valido");
+            .expect("valid name");
 
-        assert_eq!(Library::load(&file).expect("riletta").name, "Scelta");
+        assert_eq!(Library::load(&file).expect("read back").name, "Scelta");
     }
 
     #[test]

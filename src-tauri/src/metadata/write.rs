@@ -71,14 +71,12 @@ fn blank_to_none(value: Option<&String>) -> Option<&str> {
 
 pub fn validate_update(update: &MetadataUpdate) -> AppResult<()> {
     if update.title.trim().is_empty() {
-        return Err(AppError::Validation(
-            "il titolo non può essere vuoto".to_owned(),
-        ));
+        return Err(AppError::Validation("the title cannot be empty".to_owned()));
     }
 
     if update.title.chars().count() > MAX_TITLE_LENGTH {
         return Err(AppError::Validation(format!(
-            "il titolo supera i {MAX_TITLE_LENGTH} caratteri"
+            "the title is limited to {MAX_TITLE_LENGTH} characters"
         )));
     }
 
@@ -102,28 +100,28 @@ pub fn validate_update(update: &MetadataUpdate) -> AppResult<()> {
 pub fn validate_cover(cover: &Cover) -> AppResult<(Vec<u8>, &'static str)> {
     if !ALLOWED_COVER_MIME.contains(&cover.mime_type.as_str()) {
         return Err(AppError::Validation(format!(
-            "formato immagine non ammesso: {}",
+            "image format not accepted: {}",
             cover.mime_type
         )));
     }
 
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(&cover.data)
-        .map_err(|error| AppError::Validation(format!("immagine non leggibile: {error}")))?;
+        .map_err(|error| AppError::Validation(format!("unreadable image: {error}")))?;
 
     if bytes.is_empty() {
-        return Err(AppError::Validation("immagine vuota".to_owned()));
+        return Err(AppError::Validation("empty image".to_owned()));
     }
 
     let Some(mime_type) = image_mime(&bytes) else {
         return Err(AppError::Validation(
-            "immagine non riconosciuta: sono ammessi solo PNG e JPEG".to_owned(),
+            "unrecognised image: only PNG and JPEG are accepted".to_owned(),
         ));
     };
 
     if bytes.len() > MAX_COVER_BYTES {
         return Err(AppError::Validation(format!(
-            "immagine troppo grande: massimo {} MB",
+            "image too large: {} MB at most",
             MAX_COVER_BYTES / (1024 * 1024)
         )));
     }

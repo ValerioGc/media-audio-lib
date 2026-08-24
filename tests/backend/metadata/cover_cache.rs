@@ -48,7 +48,7 @@
             .expect("cover");
         let bytes = base64::engine::general_purpose::STANDARD
             .decode(&cover.data)
-            .expect("base64 valido");
+            .expect("valid base64");
 
         assert_eq!(bytes, b"fake-cover");
     }
@@ -100,7 +100,7 @@
         let track = wav_with_cover(dir.path(), "track.wav");
         // Un file al posto della cartella: ogni scrittura in cache fallira'.
         let path_occupato = dir.path().join("occupato");
-        std::fs::write(&path_occupato, b"non sono una cartella").expect("file written");
+        std::fs::write(&path_occupato, b"not a folder").expect("file written");
         let cache = CoverCache::new(path_occupato);
 
         assert!(cache.load(&track).expect("read succeeded").cover.is_some());
@@ -120,11 +120,11 @@
         let track = wav_with_cover(dir.path(), "track.wav");
         cache.load(&track).expect("read");
 
-        cache.clear().expect("pulizia riuscita");
+        cache.clear().expect("cleanup succeeded");
 
         assert_eq!(
             std::fs::read_dir(cache.directory())
-                .expect("cartella leggibile")
+                .expect("readable folder")
                 .count(),
             0
         );
@@ -132,15 +132,15 @@
 
     /// Writes an entry of the given weight, last served `age_seconds` ago.
     fn aged_entry(cache: &CoverCache, name: &str, size: usize, age_seconds: u64) {
-        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        std::fs::create_dir_all(cache.directory()).expect("folder created");
         let path = cache.directory().join(name);
-        std::fs::write(&path, vec![0_u8; size]).expect("voce scritta");
+        std::fs::write(&path, vec![0_u8; size]).expect("entry written");
 
         let when = SystemTime::now() - std::time::Duration::from_secs(age_seconds);
         let file = std::fs::File::options()
             .write(true)
             .open(&path)
-            .expect("voce apribile");
+            .expect("entry can be opened");
         file.set_times(FileTimes::new().set_modified(when))
             .expect("data impostata");
     }
@@ -152,7 +152,7 @@
         // A file with no cover at all: if the answer came from the file rather than from
         // the note beside it, it would say "no cover" instead of "too heavy".
         let track = wav_with_tags(dir.path(), "track.wav");
-        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        std::fs::create_dir_all(cache.directory()).expect("folder created");
         std::fs::write(
             cache
                 .directory()
@@ -183,7 +183,7 @@
             .directory()
             .join(format!("{}.big", CoverCache::entry_key(&track)))
             .is_file());
-        assert!(cache.size_bytes() < 100, "l'immagine non viene conservata");
+        assert!(cache.size_bytes() < 100, "the image is not kept");
         assert_eq!(
             cache.load(&track).expect("lettura").too_large_bytes,
             Some(20_000_000)
@@ -196,22 +196,22 @@
         let cache = cache(&dir);
         let track = wav_with_cover(dir.path(), "track.wav");
 
-        let entry = cache.entry(&track).expect("voce");
+        let entry = cache.entry(&track).expect("entry");
 
         let CoverEntry::Image(picture) = entry else {
-            panic!("attesa un'immagine, trovato {entry:?}");
+            panic!("an image was expected, found {entry:?}");
         };
         assert_eq!(
-            std::fs::read(&picture).expect("immagine leggibile"),
+            std::fs::read(&picture).expect("readable image"),
             base64::engine::general_purpose::STANDARD
                 .decode(crate::fixtures::png_cover_base64())
-                .expect("base64 valido"),
-            "i byte serviti sono quelli della copertina, senza ricodifiche"
+                .expect("valid base64"),
+            "the bytes served are those of the cover, with no re-encoding"
         );
 
         // The second time nothing is opened but the cache itself.
         assert!(matches!(
-            cache.entry(&track).expect("voce"),
+            cache.entry(&track).expect("entry"),
             CoverEntry::Image(_)
         ));
     }
@@ -222,10 +222,10 @@
         let cache = cache(&dir);
         let without = wav_with_tags(dir.path(), "track.wav");
 
-        assert_eq!(cache.entry(&without).expect("voce"), CoverEntry::Missing);
+        assert_eq!(cache.entry(&without).expect("entry"), CoverEntry::Missing);
 
         let heavy = wav_with_tags(dir.path(), "heavy.wav");
-        std::fs::create_dir_all(cache.directory()).expect("cartella creata");
+        std::fs::create_dir_all(cache.directory()).expect("folder created");
         std::fs::write(
             cache
                 .directory()
@@ -235,7 +235,7 @@
         .expect("nota scritta");
 
         assert_eq!(
-            cache.entry(&heavy).expect("voce"),
+            cache.entry(&heavy).expect("entry"),
             CoverEntry::TooLarge(20_000_000)
         );
     }
@@ -245,7 +245,7 @@
         let dir = TempDir::new("cache-size");
         let cache = cache(&dir);
 
-        assert_eq!(cache.size_bytes(), 0, "una cache mai creata non pesa nulla");
+        assert_eq!(cache.size_bytes(), 0, "a cache never created weighs nothing");
 
         aged_entry(&cache, "a.png", 500, 0);
         aged_entry(&cache, "b.jpg", 300, 0);
@@ -274,10 +274,10 @@
     fn a_cache_within_its_limit_is_left_alone() {
         let dir = TempDir::new("cache-evict-none");
         let cache = cache(&dir);
-        aged_entry(&cache, "una.png", 400, 90_000);
+        aged_entry(&cache, "one.png", 400, 90_000);
 
         assert_eq!(cache.evict_down_to(1_000, 500), 0);
-        assert!(cache.directory().join("una.png").exists());
+        assert!(cache.directory().join("one.png").exists());
     }
 
     #[test]
@@ -285,7 +285,7 @@
         let dir = TempDir::new("cache-touch");
         let cache = cache(&dir);
         let track = wav_with_cover(dir.path(), "track.wav");
-        cache.load(&track).expect("prima lettura");
+        cache.load(&track).expect("first read");
 
         let entry = cache
             .directory()
@@ -294,7 +294,7 @@
         let file = std::fs::File::options()
             .write(true)
             .open(&entry)
-            .expect("voce apribile");
+            .expect("entry can be opened");
         file.set_times(
             FileTimes::new().set_modified(SystemTime::now() - std::time::Duration::from_secs(7_200)),
         )
@@ -305,13 +305,13 @@
         let age = SystemTime::now()
             .duration_since(
                 std::fs::metadata(&entry)
-                    .expect("voce leggibile")
+                    .expect("readable entry")
                     .modified()
-                    .expect("data leggibile"),
+                    .expect("readable data"),
             )
             .expect("data nel passato");
 
-        assert!(age.as_secs() < 60, "la voce servita torna in cima alla fila");
+        assert!(age.as_secs() < 60, "the entry served returns to the head of the queue");
     }
 
     #[test]
@@ -319,24 +319,24 @@
         let dir = TempDir::new("cache-touch-skip");
         let cache = cache(&dir);
         let track = wav_with_cover(dir.path(), "track.wav");
-        cache.load(&track).expect("prima lettura");
+        cache.load(&track).expect("first read");
 
         let entry = cache
             .directory()
             .join(format!("{}.png", CoverCache::entry_key(&track)));
         let before = std::fs::metadata(&entry)
-            .expect("voce leggibile")
+            .expect("readable entry")
             .modified()
-            .expect("data leggibile");
+            .expect("readable data");
 
         cache.load(&track).expect("seconda lettura");
 
         let after = std::fs::metadata(&entry)
-            .expect("voce leggibile")
+            .expect("readable entry")
             .modified()
-            .expect("data leggibile");
+            .expect("readable data");
 
-        assert_eq!(before, after, "scorrere la libreria non riscrive la cache");
+        assert_eq!(before, after, "walking the library does not write the cache again");
     }
 
     #[test]

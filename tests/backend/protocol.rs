@@ -12,7 +12,7 @@
             None => builder,
         };
 
-        builder.body(Vec::new()).expect("richiesta valida")
+        builder.body(Vec::new()).expect("valid request")
     }
 
     #[test]
@@ -30,7 +30,7 @@
     fn a_file_of_the_library_comes_back_whole() {
         let directory = TempDir::new("protocol-whole");
         let track = mp3_with_tags(directory.path(), "track.mp3");
-        let on_disk = std::fs::read(&track).expect("file leggibile");
+        let on_disk = std::fs::read(&track).expect("readable file");
 
         let response = respond(&request(&track, None), true);
 
@@ -50,7 +50,7 @@
     fn a_seek_is_answered_with_the_piece_it_asked_for() {
         let directory = TempDir::new("protocol-range");
         let track = wav_with_tags(directory.path(), "track.wav");
-        let on_disk = std::fs::read(&track).expect("file leggibile");
+        let on_disk = std::fs::read(&track).expect("readable file");
         let length = on_disk.len() as u64;
 
         let response = respond(&request(&track, Some("bytes=4-9")), true);
@@ -72,7 +72,7 @@
     fn an_open_ended_range_runs_to_the_end_of_the_file() {
         let directory = TempDir::new("protocol-open-range");
         let track = wav_with_tags(directory.path(), "track.wav");
-        let on_disk = std::fs::read(&track).expect("file leggibile");
+        let on_disk = std::fs::read(&track).expect("readable file");
         let length = on_disk.len() as u64;
 
         let response = respond(&request(&track, Some("bytes=0-")), true);
@@ -89,7 +89,7 @@
     fn a_range_past_the_end_of_the_file_is_told_so() {
         let directory = TempDir::new("protocol-bad-range");
         let track = wav_with_tags(directory.path(), "track.wav");
-        let length = std::fs::metadata(&track).expect("file leggibile").len();
+        let length = std::fs::metadata(&track).expect("readable file").len();
 
         let response = respond(
             &request(&track, Some(&format!("bytes={}-{}", length + 10, length + 20))),
@@ -107,7 +107,7 @@
     fn a_request_for_several_pieces_at_once_gets_the_whole_file() {
         let directory = TempDir::new("protocol-multi-range");
         let track = wav_with_tags(directory.path(), "track.wav");
-        let on_disk = std::fs::read(&track).expect("file leggibile");
+        let on_disk = std::fs::read(&track).expect("readable file");
 
         let response = respond(&request(&track, Some("bytes=0-3,8-11")), true);
 
@@ -131,7 +131,7 @@
         let track = mp3_with_tags(directory.path(), "track.mp3");
         let stranger = mp3_with_tags(directory.path(), "stranger.mp3");
         let document = directory.path().join("appunti.txt");
-        std::fs::write(&document, b"testo").expect("file scritto");
+        std::fs::write(&document, b"testo").expect("file written");
 
         let mut library = crate::library::Library::new();
         crate::library::add_paths(&mut library, &[track.display().to_string()], 0);

@@ -25,7 +25,7 @@
     fn refuses_a_listed_path_that_is_not_an_audio_file() {
         let directory = TempDir::new("playback-not-audio");
         let intruder = directory.path().join("segreti.pdf");
-        std::fs::write(&intruder, b"non sono musica").expect("file scritto");
+        std::fs::write(&intruder, b"non sono musica").expect("file written");
         let library = library_with(&intruder);
 
         let error = playable_path(&library, "id-1").unwrap_err();

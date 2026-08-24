@@ -25,7 +25,7 @@
 
         assert!(
             write_cover(&path, Some(&cover))
-                .expect("aggiunta riuscita")
+                .expect("addition succeeded")
                 .has_cover
         );
         assert!(
@@ -41,7 +41,7 @@
         let dir = TempDir::new("write-roundtrip");
         let path = wav_with_tags(dir.path(), "track.wav");
 
-        let written = write_metadata(&path, &update()).expect("scrittura riuscita");
+        let written = write_metadata(&path, &update()).expect("write succeeded");
         let reread = read_metadata(&path).expect("riread succeeded");
 
         assert_eq!(written, reread);
@@ -65,7 +65,7 @@
             genre: None,
         };
 
-        let written = write_metadata(&path, &cleared).expect("scrittura riuscita");
+        let written = write_metadata(&path, &cleared).expect("write succeeded");
 
         assert_eq!(written.title.as_deref(), Some("Solo titolo"));
         assert_eq!(written.artist, None);
@@ -79,7 +79,7 @@
         let dir = TempDir::new("write-keeps-cover");
         let path = wav_with_cover(dir.path(), "track.wav");
 
-        let written = write_metadata(&path, &update()).expect("scrittura riuscita");
+        let written = write_metadata(&path, &update()).expect("write succeeded");
 
         assert!(written.has_cover);
     }
@@ -89,10 +89,10 @@
         let dir = TempDir::new("write-no-temp");
         let path = wav_with_tags(dir.path(), "track.wav");
 
-        write_metadata(&path, &update()).expect("scrittura riuscita");
+        write_metadata(&path, &update()).expect("write succeeded");
 
         let leftovers: Vec<_> = std::fs::read_dir(dir.path())
-            .expect("cartella leggibile")
+            .expect("readable folder")
             .filter_map(Result::ok)
             .filter(|entry| entry.file_name().to_string_lossy().contains("mal-tmp"))
             .collect();
@@ -121,7 +121,7 @@
 
         assert_eq!(removed, 1);
         assert!(!abandoned.exists());
-        assert!(path.exists(), "il file originale non va toccato");
+        assert!(path.exists(), "the original file is left untouched");
     }
 
     #[test]
@@ -247,11 +247,11 @@
             data: png_cover_base64(),
         };
 
-        let written = write_cover(&path, Some(&cover)).expect("scrittura riuscita");
+        let written = write_cover(&path, Some(&cover)).expect("write succeeded");
         let stored = read_cover(&path)
             .expect("riread")
             .into_cover()
-            .expect("cover presente");
+            .expect("cover present");
 
         assert!(written.has_cover);
         assert_eq!(stored.mime_type, "image/png");
@@ -267,11 +267,11 @@
             data: png_cover_base64(),
         };
 
-        write_cover(&path, Some(&cover)).expect("scrittura riuscita");
+        write_cover(&path, Some(&cover)).expect("write succeeded");
         let stored = read_cover(&path)
             .expect("riread")
             .into_cover()
-            .expect("cover presente");
+            .expect("cover present");
 
         // Announced as JPEG, written and read back as what the bytes actually are.
         assert_eq!(stored.mime_type, "image/png");

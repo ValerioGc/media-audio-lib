@@ -368,12 +368,12 @@ impl Library {
 
     pub fn rename(&mut self, name: &str) -> AppResult<String> {
         let name = clean_library_name(name).ok_or_else(|| {
-            AppError::Validation("il nome della libreria non può essere vuoto".to_owned())
+            AppError::Validation("the name of a library cannot be empty".to_owned())
         })?;
 
         if name.chars().count() > MAX_LIBRARY_NAME_LENGTH {
             return Err(AppError::Validation(format!(
-                "il nome della libreria supera i {MAX_LIBRARY_NAME_LENGTH} caratteri"
+                "the name of a library is limited to {MAX_LIBRARY_NAME_LENGTH} characters"
             )));
         }
 
@@ -646,7 +646,7 @@ fn ensure_readable_size(path: &Path, max_bytes: u64) -> AppResult<()> {
 
     if size > max_bytes {
         return Err(AppError::Validation(format!(
-            "file di libreria troppo grande: massimo {} MB",
+            "library file too large: {} MB at most",
             MAX_LIBRARY_FILE_BYTES / (1024 * 1024)
         )));
     }

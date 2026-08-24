@@ -34,7 +34,7 @@ fn ensure_known_file(
     }
 
     Err(AppError::NotFound(format!(
-        "{} non è un file di questa libreria",
+        "{} is not a file of this library",
         path.display()
     )))
 }
@@ -42,14 +42,14 @@ fn ensure_known_file(
 fn tracked_path(state: &LibraryState, id: &str) -> AppResult<PathBuf> {
     state
         .read(|library| library::path_of(library, id))?
-        .ok_or_else(|| AppError::NotFound(format!("brano {id} non presente in libreria")))
+        .ok_or_else(|| AppError::NotFound(format!("track {id} is not in the library")))
 }
 
 /// Mirrors freshly written tags onto the library entry and persists it.
 fn store_metadata(state: &LibraryState, id: &str, written: TrackMetadata) -> AppResult<Track> {
     state
         .update(|library| library::apply_metadata(library, id, written))?
-        .ok_or_else(|| AppError::NotFound(format!("brano {id} non presente in libreria")))
+        .ok_or_else(|| AppError::NotFound(format!("track {id} is not in the library")))
 }
 
 pub fn edit_metadata(state: &LibraryState, id: &str, update: &MetadataUpdate) -> AppResult<Track> {

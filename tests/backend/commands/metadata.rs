@@ -114,7 +114,7 @@
             data: png_cover_base64(),
         };
 
-        let with_cover = edit_cover(&state, &id, Some(&cover)).expect("scrittura riuscita");
+        let with_cover = edit_cover(&state, &id, Some(&cover)).expect("write succeeded");
         assert!(with_cover.has_cover);
 
         let without_cover = edit_cover(&state, &id, None).expect("removal succeeded");

@@ -51,15 +51,15 @@
     #[test]
     fn a_name_another_library_answers_to_is_refused() {
         let setup = setup();
-        create(&setup.catalog, &setup.state, "Jazz").expect("prima libreria");
+        create(&setup.catalog, &setup.state, "Jazz").expect("first library");
 
-        let error = create(&setup.catalog, &setup.state, "Jazz").expect_err("nome già preso");
+        let error = create(&setup.catalog, &setup.state, "Jazz").expect_err("name already taken");
 
         assert!(matches!(error, AppError::Validation(_)));
         assert_eq!(
             summaries(&setup.catalog, &setup.state).expect("list").len(),
             2,
-            "la seconda non è stata creata"
+            "the second one was not created"
         );
     }
 
@@ -67,7 +67,7 @@
     #[test]
     fn the_same_name_written_differently_is_still_the_same_name() {
         let setup = setup();
-        create(&setup.catalog, &setup.state, "Jazz").expect("prima libreria");
+        create(&setup.catalog, &setup.state, "Jazz").expect("first library");
 
         assert!(create(&setup.catalog, &setup.state, "  jazz  ").is_err());
         assert!(create(&setup.catalog, &setup.state, "JAZZ").is_err());
@@ -80,7 +80,7 @@
         let active = setup
             .catalog
             .read(|catalog| catalog.active.clone())
-            .expect("attiva");
+            .expect("active");
         let name = summaries(&setup.catalog, &setup.state).expect("list")[0]
             .name
             .clone();

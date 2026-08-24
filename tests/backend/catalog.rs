@@ -85,7 +85,7 @@
         assert_eq!(dropped, 1);
         assert_eq!(catalog.entries.len(), 1);
         assert_eq!(catalog.entries[0].id, mine.id);
-        assert_eq!(catalog.active, mine.id, "l'attiva ricade su ciò che resta");
+        assert_eq!(catalog.active, mine.id, "the active one falls back to what is left");
     }
 
     #[test]
@@ -109,7 +109,7 @@
             &file,
             r#"{"version":99,"active":"uno","entries":[{"id":"uno","file":"a.json"}]}"#,
         )
-        .expect("catalog scritto");
+        .expect("catalog written");
 
         let error = Catalog::load(&file).expect_err("schema troppo recente");
 
@@ -220,7 +220,7 @@
             .update(|catalog| catalog.add(entry("due")))
             .expect("catalog aggiornato");
 
-        let file = state.file_of("due").expect("file trovato");
+        let file = state.file_of("due").expect("file found");
 
         assert_eq!(file, PathBuf::from("C:/dati/due.json"));
         assert!(matches!(

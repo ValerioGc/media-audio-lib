@@ -12,13 +12,13 @@ use serde::{Serialize, Serializer};
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
-    #[error("file non trovato: {0}")]
+    #[error("file not found: {0}")]
     NotFound(String),
 
-    #[error("formato non supportato: {0}")]
+    #[error("unsupported format: {0}")]
     UnsupportedFormat(String),
 
-    #[error("file audio illeggibile: {0}")]
+    #[error("unreadable audio file: {0}")]
     InvalidAudio(String),
 
     #[error("dati non validi: {0}")]
@@ -27,7 +27,7 @@ pub enum AppError {
     #[error("file in sola lettura: {0}")]
     ReadOnly(String),
 
-    #[error("libreria non disponibile: {0}")]
+    #[error("library unavailable: {0}")]
     State(String),
 
     #[error("errore di I/O: {0}")]

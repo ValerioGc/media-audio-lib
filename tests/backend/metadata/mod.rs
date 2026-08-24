@@ -27,7 +27,7 @@
     fn rejects_unsupported_formats() {
         let dir = TempDir::new("metadata-unsupported");
         let path = dir.path().join("nota.txt");
-        std::fs::write(&path, b"non audio").expect("file di test scritto");
+        std::fs::write(&path, b"non audio").expect("test file written");
 
         let error = ensure_importable(&path).unwrap_err();
 
@@ -53,7 +53,7 @@
 
         assert_eq!(metadata.title.as_deref(), Some("Test Title"));
         assert_eq!(metadata.artist.as_deref(), Some("Test Artist"));
-        assert_eq!(metadata.album.as_deref(), Some("Album di prova"));
+        assert_eq!(metadata.album.as_deref(), Some("Sample Album"));
         assert_eq!(metadata.year, Some(1999));
         assert_eq!(metadata.genre.as_deref(), Some("Rock"));
         assert_eq!(metadata.format, "wav");
@@ -136,12 +136,12 @@
     fn a_picture_too_heavy_to_read_is_reported_rather_than_loaded() {
         let dir = TempDir::new("cover-oversized");
         let path = wav_with_cover(dir.path(), "track.wav");
-        let weight = std::fs::metadata(&path).expect("file leggibile").len();
+        let weight = std::fs::metadata(&path).expect("readable file").len();
 
         // No need for a sixteen megabyte fixture: the weight refused is an argument.
         let read = read_cover_within(&path, 8).expect("read succeeded");
 
-        assert_eq!(read.cover, None, "niente di enorme attraversa l'IPC");
+        assert_eq!(read.cover, None, "nothing huge crosses the IPC");
         assert!(read.too_large_bytes.is_some_and(|bytes| bytes > 8));
         assert!(read.too_large_bytes.is_some_and(|bytes| bytes < weight));
     }
@@ -163,7 +163,7 @@
         let cover = read_cover(&path)
             .expect("read succeeded")
             .into_cover()
-            .expect("cover presente");
+            .expect("cover present");
 
         assert!(metadata.has_cover);
         assert_eq!(cover.mime_type, "image/png");
@@ -171,7 +171,7 @@
         assert_eq!(
             base64::engine::general_purpose::STANDARD
                 .decode(&cover.data)
-                .expect("base64 valido")
+                .expect("valid base64")
                 .first(),
             Some(&0x89)
         );

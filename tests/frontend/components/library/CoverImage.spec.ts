@@ -31,7 +31,7 @@ describe('CoverImage', () => {
     expect(wrapper.get('img').attributes('src')).toBe('cover://localhost/track.mp3?v=0');
   });
 
-  it('applica la dimensione richiesta', () => {
+  it('applies the requested size', () => {
     const wrapper = mount(CoverImage, {
       ...withPinia(),
       props: { track: makeTrack(), size: 'card' },

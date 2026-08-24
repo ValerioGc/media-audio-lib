@@ -88,7 +88,8 @@ function onKeydown(event: KeyboardEvent, index: number) {
   &_list {
     display: flex;
     gap: $space_xs;
-    // The tabs sit in the middle of the settings page, as requested.
+    // Centred: the settings are read down the middle of the page, and the strip that names
+    // the sections belongs on the same axis as they do.
     justify-content: center;
     padding: $space_xs;
 

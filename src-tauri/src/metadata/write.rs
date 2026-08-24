@@ -167,7 +167,7 @@ pub fn is_staging_file(path: &Path) -> bool {
 /// writing it.
 ///
 /// A file whose age cannot be read, or that claims to come from the future, counts as
-/// recent: deleting on a clock we cannot make sense of is the worse mistake.
+/// recent: deleting on a clock that cannot be made sense of is the worse mistake.
 fn is_recent(path: &Path, max_age: Duration) -> bool {
     let Ok(modified) = std::fs::metadata(path).and_then(|metadata| metadata.modified()) else {
         return true;

@@ -1,4 +1,5 @@
-// Base design tokens. Full palette and light/dark themes land in phase 1.
+// The measurements the interface is built from. Colour lives in `_themes.scss`, which
+// carries a set of these for each theme.
 
 // Spacing
 $space_2xs: 0.125rem;

@@ -54,7 +54,7 @@ describe('SettingsTabs', () => {
     expect(wrapper.findAll('[role="tab"]')[2]?.attributes('aria-selected')).toBe('true');
   });
 
-  it('collega ogni tab al proprio pannello', async () => {
+  it('ties each tab to its own panel', async () => {
     const wrapper = mountTabs();
     const tab = wrapper.findAll('[role="tab"]')[0];
     const panel = wrapper.get('[role="tabpanel"]');

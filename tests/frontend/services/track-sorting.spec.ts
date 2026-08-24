@@ -115,7 +115,7 @@ describe('sortTracks', () => {
 });
 
 describe('filterAndSort', () => {
-  it('applica first il filtro e poi l ordinamento', () => {
+  it('filters first, then sorts', () => {
     const result = filterAndSort(tracks, 'a', { column: 'title', direction: 'asc' });
 
     expect(result.map((track) => track.id)).toEqual(['b', 'c', 'a']);

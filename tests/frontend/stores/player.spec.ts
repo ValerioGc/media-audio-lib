@@ -357,7 +357,7 @@ describe('usePlayerStore', () => {
     expect(engine.setVolume).toHaveBeenLastCalledWith(0);
   });
 
-  it('applica il volume scelto first dell avvio', async () => {
+  it('applies the chosen volume before starting', async () => {
     const player = usePlayerStore();
     player.setVolume(0.3);
 

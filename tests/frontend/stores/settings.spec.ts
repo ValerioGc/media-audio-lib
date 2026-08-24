@@ -104,7 +104,7 @@ describe('useSettingsStore', () => {
     store.dispose();
   });
 
-  it('ricade sui valori predefiniti se la read fallisce', async () => {
+  it('falls back to the defaults when the read fails', async () => {
     const store = useSettingsStore();
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
     const storage: SettingsStorage = {

@@ -26,7 +26,7 @@ describe('LibraryContentTabs', () => {
     ]);
   });
 
-  it('marca la tab attiva', () => {
+  it('marks the active tab', () => {
     const wrapper = mountTabs('albums');
 
     expect(wrapper.findAll('[role="tab"]')[2]?.attributes('aria-selected')).toBe('true');

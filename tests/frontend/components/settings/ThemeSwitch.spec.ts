@@ -34,7 +34,7 @@ describe('ThemeSwitch', () => {
     expect(wrapper.find('[data-testid="system-hint"]').exists()).toBe(false);
   });
 
-  it('applica il tema scelto al documento', async () => {
+  it('applies the chosen theme to the document', async () => {
     const wrapper = mount(ThemeSwitch, withPinia());
     const store = useSettingsStore();
 

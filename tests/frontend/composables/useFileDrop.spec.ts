@@ -54,7 +54,7 @@ describe('useFileDrop', () => {
       paths: ['C:/music/track.mp3', 'C:/music/Album 2020', 'C:/music/altro.FLAC'],
     });
 
-    // Solo il backend puo' guardare dentro una cartella, quindi non si filtra qui.
+    // Only the backend can look inside a folder, so nothing is filtered out here.
     expect(onDrop).toHaveBeenCalledWith([
       'C:/music/track.mp3',
       'C:/music/Album 2020',

@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 describe('BackToLibrary', () => {
-  it('dice dove porta', () => {
+  it('says where it leads', () => {
     const wrapper = mount(BackToLibrary, withPinia());
 
     expect(wrapper.text()).toContain('Torna alla libreria');

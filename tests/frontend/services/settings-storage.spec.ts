@@ -48,7 +48,7 @@ afterEach(() => {
 });
 
 describe('sanitizeSettings', () => {
-  it('restituisce i valori predefiniti per dati assenti', () => {
+  it('falls back to the defaults for missing data', () => {
     expect(sanitizeSettings(undefined)).toEqual(DEFAULT_SETTINGS);
     expect(sanitizeSettings(null)).toEqual(DEFAULT_SETTINGS);
     expect(sanitizeSettings('non un oggetto')).toEqual(DEFAULT_SETTINGS);

@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
-import { sendMiniCloseDecision } from '@/services/mini-player-bridge';
-import { closeWindow, showCurrentWindow } from '@/services/window-controls';
+import { closeMiniPlayer } from '@/services/shell-integration';
+import { closeWindow, quitApp } from '@/services/window-controls';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
@@ -15,9 +15,6 @@ const isSending = ref(false);
 onMounted(() => {
   settings.initialize().catch((error: unknown) => {
     console.error('Loading settings for the close question failed', error);
-  });
-  showCurrentWindow().catch((error: unknown) => {
-    console.error('Showing the close question failed', error);
   });
 });
 
@@ -35,8 +32,25 @@ async function choose(quitsApp: boolean) {
   }
 
   isSending.value = true;
-  await sendMiniCloseDecision({ quitsApp, remember: remembers.value });
-  await closeWindow();
+
+  try {
+    if (remembers.value) {
+      await settings.setMiniPlayerCloseAction(quitsApp ? 'app' : 'dock');
+    }
+
+    // The confirmation window owns the decision and closes the target directly. This avoids
+    // losing the click when the mini-player event listener is still being attached.
+    if (quitsApp) {
+      await quitApp();
+    } else {
+      await closeMiniPlayer();
+    }
+  } catch (error) {
+    console.error('Applying the close choice failed', error);
+  } finally {
+    await closeWindow();
+    isSending.value = false;
+  }
 }
 </script>
 
@@ -52,13 +66,23 @@ async function choose(quitsApp: boolean) {
       </label>
 
       <footer class="mini_confirm_actions">
-        <AppButton variant="ghost" :disabled="isSending" @click="cancel">
+        <AppButton
+          variant="ghost"
+          data-testid="mini-confirm-cancel"
+          :disabled="isSending"
+          @click="cancel"
+        >
           {{ t('mini.confirm.cancel') }}
         </AppButton>
-        <AppButton :disabled="isSending" @click="choose(false)">
+        <AppButton data-testid="mini-confirm-dock" :disabled="isSending" @click="choose(false)">
           {{ t('mini.confirm.dockOnly') }}
         </AppButton>
-        <AppButton variant="danger" :disabled="isSending" @click="choose(true)">
+        <AppButton
+          variant="danger"
+          data-testid="mini-confirm-app"
+          :disabled="isSending"
+          @click="choose(true)"
+        >
           {{ t('mini.confirm.wholeApp') }}
         </AppButton>
       </footer>

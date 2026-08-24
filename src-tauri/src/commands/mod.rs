@@ -24,7 +24,7 @@ pub use playback::{
 };
 pub use window::{
     close_mini_player, open_mini_close_confirmation, open_mini_player, quit_app, set_close_to_tray,
-    set_mini_player_shape, set_tray_menu,
+    set_mini_player_always_on_top, set_mini_player_shape, set_tray_menu,
 };
 
 use crate::metadata::SUPPORTED_EXTENSIONS;

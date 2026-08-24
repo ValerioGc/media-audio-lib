@@ -132,3 +132,8 @@ export async function applyMiniPlayerShape(
 ): Promise<boolean> {
   return invokeCommand('set_mini_player_shape', { vertical, alwaysOnTop, expanded });
 }
+
+/** Changes only the dock z-order, without resizing or moving it. */
+export async function applyMiniPlayerAlwaysOnTop(alwaysOnTop: boolean): Promise<boolean> {
+  return invokeCommand('set_mini_player_always_on_top', { alwaysOnTop });
+}

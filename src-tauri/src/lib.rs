@@ -47,8 +47,8 @@ pub const MINI_CONFIRM_WINDOW: &str = "mini-confirm";
 /// Sizes of the dock, in logical pixels: one per layout, one per level.
 pub const MINI_SIZE: (f64, f64) = (360.0, 144.0);
 pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 172.0);
-pub const MINI_SIZE_VERTICAL: (f64, f64) = (232.0, 268.0);
-pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (232.0, 322.0);
+pub const MINI_SIZE_VERTICAL: (f64, f64) = (244.0, 292.0);
+pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (280.0, 300.0);
 
 /// Room left between the dock and the corner of the screen it first appears in.
 pub const MINI_SCREEN_MARGIN: f64 = 16.0;
@@ -316,6 +316,7 @@ pub fn run() {
             commands::window::open_mini_player,
             commands::window::open_mini_close_confirmation,
             commands::window::close_mini_player,
+            commands::window::set_mini_player_always_on_top,
             commands::window::set_mini_player_shape,
             commands::window::quit_app,
             commands::library::library_info,

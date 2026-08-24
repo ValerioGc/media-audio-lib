@@ -277,7 +277,7 @@ describe('MiniPlayerView', () => {
     await flushPromises();
 
     await wrapper.get('[data-testid="mini-close"]').trigger('click');
-    expect(wrapper.find('dialog').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="mini-close-cancel"]').exists()).toBe(true);
 
     await wrapper.get('[data-testid="mini-remember"]').setValue(true);
     await wrapper.get('[data-testid="mini-close-dock"]').trigger('click');

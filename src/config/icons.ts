@@ -39,7 +39,8 @@ export const ICON_GLYPHS = {
   add: '＋',
   search: '⌕',
   more: '⋮',
-  pin: '📌',
+  // Text presentation keeps the inactive pin monochrome; the active state colours it via CSS.
+  pin: '📌︎',
   verify: '✓',
   duplicate: '⧉',
   check: '✔',

@@ -178,15 +178,15 @@ pub fn open_mini_close_confirmation<R: Runtime>(app: AppHandle<R>) -> bool {
     .skip_taskbar(true)
     .shadow(true)
     .center()
-    .visible(false)
+    .visible(true)
     .build();
 
-    let Ok(_window) = built else {
+    let Ok(window) = built else {
         return false;
     };
 
-    // The confirmation webview shows itself after Vue has mounted, so the native white
-    // surface is never exposed while the page is still loading.
+    let _ = window.set_focus();
+
     true
 }
 
@@ -212,6 +212,14 @@ pub fn set_mini_player_shape<R: Runtime>(
     set_mini_player_window_shape(&window, vertical, always_on_top, expanded)
 }
 
+/// Changes only the z-order flag. Pinning must not run the resize/anchor calculation.
+#[tauri::command]
+pub fn set_mini_player_always_on_top<R: Runtime>(app: AppHandle<R>, always_on_top: bool) -> bool {
+    app.get_webview_window(MINI_WINDOW)
+        .map(|window| window.set_always_on_top(always_on_top).is_ok())
+        .unwrap_or(false)
+}
+
 fn set_mini_player_window_shape<R: Runtime>(
     window: &tauri::WebviewWindow<R>,
     vertical: bool,
@@ -220,6 +228,20 @@ fn set_mini_player_window_shape<R: Runtime>(
 ) -> bool {
     let (width, height) = mini_size(vertical, expanded);
     let _ = window.set_always_on_top(always_on_top);
+
+    let same_size = window
+        .outer_size()
+        .ok()
+        .zip(window.scale_factor().ok())
+        .map(|(size, scale)| {
+            let current = size.to_logical::<f64>(scale);
+            (current.width - width).abs() < 1.0 && (current.height - height).abs() < 1.0
+        })
+        .unwrap_or(false);
+
+    if same_size {
+        return true;
+    }
 
     // Read before the resize, applied after it: the new position depends on where the dock
     // was standing, and the resize is what would have moved it.

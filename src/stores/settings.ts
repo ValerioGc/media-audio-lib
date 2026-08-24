@@ -16,7 +16,12 @@ import {
   sanitizeSettings,
   type SettingsStorage,
 } from '@/services/settings-storage';
-import { applyCloseToTray, applyMiniPlayerShape, setAutostart } from '@/services/shell-integration';
+import {
+  applyCloseToTray,
+  applyMiniPlayerAlwaysOnTop,
+  applyMiniPlayerShape,
+  setAutostart,
+} from '@/services/shell-integration';
 import { getSystemTheme, watchSystemTheme } from '@/services/system-theme';
 import {
   isLockedLeadingTableColumn,
@@ -383,7 +388,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function setMiniPlayerAlwaysOnTop(next: boolean) {
     miniPlayerAlwaysOnTop.value = next;
-    await reshapeMiniPlayer();
+    await applyMiniPlayerAlwaysOnTop(next);
     await persist();
   }
 

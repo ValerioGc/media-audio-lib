@@ -4,16 +4,14 @@ import { useI18n } from 'vue-i18n';
 
 import AppButton from '@/components/common/AppButton.vue';
 import AppIcon from '@/components/common/AppIcon.vue';
-import AppModal from '@/components/common/AppModal.vue';
 import PlayerProgress from '@/components/player/PlayerProgress.vue';
 import PlayerVolume from '@/components/player/PlayerVolume.vue';
 import {
-  onMiniCloseDecision,
   onPlayerState,
   sendMiniCommand,
   type MiniPlayerState,
 } from '@/services/mini-player-bridge';
-import { closeMiniPlayer, openMiniCloseConfirmation } from '@/services/shell-integration';
+import { closeMiniPlayer } from '@/services/shell-integration';
 import { onWindowMoved, windowPosition } from '@/services/window-controls';
 import { useSettingsStore } from '@/stores/settings';
 
@@ -26,7 +24,6 @@ const isSheetOpen = ref(false);
 const remembers = ref(false);
 let unlistenState: (() => void) | null = null;
 let unlistenMoved: (() => void) | null = null;
-let unlistenCloseDecision: (() => void) | null = null;
 
 const isVertical = computed(() => settings.miniPlayerOrientation === 'vertical');
 const isExpanded = computed(() => settings.miniPlayerLevel === 'expanded');
@@ -52,11 +49,6 @@ onMounted(async () => {
   unlistenState = await onPlayerState((received) => {
     state.value = received;
   });
-  unlistenCloseDecision = await onMiniCloseDecision((decision) => {
-    close(decision.quitsApp, decision.remember).catch((error: unknown) => {
-      console.error('Closing the mini player from the confirmation window failed', error);
-    });
-  });
 
   // The state event may have been emitted before this separate webview started listening.
   // Asking for a fresh snapshot also carries the cover gradient into a newly opened dock.
@@ -73,10 +65,8 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   unlistenState?.();
   unlistenMoved?.();
-  unlistenCloseDecision?.();
   unlistenState = null;
   unlistenMoved = null;
-  unlistenCloseDecision = null;
   settings.dispose();
 });
 
@@ -98,15 +88,10 @@ async function toggleOnTop() {
 
 /** Closing the dock may or may not mean closing the app: the answer can be remembered. */
 async function requestClose() {
+  isSheetOpen.value = false;
+
   if (settings.miniPlayerCloseAction === 'ask') {
-    const opened = await openMiniCloseConfirmation();
-
-    // Browser previews and tests have no Tauri window to open, so retain the in-webview
-    // dialog as a graceful fallback outside the desktop shell.
-    if (!opened) {
-      isClosing.value = true;
-    }
-
+    isClosing.value = true;
     return;
   }
 
@@ -205,83 +190,40 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       </button>
     </div>
 
-    <!-- The expanded view gives the track information its own line. The compact view keeps
-         transport beside the title so the fixed-size dock stays quick to read. -->
-    <div class="mini_player_track">
-      <span class="mini_player_cover">
-        <img v-if="state?.cover" :src="state.cover" alt="" />
-        <AppIcon v-else name="note" />
-      </span>
+    <template v-if="!isClosing">
+      <!-- The expanded view gives the track information its own line. The compact view keeps
+           transport beside the title so the fixed-size dock stays quick to read. -->
+      <div class="mini_player_track">
+        <span class="mini_player_cover">
+          <img v-if="state?.cover" :src="state.cover" alt="" />
+          <AppIcon v-else name="note" />
+        </span>
 
-      <span class="mini_player_names">
-        <span v-if="state !== null" class="mini_player_title">{{ state.title }}</span>
+        <span class="mini_player_names">
+          <span v-if="state !== null" class="mini_player_title">{{ state.title }}</span>
+          <span
+            v-else
+            class="mini_player_title mini_player_skeleton mini_player_skeleton_title"
+            aria-hidden="true"
+          ></span>
+          <span v-if="state !== null" class="mini_player_artist">{{ state.artist ?? '' }}</span>
+          <span
+            v-else
+            class="mini_player_artist mini_player_skeleton mini_player_skeleton_artist"
+            aria-hidden="true"
+          ></span>
+          <span v-if="isExpanded && state?.album" class="mini_player_album">{{ state.album }}</span>
+        </span>
+
         <span
-          v-else
-          class="mini_player_title mini_player_skeleton mini_player_skeleton_title"
-          aria-hidden="true"
-        ></span>
-        <span v-if="state !== null" class="mini_player_artist">{{ state.artist ?? '' }}</span>
-        <span
-          v-else
-          class="mini_player_artist mini_player_skeleton mini_player_skeleton_artist"
-          aria-hidden="true"
-        ></span>
-        <span v-if="isExpanded && state?.album" class="mini_player_album">{{ state.album }}</span>
-      </span>
-
-      <span
-        v-if="isExpanded && state !== null && state.year !== null"
-        class="mini_player_year"
-        data-testid="mini-year"
-      >
-        {{ state?.year }}
-      </span>
-
-      <div v-if="!isExpanded && !isVertical" class="mini_player_controls">
-        <button
-          class="mini_player_button"
-          type="button"
-          :aria-label="t('player.previous')"
-          :disabled="!state?.hasPrevious"
-          data-testid="mini-previous"
-          @click="sendMiniCommand('previous')"
+          v-if="isExpanded && state !== null && state.year !== null"
+          class="mini_player_year"
+          data-testid="mini-year"
         >
-          <AppIcon name="previous" />
-        </button>
-        <button
-          class="mini_player_button mini_player_button_main"
-          type="button"
-          :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
-          :disabled="state === null"
-          data-testid="mini-toggle"
-          @click="sendMiniCommand('toggle')"
-        >
-          <AppIcon :name="state?.isPlaying ? 'pause' : 'play'" />
-        </button>
-        <button
-          class="mini_player_button"
-          type="button"
-          :aria-label="t('player.next')"
-          :disabled="!state?.hasNext"
-          data-testid="mini-next"
-          @click="sendMiniCommand('next')"
-        >
-          <AppIcon name="next" />
-        </button>
-      </div>
-    </div>
+          {{ state?.year }}
+        </span>
 
-    <!-- Expanded: transport left and volume right above the progress bar. Compact: the
-         volume stays beside the progress bar because the transport is already above it. -->
-    <div
-      class="mini_player_progress_area"
-      :class="{
-        mini_player_progress_area_compact: !isExpanded,
-        mini_player_progress_area_expanded: isExpanded,
-      }"
-    >
-      <div v-if="isExpanded || isVertical" class="mini_player_playback_row">
-        <div class="mini_player_controls">
+        <div v-if="!isExpanded && !isVertical" class="mini_player_controls">
           <button
             class="mini_player_button"
             type="button"
@@ -312,19 +254,121 @@ async function close(quitsApp: boolean, remember = remembers.value) {
           >
             <AppIcon name="next" />
           </button>
+        </div>
+      </div>
+
+      <!-- Expanded: transport left and volume right above the progress bar. Compact: the
+           volume stays beside the progress bar because the transport is already above it. -->
+      <div
+        class="mini_player_progress_area"
+        :class="{
+          mini_player_progress_area_compact: !isExpanded,
+          mini_player_progress_area_expanded: isExpanded,
+        }"
+      >
+        <div v-if="isExpanded || isVertical" class="mini_player_playback_row">
+          <div class="mini_player_controls">
+            <button
+              class="mini_player_button"
+              type="button"
+              :aria-label="t('player.previous')"
+              :disabled="!state?.hasPrevious"
+              data-testid="mini-previous"
+              @click="sendMiniCommand('previous')"
+            >
+              <AppIcon name="previous" />
+            </button>
+            <button
+              class="mini_player_button mini_player_button_main"
+              type="button"
+              :aria-label="state?.isPlaying ? t('player.pause') : t('player.play')"
+              :disabled="state === null"
+              data-testid="mini-toggle"
+              @click="sendMiniCommand('toggle')"
+            >
+              <AppIcon :name="state?.isPlaying ? 'pause' : 'play'" />
+            </button>
+            <button
+              class="mini_player_button"
+              type="button"
+              :aria-label="t('player.next')"
+              :disabled="!state?.hasNext"
+              data-testid="mini-next"
+              @click="sendMiniCommand('next')"
+            >
+              <AppIcon name="next" />
+            </button>
+            <button
+              class="mini_player_button"
+              type="button"
+              :aria-label="t('player.stop')"
+              :disabled="state === null"
+              data-testid="mini-stop"
+              @click="sendMiniCommand('stop')"
+            >
+              <AppIcon name="stop" />
+            </button>
+          </div>
+
+          <div v-if="!isExpanded || !isVertical" class="mini_player_sound">
+            <button
+              class="mini_player_button"
+              type="button"
+              :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+              :aria-pressed="state?.isMuted ?? false"
+              :disabled="state === null"
+              data-testid="mini-mute"
+              @click="sendMiniCommand('mute')"
+            >
+              <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
+            </button>
+            <PlayerVolume
+              class="mini_player_volume"
+              :model-value="state?.volume ?? 0"
+              :disabled="state === null"
+              @update:model-value="sendMiniCommand('volume', $event)"
+            />
+          </div>
+        </div>
+
+        <PlayerProgress
+          v-if="settings.miniPlayerProgress !== 'none'"
+          class="mini_player_progress"
+          :class="{
+            mini_player_progress_line: settings.miniPlayerProgress === 'line',
+            mini_player_progress_playing: state?.isPlaying === true,
+          }"
+          :position="state?.position ?? 0"
+          :duration="state?.duration ?? 0"
+          :hide-times="settings.miniPlayerProgress === 'line'"
+          data-testid="mini-progress"
+          @seek="sendMiniCommand('seek', $event)"
+        />
+
+        <div
+          v-if="isExpanded && isVertical"
+          class="mini_player_sound mini_player_sound_vertical_bottom"
+        >
           <button
             class="mini_player_button"
             type="button"
-            :aria-label="t('player.stop')"
+            :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
+            :aria-pressed="state?.isMuted ?? false"
             :disabled="state === null"
-            data-testid="mini-stop"
-            @click="sendMiniCommand('stop')"
+            data-testid="mini-mute"
+            @click="sendMiniCommand('mute')"
           >
-            <AppIcon name="stop" />
+            <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
           </button>
+          <PlayerVolume
+            class="mini_player_volume"
+            :model-value="state?.volume ?? 0"
+            :disabled="state === null"
+            @update:model-value="sendMiniCommand('volume', $event)"
+          />
         </div>
 
-        <div v-if="!isExpanded || !isVertical" class="mini_player_sound">
+        <div v-if="!isExpanded && !isVertical" class="mini_player_sound">
           <button
             class="mini_player_button"
             type="button"
@@ -344,64 +388,32 @@ async function close(quitsApp: boolean, remember = remembers.value) {
           />
         </div>
       </div>
+    </template>
 
-      <PlayerProgress
-        v-if="settings.miniPlayerProgress !== 'none'"
-        class="mini_player_progress"
-        :class="{
-          mini_player_progress_line: settings.miniPlayerProgress === 'line',
-          mini_player_progress_playing: state?.isPlaying === true,
-        }"
-        :position="state?.position ?? 0"
-        :duration="state?.duration ?? 0"
-        :hide-times="settings.miniPlayerProgress === 'line'"
-        data-testid="mini-progress"
-        @seek="sendMiniCommand('seek', $event)"
-      />
+    <section v-else class="mini_player_close_panel" role="dialog" aria-modal="true">
+      <div class="mini_player_close_content">
+        <AppIcon name="warning" />
+        <strong>{{ t('mini.confirm.title') }}</strong>
+        <p>{{ t('mini.confirm.message') }}</p>
 
-      <div
-        v-if="isExpanded && isVertical"
-        class="mini_player_sound mini_player_sound_vertical_bottom"
-      >
-        <button
-          class="mini_player_button"
-          type="button"
-          :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
-          :aria-pressed="state?.isMuted ?? false"
-          :disabled="state === null"
-          data-testid="mini-mute"
-          @click="sendMiniCommand('mute')"
-        >
-          <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
-        </button>
-        <PlayerVolume
-          class="mini_player_volume"
-          :model-value="state?.volume ?? 0"
-          :disabled="state === null"
-          @update:model-value="sendMiniCommand('volume', $event)"
-        />
+        <label class="mini_player_remember">
+          <input v-model="remembers" type="checkbox" data-testid="mini-remember" />
+          <span>{{ t('mini.confirm.remember') }}</span>
+        </label>
+
+        <div class="mini_player_close_actions">
+          <AppButton data-testid="mini-close-cancel" @click="isClosing = false">
+            {{ t('mini.confirm.cancel') }}
+          </AppButton>
+          <AppButton data-testid="mini-close-dock" @click="close(false)">
+            {{ t('mini.confirm.dockOnly') }}
+          </AppButton>
+          <AppButton variant="danger" data-testid="mini-close-app" @click="close(true)">
+            {{ t('mini.confirm.wholeApp') }}
+          </AppButton>
+        </div>
       </div>
-
-      <div v-if="!isExpanded && !isVertical" class="mini_player_sound">
-        <button
-          class="mini_player_button"
-          type="button"
-          :aria-label="state?.isMuted ? t('player.unmute') : t('player.mute')"
-          :aria-pressed="state?.isMuted ?? false"
-          :disabled="state === null"
-          data-testid="mini-mute"
-          @click="sendMiniCommand('mute')"
-        >
-          <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
-        </button>
-        <PlayerVolume
-          class="mini_player_volume"
-          :model-value="state?.volume ?? 0"
-          :disabled="state === null"
-          @update:model-value="sendMiniCommand('volume', $event)"
-        />
-      </div>
-    </div>
+    </section>
   </div>
 
   <!-- The menu belongs to the window, not to the dock surface: it can float over it and over
@@ -434,25 +446,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       </button>
     </div>
   </Teleport>
-
-  <!-- Kept outside the dock surface so the dialog has its own layer and never changes the
-       dock's layout. AppModal also teleports its dialog to the window body. -->
-  <AppModal :open="isClosing" :title="t('mini.confirm.title')" @close="isClosing = false">
-    <p>{{ t('mini.confirm.message') }}</p>
-    <label class="mini_player_remember">
-      <input v-model="remembers" type="checkbox" data-testid="mini-remember" />
-      <span>{{ t('mini.confirm.remember') }}</span>
-    </label>
-
-    <template #actions>
-      <AppButton data-testid="mini-close-dock" @click="close(false)">
-        {{ t('mini.confirm.dockOnly') }}
-      </AppButton>
-      <AppButton variant="danger" data-testid="mini-close-app" @click="close(true)">
-        {{ t('mini.confirm.wholeApp') }}
-      </AppButton>
-    </template>
-  </AppModal>
 </template>
 
 <style scoped lang="scss">
@@ -504,11 +497,13 @@ async function close(quitsApp: boolean, remember = remembers.value) {
   &_vertical &_track {
     flex: 0 0 auto;
     flex-direction: column;
+    width: 100%;
     text-align: center;
   }
 
   &.mini_player_vertical.mini_player_expanded &_track {
     flex-direction: row;
+    justify-content: center;
     text-align: left;
   }
 
@@ -669,11 +664,11 @@ async function close(quitsApp: boolean, remember = remembers.value) {
   }
 
   &.mini_player_vertical.mini_player_expanded &_playback_row {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   &_sound_vertical_bottom {
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   &_volume {
@@ -879,6 +874,49 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       height: 1rem;
       accent-color: var(--color_accent);
     }
+  }
+
+  &_close_panel {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    padding: $space_sm;
+    text-align: center;
+  }
+
+  &_close_content {
+    display: flex;
+    flex-direction: column;
+    gap: $space_xs;
+    align-items: center;
+    width: min(30rem, 100%);
+
+    :deep(.app_icon) {
+      color: var(--color_accent);
+      font-size: 1.35rem;
+    }
+
+    strong {
+      font-size: 1em;
+    }
+
+    p {
+      max-width: 30rem;
+      margin: 0;
+      color: var(--color_text_muted);
+      font-size: 0.84em;
+      line-height: 1.35;
+    }
+  }
+
+  &_close_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space_xs;
+    justify-content: center;
+    margin-top: $space_2xs;
   }
 }
 

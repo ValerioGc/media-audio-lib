@@ -559,7 +559,8 @@
       "horizontal": "Disponi in orizzontale",
       "vertical": "Disponi in verticale",
       "alwaysOnTop": "Sempre in primo piano",
-      "gradient": "Sfondo dalla copertina"
+      "gradient": "Sfondo dalla copertina",
+      "settings": "Impostazioni del player"
     },
     "pin": "Tieni il mini player sempre in primo piano",
     "unpin": "Disattiva il mini player sempre in primo piano",

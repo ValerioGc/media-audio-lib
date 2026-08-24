@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { resetI18n, withPinia } from '@tests/support/mount';
@@ -25,6 +25,18 @@ describe('SettingsView', () => {
       'Aspetto',
       'Libreria',
     ]);
+  });
+
+  it('focuses the Player section when navigation asks for it', async () => {
+    const options = withPinia();
+    const navigation = useNavigationStore();
+    const wrapper = mount(SettingsView, options);
+
+    navigation.goToSettings('player');
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="settings-player-section"]').exists()).toBe(true);
+    expect(navigation.settingsFocus).toBeNull();
   });
 
   it('groups general application settings under their tab', () => {

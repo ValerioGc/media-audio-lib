@@ -391,51 +391,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       <button
         class="mini_player_sheet_item"
         type="button"
-        role="menuitem"
-        :disabled="state === null"
-        data-testid="mini-sheet-stop"
-        @click="sendMiniCommand('stop')"
-      >
-        <AppIcon name="stop" />
-        <span>{{ t('player.stop') }}</span>
-      </button>
-      <button
-        class="mini_player_sheet_item"
-        type="button"
-        role="menuitem"
-        :disabled="!state?.hasPrevious"
-        data-testid="mini-sheet-previous"
-        @click="sendMiniCommand('previous')"
-      >
-        <AppIcon name="previous" />
-        <span>{{ t('player.previous') }}</span>
-      </button>
-      <button
-        class="mini_player_sheet_item"
-        type="button"
-        role="menuitemradio"
-        :aria-checked="state?.isMuted ?? false"
-        :disabled="state === null"
-        data-testid="mini-sheet-mute"
-        @click="sendMiniCommand('mute')"
-      >
-        <AppIcon :name="state?.isMuted ? 'mute' : 'volume'" />
-        <span>{{ state?.isMuted ? t('player.unmute') : t('player.mute') }}</span>
-      </button>
-
-      <div class="mini_player_sheet_volume">
-        <PlayerVolume
-          :model-value="state?.volume ?? 0"
-          :disabled="state === null"
-          @update:model-value="sendMiniCommand('volume', $event)"
-        />
-      </div>
-
-      <hr class="mini_player_sheet_divider" />
-
-      <button
-        class="mini_player_sheet_item"
-        type="button"
         role="menuitemradio"
         :aria-checked="isVertical"
         :disabled="state === null"
@@ -444,6 +399,19 @@ async function close(quitsApp: boolean, remember = remembers.value) {
       >
         <AppIcon :name="isVertical ? 'grid' : 'list'" />
         <span>{{ isVertical ? t('mini.menu.horizontal') : t('mini.menu.vertical') }}</span>
+      </button>
+
+      <hr class="mini_player_sheet_divider" />
+
+      <button
+        class="mini_player_sheet_item"
+        type="button"
+        role="menuitem"
+        data-testid="mini-settings"
+        @click="sendMiniCommand('settings')"
+      >
+        <AppIcon name="settings" />
+        <span>{{ t('mini.menu.settings') }}</span>
       </button>
     </div>
   </Teleport>

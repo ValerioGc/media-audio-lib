@@ -559,7 +559,8 @@
       "horizontal": "Waagerecht anordnen",
       "vertical": "Senkrecht anordnen",
       "alwaysOnTop": "Immer im Vordergrund",
-      "gradient": "Hintergrund aus dem Cover"
+      "gradient": "Hintergrund aus dem Cover",
+      "settings": "Player-Einstellungen"
     },
     "pin": "Mini-Player immer im Vordergrund halten",
     "unpin": "Mini-Player nicht mehr im Vordergrund halten",

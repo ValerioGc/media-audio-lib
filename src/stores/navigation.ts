@@ -9,9 +9,11 @@ import { computed, ref } from 'vue';
  */
 export const APP_VIEWS = ['library', 'settings', 'help', 'player'] as const;
 export type AppView = (typeof APP_VIEWS)[number];
+export type SettingsFocus = 'player' | null;
 
 export const useNavigationStore = defineStore('navigation', () => {
   const view = ref<AppView>('library');
+  const settingsFocus = ref<SettingsFocus>(null);
 
   const isLibrary = computed(() => view.value === 'library');
   const isSettings = computed(() => view.value === 'settings');
@@ -19,12 +21,31 @@ export const useNavigationStore = defineStore('navigation', () => {
   const isPlayer = computed(() => view.value === 'player');
 
   function go(next: AppView) {
+    if (next !== 'settings') {
+      settingsFocus.value = null;
+    }
+
     view.value = next;
+  }
+
+  function goToSettings(focus: Exclude<SettingsFocus, null> | null = null) {
+    settingsFocus.value = focus;
+    view.value = 'settings';
+  }
+
+  function clearSettingsFocus() {
+    settingsFocus.value = null;
   }
 
   /** Opens a view, or returns to the library when that view is already open. */
   function toggle(target: AppView) {
-    view.value = view.value === target ? 'library' : target;
+    const next = view.value === target ? 'library' : target;
+
+    if (next !== 'settings') {
+      settingsFocus.value = null;
+    }
+
+    view.value = next;
   }
 
   function toggleSettings() {
@@ -35,5 +56,18 @@ export const useNavigationStore = defineStore('navigation', () => {
     toggle('help');
   }
 
-  return { view, isLibrary, isSettings, isHelp, isPlayer, go, toggle, toggleSettings, toggleHelp };
+  return {
+    view,
+    settingsFocus,
+    isLibrary,
+    isSettings,
+    isHelp,
+    isPlayer,
+    go,
+    goToSettings,
+    clearSettingsFocus,
+    toggle,
+    toggleSettings,
+    toggleHelp,
+  };
 });

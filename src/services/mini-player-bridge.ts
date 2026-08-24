@@ -26,6 +26,7 @@ export interface MiniPlayerCommand {
     | 'previous'
     | 'stop'
     | 'expand'
+    | 'settings'
     | 'quit'
     | 'sync'
     | 'seek'

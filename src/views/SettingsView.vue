@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, nextTick, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BackToLibrary from '@/components/layout/BackToLibrary.vue';
@@ -20,10 +20,12 @@ import StartupPanel from '@/components/settings/StartupPanel.vue';
 import TextSizeSelect from '@/components/settings/TextSizeSelect.vue';
 import ThemeSwitch from '@/components/settings/ThemeSwitch.vue';
 import { useLibraryStore } from '@/stores/library';
+import { useNavigationStore } from '@/stores/navigation';
 import { useSettingsStore } from '@/stores/settings';
 
 const { t } = useI18n();
 const library = useLibraryStore();
+const navigation = useNavigationStore();
 const settings = useSettingsStore();
 
 const tabs = computed(() => [
@@ -31,6 +33,22 @@ const tabs = computed(() => [
   { id: 'appearance', label: t('settings.tabs.appearance') },
   { id: 'library', label: t('settings.tabs.library') },
 ]);
+
+watch(
+  () => [navigation.isSettings, navigation.settingsFocus] as const,
+  async ([isSettings, focus]) => {
+    if (!isSettings || focus !== 'player') {
+      return;
+    }
+
+    await nextTick();
+    document
+      .querySelector<HTMLElement>('[data-testid="settings-player-section"]')
+      ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+    navigation.clearSettingsFocus();
+  },
+  { immediate: true },
+);
 
 async function setTableDividers(event: Event) {
   await settings.setTableColumnDividers((event.target as HTMLInputElement).checked);
@@ -100,6 +118,7 @@ async function setTableDividers(event: Event) {
           <SettingsSection
             :title="t('settings.playerBehaviour.title')"
             :description="t('settings.playerBehaviour.description')"
+            data-testid="settings-player-section"
           >
             <PlayerBehaviourPanel />
           </SettingsSection>

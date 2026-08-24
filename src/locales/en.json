@@ -559,7 +559,8 @@
       "horizontal": "Lay out horizontally",
       "vertical": "Lay out vertically",
       "alwaysOnTop": "Always on top",
-      "gradient": "Background from the cover"
+      "gradient": "Background from the cover",
+      "settings": "Player settings"
     },
     "pin": "Keep the mini player always on top",
     "unpin": "Stop keeping the mini player on top",

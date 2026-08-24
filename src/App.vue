@@ -120,6 +120,15 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
   }
 
   if (action === 'expand') {
+    navigation.go('library');
+    player.expand();
+    await closeMiniPlayer();
+    await showWindow();
+    return;
+  }
+
+  if (action === 'settings') {
+    navigation.goToSettings('player');
     await closeMiniPlayer();
     await showWindow();
     return;

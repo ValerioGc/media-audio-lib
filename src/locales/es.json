@@ -559,7 +559,8 @@
       "horizontal": "Disponer en horizontal",
       "vertical": "Disponer en vertical",
       "alwaysOnTop": "Siempre en primer plano",
-      "gradient": "Fondo desde la carátula"
+      "gradient": "Fondo desde la carátula",
+      "settings": "Ajustes del reproductor"
     },
     "pin": "Mantener el mini reproductor siempre en primer plano",
     "unpin": "Dejar de mantener el mini reproductor en primer plano",

@@ -199,17 +199,19 @@ describe('MiniPlayerView', () => {
 
     const sheet = wrapper.get('[data-testid="mini-sheet"]');
 
-    await sheet.get('[data-testid="mini-sheet-stop"]').trigger('click');
-    await sheet.get('[data-testid="mini-sheet-mute"]').trigger('click');
-
-    expect(send.mock.calls.map(([action]) => action).filter((action) => action !== 'sync')).toEqual(
-      ['stop', 'mute'],
-    );
-    // The previous track is offered, and refused while there is none behind this one.
-    expect(sheet.get('[data-testid="mini-sheet-previous"]').attributes('disabled')).toBeDefined();
+    // Audio and transport controls live on the face of the dock, not in this menu.
+    expect(sheet.find('[data-testid="mini-sheet-stop"]').exists()).toBe(false);
+    expect(sheet.find('[data-testid="mini-sheet-previous"]').exists()).toBe(false);
+    expect(sheet.find('[data-testid="mini-sheet-mute"]').exists()).toBe(false);
+    expect(sheet.find('.mini_player_sheet_volume').exists()).toBe(false);
 
     await sheet.get('[data-testid="mini-orientation"]').trigger('click');
     expect(settings.miniPlayerOrientation).toBe('vertical');
+
+    await sheet.get('[data-testid="mini-settings"]').trigger('click');
+    expect(send.mock.calls.map(([action]) => action).filter((action) => action !== 'sync')).toEqual(
+      ['settings'],
+    );
 
     expect(sheet.find('[data-testid="mini-on-top"]').exists()).toBe(false);
     await wrapper.get('[data-testid="mini-pin"]').trigger('click');

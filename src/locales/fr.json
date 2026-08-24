@@ -559,7 +559,8 @@
       "horizontal": "Disposer à l’horizontale",
       "vertical": "Disposer à la verticale",
       "alwaysOnTop": "Toujours au premier plan",
-      "gradient": "Fond depuis la pochette"
+      "gradient": "Fond depuis la pochette",
+      "settings": "Paramètres du lecteur"
     },
     "pin": "Garder le mini-lecteur toujours au premier plan",
     "unpin": "Ne plus garder le mini-lecteur au premier plan",

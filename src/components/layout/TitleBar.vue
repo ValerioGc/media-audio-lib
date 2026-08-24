@@ -28,6 +28,11 @@ const settings = useSettingsStore();
  * the window on screen.
  */
 async function sendToTray(): Promise<boolean> {
+  // The main window can be restored directly by the operating system (for example
+  // from the taskbar), without going through the mini-player expand command. Keep
+  // its destination ready before hiding it so Settings/Help never flashes back.
+  navigation.go('library');
+
   if (settings.miniPlayerEnabled && player.isActive) {
     await openMiniPlayer(
       settings.miniPlayerOrientation === 'vertical',

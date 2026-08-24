@@ -106,6 +106,9 @@ pub async fn open_mini_player<R: Runtime>(
     position: Option<(f64, f64)>,
 ) -> bool {
     if let Some(window) = app.get_webview_window(MINI_WINDOW) {
+        // The dock may already exist when the user changes orientation or level. Reapply the
+        // requested shape here as well as when the command comes from the dock itself.
+        let _ = set_mini_player_window_shape(&window, vertical, always_on_top, expanded);
         let _ = window.set_always_on_top(always_on_top);
         let _ = window.show();
         let _ = window.set_focus();
@@ -206,6 +209,15 @@ pub fn set_mini_player_shape<R: Runtime>(
         return false;
     };
 
+    set_mini_player_window_shape(&window, vertical, always_on_top, expanded)
+}
+
+fn set_mini_player_window_shape<R: Runtime>(
+    window: &tauri::WebviewWindow<R>,
+    vertical: bool,
+    always_on_top: bool,
+    expanded: bool,
+) -> bool {
     let (width, height) = mini_size(vertical, expanded);
     let _ = window.set_always_on_top(always_on_top);
 

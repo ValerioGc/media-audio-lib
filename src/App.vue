@@ -120,10 +120,13 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
   }
 
   if (action === 'expand') {
+    // Set the destination before showing the window: otherwise the previous view is
+    // painted for a frame while the mini player is being closed.
+    navigation.go('library');
+    player.expand();
     await closeMiniPlayer();
     await showWindow();
-    // Apply the destination after the main window is visible: the final navigation state
-    // must win over the page that was open when the app went to the tray.
+    // Re-apply it after the async window transition as a guard for native restore races.
     navigation.go('library');
     player.expand();
     return;

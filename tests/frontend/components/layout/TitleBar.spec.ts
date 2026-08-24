@@ -75,6 +75,19 @@ describe('TitleBar', () => {
     expect(close).not.toHaveBeenCalled();
   });
 
+  it('prepares the library view before hiding the window in the tray', async () => {
+    const hide = vi.spyOn(windowControls, 'hideWindow').mockResolvedValue(true);
+    const options = withPinia();
+    const navigation = useNavigationStore();
+    navigation.go('settings');
+    const wrapper = mount(TitleBar, options);
+
+    await wrapper.get('[data-testid="window-tray"]').trigger('click');
+
+    expect(hide).toHaveBeenCalledTimes(1);
+    expect(navigation.view).toBe('library');
+  });
+
   it('maximizes on double click on the bar', async () => {
     const toggle = vi.spyOn(windowControls, 'toggleMaximizeWindow').mockResolvedValue(true);
     const wrapper = mount(TitleBar, withPinia());

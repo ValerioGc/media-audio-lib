@@ -55,7 +55,7 @@ describe('MiniPlayerView', () => {
     const { wrapper } = await mountDock();
 
     expect(wrapper.find('.mini_player_skeleton_title').exists()).toBe(true);
-    expect(wrapper.get('[data-testid="mini-menu"]').attributes('disabled')).toBeDefined();
+    expect(wrapper.get('[data-testid="mini-menu"]').attributes('disabled')).toBeUndefined();
 
     mocks.state(playing);
     await flushPromises();
@@ -82,7 +82,7 @@ describe('MiniPlayerView', () => {
     expect(bar.find('[data-testid="mini-pin"]').exists()).toBe(true);
     expect(bar.find('[data-testid="mini-level"]').attributes('disabled')).toBeDefined();
     expect(bar.find('[data-testid="mini-expand"]').attributes('disabled')).toBeDefined();
-    expect(bar.find('[data-testid="mini-close"]').attributes('disabled')).toBeDefined();
+    expect(bar.find('[data-testid="mini-close"]').attributes('disabled')).toBeUndefined();
     expect(bar.find('[data-testid="mini-toggle"]').exists()).toBe(false);
   });
 
@@ -243,6 +243,8 @@ describe('MiniPlayerView', () => {
     expect(sheet.find('[data-testid="mini-sheet-previous"]').exists()).toBe(false);
     expect(sheet.find('[data-testid="mini-sheet-mute"]').exists()).toBe(false);
     expect(sheet.find('.mini_player_sheet_volume').exists()).toBe(false);
+
+    expect(wrapper.get('[data-testid="mini-menu"]').attributes('disabled')).toBeUndefined();
 
     await sheet.get('[data-testid="mini-orientation"]').trigger('click');
     expect(settings.miniPlayerOrientation).toBe('vertical');

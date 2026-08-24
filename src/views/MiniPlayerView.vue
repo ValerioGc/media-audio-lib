@@ -168,7 +168,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         type="button"
         :aria-label="t('mini.menu.label')"
         :aria-expanded="isSheetOpen"
-        :disabled="state === null"
         data-testid="mini-menu"
         @click="isSheetOpen = !isSheetOpen"
       >
@@ -180,7 +179,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         type="button"
         :aria-label="settings.miniPlayerAlwaysOnTop ? t('mini.unpin') : t('mini.pin')"
         :aria-pressed="settings.miniPlayerAlwaysOnTop"
-        :disabled="state === null"
         data-testid="mini-pin"
         @click="toggleOnTop"
       >
@@ -200,7 +198,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         class="mini_player_button"
         type="button"
         :aria-label="t('mini.close')"
-        :disabled="state === null"
         data-testid="mini-close"
         @click="requestClose"
       >
@@ -416,7 +413,6 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         type="button"
         role="menuitemradio"
         :aria-checked="isVertical"
-        :disabled="state === null"
         data-testid="mini-orientation"
         @click="toggleOrientation"
       >
@@ -798,14 +794,14 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 1.9rem;
+    height: 1.9rem;
     border: 0;
     border-radius: 999px;
     background: none;
     color: var(--color_text_muted);
     font: inherit;
-    font-size: 0.75em;
+    font-size: 0.8em;
     cursor: pointer;
 
     &:disabled {
@@ -826,8 +822,8 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     @include focus_ring;
 
     &_main {
-      width: 2.25rem;
-      height: 2.25rem;
+      width: 2.4rem;
+      height: 2.4rem;
       background-color: var(--color_accent);
       color: var(--color_on_accent);
 

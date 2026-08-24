@@ -194,7 +194,7 @@
     "coverCache": {
       "title": "Caché de portadas",
       "description": "Las portadas se guardan en el disco, para no tener que leerlas de los archivos en cada arranque. La caché se puede vaciar en cualquier momento: se reconstruye sola y los archivos de la biblioteca no se modifican.",
-      "size": "En este momento la caché ocupa {size} en el disco.",
+      "size": "Espacio ocupado: {size}",
       "empty": "La caché está vacía: no ocupa espacio.",
       "limit": "Cuando la caché supera {limit}, las portadas solicitadas hace más tiempo se eliminan automáticamente.",
       "clear": "Vaciar la caché",

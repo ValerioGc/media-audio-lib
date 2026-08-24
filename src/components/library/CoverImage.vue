@@ -59,7 +59,9 @@ watch(source, () => {
       decoding="async"
       @error="failed = true"
     />
-    <AppIcon v-else class="cover_image_fallback" name="note" :label="t('library.row.noCover')" />
+    <span v-else class="cover_image_fallback" role="img" :aria-label="t('library.row.noCover')">
+      <AppIcon name="note" />
+    </span>
   </div>
 </template>
 
@@ -105,6 +107,59 @@ watch(source, () => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  &_fallback {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 22% 18%,
+        color-mix(in srgb, var(--color_accent) 32%, transparent) 0 18%,
+        transparent 52%
+      ),
+      radial-gradient(
+        circle at 82% 86%,
+        color-mix(in srgb, var(--color_accent) 20%, transparent) 0 14%,
+        transparent 48%
+      ),
+      linear-gradient(135deg, var(--color_surface_alt), var(--color_bg_accent));
+    color: var(--color_accent);
+
+    &::before,
+    &::after {
+      position: absolute;
+      border: 1px solid color-mix(in srgb, var(--color_accent) 28%, transparent);
+      border-radius: 50%;
+      content: '';
+    }
+
+    &::before {
+      width: 68%;
+      height: 68%;
+      transform: rotate(-18deg);
+    }
+
+    &::after {
+      width: 42%;
+      height: 42%;
+      transform: translate(20%, 20%);
+    }
+
+    :deep(.app_icon) {
+      position: relative;
+      z-index: 1;
+      padding: 0.3em;
+      border-radius: 50%;
+      background-color: color-mix(in srgb, var(--color_surface) 72%, transparent);
+      box-shadow: var(--shadow_card);
+      font-size: 1.2em;
+    }
   }
 }
 </style>

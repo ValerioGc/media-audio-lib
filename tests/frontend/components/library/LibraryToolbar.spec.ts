@@ -83,7 +83,8 @@ describe('LibraryToolbar', () => {
 
     await wrapper.setProps({ showSort: true });
 
-    await wrapper.get('[data-testid="preview-sort-field"] select').setValue('album');
+    await wrapper.get('[data-testid="preview-sort-field"]').trigger('click');
+    await wrapper.get('[data-testid="preview-sort-option-album"]').trigger('click');
     expect(library.sort).toEqual({ column: 'album', direction: 'asc' });
 
     await wrapper.get('[data-testid="preview-sort-direction"]').trigger('click');

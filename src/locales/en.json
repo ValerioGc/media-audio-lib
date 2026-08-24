@@ -194,7 +194,7 @@
     "coverCache": {
       "title": "Cover cache",
       "description": "Cover art is kept on disk, so it does not have to be read out of the files at every start. The cache can be emptied at any time: it rebuilds itself and the library files are left untouched.",
-      "size": "The cache currently takes {size} on disk.",
+      "size": "Space used: {size}",
       "empty": "The cache is empty: it takes no space.",
       "limit": "When the cache goes past {limit}, the covers requested longest ago are removed automatically.",
       "clear": "Empty the cache",

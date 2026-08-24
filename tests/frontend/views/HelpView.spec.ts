@@ -25,6 +25,9 @@ describe('HelpView', () => {
       .map((entry) => entry.attributes('data-testid'));
 
     expect(entries).toEqual(HELP_TOPICS.map((topic) => `help-index-${topic}`));
+    expect(wrapper.get('.help_view_body').element.firstElementChild?.classList).toContain(
+      'help_view_index',
+    );
     // One topic at a time: the guide is long, and the index says what else is in it.
     expect(wrapper.findAll('.help_topic')).toHaveLength(1);
     expect(wrapper.get('.help_topic').attributes('data-topic')).toBe(HELP_TOPICS[0]);
@@ -92,6 +95,19 @@ describe('HelpView', () => {
     await wrapper.get('[data-testid="help-previous-topic"]').trigger('click');
 
     expect(wrapper.get('.help_topic').attributes('data-topic')).toBe(HELP_TOPICS[0]);
+  });
+
+  it('uses the next-topic glyph for both navigation directions', async () => {
+    const wrapper = mountHelp();
+
+    await wrapper.get('[data-testid="help-next-topic"]').trigger('click');
+
+    expect(wrapper.get('[data-testid="help-previous-topic"] .app_icon').classes()).toContain(
+      'app_icon_next',
+    );
+    expect(
+      wrapper.get('[data-testid="help-previous-topic"] .help_topic_steer_previous_icon').classes(),
+    ).toContain('help_topic_steer_previous_icon');
   });
 
   it('returns to the library', async () => {

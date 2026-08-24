@@ -194,7 +194,7 @@
     "coverCache": {
       "title": "Cover-Cache",
       "description": "Cover werden auf der Festplatte behalten, damit sie nicht bei jedem Start neu aus den Dateien gelesen werden müssen. Der Cache kann jederzeit geleert werden: er baut sich von selbst wieder auf und die Dateien der Bibliothek bleiben unverändert.",
-      "size": "Der Cache belegt derzeit {size} auf der Festplatte.",
+      "size": "Belegter Speicher: {size}",
       "empty": "Der Cache ist leer: er belegt keinen Speicher.",
       "limit": "Wenn der Cache {limit} überschreitet, werden die am längsten nicht angefragten Cover automatisch entfernt.",
       "clear": "Cache leeren",

@@ -73,7 +73,7 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
         data-testid="help-previous-topic"
         @click="emit('open', previous)"
       >
-        <AppIcon name="back" />
+        <AppIcon class="help_topic_steer_previous_icon" name="next" />
         <span>{{ t(`help.topics.${previous}.title`) }}</span>
       </button>
       <span v-else />
@@ -214,6 +214,10 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
     justify-content: space-between;
     padding-top: $space_md;
     border-top: 1px solid var(--color_border);
+
+    &_previous_icon {
+      transform: rotate(180deg);
+    }
 
     &_button {
       display: inline-flex;

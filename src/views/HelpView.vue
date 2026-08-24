@@ -23,8 +23,6 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     </header>
 
     <div class="help_view_body">
-      <HelpTopicCard class="help_view_topic" :topic="openTopic" @open="openTopic = $event" />
-
       <nav class="help_view_index" :aria-label="t('help.index')">
         <p class="help_view_index_title">{{ t('help.index') }}</p>
 
@@ -45,6 +43,8 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
           </li>
         </ul>
       </nav>
+
+      <HelpTopicCard class="help_view_topic" :topic="openTopic" @open="openTopic = $event" />
     </div>
   </div>
 </template>
@@ -75,21 +75,24 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     color: var(--color_text_muted);
   }
 
-  // The guide reads on the left and takes the scroll; the index stands still on the right
-  // and says where else to go.
+  // The index stays on the left, where navigation is found before the topic content. The
+  // topic receives the flexible column so its explanatory text has room to breathe.
   &_body {
     display: grid;
-    flex: 1;
-    grid-template-columns: minmax(0, 1fr) 15rem;
+    flex: 1 1 0;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     gap: $space_lg;
-    // Both columns are given the height of the row, so each can scroll inside its own.
     align-items: stretch;
+    height: 0;
     min-height: 0;
+    overflow: hidden;
   }
 
   &_topic {
     min-width: 0;
-    max-height: 100%;
+    min-height: 0;
+    height: 100%;
 
     @include scroll_area;
   }
@@ -98,8 +101,8 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     display: flex;
     flex-direction: column;
     gap: $space_sm;
-    align-self: start;
-    max-height: 100%;
+    min-height: 0;
+    height: 100%;
     padding: $space_md;
     @include glass_surface($radius_lg);
 
@@ -108,7 +111,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 
   &_index_title {
     color: var(--color_text_muted);
-    font-size: 0.75em;
+    font-size: 0.8125em;
     font-weight: 700;
     text-transform: uppercase;
   }
@@ -134,7 +137,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
     background: none;
     color: var(--color_text_muted);
     font: inherit;
-    font-size: 0.875em;
+    font-size: 0.9375em;
     text-align: left;
     cursor: pointer;
     transition:
@@ -149,6 +152,11 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 
     @include focus_ring;
 
+    :deep(.app_icon) {
+      flex-shrink: 0;
+      font-size: 1.15em;
+    }
+
     // The open topic is marked on the rail as well as filled: the index is read down its
     // left edge, and a colour alone is easy to lose among fourteen lines.
     &_active {
@@ -161,8 +169,8 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 
   &_index_number {
     flex-shrink: 0;
-    width: 1.25rem;
-    font-size: 0.75em;
+    width: 1.5rem;
+    font-size: 0.8em;
     font-variant-numeric: tabular-nums;
     text-align: right;
   }
@@ -178,10 +186,7 @@ const openTopic = ref<HelpTopic>(HELP_TOPICS[0]);
 @media (max-width: 860px) {
   .help_view_body {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .help_view_index {
-    order: -1;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 </style>

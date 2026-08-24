@@ -194,7 +194,7 @@
     "coverCache": {
       "title": "Cache delle copertine",
       "description": "Le copertine dei brani vengono conservate su disco, per non doverle rileggere dai file a ogni avvio. È possibile svuotare la cache in qualsiasi momento: si ricostruisce da sola e i file della libreria non vengono modificati.",
-      "size": "Al momento la cache occupa {size} sul disco.",
+      "size": "Spazio occupato: {size}",
       "empty": "La cache è vuota: non occupa spazio.",
       "limit": "Quando la cache supera {limit}, le copertine richieste da più tempo vengono rimosse automaticamente.",
       "clear": "Svuota la cache",

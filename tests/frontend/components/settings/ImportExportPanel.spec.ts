@@ -78,9 +78,11 @@ describe('ImportExportPanel', () => {
     };
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.get('output').text()).toContain('6 brani letti');
+    // Named rather than picked by tag: the panel now carries a second output, the one that
+    // reports a running import.
+    expect(wrapper.get('[data-testid="import-report-summary"]').text()).toContain('6 brani letti');
 
-    await wrapper.get('output button').trigger('click');
+    await wrapper.get('[data-testid="import-report-summary"] button').trigger('click');
 
     expect(library.lastLibraryImport).toBeNull();
   });

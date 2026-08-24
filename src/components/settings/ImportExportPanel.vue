@@ -42,16 +42,18 @@ async function exportActive() {
 <template>
   <div class="import_export_panel">
     <!-- Above the controls, not below them: an import locks the page, and the reason has to
-         be on screen before the reader looks for what stopped answering. -->
-    <p
+         be on screen before the reader looks for what stopped answering.
+
+         An `output` rather than a paragraph given the status role by hand: the element
+         already carries that role, and it is announced where a bare role is not. -->
+    <output
       v-if="library.isLibraryImporting"
       class="import_export_panel_busy"
-      role="status"
       data-testid="import-busy"
     >
       <span class="import_export_panel_busy_spinner" aria-hidden="true" />
       {{ t('settings.importExport.busy') }}
-    </p>
+    </output>
 
     <div class="import_export_panel_controls">
       <AppSelect
@@ -98,7 +100,11 @@ async function exportActive() {
       {{ t(`settings.importExport.mode.hints.${exportMode}`) }}
     </p>
 
-    <output v-if="library.lastLibraryImport !== null" class="import_export_panel_report">
+    <output
+      v-if="library.lastLibraryImport !== null"
+      class="import_export_panel_report"
+      data-testid="import-report-summary"
+    >
       <span>
         {{
           t('settings.importExport.report.summary', {

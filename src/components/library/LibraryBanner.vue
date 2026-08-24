@@ -6,7 +6,7 @@
  * One shape for all of them, told apart by tone alone. The symbol and the message sit
  * together on the left, where reading starts, and the way to close it is at the right.
  */
-import { computed } from 'vue';
+import { computed, useSlots } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
@@ -33,14 +33,19 @@ const emit = defineEmits<{ dismiss: [] }>();
 
 const { t } = useI18n();
 const settings = useSettingsStore();
+const slots = useSlots();
 
 /**
- * A banner goes on its own after a while, and the bar under it shows how long is left.
+ * A simple notification goes on its own after a while, and the bar under it shows how long
+ * is left. Once a banner offers an action, it stays until the user answers or closes it:
+ * an action must not disappear while it is waiting to be used.
  *
  * Only one that can be closed at all: a banner reporting a state stays as long as the state
  * does. The length is a setting, and zero there means it waits to be closed by hand.
  */
-const autoDismissMs = computed(() => (props.dismissible ? settings.bannerDuration * 1000 : 0));
+const autoDismissMs = computed(() =>
+  props.dismissible && slots.action === undefined ? settings.bannerDuration * 1000 : 0,
+);
 
 /**
  * The delay runs only while the page is in front of the reader, and the bar under the

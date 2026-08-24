@@ -81,6 +81,26 @@ describe('LibraryBanner', () => {
     expect(wrapper.emitted('dismiss')).toBeUndefined();
   });
 
+  it('keeps banners with actions visible until the user closes them', () => {
+    const options = withPinia();
+    const settings = useSettingsStore();
+    settings.bannerDuration = 5;
+
+    const wrapper = mount(LibraryBanner, {
+      ...options,
+      slots: {
+        default: 'Something happened',
+        action: 'Action',
+      },
+    });
+
+    vi.advanceTimersByTime(60_000);
+
+    expect(wrapper.emitted('dismiss')).toBeUndefined();
+    expect(wrapper.find('[data-testid="library-banner-countdown"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="library-banner-dismiss"]').exists()).toBe(true);
+  });
+
   it('closes on demand', async () => {
     const { wrapper } = mountBanner();
 

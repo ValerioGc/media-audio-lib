@@ -223,7 +223,8 @@ onBeforeUnmount(() => {
     flex: 1;
     flex-direction: column;
     min-height: 0;
-    padding: $page_gutter;
+    // Keep only a small breathing room before the in-app player dock.
+    padding: $page_gutter $page_gutter $space_xs;
     overflow: hidden;
   }
 

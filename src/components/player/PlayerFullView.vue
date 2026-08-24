@@ -284,14 +284,16 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     flex-direction: column;
     gap: $space_md;
     align-items: center;
-    max-width: 100%;
+    width: 100%;
+    max-width: min(52rem, calc(100vw - #{$page_gutter} - #{$page_gutter}));
   }
 
   &_heading {
     display: flex;
     flex-direction: column;
     gap: $space_2xs;
-    max-width: min(34rem, 100%);
+    width: 100%;
+    max-width: min(52rem, 100%);
   }
 
   &_title {
@@ -302,8 +304,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.25;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
   }
 
   &_artist {
@@ -312,6 +313,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     color: var(--color_accent);
     font-size: 1.0625em;
     font-weight: 600;
+    overflow-wrap: anywhere;
   }
 
   // What gathers other tracks opens on a click, but is written as plain text: no
@@ -352,8 +354,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     flex-direction: column;
     gap: $space_xs;
     align-items: stretch;
-    max-width: min(34rem, 100%);
-    width: min(34rem, 100%);
+    width: 100%;
+    max-width: min(52rem, 100%);
     margin: 0;
   }
 
@@ -376,12 +378,12 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown));
     &_value {
       @include selectable_text;
 
-      overflow: hidden;
+      flex: 1;
+      min-width: 0;
       margin: 0;
       font-size: 0.9375em;
       font-weight: 600;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      overflow-wrap: anywhere;
     }
   }
 

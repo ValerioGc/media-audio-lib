@@ -28,6 +28,20 @@ let unlistenMoved: (() => void) | null = null;
 const isVertical = computed(() => settings.miniPlayerOrientation === 'vertical');
 const isExpanded = computed(() => settings.miniPlayerLevel === 'expanded');
 
+function closeSheetOnOutside(event: MouseEvent) {
+  const target = event.target;
+
+  if (!(target instanceof Element)) {
+    return;
+  }
+
+  if (target.closest('[data-testid="mini-sheet"]') || target.closest('[data-testid="mini-menu"]')) {
+    return;
+  }
+
+  isSheetOpen.value = false;
+}
+
 /** The colour of the cover, painted behind the dock when the setting asks for it. */
 const gradientStyle = computed(() =>
   state.value?.gradient === null || state.value === null
@@ -44,6 +58,8 @@ const progressStyle = computed(() => {
 });
 
 onMounted(async () => {
+  document.addEventListener('click', closeSheetOnOutside);
+
   // The dock reads the same settings file as the app, so theme, accent and text size follow.
   await settings.initialize();
   unlistenState = await onPlayerState((received) => {
@@ -52,7 +68,7 @@ onMounted(async () => {
 
   // The state event may have been emitted before this separate webview started listening.
   // Asking for a fresh snapshot also carries the cover gradient into a newly opened dock.
-  await sendMiniCommand('sync');
+  await sendMiniCommand('sync', settings.miniPlayerAlwaysOnTop ? 1 : 0);
 
   // Wherever it is left is where it comes back: the position is written down as it moves.
   unlistenMoved = await onWindowMoved((position) => {
@@ -63,6 +79,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  document.removeEventListener('click', closeSheetOnOutside);
   unlistenState?.();
   unlistenMoved?.();
   unlistenState = null;
@@ -84,6 +101,7 @@ async function toggleOrientation() {
 
 async function toggleOnTop() {
   await settings.setMiniPlayerAlwaysOnTop(!settings.miniPlayerAlwaysOnTop);
+  await sendMiniCommand('sync', settings.miniPlayerAlwaysOnTop ? 1 : 0);
 }
 
 /** Closing the dock may or may not mean closing the app: the answer can be remembered. */
@@ -131,6 +149,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     }"
     :style="{ ...gradientStyle, ...progressStyle }"
     :aria-busy="state === null"
+    @click="closeSheetOnOutside"
   >
     <!-- The window commands take the top line, out of the way of the transport. -->
     <div class="mini_player_bar" data-tauri-drag-region>
@@ -154,7 +173,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
         :aria-label="t('mini.menu.label')"
         :aria-expanded="isSheetOpen"
         data-testid="mini-menu"
-        @click="isSheetOpen = !isSheetOpen"
+        @click.stop="isSheetOpen = !isSheetOpen"
       >
         <AppIcon name="more" />
       </button>
@@ -913,10 +932,15 @@ async function close(quitsApp: boolean, remember = remembers.value) {
 
   &_close_actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: $space_xs;
-    justify-content: center;
+    align-items: stretch;
+    width: min(16rem, 100%);
     margin-top: $space_2xs;
+
+    :deep(button) {
+      width: 100%;
+    }
   }
 }
 

@@ -30,8 +30,18 @@ const player = usePlayerStore();
  * The tray menu is written by the shell, so it is handed the words of the interface and
  * the state of the player: with nothing loaded there is nothing to stop.
  */
-async function writeTrayMenu() {
-  await applyTrayMenu(t('tray.show'), t('tray.stop'), t('tray.quit'), player.isActive);
+let dockPinned = settings.miniPlayerAlwaysOnTop;
+
+async function writeTrayMenu(pinned = dockPinned) {
+  dockPinned = pinned;
+  await applyTrayMenu(
+    t('tray.show'),
+    t('tray.bringToFront'),
+    t('tray.stop'),
+    t('tray.quit'),
+    player.isActive,
+    player.isActive && !pinned,
+  );
 }
 
 let stopTrayListener: (() => void) | null = null;
@@ -141,6 +151,7 @@ async function runDockCommand({ action, value }: MiniPlayerCommand) {
 
   if (action === 'sync') {
     await publishToDock();
+    await writeTrayMenu(value === undefined ? undefined : value === 1);
     return;
   }
 
@@ -178,7 +189,10 @@ async function initializeApp() {
 
 onMounted(initializeApp);
 
-watch([() => settings.locale, () => player.isActive], writeTrayMenu);
+watch([() => settings.locale, () => player.isActive, () => settings.miniPlayerAlwaysOnTop], () => {
+  dockPinned = settings.miniPlayerAlwaysOnTop;
+  writeTrayMenu();
+});
 
 // The dock follows the track, how far it has got, and everything it can act on.
 watch(

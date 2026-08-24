@@ -784,6 +784,7 @@
   },
   "tray": {
     "show": "Abrir Media Audio Lib",
+    "bringToFront": "Traer el minirreproductor al frente",
     "stop": "Detener la reproducción",
     "quit": "Salir"
   }

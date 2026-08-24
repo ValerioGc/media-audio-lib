@@ -142,6 +142,14 @@ pub fn show_main_window<R: Runtime>(app: &AppHandle<R>) {
     }
 }
 
+/// Brings the floating player forward without closing it or restoring the main window.
+fn bring_mini_player_to_front<R: Runtime>(app: &AppHandle<R>) {
+    if let Some(window) = app.get_webview_window(MINI_WINDOW) {
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+}
+
 fn hide_main_window<R: Runtime>(app: &AppHandle<R>) {
     if let Some(window) = app.get_webview_window(MAIN_WINDOW) {
         let _ = window.hide();
@@ -154,14 +162,23 @@ fn hide_main_window<R: Runtime>(app: &AppHandle<R>) {
 pub fn tray_menu<R: Runtime>(
     app: &AppHandle<R>,
     show: &str,
+    bring_to_front: &str,
     stop: &str,
     quit: &str,
     can_stop: bool,
+    can_bring_to_front: bool,
 ) -> tauri::Result<Menu<R>> {
     Menu::with_items(
         app,
         &[
             &MenuItem::with_id(app, "show", show, true, None::<&str>)?,
+            &MenuItem::with_id(
+                app,
+                "bring-to-front",
+                bring_to_front,
+                can_bring_to_front,
+                None::<&str>,
+            )?,
             &MenuItem::with_id(app, "stop", stop, can_stop, None::<&str>)?,
             &MenuItem::with_id(app, "quit", quit, true, None::<&str>)?,
         ],
@@ -175,10 +192,19 @@ fn build_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         })?)
         .tooltip("Media Audio Lib")
         // Nothing plays at startup, so the command starts out of reach.
-        .menu(&tray_menu(app, "Show", "Stop playback", "Quit", false)?)
+        .menu(&tray_menu(
+            app,
+            "Show",
+            "Bring mini player to front",
+            "Stop playback",
+            "Quit",
+            false,
+            false,
+        )?)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| match event.id.as_ref() {
             "show" => show_main_window(app),
+            "bring-to-front" => bring_mini_player_to_front(app),
             "stop" => {
                 let _ = app.emit(STOP_PLAYBACK_EVENT, ());
             }

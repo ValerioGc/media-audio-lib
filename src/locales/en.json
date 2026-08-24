@@ -784,6 +784,7 @@
   },
   "tray": {
     "show": "Open Media Audio Lib",
+    "bringToFront": "Bring mini player to front",
     "stop": "Stop playback",
     "quit": "Quit"
   }

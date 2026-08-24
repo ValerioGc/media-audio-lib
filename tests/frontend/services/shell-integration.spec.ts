@@ -10,7 +10,9 @@ afterEach(() => {
 describe('shell integration outside the desktop shell', () => {
   it('does nothing, so the same settings work in the browser', async () => {
     expect(await applyCloseToTray(true)).toBe(false);
-    expect(await applyTrayMenu('Apri', 'Interrompi', 'Esci', true)).toBe(false);
+    expect(
+      await applyTrayMenu('Apri', 'Porta in primo piano', 'Interrompi', 'Esci', true, true),
+    ).toBe(false);
     expect(await onTrayStopPlayback(() => {})).toBeNull();
   });
 });

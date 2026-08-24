@@ -35,11 +35,20 @@ export async function applyCloseToTray(enabled: boolean): Promise<boolean> {
  */
 export async function applyTrayMenu(
   show: string,
+  bringToFront: string,
   stop: string,
   quit: string,
   canStop: boolean,
+  canBringToFront: boolean,
 ): Promise<boolean> {
-  return invokeCommand('set_tray_menu', { show, stop, quit, canStop });
+  return invokeCommand('set_tray_menu', {
+    show,
+    bringToFront,
+    stop,
+    quit,
+    canStop,
+    canBringToFront,
+  });
 }
 
 /**

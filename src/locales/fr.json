@@ -784,6 +784,7 @@
   },
   "tray": {
     "show": "Ouvrir Media Audio Lib",
+    "bringToFront": "Mettre le mini-player au premier plan",
     "stop": "Arrêter la lecture",
     "quit": "Quitter"
   }

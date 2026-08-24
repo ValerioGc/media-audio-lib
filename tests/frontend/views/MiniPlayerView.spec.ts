@@ -259,6 +259,19 @@ describe('MiniPlayerView', () => {
     expect(settings.miniPlayerAlwaysOnTop).toBe(false);
   });
 
+  it('closes the three-dot menu when another player command is clicked', async () => {
+    const { wrapper } = await mountDock();
+    mocks.state(playing);
+    await flushPromises();
+
+    await wrapper.get('[data-testid="mini-menu"]').trigger('click');
+    expect(wrapper.find('[data-testid="mini-sheet"]').exists()).toBe(true);
+
+    await wrapper.get('[data-testid="mini-pin"]').trigger('click');
+
+    expect(wrapper.find('[data-testid="mini-sheet"]').exists()).toBe(false);
+  });
+
   it('leaves the cover background to the settings of the app', async () => {
     const { wrapper } = await mountDock();
     mocks.state(playing);

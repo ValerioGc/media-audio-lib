@@ -273,15 +273,25 @@ pub fn quit_app<R: Runtime>(app: AppHandle<R>) {
 pub fn set_tray_menu<R: Runtime>(
     app: AppHandle<R>,
     show: String,
+    bring_to_front: String,
     stop: String,
     quit: String,
     can_stop: bool,
+    can_bring_to_front: bool,
 ) -> bool {
     let Some(tray) = app.tray_by_id("main") else {
         return false;
     };
 
-    match tray_menu(&app, &show, &stop, &quit, can_stop) {
+    match tray_menu(
+        &app,
+        &show,
+        &bring_to_front,
+        &stop,
+        &quit,
+        can_stop,
+        can_bring_to_front,
+    ) {
         Ok(menu) => tray.set_menu(Some(menu)).is_ok(),
         Err(_) => false,
     }

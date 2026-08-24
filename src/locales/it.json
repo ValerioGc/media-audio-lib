@@ -784,6 +784,7 @@
   },
   "tray": {
     "show": "Apri Media Audio Lib",
+    "bringToFront": "Porta in primo piano",
     "stop": "Interrompi la riproduzione",
     "quit": "Esci"
   }

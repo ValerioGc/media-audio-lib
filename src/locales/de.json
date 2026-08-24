@@ -784,6 +784,7 @@
   },
   "tray": {
     "show": "Media Audio Lib öffnen",
+    "bringToFront": "Mini-Player in den Vordergrund",
     "stop": "Wiedergabe beenden",
     "quit": "Beenden"
   }

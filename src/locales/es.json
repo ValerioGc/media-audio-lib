@@ -392,6 +392,7 @@
     "refresh": {
       "missing": "{count} archivo ya no está disponible en la ruta registrada | {count} archivos ya no están disponibles en las rutas registradas",
       "refreshed": "Se han actualizado {count} pistas modificadas fuera de la app",
+      "recovered": "Se encontraron de nuevo {count} archivos que faltaban",
       "removeMissing": "Eliminar archivos ausentes",
       "removeMissingTitle": "¿Eliminar archivos ausentes?",
       "removeMissingMessage": "Se quitarán {count} pistas de la biblioteca. Los archivos del disco no se eliminarán."

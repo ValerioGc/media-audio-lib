@@ -392,6 +392,7 @@
     "refresh": {
       "missing": "{count} fichier n’est plus disponible au chemin enregistré | {count} fichiers ne sont plus disponibles aux chemins enregistrés",
       "refreshed": "{count} morceaux modifiés hors de l’app ont été mis à jour",
+      "recovered": "{count} fichiers auparavant absents ont été retrouvés",
       "removeMissing": "Retirer les fichiers absents",
       "removeMissingTitle": "Retirer les fichiers absents ?",
       "removeMissingMessage": "{count} morceaux seront retirés de la bibliothèque. Les fichiers sur le disque ne seront pas supprimés."

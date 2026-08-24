@@ -374,10 +374,36 @@ const showsMissingBanner = computed(
     library.hasMissingAfterRefresh && library.missingReportKey !== settings.dismissedMissingReport,
 );
 
+const showsRecoveredBanner = computed(() => library.lastRefreshRecovered > 0);
+
+const showsVerificationBanner = computed(() => {
+  const verification = library.lastVerification;
+
+  if (verification === null) {
+    return false;
+  }
+
+  return (
+    verification.missing === 0 ||
+    library.missingReportKey === '' ||
+    library.missingReportKey !== settings.dismissedMissingReport
+  );
+});
+
 async function dismissMissingReport() {
   const key = library.missingReportKey;
-  library.dismissRefresh();
-  await settings.setDismissedMissingReport(key);
+
+  if (key !== '') {
+    await settings.setDismissedMissingReport(key);
+  }
+}
+
+async function rememberMissingBannerDismissal() {
+  const key = library.missingReportKey;
+
+  if (key !== '') {
+    await settings.setDismissedMissingReport(key);
+  }
 }
 
 // A check that finds nothing gone closes the matter, so what was answered for is forgotten:
@@ -395,8 +421,41 @@ watch(
   },
 );
 
+// A file found again by a single-track check changes the current set even when no full
+// refresh report was produced. Forget the old answer so a later disappearance is news again.
+watch(
+  () => library.missingReportKey,
+  (key) => {
+    if (key === '' && settings.dismissedMissingReport !== '') {
+      settings.setDismissedMissingReport('').catch((error: unknown) => {
+        console.error('Clearing the answered missing report failed', error);
+      });
+    }
+  },
+);
+
 /** The track whose file was not there when it was asked for, named on a banner. */
 const unplayableTitle = ref<string | null>(null);
+
+const showsUnplayableBanner = computed(
+  () =>
+    unplayableTitle.value !== null && library.missingReportKey !== settings.dismissedMissingReport,
+);
+
+async function dismissUnplayableBanner() {
+  unplayableTitle.value = null;
+  await rememberMissingBannerDismissal();
+}
+
+async function dismissVerificationBanner() {
+  const hasMissing = library.lastVerification?.missing ?? 0;
+
+  library.dismissVerification();
+
+  if (hasMissing > 0) {
+    await rememberMissingBannerDismissal();
+  }
+}
 
 /**
  * Whether the track can still be played, checked against the disk rather than against what
@@ -563,7 +622,9 @@ async function confirmRemoval() {
 
 async function confirmMissingRemoval() {
   isRemovingMissing.value = false;
+  unplayableTitle.value = null;
   await library.removeMissingTracks();
+  await settings.setDismissedMissingReport('');
 }
 </script>
 
@@ -646,17 +707,42 @@ async function confirmMissingRemoval() {
     </LibraryBanner>
 
     <LibraryBanner
-      v-if="unplayableTitle !== null"
+      v-if="showsUnplayableBanner"
       tone="warning"
       alert
       data-testid="unplayable-notice"
-      @dismiss="unplayableTitle = null"
+      @dismiss="dismissUnplayableBanner"
     >
       {{ t('library.playback.unavailable', { title: unplayableTitle }) }}
+
+      <template #action>
+        <AppButton
+          variant="danger"
+          data-testid="remove-missing-from-playback"
+          @click="isRemovingMissing = true"
+        >
+          {{ t('library.refresh.removeMissing') }}
+        </AppButton>
+      </template>
     </LibraryBanner>
 
     <!-- What the refresh found on opening: files gone from disk are a warning, tags read
          again are a note. -->
+    <LibraryBanner
+      v-if="showsRecoveredBanner"
+      icon="verify"
+      data-testid="refresh-recovered"
+      @dismiss="library.dismissRecovered()"
+    >
+      {{
+        t(
+          'library.refresh.recovered',
+          { count: library.lastRefreshRecovered },
+          library.lastRefreshRecovered,
+        )
+      }}
+    </LibraryBanner>
+
     <LibraryBanner
       v-if="showsMissingBanner"
       tone="warning"
@@ -680,7 +766,9 @@ async function confirmMissingRemoval() {
     </LibraryBanner>
 
     <LibraryBanner
-      v-else-if="(library.lastRefresh?.refreshed ?? 0) > 0"
+      v-if="
+        !showsMissingBanner && !showsRecoveredBanner && (library.lastRefresh?.refreshed ?? 0) > 0
+      "
       icon="verify"
       data-testid="refresh-updated"
       @dismiss="library.dismissRefresh()"
@@ -695,11 +783,11 @@ async function confirmMissingRemoval() {
     </LibraryBanner>
 
     <LibraryBanner
-      v-if="library.lastVerification !== null"
+      v-if="library.lastVerification !== null && showsVerificationBanner"
       icon="verify"
       :tone="library.lastVerification.missing > 0 ? 'warning' : 'info'"
       data-testid="verification-notice"
-      @dismiss="library.dismissVerification()"
+      @dismiss="dismissVerificationBanner"
     >
       {{
         t('library.verification.summary', {
@@ -707,6 +795,16 @@ async function confirmMissingRemoval() {
           missing: library.lastVerification.missing,
         })
       }}
+
+      <template v-if="library.lastVerification.missing > 0" #action>
+        <AppButton
+          variant="danger"
+          data-testid="remove-missing-from-verification"
+          @click="isRemovingMissing = true"
+        >
+          {{ t('library.refresh.removeMissing') }}
+        </AppButton>
+      </template>
     </LibraryBanner>
 
     <LibraryImportReport

@@ -821,6 +821,19 @@ describe('refresh from disk', () => {
     expect(library.lastRefresh).toBeNull();
   });
 
+  it('reports a file that was missing and is found again', async () => {
+    const library = useLibraryStore();
+    const path = 'C:/music/back-again.mp3';
+    library.tracks = [makeTrack({ path, missing: true })];
+    refreshLibraryFromDisk.mockResolvedValue({ refreshed: 1, missing: [] });
+    listTracks.mockResolvedValue([makeTrack({ path, missing: false })]);
+
+    await library.refreshFromDisk();
+
+    expect(library.lastRefreshRecovered).toBe(1);
+    expect(library.tracks[0]?.missing).toBe(false);
+  });
+
   it('names a set of missing files, and names two different sets apart', () => {
     const library = useLibraryStore();
 

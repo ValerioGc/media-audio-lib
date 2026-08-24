@@ -392,6 +392,7 @@
     "refresh": {
       "missing": "{count} Datei ist unter dem hinterlegten Pfad nicht mehr verfügbar | {count} Dateien sind unter den hinterlegten Pfaden nicht mehr verfügbar",
       "refreshed": "{count} außerhalb der App bearbeitete Titel wurden aktualisiert",
+      "recovered": "{count} zuvor fehlende Dateien wieder gefunden",
       "removeMissing": "Fehlende Dateien entfernen",
       "removeMissingTitle": "Fehlende Dateien entfernen?",
       "removeMissingMessage": "{count} Titel werden aus der Bibliothek entfernt. Dateien auf der Festplatte werden nicht gelöscht."

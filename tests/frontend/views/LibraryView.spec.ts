@@ -501,9 +501,30 @@ describe('LibraryView', () => {
     const banner = wrapper.get('[data-testid="verification-notice"]');
 
     expect(banner.text()).toContain('file mancanti 1 su 3 brani');
+    expect(banner.find('[data-testid="remove-missing-from-verification"]').exists()).toBe(true);
 
     await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
     expect(store.lastVerification).toBeNull();
+  });
+
+  it('remembers closing the verification warning for the current missing files', async () => {
+    const { wrapper, store } = await mountView();
+    const track = makeTrack({ missing: true });
+    const settings = useSettingsStore();
+    store.tracks = [track];
+    store.lastVerification = { total: 1, missing: 1 };
+    await flushPromises();
+
+    await wrapper
+      .get('[data-testid="verification-notice"] [data-testid="library-banner-dismiss"]')
+      .trigger('click');
+    await flushPromises();
+
+    expect(settings.dismissedMissingReport).toBe(store.missingReportKey);
+    store.lastVerification = { total: 1, missing: 1 };
+    await flushPromises();
+
+    expect(wrapper.find('[data-testid="verification-notice"]').exists()).toBe(false);
   });
 
   it('asks for confirmation before removing a track', async () => {
@@ -708,6 +729,7 @@ describe('LibraryView', () => {
     const banner = wrapper.get('[data-testid="unplayable-notice"]');
 
     expect(banner.text()).toContain('«Gone» non può essere riprodotto');
+    expect(banner.find('[data-testid="remove-missing-from-playback"]').exists()).toBe(true);
 
     await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
 
@@ -810,5 +832,16 @@ describe('LibraryView', () => {
 
     expect(wrapper.find('[data-testid="refresh-missing"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="refresh-updated"]').text()).toContain('3');
+  });
+
+  it('notes a file that was missing and is found again on reload', async () => {
+    const { wrapper, store } = await mountView();
+    store.lastRefresh = { refreshed: 1, missing: [] };
+    store.lastRefreshRecovered = 1;
+    await flushPromises();
+
+    expect(wrapper.get('[data-testid="refresh-recovered"]').text()).toContain(
+      'Trovati di nuovo 1 file',
+    );
   });
 });

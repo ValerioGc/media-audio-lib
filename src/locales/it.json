@@ -392,6 +392,7 @@
     "refresh": {
       "missing": "{count} file non risulta più disponibile nel percorso registrato | {count} file non risultano più disponibili nei percorsi registrati",
       "refreshed": "Aggiornati {count} brani modificati fuori dall’app",
+      "recovered": "Trovati di nuovo {count} file precedentemente mancanti",
       "removeMissing": "Rimuovi file mancanti",
       "removeMissingTitle": "Rimuovere i file mancanti?",
       "removeMissingMessage": "{count} brani verranno rimossi dalla libreria. I file sul disco non verranno eliminati."

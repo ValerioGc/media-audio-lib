@@ -392,6 +392,7 @@
     "refresh": {
       "missing": "{count} file is no longer available at the path on record | {count} files are no longer available at the paths on record",
       "refreshed": "{count} tracks edited outside the app were brought up to date",
+      "recovered": "Found {count} files that were previously missing",
       "removeMissing": "Remove missing files",
       "removeMissingTitle": "Remove missing files?",
       "removeMissingMessage": "{count} tracks will be removed from the library. Files on disk will not be deleted."

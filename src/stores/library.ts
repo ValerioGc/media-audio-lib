@@ -106,6 +106,7 @@ export const useLibraryStore = defineStore('library', () => {
   const lastLibraryImport = ref<LibraryImportReport | null>(null);
   const lastVerification = ref<TrackListVerificationReport | null>(null);
   const lastRefresh = ref<LibraryRefreshReport | null>(null);
+  const lastRefreshRecovered = ref(0);
   let refreshRequest = 0;
   const tracks = ref<TrackView[]>([]);
   const query = ref('');
@@ -162,16 +163,20 @@ export const useLibraryStore = defineStore('library', () => {
   const hasMissingAfterRefresh = computed(() => (lastRefresh.value?.missing.length ?? 0) > 0);
 
   /**
-   * A short name for the set of files the last check found gone.
+   * A short name for the set of files that are missing now.
    *
-   * The banner reporting them is closed for good rather than for the moment, so what was
-   * closed has to be written down — and the list itself can run to hundreds of paths. Two
-   * checks that found the same files answer with the same key, and one that found a file
-   * the other did not answers with a different one, which is all the comparison needs.
+   * The same key is shared by the refresh, verification and playback banners. Closing one
+   * of them therefore answers the same state everywhere, until a file goes missing or one
+   * of the missing files comes back. The refresh fallback keeps the key useful while tests
+   * and the first refresh report are still carrying the answer from the disk.
    */
-  const missingReportKey = computed(() =>
-    hasMissingAfterRefresh.value ? fingerprintOf(lastRefresh.value?.missing ?? []) : '',
-  );
+  const missingReportKey = computed(() => {
+    const currentMissing = tracks.value.filter((track) => track.missing).map((track) => track.path);
+    const reportedMissing = lastRefresh.value?.missing ?? [];
+    const paths = reportedMissing.length > 0 ? reportedMissing : currentMissing;
+
+    return paths.length > 0 ? fingerprintOf(paths) : '';
+  });
 
   /** How many different values the library holds for a field, blanks left out. */
   function distinctCount(field: 'artist' | 'album' | 'genre'): number {
@@ -231,7 +236,11 @@ export const useLibraryStore = defineStore('library', () => {
    */
   async function refreshFromDisk() {
     const request = ++refreshRequest;
+    const previousMissingPaths = new Set(
+      tracks.value.filter((track) => track.missing).map((track) => track.path),
+    );
     lastRefresh.value = null;
+    lastRefreshRecovered.value = 0;
 
     try {
       const report = await api.refreshLibraryFromDisk();
@@ -240,13 +249,16 @@ export const useLibraryStore = defineStore('library', () => {
         return;
       }
 
-      if (report.refreshed > 0 || report.missing.length > 0) {
+      if (report.refreshed > 0 || report.missing.length > 0 || previousMissingPaths.size > 0) {
         const refreshedTracks = await api.listTracks();
 
         if (request !== refreshRequest) {
           return;
         }
 
+        lastRefreshRecovered.value = refreshedTracks.filter(
+          (track) => previousMissingPaths.has(track.path) && !track.missing,
+        ).length;
         tracks.value = refreshedTracks;
         selectedIds.value = keepExistingIds(selectedIds.value, refreshedTracks);
       }
@@ -273,6 +285,17 @@ export const useLibraryStore = defineStore('library', () => {
       }
 
       tracks.value = tracks.value.map((track) => (track.id === id ? refreshed : track));
+      if (lastRefresh.value !== null) {
+        const missing = new Set(lastRefresh.value.missing);
+
+        if (refreshed.missing) {
+          missing.add(refreshed.path);
+        } else {
+          missing.delete(refreshed.path);
+        }
+
+        lastRefresh.value = { ...lastRefresh.value, missing: [...missing] };
+      }
       // The cover may have changed with the tags: a new address makes the webview fetch it
       // again rather than show what it already has.
       bumpCover(id);
@@ -287,6 +310,11 @@ export const useLibraryStore = defineStore('library', () => {
 
   function dismissRefresh() {
     lastRefresh.value = null;
+    lastRefreshRecovered.value = 0;
+  }
+
+  function dismissRecovered() {
+    lastRefreshRecovered.value = 0;
   }
 
   /**
@@ -579,6 +607,7 @@ export const useLibraryStore = defineStore('library', () => {
 
     if (tracks.value.every((track) => !track.missing)) {
       dismissRefresh();
+      lastVerification.value = null;
     }
   }
 
@@ -781,6 +810,7 @@ export const useLibraryStore = defineStore('library', () => {
     hasMissingAfterRefresh,
     missingReportKey,
     lastRefresh,
+    lastRefreshRecovered,
     artistCount,
     albumCount,
     genreCount,
@@ -810,6 +840,7 @@ export const useLibraryStore = defineStore('library', () => {
     refreshFromDisk,
     refreshTrack,
     dismissRefresh,
+    dismissRecovered,
     verifyAllTracks,
     coverUrl,
     heavyCoverBytes,

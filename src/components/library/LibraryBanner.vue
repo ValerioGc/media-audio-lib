@@ -101,17 +101,18 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       <AppIcon name="close" />
     </button>
 
-    <!-- The time left, drained along the foot of the banner. -->
-    <div
-      v-if="autoDismissMs > 0"
-      class="library_banner_countdown"
-      data-testid="library-banner-countdown"
-      :style="{
-        animationDuration: `${autoDismissMs}ms`,
-        animationPlayState: isCounting ? 'running' : 'paused',
-      }"
-      aria-hidden="true"
-    />
+    <!-- The timer has a track as well as a moving fill: a thin line on its own was easy to
+         miss against the banner surface. -->
+    <div v-if="autoDismissMs > 0" class="library_banner_timer" aria-hidden="true">
+      <div
+        class="library_banner_countdown"
+        data-testid="library-banner-countdown"
+        :style="{
+          animationDuration: `${autoDismissMs}ms`,
+          animationPlayState: isCounting ? 'running' : 'paused',
+        }"
+      />
+    </div>
   </div>
 </template>
 
@@ -177,17 +178,22 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
   }
 
   &_countdown {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
     height: 3px;
     background-color: currentcolor;
-    opacity: 0.55;
     transform-origin: left center;
     animation-name: library_banner_drain;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
+  }
+
+  &_timer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color_text) 16%, transparent);
   }
 
   &_info {
@@ -198,7 +204,7 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       color: var(--color_accent);
     }
 
-    .library_banner_countdown {
+    .library_banner_timer {
       color: var(--color_accent);
     }
   }
@@ -213,7 +219,7 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       color: var(--color_on_warning);
     }
 
-    .library_banner_countdown {
+    .library_banner_timer {
       color: var(--color_warning);
     }
   }
@@ -228,7 +234,7 @@ const icon = computed(() => props.icon ?? TONE_ICONS[props.tone]);
       color: var(--color_on_danger);
     }
 
-    .library_banner_countdown {
+    .library_banner_timer {
       color: var(--color_danger);
     }
   }

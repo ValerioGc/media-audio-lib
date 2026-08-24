@@ -493,6 +493,29 @@ describe('LibraryView', () => {
     expect(store.lastLibraryImport).toBeNull();
   });
 
+  it('keeps a missing-file library import warning visible until it is closed', async () => {
+    const { wrapper, store } = await mountView();
+    store.lastLibraryImport = {
+      added: 1,
+      updated: 0,
+      skipped: 0,
+      missing: ['C:/music/gone.mp3'],
+      total: 2,
+    };
+    await flushPromises();
+
+    const banner = wrapper.get('[data-testid="library-import-notice"]');
+
+    expect(banner.attributes('role')).toBe('alert');
+    expect(banner.classes()).toContain('library_banner_warning');
+    expect(banner.find('[data-testid="library-banner-countdown"]').exists()).toBe(false);
+    expect(banner.find('[data-testid="remove-missing-from-library-import"]').exists()).toBe(true);
+
+    await banner.get('[data-testid="library-banner-dismiss"]').trigger('click');
+
+    expect(store.lastLibraryImport).toBeNull();
+  });
+
   it('shows and closes the file verification summary', async () => {
     const { wrapper, store } = await mountView();
     store.lastVerification = { total: 3, missing: 1 };

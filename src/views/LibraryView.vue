@@ -374,6 +374,10 @@ const showsMissingBanner = computed(
     library.hasMissingAfterRefresh && library.missingReportKey !== settings.dismissedMissingReport,
 );
 
+const hasMissingFromLibraryImport = computed(
+  () => (library.lastLibraryImport?.missing.length ?? 0) > 0,
+);
+
 const showsRecoveredBanner = computed(() => library.lastRefreshRecovered > 0);
 
 const showsVerificationBanner = computed(() => {
@@ -623,10 +627,16 @@ async function confirmRemoval() {
 }
 
 async function confirmMissingRemoval() {
+  const cameFromLibraryImport = hasMissingFromLibraryImport.value;
+
   isRemovingMissing.value = false;
   unplayableTitle.value = null;
   await library.removeMissingTracks();
   await settings.setDismissedMissingReport('');
+
+  if (cameFromLibraryImport) {
+    library.dismissLibraryImport();
+  }
 }
 </script>
 
@@ -665,7 +675,35 @@ async function confirmMissingRemoval() {
     </LibraryBanner>
 
     <LibraryBanner
-      v-if="library.lastLibraryImport !== null"
+      v-if="library.lastLibraryImport !== null && hasMissingFromLibraryImport"
+      tone="warning"
+      alert
+      data-testid="library-import-notice"
+      @dismiss="library.dismissLibraryImport()"
+    >
+      {{
+        t('settings.importExport.report.summary', {
+          total: library.lastLibraryImport.total,
+          added: library.lastLibraryImport.added,
+          updated: library.lastLibraryImport.updated,
+          skipped: library.lastLibraryImport.skipped,
+          missing: library.lastLibraryImport.missing.length,
+        })
+      }}
+
+      <template #action>
+        <AppButton
+          variant="danger"
+          data-testid="remove-missing-from-library-import"
+          @click="isRemovingMissing = true"
+        >
+          {{ t('library.refresh.removeMissing') }}
+        </AppButton>
+      </template>
+    </LibraryBanner>
+
+    <LibraryBanner
+      v-else-if="library.lastLibraryImport !== null"
       icon="import"
       data-testid="library-import-notice"
       @dismiss="library.dismissLibraryImport()"

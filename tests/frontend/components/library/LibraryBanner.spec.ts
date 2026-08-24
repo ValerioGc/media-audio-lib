@@ -50,6 +50,7 @@ describe('LibraryBanner', () => {
 
     const countdown = wrapper.get('[data-testid="library-banner-countdown"]');
 
+    expect(wrapper.find('.library_banner_timer').exists()).toBe(true);
     expect(countdown.attributes('style')).toContain('5000ms');
 
     vi.advanceTimersByTime(4999);

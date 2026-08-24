@@ -83,18 +83,23 @@ const lines = computed(() =>
       {{ t('library.report.dismiss') }}
     </AppButton>
 
-    <!-- Visible countdown: the bar drains over the time left before the banner goes. -->
+    <!-- Visible countdown: the track makes the time left readable instead of leaving a lone
+         three-pixel line to guess at. -->
     <div
       v-if="!hasFailures && autoDismissMs > 0"
       :key="runId"
-      class="library_report_countdown"
-      data-testid="report-countdown"
-      :style="{
-        animationDuration: `${autoDismissMs}ms`,
-        animationPlayState: isCounting ? 'running' : 'paused',
-      }"
+      class="library_report_timer"
       aria-hidden="true"
-    />
+    >
+      <div
+        class="library_report_countdown"
+        data-testid="report-countdown"
+        :style="{
+          animationDuration: `${autoDismissMs}ms`,
+          animationPlayState: isCounting ? 'running' : 'paused',
+        }"
+      />
+    </div>
   </section>
 </template>
 
@@ -140,16 +145,22 @@ const lines = computed(() =>
   }
 
   &_countdown {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
     height: 3px;
     background-color: var(--color_accent);
     transform-origin: left center;
     animation-name: drain;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
+  }
+
+  &_timer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--color_text) 16%, transparent);
   }
 }
 

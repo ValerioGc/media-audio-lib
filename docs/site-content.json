@@ -68,8 +68,8 @@
           "body": "Tema chiaro o scuro, quattro dimensioni del testo, un colore accent a tua scelta e uno sfondo sfumato costruito su quel colore, di cui decidi forma e origine, con superfici in vetro attivabili a parte e un player che prende i colori dalla copertina in ascolto."
         },
         {
-          "title": "Import ed export",
-          "body": "L'elenco dei brani si esporta in un file portabile e si reimporta altrove, con gestione dei duplicati. I file spostati o cancellati vengono segnalati invece di sparire in silenzio."
+          "title": "Importazione ed esportazione",
+          "body": "Una libreria si esporta in un file portabile e si reimporta altrove, con l’unione già gestita: sostituire quella aperta, aggiungere solo i brani nuovi o aggiornare anche quelli già presenti. L’esportazione può contenere tutta la libreria oppure i soli percorsi dei brani, che tiene il file leggero quando i file audio viaggiano insieme. L’elenco dei brani si esporta a parte in testo o CSV."
         },
         {
           "title": "File sempre allineati",
@@ -155,7 +155,7 @@
         },
         {
           "title": "Import and export",
-          "body": "The track list exports to a portable file and imports back elsewhere, duplicates handled. Files that were moved or deleted are reported rather than quietly disappearing."
+          "body": "A library exports to a portable file and imports back elsewhere, with the merge handled for you: replace what is open, add only what is new, or update what is already there. The export carries the whole library or only the paths of the tracks, which keeps the file small when the audio itself is coming along. The track list on its own exports to text or CSV."
         },
         {
           "title": "Files kept in step",
@@ -241,7 +241,7 @@
         },
         {
           "title": "Import et export",
-          "body": "La liste des morceaux s’exporte dans un fichier portable et se réimporte ailleurs, doublons gérés. Les fichiers déplacés ou supprimés sont signalés au lieu de disparaître en silence."
+          "body": "Une bibliothèque s’exporte dans un fichier portable et se réimporte ailleurs, la fusion étant déjà prise en charge : remplacer celle qui est ouverte, n’ajouter que les nouveautés, ou mettre à jour ce qui existe déjà. L’export contient toute la bibliothèque ou seulement les chemins des morceaux, ce qui garde le fichier léger quand l’audio voyage avec. La liste des morceaux s’exporte à part, en texte ou en CSV."
         },
         {
           "title": "Des fichiers toujours à jour",
@@ -326,8 +326,8 @@
           "body": "Tema claro u oscuro, cuatro tamaños de texto, un color de acento a tu gusto y un fondo degradado construido sobre ese color, del que decides forma y origen, con superficies de cristal activables aparte y un reproductor que toma los colores de la carátula en reproducción."
         },
         {
-          "title": "Importar y exportar",
-          "body": "La lista de pistas se exporta a un archivo portable y se reimporta en otro sitio, con los duplicados gestionados. Los archivos movidos o borrados se señalan en lugar de desaparecer en silencio."
+          "title": "Importación y exportación",
+          "body": "Una biblioteca se exporta a un archivo portable y se vuelve a importar en otro sitio, con la fusión ya resuelta: sustituir la que está abierta, añadir solo lo nuevo o actualizar también lo que ya estaba. La exportación lleva toda la biblioteca o solo las rutas de las pistas, lo que mantiene el archivo ligero cuando el audio viaja con él. La lista de pistas se exporta aparte, en texto o CSV."
         },
         {
           "title": "Archivos siempre al día",
@@ -413,7 +413,7 @@
         },
         {
           "title": "Import und Export",
-          "body": "Die Titelliste lässt sich in eine portable Datei exportieren und anderswo wieder einlesen, Duplikate inbegriffen. Verschobene oder gelöschte Dateien werden gemeldet, statt still zu verschwinden."
+          "body": "Eine Bibliothek wird in eine portable Datei exportiert und anderswo wieder importiert, das Zusammenführen inbegriffen: die geöffnete ersetzen, nur Neues hinzufügen oder auch Vorhandenes aktualisieren. Der Export enthält die ganze Bibliothek oder nur die Pfade der Titel, was die Datei klein hält, wenn die Audiodateien mitreisen. Die Titelliste wird gesondert als Text oder CSV exportiert."
         },
         {
           "title": "Dateien bleiben im Takt",

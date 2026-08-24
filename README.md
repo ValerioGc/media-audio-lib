@@ -42,8 +42,14 @@ Everything happens locally. No account, no sync, no connection, no telemetry.
 
 Files are added one at a time, by folder, or by dropping them onto the window. Several
 libraries can live side by side and you switch between them from the menu next to the
-library name. Each one exports to a portable file and imports back elsewhere, duplicates
-handled, and the track list on its own exports to text or CSV.
+library name.
+
+Each library exports to a portable file and imports back elsewhere, with the merge decided
+up front: replace what is open, add only what is new, or update what is already there. The
+export carries either the whole library — data and cover art — or only the paths of the
+tracks, which keeps the file small when the audio is travelling with it and reads the tags
+back from those files on import. Every export opens with a short header naming the version
+of the app and the system that wrote it. The track list on its own exports to text or CSV.
 
 Opening a library reads its files again in the background: tags edited by another program
 arrive on their own, and a track whose file was moved or deleted is flagged rather than
@@ -85,6 +91,10 @@ choosing that the interface adapts per theme so it stays readable. On top of tha
 optional ambient background built from that same colour — its shape and its origin are
 yours — optional glass surfaces, and a player that takes its colours from the cover of what
 is playing.
+
+Smaller things are yours too: the columns of the list can be separated by a rule or left to
+their spacing, and the messages the library reports close themselves after a delay you set,
+or wait to be closed by hand.
 
 ## Languages
 

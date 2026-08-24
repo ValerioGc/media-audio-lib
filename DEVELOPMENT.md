@@ -123,6 +123,26 @@ Both windows are built in Rust rather than by the shell (`"create": false` on th
 that leaves the pages of the app would run beside its commands, so it is not allowed to
 navigate anywhere else, nor to open a window for a page it was asked to.
 
+## The library file, and what an export adds to it
+
+A library is a JSON file: a schema version, a name, the metadata gathered from the tracks
+and the tracks themselves (`src-tauri/src/library/mod.rs`). It is written through a
+temporary file that replaces the original once complete, so an interrupted save cannot
+truncate it.
+
+An export is the same file with a header. `LibraryExport` writes an `export` object at the
+top naming the app, its version, the operating system and architecture that produced it,
+when it was written, and the mode used. Two modes:
+
+| Mode    | Carries                                    | Read back by                            |
+| ------- | ------------------------------------------ | --------------------------------------- |
+| `full`  | The library as it stands, artwork included | Reading the entries out of the file     |
+| `paths` | Only the paths of the tracks               | Reading the tags from those files again |
+
+A `full` export is byte for byte a library file with one extra object in it, so an older
+version of the app opens it as a library and ignores the header. `load_for_import` reads
+either shape, along with any library file written by an earlier schema.
+
 ## Development rules
 
 These apply to **every** step and are part of the definition of done.
@@ -146,7 +166,7 @@ These apply to **every** step and are part of the definition of done.
 5. **TypeScript**: strict mode, no implicit `any`.
 6. **Errors**: no unjustified `unwrap()` in Rust. Errors are typed, propagated and turned into a message a user can understand.
 7. **i18n**: every string a user can see — labels, error messages, tooltips, dialog text — goes through `vue-i18n`. No hardcoded strings in components.
-8. **Comments**: code comments are written in English; documentation and the interface are in Italian.
+8. **Language**: code, comments and documentation are written in English, impersonally. The interface is translated through `vue-i18n` into the five locales, and Italian is the default among them — no user-facing string is written in the source.
 9. **Class names must be literal**: the CSS goes through PurgeCSS, which keeps only the class names the sources spell out. A class built from a prop — ``:class="`card_${size}`"`` — is dropped from the stylesheet without a word, and the component renders unstyled in the packaged app. Bind an object with the names written out instead.
 10. **HTML5 drag and drop is unavailable**: the window keeps Tauri's native file drop (`dragDropEnabled`, on by default), which on Windows takes the drag events away from the webview. Reordering inside the app is done with pointer events, as in the column settings dialog.
 11. **Edits are staged, and the leftovers are swept**: a tag is written on a copy named `{stem}.mal-tmp.{ext}` beside the original, which replaces it only once the write is complete — so an interrupted edit cannot corrupt the file. A copy the process did not live long enough to remove is cleared at the next start, off the main thread, and only once it is older than `STAGING_MAX_AGE` (`metadata::write::remove_abandoned_staging_files`). Anything walking a folder of audio files has to skip these, since a staged copy carries the extension of its original.
@@ -237,7 +257,7 @@ Deliberate debts rather than oversights. None of them blocks the remaining work.
 | Point                                    | State                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tauri commands tested through state only | The commands are one-line delegations to `LibraryState`, which the tests cover. Testing across the IPC bridge (`tauri::test::mock_builder`) was tried and dropped: on Windows the test executable cannot find `WebView2Loader.dll`.                                                                                                                                                                                    |
-| TypeScript held at 6.x                   | `vue-tsc` 3.3.10 does not support TypeScript 7 (the `./lib/tsc` export was removed).                                                                                                                                                                                                                                                                                                                                   |
+| TypeScript held at 6.x                   | `vue-tsc` 3.3.x does not support TypeScript 7 (the `./lib/tsc` export was removed). Raising one means raising the other.                                                                                                                                                                                                                                                                                               |
 | M4A and OGG fixtures missing             | Both formats go through the same `lofty` API as the others, but no generated file proves it: building one by hand needs a complete MP4/Ogg container.                                                                                                                                                                                                                                                                  |
 | `style-src 'unsafe-inline'` in the CSP   | Vue writes `:style` bindings out as inline `style` attributes, and the accent colour and the ambient background are set as custom properties on the root element. Dropping the directive means dropping those, and CSP3 hashes do not cover attributes. It is the weakest line of the policy and it stays: `script-src` is `'self'` with no inline scripts, and that is the line deciding whether a page can run code. |
 | No watcher on the library folders        | The files are read again when the app starts, when a library is opened, and one at a time before a track is played or edited. A change made while the list sits on screen is not seen until one of those: watching the filesystem is not implemented.                                                                                                                                                                  |

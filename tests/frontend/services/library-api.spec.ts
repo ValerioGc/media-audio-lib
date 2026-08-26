@@ -73,7 +73,7 @@ describe('listTracks', () => {
 
 describe('libraryInfo', () => {
   it('uses the app name outside the shell', async () => {
-    await expect(libraryInfo()).resolves.toEqual({ name: 'Media Audio Lib', metadata });
+    await expect(libraryInfo()).resolves.toEqual({ name: 'TuneLib', metadata });
     expect(mocks.invoke).not.toHaveBeenCalled();
   });
 

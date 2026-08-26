@@ -11,7 +11,7 @@ import {
 
 describe('app-config', () => {
   it('exposes the app name and version', () => {
-    expect(APP_NAME).toBe('Media Audio Lib');
+    expect(APP_NAME).toBe('TuneLib');
     expect(APP_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
   });
 

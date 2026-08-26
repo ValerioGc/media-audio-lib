@@ -1,4 +1,4 @@
-//! Media Audio Lib core.
+//! TuneLib core.
 //!
 //! The binary only calls [`run`]; all logic lives here so it stays testable with `cargo test`.
 
@@ -47,8 +47,8 @@ pub const MINI_CONFIRM_WINDOW: &str = "mini-confirm";
 /// Sizes of the dock, in logical pixels: one per layout, one per level.
 pub const MINI_SIZE: (f64, f64) = (360.0, 144.0);
 pub const MINI_SIZE_EXPANDED: (f64, f64) = (400.0, 172.0);
-pub const MINI_SIZE_VERTICAL: (f64, f64) = (244.0, 292.0);
-pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (280.0, 300.0);
+pub const MINI_SIZE_VERTICAL: (f64, f64) = (224.0, 268.0);
+pub const MINI_SIZE_VERTICAL_EXPANDED: (f64, f64) = (252.0, 286.0);
 
 /// Room left between the dock and the corner of the screen it first appears in.
 pub const MINI_SCREEN_MARGIN: f64 = 16.0;
@@ -190,7 +190,7 @@ fn build_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
         .icon(app.default_window_icon().cloned().ok_or_else(|| {
             tauri::Error::AssetNotFound("the window icon is needed for the tray".to_owned())
         })?)
-        .tooltip("Media Audio Lib")
+        .tooltip("TuneLib")
         // Nothing plays at startup, so the command starts out of reach.
         .menu(&tray_menu(
             app,

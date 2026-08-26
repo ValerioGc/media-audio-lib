@@ -123,7 +123,7 @@ pub async fn open_mini_player<R: Runtime>(
         MINI_WINDOW,
         WebviewUrl::App("index.html?view=mini".into()),
     ))
-    .title("Media Audio Lib")
+    .title("TuneLib")
     .inner_size(width, height)
     .resizable(false)
     .decorations(false)
@@ -170,7 +170,7 @@ pub fn open_mini_close_confirmation<R: Runtime>(app: AppHandle<R>) -> bool {
         MINI_CONFIRM_WINDOW,
         WebviewUrl::App("index.html?view=mini-confirm".into()),
     ))
-    .title("Media Audio Lib")
+    .title("TuneLib")
     .inner_size(440.0, 270.0)
     .resizable(false)
     .decorations(false)

@@ -1,10 +1,10 @@
-export const APP_NAME = 'Media Audio Lib';
+export const APP_NAME = 'TuneLib';
 
-export const APP_VERSION: string = import.meta.env.VITE_APP_VERSION ?? '0.1.0';
+export const APP_VERSION: string = import.meta.env.VITE_APP_VERSION ?? '1.0.0';
 
 /** Where the project lives, as read from the about window. Update here if it moves. */
-export const WEBSITE_URL = 'https://valeriogc.github.io/media-audio-lib/';
-export const GITHUB_URL = 'https://github.com/ValerioGc/media-audio-lib';
+export const WEBSITE_URL = 'https://valeriogc.github.io/tune-lib/';
+export const GITHUB_URL = 'https://github.com/ValerioGc/tune-lib';
 export const CHANGELOG_URL = `${GITHUB_URL}/blob/main/CHANGELOG.txt`;
 export const RELEASES_URL = `${GITHUB_URL}/releases`;
 

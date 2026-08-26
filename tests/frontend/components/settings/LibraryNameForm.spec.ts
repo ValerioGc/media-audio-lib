@@ -22,7 +22,7 @@ const metadata = { artists: [], albums: [], genres: [], artistArtwork: [], genre
 
 beforeEach(() => {
   resetI18n();
-  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib', metadata });
+  libraryInfo.mockResolvedValue({ name: 'TuneLib', metadata });
   renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
 });
 
@@ -36,7 +36,7 @@ describe('LibraryNameForm', () => {
     await flushPromises();
 
     expect(libraryInfo).toHaveBeenCalled();
-    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('Media Audio Lib');
+    expect((wrapper.get('input').element as HTMLInputElement).value).toBe('TuneLib');
   });
 
   it('saves the name trimmed of whitespace', async () => {

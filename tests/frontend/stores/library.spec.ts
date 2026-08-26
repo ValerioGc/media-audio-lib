@@ -70,7 +70,7 @@ const metadata = { artists: [], albums: [], genres: [], artistArtwork: [], genre
 
 beforeEach(() => {
   setActivePinia(createTestPinia());
-  libraryInfo.mockResolvedValue({ name: 'Media Audio Lib', metadata });
+  libraryInfo.mockResolvedValue({ name: 'TuneLib', metadata });
   renameLibrary.mockResolvedValue({ name: 'Archive', metadata });
   listTracks.mockResolvedValue([]);
   refreshLibraryFromDisk.mockResolvedValue({ refreshed: 0, missing: [] });

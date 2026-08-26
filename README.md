@@ -2,7 +2,7 @@
 
 <img src="src/assets/logo.svg" alt="" width="88" height="88">
 
-# Media Audio Lib
+# TuneLib
 
 **Your audio library, on your own computer.**
 
@@ -20,7 +20,7 @@ the window.
 
 </div>
 
-![Media Audio Lib app screenshot](docs/screenshot/preview.png)
+![TuneLib app screenshot](docs/screenshot/preview.png)
 
 ---
 
@@ -118,13 +118,13 @@ Reading and writing tags goes through the same library for every format.
 ## Installation
 
 Download the package for your platform from the
-[Releases](https://github.com/ValerioGc/media-audio-lib/releases) section:
+[Releases](https://github.com/ValerioGc/tune-lib/releases) section:
 
-| Platform              | File                                              |
-| --------------------- | ------------------------------------------------- |
-| Windows               | `MediaAudioLib_x.x.x_windows_x64.exe`             |
-| Linux (portable)      | `MediaAudioLib_x.x.x_linux_x64_portable.AppImage` |
-| Linux (Debian/Ubuntu) | `MediaAudioLib_x.x.x_linux_x64.deb`               |
+| Platform              | File                                        |
+| --------------------- | ------------------------------------------- |
+| Windows               | `TuneLib_x.x.x_windows_x64.exe`             |
+| Linux (portable)      | `TuneLib_x.x.x_linux_x64_portable.AppImage` |
+| Linux (Debian/Ubuntu) | `TuneLib_x.x.x_linux_x64.deb`               |
 
 > **Windows SmartScreen notice:** the installer is not yet signed with a paid certificate,
 > so SmartScreen may show a warning on first launch. Choose "More info" → "Run anyway" to
@@ -137,13 +137,13 @@ Distribution through the Microsoft Store and Winget is not available yet, but is
 A self-contained portable binary that runs on any distribution without installation:
 
 ```bash
-chmod +x MediaAudioLib_x.x.x_linux_x64_portable.AppImage
-./MediaAudioLib_x.x.x_linux_x64_portable.AppImage
+chmod +x TuneLib_x.x.x_linux_x64_portable.AppImage
+./TuneLib_x.x.x_linux_x64_portable.AppImage
 ```
 
 ## Privacy
 
-**Media Audio Lib collects no data, sends no telemetry and requires no internet connection,
+**TuneLib collects no data, sends no telemetry and requires no internet connection,
 ever.** There is no analytics, no crash reporting, no usage tracking and no cloud sync. No
 line of this app makes a network request, and the window it runs in is not allowed to reach
 any address outside the app: a page from the internet cannot be loaded into it, by accident
@@ -198,6 +198,6 @@ release process — is in [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ## Licence
 
-Media Audio Lib is released into the public domain under [The Unlicense](LICENSE). You are
+TuneLib is released into the public domain under [The Unlicense](LICENSE). You are
 free to copy, modify, publish, use, compile, sell or distribute it, in source or binary
 form, for any purpose, commercial or not, with no conditions attached.

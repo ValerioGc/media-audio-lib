@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Media Audio Lib are documented in this file.
+All notable changes to TuneLib are documented in this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -10,7 +10,7 @@ reads it with `scripts/extract-changelog.cjs` and refuses to publish a tag witho
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-08-21
+## [1.0.0] - 2026-08-21
 
 ### Added
 

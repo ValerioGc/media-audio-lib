@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Media Audio Lib"
+    "name": "TuneLib"
   },
   "nav": {
     "settings": "Ajustes",
@@ -129,8 +129,8 @@
     },
     "defaultPlayer": {
       "title": "Reproductor de audio predeterminado",
-      "description": "Asocia los archivos de audio a Media Audio Lib, para que un doble clic los abra aquí.",
-      "message": "Windows exige una elección manual: busca Media Audio Lib en las aplicaciones predeterminadas y asígnale los formatos de audio que quieras abrir aquí.",
+      "description": "Asocia los archivos de audio a TuneLib, para que un doble clic los abra aquí.",
+      "message": "Windows exige una elección manual: busca TuneLib en las aplicaciones predeterminadas y asígnale los formatos de audio que quieras abrir aquí.",
       "linuxMessage": "En Linux la asociación la gestiona tu entorno de escritorio: ajústala desde sus aplicaciones predeterminadas, o ejecuta este comando en un terminal.",
       "open": "Abrir los ajustes",
       "opening": "Abriendo…",
@@ -300,7 +300,7 @@
       "reset": "Quitar el filtro"
     },
     "defaultPlayerBanner": {
-      "title": "Puedes usar Media Audio Lib como reproductor predeterminado",
+      "title": "Puedes usar TuneLib como reproductor predeterminado",
       "message": "Abre los ajustes del sistema y elige esta aplicación para MP3, FLAC, WAV y los demás formatos de audio.",
       "action": "Configurar",
       "dismiss": "Ocultar el aviso"
@@ -783,7 +783,7 @@
     "tip": "Consejo"
   },
   "tray": {
-    "show": "Abrir Media Audio Lib",
+    "show": "Abrir TuneLib",
     "bringToFront": "Traer el minirreproductor al frente",
     "stop": "Detener la reproducción",
     "quit": "Salir"

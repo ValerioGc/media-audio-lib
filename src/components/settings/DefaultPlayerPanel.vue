@@ -19,7 +19,7 @@ const platform = computed(() => currentPlatform());
 
 /** The command that claims the audio types for the entry the packages install. */
 const linuxCommand =
-  'xdg-mime default media-audio-lib.desktop audio/mpeg audio/flac audio/ogg audio/x-wav audio/mp4';
+  'xdg-mime default tunelib.desktop audio/mpeg audio/flac audio/ogg audio/x-wav audio/mp4';
 
 async function openSettings() {
   isOpening.value = true;

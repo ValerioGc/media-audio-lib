@@ -1,8 +1,8 @@
 [package]
-name = "media-audio-lib"
-version = "0.1.0"
+name = "tune-lib"
+version = "1.0.0"
 description = "Audio library manager with metadata editing and an integrated player."
-authors = ["media-audio-lib"]
+authors = ["tune-lib"]
 edition = "2021"
 rust-version = "1.85"
 

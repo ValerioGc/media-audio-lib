@@ -1,6 +1,6 @@
 {
-  "name": "media-audio-lib",
-  "version": "0.1.0",
+  "name": "tuneLib",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "description": "Gestore di libreria audio con editing dei metadati, viste multiple e player integrato.",

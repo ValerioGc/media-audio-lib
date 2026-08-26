@@ -16,7 +16,7 @@ use crate::metadata::{self, Cover, TrackMetadata};
 
 /// v5 added library-level artwork for artists and genres, filled on export when absent.
 pub const SCHEMA_VERSION: u32 = 5;
-pub const DEFAULT_LIBRARY_NAME: &str = "Media Audio Lib";
+pub const DEFAULT_LIBRARY_NAME: &str = "TuneLib";
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

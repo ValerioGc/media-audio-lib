@@ -150,6 +150,6 @@ describe('TitleBar', () => {
 
     await wrapper.get('[data-testid="open-about"]').trigger('click');
 
-    expect(wrapper.get('.app_about_name').text()).toContain('Media Audio Lib');
+    expect(wrapper.get('.app_about_name').text()).toContain('TuneLib');
   });
 });

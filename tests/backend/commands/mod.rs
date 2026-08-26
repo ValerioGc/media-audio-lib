@@ -4,8 +4,8 @@
     fn app_info_exposes_package_name_and_version() {
         let info = app_info();
 
-        assert_eq!(info.name, "media-audio-lib");
-        assert_eq!(info.version, "0.1.0");
+        assert_eq!(info.name, "tune-lib");
+        assert_eq!(info.version, "1.0.0");
     }
 
     #[test]

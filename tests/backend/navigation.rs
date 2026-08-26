@@ -18,7 +18,7 @@ mod tests {
     #[test]
     fn nothing_else_is_a_page_of_this_app() {
         assert!(!is_app_page(&page("https://example.com/")));
-        assert!(!is_app_page(&page("http://valeriogc.github.io/media-audio-lib/")));
+        assert!(!is_app_page(&page("http://valeriogc.github.io/tune-lib/")));
         assert!(!is_app_page(&page("file:///C:/Windows/System32/")));
         // A host that only looks like the local one.
         assert!(!is_app_page(&page("https://tauri.localhost.example.com/")));

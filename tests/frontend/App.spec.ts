@@ -75,7 +75,7 @@ describe('App', () => {
   it('shows the custom titlebar instead of the system one', async () => {
     const wrapper = await mountApp();
 
-    expect(wrapper.get('.titlebar_name').text()).toBe('Media Audio Lib');
+    expect(wrapper.get('.titlebar_name').text()).toBe('TuneLib');
     expect(wrapper.find('[data-testid="window-close"]').exists()).toBe(true);
   });
 

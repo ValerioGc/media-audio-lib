@@ -1,6 +1,6 @@
-# Media Audio Lib - Development guide
+# TuneLib - Development guide
 
-Technical documentation for anyone developing, testing or releasing Media Audio Lib. For the end-user product description, see [README.md](README.md).
+Technical documentation for anyone developing, testing or releasing TuneLib. For the end-user product description, see [README.md](README.md).
 
 Target platforms are **Windows** (NSIS installer) and **Linux** (AppImage and `.deb`). macOS is not supported.
 
@@ -65,7 +65,7 @@ npm run dev       # launches the desktop app in development mode
 ## Project structure
 
 ```
-media-audio-lib/
+tune-lib/
 ├─ src/                        # Vue 3 frontend
 │  ├─ assets/help/             # optional guide screenshots (see its README)
 │  ├─ assets/styles/           # SCSS: tokens, themes, mixins, global stylesheet
@@ -189,7 +189,7 @@ The theme follows the modern Windows look (Fluent / Windows 11):
 ## Testing and coverage
 
 - **Frontend**: Vitest + jsdom + Vue Test Utils. Thresholds are configured in `vite.config.ts`: 80% for lines, functions and statements, 75% for branches.
-- **Backend**: `cargo test` on the `media-audio-lib` crate. Coverage via `cargo llvm-cov`, with `main.rs` and `lib.rs` excluded because they are wiring.
+- **Backend**: `cargo test` on the `tune-lib` crate. Coverage via `cargo llvm-cov`, with `main.rs` and `lib.rs` excluded because they are wiring.
 - The list is virtualised, so a row only exists while it is on screen: tests that count rows have to account for the window rather than the whole track list.
 
 ## Static analysis (SonarQube)
@@ -235,11 +235,11 @@ Deployment runs through `.github/workflows/pages.yml`, on push to `main` when th
 
 ### Asset naming
 
-| Platform              | Filename                                              |
-| --------------------- | ----------------------------------------------------- |
-| Windows               | `MediaAudioLib_{version}_windows_x64.exe`             |
-| Linux (portable)      | `MediaAudioLib_{version}_linux_x64_portable.AppImage` |
-| Linux (Debian/Ubuntu) | `MediaAudioLib_{version}_linux_x64.deb`               |
+| Platform              | Filename                                        |
+| --------------------- | ----------------------------------------------- |
+| Windows               | `TuneLib_{version}_windows_x64.exe`             |
+| Linux (portable)      | `TuneLib_{version}_linux_x64_portable.AppImage` |
+| Linux (Debian/Ubuntu) | `TuneLib_{version}_linux_x64.deb`               |
 
 ### Publishing a release
 

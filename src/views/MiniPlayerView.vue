@@ -318,6 +318,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
               <AppIcon name="next" />
             </button>
             <button
+              v-if="isExpanded"
               class="mini_player_button"
               type="button"
               :aria-label="t('player.stop')"
@@ -517,6 +518,7 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     flex: 0 0 auto;
     flex-direction: column;
     width: 100%;
+    gap: $space_md;
     text-align: center;
   }
 
@@ -676,10 +678,35 @@ async function close(quitsApp: boolean, remember = remembers.value) {
     }
   }
 
+  &.mini_player_vertical {
+    gap: $space_sm;
+    padding-bottom: $space_xs;
+
+    .mini_player_progress_area {
+      gap: $space_md;
+    }
+  }
+
+  &.mini_player_vertical:not(.mini_player_expanded) {
+    .mini_player_button {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+
+    .mini_player_controls,
+    .mini_player_sound {
+      gap: $space_2xs;
+    }
+
+    .mini_player_volume {
+      width: 4rem;
+    }
+  }
+
   &.mini_player_vertical:not(.mini_player_expanded) &_progress_area_compact {
     flex-direction: column;
     align-items: stretch;
-    gap: $space_sm;
+    gap: $space_md;
   }
 
   &.mini_player_vertical.mini_player_expanded &_playback_row {

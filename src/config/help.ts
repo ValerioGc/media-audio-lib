@@ -27,25 +27,18 @@ export const HELP_TOPICS = [
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];
 
-/** Visual treatment chosen for the kind of information a topic contains. */
-export type HelpTopicLayout = 'overview' | 'flow' | 'reference' | 'settings' | 'safety';
-
-export const HELP_TOPIC_LAYOUTS: Record<HelpTopic, HelpTopicLayout> = {
-  start: 'overview',
-  import: 'flow',
-  organize: 'reference',
-  views: 'reference',
-  metadata: 'flow',
-  files: 'safety',
-  player: 'flow',
-  dock: 'flow',
-  shortcuts: 'reference',
-  libraries: 'overview',
-  transfer: 'flow',
-  appearance: 'settings',
-  settings: 'settings',
-  storage: 'safety',
-};
+/** Topics whose content is easier to scan as actions than as running prose. */
+export const HELP_TOPIC_LISTS = new Set<HelpTopic>([
+  'import',
+  'organize',
+  'metadata',
+  'files',
+  'dock',
+  'shortcuts',
+  'libraries',
+  'transfer',
+  'settings',
+]);
 
 export const HELP_TOPIC_ICONS: Record<HelpTopic, IconName> = {
   start: 'play',

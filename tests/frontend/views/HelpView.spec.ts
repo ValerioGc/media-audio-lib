@@ -68,6 +68,18 @@ describe('HelpView', () => {
     expect(steps.some((step) => step.includes('trascina'))).toBe(true);
   });
 
+  it('uses prose for explanations and bullets for procedures', async () => {
+    const wrapper = mountHelp();
+
+    expect(wrapper.get('.help_topic[data-topic="start"] .help_topic_prose').exists()).toBe(true);
+    expect(wrapper.find('.help_topic[data-topic="start"] .help_topic_list').exists()).toBe(false);
+
+    await wrapper.get('[data-testid="help-index-import"]').trigger('click');
+
+    expect(wrapper.get('.help_topic[data-topic="import"] .help_topic_list').exists()).toBe(true);
+    expect(wrapper.find('.help_topic[data-topic="import"] .help_topic_prose').exists()).toBe(false);
+  });
+
   it('translates the whole guide when the language changes', async () => {
     const wrapper = mountHelp();
     await wrapper.get('[data-testid="help-index-import"]').trigger('click');

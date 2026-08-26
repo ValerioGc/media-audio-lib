@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import AppIcon from '@/components/common/AppIcon.vue';
 import HelpFigure from '@/components/help/HelpFigure.vue';
-import { HELP_TOPICS, HELP_TOPIC_ICONS, HELP_TOPIC_LAYOUTS, type HelpTopic } from '@/config/help';
+import { HELP_TOPICS, HELP_TOPIC_ICONS, HELP_TOPIC_LISTS, type HelpTopic } from '@/config/help';
 
 const props = defineProps<{ topic: HelpTopic }>();
 
@@ -13,8 +13,8 @@ const emit = defineEmits<{ open: [topic: HelpTopic] }>();
 const { t, tm, rt } = useI18n();
 
 const icon = computed(() => HELP_TOPIC_ICONS[props.topic]);
-const layout = computed(() => HELP_TOPIC_LAYOUTS[props.topic]);
 const position = computed(() => HELP_TOPICS.indexOf(props.topic) + 1);
+const usesList = computed(() => HELP_TOPIC_LISTS.has(props.topic));
 
 /** The steps are a list in the translation files, so each language sets its own length. */
 const steps = computed(() =>
@@ -41,16 +41,7 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
       </div>
     </header>
 
-    <div
-      class="help_topic_content"
-      :class="{
-        help_topic_content_overview: layout === 'overview',
-        help_topic_content_flow: layout === 'flow',
-        help_topic_content_reference: layout === 'reference',
-        help_topic_content_settings: layout === 'settings',
-        help_topic_content_safety: layout === 'safety',
-      }"
-    >
+    <div class="help_topic_content">
       <div class="help_topic_context">
         <AppIcon name="search" />
         <p>
@@ -61,14 +52,16 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
 
       <HelpFigure :topic="topic" />
 
-      <section class="help_topic_sections">
-        <article v-for="(step, index) in steps" :key="index" class="help_topic_section">
-          <span v-if="layout === 'flow'" class="help_topic_section_index" aria-hidden="true">
-            {{ index + 1 }}
-          </span>
-          <p class="help_topic_section_text">{{ step }}</p>
-        </article>
-      </section>
+      <ul v-if="usesList" class="help_topic_sections help_topic_list">
+        <li v-for="(step, index) in steps" :key="index" class="help_topic_section">
+          {{ step }}
+        </li>
+      </ul>
+      <div v-else class="help_topic_sections help_topic_prose">
+        <p v-for="(step, index) in steps" :key="index" class="help_topic_section">
+          {{ step }}
+        </p>
+      </div>
     </div>
 
     <p class="help_topic_tip">
@@ -128,9 +121,9 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: $radius_lg;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
     background-color: var(--color_accent_soft);
     color: var(--color_accent);
     font-size: 1.25em;
@@ -160,17 +153,15 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
   &_content {
     display: flex;
     flex-direction: column;
-    gap: $space_lg;
+    gap: $space_md;
   }
 
   &_context {
     display: flex;
     gap: $space_sm;
     align-items: flex-start;
-    padding: $space_sm $space_md;
-    border-left: 3px solid var(--color_accent);
-    border-radius: $radius_sm;
-    background-color: var(--color_surface_alt);
+    padding-bottom: $space_sm;
+    border-bottom: 1px solid var(--color_border);
     color: var(--color_text_muted);
     font-size: 0.9375em;
 
@@ -191,66 +182,24 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
   }
 
   &_sections {
-    display: flex;
-    flex-wrap: wrap;
-    gap: $space_md;
     margin: 0;
+    max-width: 72ch;
+  }
+
+  &_list {
+    display: grid;
+    gap: $space_sm;
+    padding-left: 1.35rem;
+  }
+
+  &_prose {
+    display: grid;
+    gap: $space_md;
   }
 
   &_section {
-    flex: 1 1 100%;
-    min-width: 0;
-    padding: $space_md;
-    border: 1px solid var(--color_border);
-    border-radius: $radius_md;
-    background-color: var(--color_surface_alt);
-  }
-
-  &_section_text {
     margin: 0;
-  }
-
-  &_section_index {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-bottom: $space_sm;
-    border-radius: 50%;
-    background-color: var(--color_accent_soft);
-    color: var(--color_accent);
-    font-size: 0.75em;
-    font-variant-numeric: tabular-nums;
-    font-weight: 700;
-  }
-
-  &_content_overview &_sections,
-  &_content_reference &_sections {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  &_content_overview &_section:first-child {
-    grid-column: 1 / -1;
-    border-color: var(--color_accent);
-    background-color: var(--color_accent_soft);
-  }
-
-  &_content_flow &_section {
-    border-left: 3px solid var(--color_accent);
-  }
-
-  &_content_settings &_section {
-    padding: $space_sm 0;
-    border-width: 0 0 1px;
-    border-radius: 0;
-    background: none;
-  }
-
-  &_content_safety &_section {
-    border-color: var(--color_warning_border);
-    background-color: var(--color_warning_soft);
+    line-height: 1.6;
   }
 
   // The one thing worth knowing that is not a step: set apart so it is not read as one.
@@ -258,11 +207,16 @@ const next = computed(() => HELP_TOPICS[position.value] ?? null);
     display: flex;
     gap: $space_sm;
     align-items: baseline;
-    padding: $space_sm $space_md;
-    border-left: 3px solid var(--color_accent);
-    border-radius: $radius_sm;
-    background-color: var(--color_accent_soft);
+    max-width: 72ch;
+    padding-top: $space_md;
+    border-top: 1px solid var(--color_border);
+    color: var(--color_text_muted);
     font-size: 0.9375em;
+
+    :deep(.app_icon) {
+      flex-shrink: 0;
+      color: var(--color_accent);
+    }
   }
 
   &_steer {

@@ -2113,26 +2113,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tune-lib"
-version = "1.0.0"
-dependencies = [
- "base64 0.23.1",
- "http-range",
- "lofty",
- "percent-encoding",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-autostart",
- "tauri-plugin-dialog",
- "tauri-plugin-opener",
- "tauri-plugin-store",
- "tempfile",
- "thiserror 2.0.20",
-]
-
-[[package]]
 name = "memchr"
 version = "2.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4252,6 +4232,26 @@ name = "try-lock"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
+
+[[package]]
+name = "tune-lib"
+version = "1.0.0"
+dependencies = [
+ "base64 0.23.1",
+ "http-range",
+ "lofty",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-dialog",
+ "tauri-plugin-opener",
+ "tauri-plugin-store",
+ "tempfile",
+ "thiserror 2.0.20",
+]
 
 [[package]]
 name = "typeid"
